@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.regiontool;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.slipcor.pvparena.arena.Arena;
@@ -17,7 +18,11 @@ public class RegionTool extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.7.21.0";
+		return "v0.8.6.14";
+	}
+
+	public void initLanguage(YamlConfiguration config) {
+		config.addDefault("log.matnotfound", "Material not found: %1%");
 	}
 	
 	public boolean onPlayerInteract(PlayerInteractEvent event) {
