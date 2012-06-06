@@ -32,7 +32,6 @@ public class RegionTool extends ArenaModule {
 
 		for (Arena arena : Arenas.getArenas()) {
 			Material mMat = Material.STICK;
-			// TODO REPLACE WITH WAND!"
 			if (arena.cfg.get("setup.wand") != null) {
 				db.i("reading wand");
 				try {
