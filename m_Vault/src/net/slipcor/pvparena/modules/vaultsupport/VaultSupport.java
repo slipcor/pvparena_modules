@@ -40,7 +40,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.4.8";
+		return "v0.8.4.19";
 	}
 
 	@Override
@@ -429,6 +429,9 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	protected void pay(Arena arena, HashSet<String> result) {
+		if (result == null || result.size() == arena.teamCount) {
+			return;
+		}
 		if (economy != null) {
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");

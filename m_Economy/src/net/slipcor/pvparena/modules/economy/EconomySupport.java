@@ -38,7 +38,7 @@ public class EconomySupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.4.8";
+		return "v0.8.4.19";
 	}
 
 	@Override
@@ -417,6 +417,9 @@ public class EconomySupport extends ArenaModule {
 	}
 
 	protected void pay(Arena arena, HashSet<String> result) {
+		if (result == null || result.size() == arena.teamCount) {
+			return;
+		}
 		if (EconomySupport.eco != null) {
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");
