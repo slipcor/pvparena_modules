@@ -38,7 +38,7 @@ public class EconomySupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.4.19";
+		return "v0.8.6.19";
 	}
 
 	@Override
