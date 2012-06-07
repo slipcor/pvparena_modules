@@ -21,12 +21,12 @@ public class CTManager extends ArenaModule {
 	protected static String spoutHandler = null;
 
 	public CTManager() {
-		super("ColoredTeams");
+		super("ColorTeams");
 	}
 	
 	@Override
 	public String version() {
-		return "v0.7.25.2";
+		return "v0.8.7.0";
 	}
 
 	@Override
