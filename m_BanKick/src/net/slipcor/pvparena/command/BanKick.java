@@ -28,7 +28,7 @@ public class BanKick extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.7.22.0";
+		return "v0.8.7.2";
 	}
 
 	public static HashMap<Arena, List<String>> bans = new HashMap<Arena, List<String>>();
@@ -211,7 +211,7 @@ public class BanKick extends ArenaModule {
 			Arenas.tellPlayer(sender, Language.parse("playernotkicked",string), arena);
 			return;
 		}
-		arena.playerLeave(p);
+		arena.playerLeave(p, "exit");
 		Arenas.tellPlayer(p, Language.parse("youwerekicked", arena.name), arena);
 		Arenas.tellPlayer(sender, Language.parse("playerkicked",string), arena);
 	}
