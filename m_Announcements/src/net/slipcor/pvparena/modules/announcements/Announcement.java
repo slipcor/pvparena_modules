@@ -76,9 +76,6 @@ public class Announcement {
 		message = message.replace(ChatColor.WHITE.toString(), ChatColor
 				.valueOf(a.cfg.getString("announcements.color"))
 				.toString());
-		message.replace("&&", "{%}");
-		message.replace('&', '§');
-		message.replace("{%}", "&");
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (a.isPartOf(p)) {
