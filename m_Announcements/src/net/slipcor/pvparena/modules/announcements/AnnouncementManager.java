@@ -23,7 +23,7 @@ public class AnnouncementManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.7.25.0";
+		return "v0.8.7.2";
 	}
 
 	@Override
@@ -34,6 +34,7 @@ public class AnnouncementManager extends ArenaModule {
 		types.put("announcements.winner", "boolean");
 		types.put("announcements.loser", "boolean");
 		types.put("announcements.prize", "boolean");
+		types.put("announcements.custom", "boolean");
 		types.put("announcements.radius", "int");
 		types.put("announcements.color", "string");
 	}
@@ -50,7 +51,6 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public void announceWinner(Arena arena, String message) {
-
 		Announcement.announce(arena, Announcement.type.WINNER, message);
 	}
 	
@@ -81,15 +81,11 @@ public class AnnouncementManager extends ArenaModule {
 		config.addDefault("announcements.winner", Boolean.valueOf(false));
 		config.addDefault("announcements.loser", Boolean.valueOf(false));
 		config.addDefault("announcements.prize", Boolean.valueOf(false));
+		config.addDefault("announcements.custom", Boolean.valueOf(false));
 		config.addDefault("announcements.radius", Integer.valueOf(0));
 		config.addDefault("announcements.color", "AQUA");
 		
 		config.options().copyDefaults(true);
-	}
-	
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.killedby", "%1% has been killed by %2%!");
 	}
 	
 	@Override
@@ -131,7 +127,9 @@ public class AnnouncementManager extends ArenaModule {
 				+ " || "
 				+ StringParser.colorVar("loser", arena.cfg.getBoolean("announcements.loser"))
 				+ " || "
-				+ StringParser.colorVar("prize", arena.cfg.getBoolean("announcements.prize")));
+				+ StringParser.colorVar("prize", arena.cfg.getBoolean("announcements.prize"))
+				+ " || "
+				+ StringParser.colorVar("custom", arena.cfg.getBoolean("announcements.custom")));
 	}
 
 	@Override

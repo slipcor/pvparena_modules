@@ -17,14 +17,14 @@ import org.bukkit.entity.Player;
  * 
  * @author slipcor
  * 
- * @version v0.7.0
+ * @version v0.8.7
  * 
  */
 public class Announcement {
 	private static Debug db = new Debug(7);
 
 	public static enum type {
-		JOIN, START, END, WINNER, LOSER, PRIZE;
+		JOIN, START, END, WINNER, LOSER, PRIZE, CUSTOM;
 	}
 
 	/**
@@ -52,6 +52,39 @@ public class Announcement {
 					message.replace(ChatColor.WHITE.toString(), ChatColor
 							.valueOf(a.cfg.getString("announcements.color"))
 							.toString()));
+		}
+	}
+
+	/**
+	 * Announce a message to the public
+	 * 
+	 * @param a
+	 *            the arena from where the announcement should come
+	 * @param sType
+	 *            the type of announcement
+	 * @param message
+	 *            the message to announce
+	 */
+	public static void announce(Arena a, String sType, String message) {
+		type t = type.valueOf(sType);
+		if (!sendCheck(a, t)) {
+			return; // do not send the announcement type
+		}
+		db.i("announce [" + a.name + "] type: " + t.name() + " : " + message);
+		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
+		
+		message = message.replace(ChatColor.WHITE.toString(), ChatColor
+				.valueOf(a.cfg.getString("announcements.color"))
+				.toString());
+		message.replace("&&", "{%}");
+		message.replace('&', '§');
+		message.replace("{%}", "&");
+		
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (a.isPartOf(p)) {
+				continue;
+			}
+			send(a, p, message);
 		}
 	}
 
