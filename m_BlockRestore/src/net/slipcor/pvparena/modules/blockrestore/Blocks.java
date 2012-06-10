@@ -106,12 +106,14 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public void onBlockBreak(Arena arena, Block block) {
+		db.i("block break in blockRestore");
 		if (arena == null || arena.cfg.getBoolean("blockRestore.hard")) {
+			db.i(arena + " || blockRestore.hard: " + arena.cfg.getBoolean("blockRestore.hard"));
 			return;
 		}
 		if (arena.fightInProgress
 				&& arena.cfg.getBoolean("protection.restore")) {
-
+			
 			checkBlock(block.getRelative(BlockFace.NORTH), BlockFace.SOUTH);
 			checkBlock(block.getRelative(BlockFace.SOUTH), BlockFace.NORTH);
 			checkBlock(block.getRelative(BlockFace.EAST), BlockFace.WEST);
@@ -119,6 +121,7 @@ public class Blocks extends ArenaModule {
 			
 			saveBlock(block);
 		}
+		db.i("arena.fightInProgress " + arena.fightInProgress + " && restore " + arena.cfg.getBoolean("protection.restore"));
 	}
 	@Override
 	public void onBlockPiston(Arena arena, Block block) {
