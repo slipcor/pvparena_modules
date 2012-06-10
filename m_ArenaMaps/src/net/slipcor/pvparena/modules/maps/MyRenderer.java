@@ -91,7 +91,7 @@ public class MyRenderer extends MapRenderer {
 
 	@Override
 	public void render(MapView map, MapCanvas canvas, Player player) {
-		if (playerName == null) {
+		if (playerName == null) { 
 			// map.removeRenderer(this);
 			// eventual first initialisation
 			if (Maps.hasCustomMap(player.getName()) && !done.contains(map.getId())) {
