@@ -21,7 +21,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.4.2";
+		return "v0.8.8.5";
 	}
 	
 	private static HashMap<Arena, HashSet<String>> players = new HashMap<Arena, HashSet<String>>();
@@ -52,7 +52,7 @@ public class LateLounge extends ArenaModule {
 		}
 		
 		if (list.contains(player.getName())) {
-			Arenas.tellPlayer(player, Language.parse("lang.lateloungewait"));
+			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
 			return list.size() >= arena.cfg.getInt("ready.min");
 		}
 		
@@ -72,7 +72,7 @@ public class LateLounge extends ArenaModule {
 					//
 				}
 			}
-			Arenas.tellPlayer(player, Language.parse("lang.lateloungewait"));
+			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
 			return false;
 		} else if (arena.cfg.getInt("ready.min") == list.size() + 1) {
 			// not enough players
@@ -104,7 +104,7 @@ public class LateLounge extends ArenaModule {
 				}
 				return true;
 			}
-			Arenas.tellPlayer(player, Language.parse("lang.lateloungewait"));
+			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
 			return false;
 		}
 		
