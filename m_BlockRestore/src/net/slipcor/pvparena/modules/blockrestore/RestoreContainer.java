@@ -58,14 +58,14 @@ public class RestoreContainer {
 				Inventory inv = ((Dispenser) world.getBlockAt(loc).getState())
 						.getInventory();
 				inv.clear();
-				for (ItemStack is : chests.get(loc)) {
+				for (ItemStack is : dispensers.get(loc)) {
 					if (is != null) {
 						inv.addItem(cloneIS(is));
 					}
 				}
 				db.i("success!");
 			} catch (Exception e) {
-				//
+				e.printStackTrace();
 			}
 		}
 		for (Location loc : furnaces.keySet()) {
