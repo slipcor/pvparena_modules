@@ -65,7 +65,7 @@ public class RestoreContainer {
 				}
 				db.i("success!");
 			} catch (Exception e) {
-				e.printStackTrace();
+				//
 			}
 		}
 		for (Location loc : furnaces.keySet()) {
