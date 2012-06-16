@@ -11,7 +11,7 @@ public class RedStoneTriggers extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.4.1";
+		return "v0.8.8.5";
 	}
 	
 	@Override

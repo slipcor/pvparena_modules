@@ -45,7 +45,6 @@ public class RedStoneListener implements Listener {
 					}
 				}
 			}
-			arena.type().checkAndCommit();
 		} else if (s.getLine(0).equals("[LOSE]")) {
 			for (ArenaTeam team : arena.getTeams()) {
 				if (!team.getName().equalsIgnoreCase(s.getLine(1))) {
