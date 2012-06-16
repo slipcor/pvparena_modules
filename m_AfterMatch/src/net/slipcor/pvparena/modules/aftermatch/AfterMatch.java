@@ -10,6 +10,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.Arenas;
@@ -26,12 +29,20 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.4.3";
+		return "v0.8.8.8";
 	}
 
 	public void afterMatch(Arena a) {
-		// TODO Auto-generated method stub
-
+		for (ArenaTeam t : a.getTeams()) {
+			for (ArenaPlayer p : t.getTeamMembers()) {
+				if (!p.getStatus().equals(Status.FIGHT)) {
+					continue;
+				}
+				Player player = p.get();
+				a.tpPlayerToCoordName(player, "after");
+			}
+		}
+		a.tellEveryone(Language.parse("aftermatch"));
 	}
 
 	public String checkSpawns(Set<String> list) {
