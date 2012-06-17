@@ -35,12 +35,12 @@ public class VaultSupport extends ArenaModule {
 	private HashMap<String, Double> paPlayersJoinAmount = new HashMap<String, Double>();
 
 	public VaultSupport() {
-		super("VaultSupport");
+		super("Vault");
 	}
 
 	@Override
 	public String version() {
-		return "v0.8.6.19";
+		return "v0.8.9.0";
 	}
 
 	@Override
@@ -53,6 +53,7 @@ public class VaultSupport extends ArenaModule {
 		types.put("money.betWinFactor", "double");
 		types.put("money.betTeamWinFactor", "double");
 		types.put("money.betPlayerWinFactor", "double");
+		types.put("money.usePot", "boolean");
 		types.put("money.winFactor", "double");
 	}
 
@@ -433,22 +434,46 @@ public class VaultSupport extends ArenaModule {
 			return;
 		}
 		if (economy != null) {
+			
+			double pot = 0;
+			double winpot = 0;
+			
+			for (String s : paPlayersBetAmount.keySet()) {
+				String[] nSplit = s.split(":");
+				
+				pot += paPlayersBetAmount.get(s);
+				
+				if (result.contains(nSplit)) {
+					winpot += paPlayersBetAmount.get(s);
+				}
+			}
+			
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");
 				ArenaTeam team = Teams.getTeam(arena, nSplit[1]);
-				if (team == null || team.getName().equals("free"))
-					continue;
+				if (team == null || team.getName().equals("free")) {
+					if (Bukkit.getPlayerExact(nSplit[1]) == null) {
+						continue;
+					}
+				}
 
 				if (result.contains(nSplit[1])) {
-					double teamFactor = arena.cfg
-							.getDouble("money.betTeamWinFactor")
-							* arena.teamCount;
-					if (teamFactor <= 0) {
-						teamFactor = 1;
+					double amount = 0;
+					
+					if (arena.cfg.getBoolean("money.usePot")) {
+						if (winpot > 0) {
+							amount = pot * paPlayersBetAmount.get(nKey) / winpot;
+						}
+					} else {
+						double teamFactor = arena.cfg
+								.getDouble("money.betTeamWinFactor")
+								* arena.teamCount;
+						if (teamFactor <= 0) {
+							teamFactor = 1;
+						}
+						teamFactor *= arena.cfg.getDouble("money.betWinFactor");
+						amount = paPlayersBetAmount.get(nKey) * teamFactor;
 					}
-					teamFactor *= arena.cfg.getDouble("money.betWinFactor");
-
-					double amount = paPlayersBetAmount.get(nKey) * teamFactor;
 
 					if (!economy.hasAccount(nSplit[0])) {
 						db.s("Account not found: " + nSplit[0]);
@@ -478,6 +503,9 @@ public class VaultSupport extends ArenaModule {
 		if (ap.getStatus().equals(Status.LOBBY) ||
 				ap.getStatus().equals(Status.READY)) {
 			int entryfee = arena.cfg.getInt("money.entry", 0);
+			if (entryfee < 1) {
+				return;
+			}
 			Arenas.tellPlayer(player, Language.parse("refunding", economy.format(entryfee)));
 			if (!economy.hasAccount(player.getName())) {
 				db.s("Account not found: " + player.getName());
