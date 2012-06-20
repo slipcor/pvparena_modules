@@ -11,6 +11,7 @@ import net.slipcor.pvparena.managers.Arenas;
 import net.slipcor.pvparena.neworder.ArenaModule;
 import net.slipcor.pvparena.neworder.ArenaRegion;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -28,7 +29,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.8.9";
+		return "v0.8.10.8";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -68,29 +69,8 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config, String type) {
 		config.addDefault("blockRestore.hard", Boolean.valueOf(false));
+		config.addDefault("blockRestore.offset", Integer.valueOf(0));
 		config.options().copyDefaults(true);
-	}
-
-	/**
-	 * get all blocks that have to be reset (arena wise)
-	 * 
-	 * @param arena
-	 *            the arena to check
-	 * @return a map of location=>block to reset
-	 */
-	private HashMap<Location, ArenaBlock> getBlocks(Arena arena) {
-		HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
-
-		db.i("reading all arenablocks");
-		for (Location l : blocks.keySet()) {
-			if (blocks.get(l).arena.equals(arena.name)
-					|| blocks.get(l).arena.equals("")) {
-				result.put(l, blocks.get(l));
-				db.i(" - " + l.toString());
-			}
-		}
-
-		return result;
 	}
 	
 	@Override
@@ -167,12 +147,7 @@ public class Blocks extends ArenaModule {
 	 */
 	private void resetBlocks(Arena arena) {
 		db.i("resetting blocks");
-		HashMap<Location, ArenaBlock> removals = getBlocks(arena);
-		for (Location l : removals.keySet()) {
-			db.i("location: " + l.toString());
-			removals.get(l).reset();
-			blocks.remove(l);
-		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks));
 	}
 
 

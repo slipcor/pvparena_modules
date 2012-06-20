@@ -13,9 +13,9 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.neworder.ArenaRegion;
@@ -37,50 +37,10 @@ public class RestoreContainer {
 	private Debug db = new Debug(55);
 
 	protected void restoreChests() {
-		World world = Bukkit.getWorld(arena.getWorld());
-		db.i("restoring chests");
-		for (Location loc : chests.keySet()) {
-			try {
-				db.i("trying to restore chest: " + loc.toString());
-				Inventory inv = ((Chest) world.getBlockAt(loc).getState())
-						.getInventory();
-				inv.clear();
-				inv.setContents(chests.get(loc));
-				db.i("success!");
-			} catch (Exception e) {
-				//
-			}
-		}
-		for (Location loc : dispensers.keySet()) {
-			try {
-				db.i("trying to restore dispenser: " + loc.toString());
-
-				Inventory inv = ((Dispenser) world.getBlockAt(loc).getState())
-						.getInventory();
-				inv.clear();
-				for (ItemStack is : dispensers.get(loc)) {
-					if (is != null) {
-						inv.addItem(cloneIS(is));
-					}
-				}
-				db.i("success!");
-			} catch (Exception e) {
-				//
-			}
-		}
-		for (Location loc : furnaces.keySet()) {
-			try {
-				db.i("trying to restore furnace: " + loc.toString());
-				((Furnace) world.getBlockAt(loc).getState()).getInventory()
-						.setContents(cloneIS(furnaces.get(loc)));
-				db.i("success!");
-			} catch (Exception e) {
-				//
-			}
-		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RestoreRunner(arena, chests, furnaces, dispensers));
 	}
 
-	private ItemStack[] cloneIS(ItemStack[] contents) {
+	protected static ItemStack[] cloneIS(ItemStack[] contents) {
 		ItemStack[] result = new ItemStack[contents.length];
 
 		for (int i = 0; i < result.length; i++) {
@@ -98,10 +58,6 @@ public class RestoreContainer {
 		}
 
 		return result;
-	}
-
-	private ItemStack cloneIS(ItemStack is) {
-		return is.clone();
 	}
 
 	public void saveChests() {
