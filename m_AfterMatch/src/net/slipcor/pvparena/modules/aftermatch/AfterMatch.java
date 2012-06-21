@@ -29,7 +29,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.8.8";
+		return "v0.8.10.1";
 	}
 
 	public void afterMatch(Arena a) {
@@ -56,6 +56,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
+		db.i("aftermatch command?");
 		if (!(sender instanceof Player)) {
 			Language.parse("onlyplayers");
 			return;
@@ -63,6 +64,7 @@ public class AfterMatch extends ArenaModule {
 		if (!args[0].startsWith("after")) {
 			return;
 		}
+		db.i("aftermatch command!");
 
 		Player player = (Player) sender;
 
@@ -85,12 +87,7 @@ public class AfterMatch extends ArenaModule {
 		if (pu.startsWith("death")) {
 			playerCount.put(arena, Integer.parseInt(ss[1]));
 		} else if (pu.startsWith("time")) {
-			int i = Integer.parseInt(ss[1]);
-			playerCount.put(
-					arena,
-					Bukkit.getScheduler().scheduleSyncDelayedTask(
-							PVPArena.instance, new AfterRunnable(arena, this),
-							i * 20L));
+			// later
 		} else {
 			db.w("error activating aftermatch module");
 		}
@@ -120,7 +117,7 @@ public class AfterMatch extends ArenaModule {
 	@Override
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
-		player.sendMessage("§AfterMatch:§f "
+		player.sendMessage("§bAfterMatch:§f "
 				+ StringParser.colorVar(playerCount.containsKey(arena)
 						|| runnables.containsKey(arena))
 				+ "("
@@ -144,7 +141,7 @@ public class AfterMatch extends ArenaModule {
 	public void teleportAllToSpawn(Arena arena) {
 		if (runnables.containsKey(arena)) {
 			int i = 0;
-			String pu = arena.cfg.getString("game.powerups", "off");
+			String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
 			String[] ss = pu.split(":");
 			if (pu.startsWith("time")) {
 				// arena.powerupTrigger = "time";
@@ -153,10 +150,10 @@ public class AfterMatch extends ArenaModule {
 				return;
 			}
 
-			db.i("using powerups : "
-					+ arena.cfg.getString("game.powerups", "off") + " : " + i);
+			db.i("using aftermatch : "
+					+ arena.cfg.getString("aftermatch.aftermatch", "off") + " : " + i);
 			if (i > 0) {
-				db.i("powerup time trigger!");
+				db.i("aftermatch time trigger!");
 				Bukkit.getScheduler().cancelTask(runnables.get(arena));
 				playerCount.put(
 						arena,
