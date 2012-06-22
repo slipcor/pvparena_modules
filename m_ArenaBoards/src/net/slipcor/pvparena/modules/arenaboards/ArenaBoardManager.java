@@ -29,7 +29,7 @@ public class ArenaBoardManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.7.21.0";
+		return "v0.8.10.0";
 	}
 
 	@Override

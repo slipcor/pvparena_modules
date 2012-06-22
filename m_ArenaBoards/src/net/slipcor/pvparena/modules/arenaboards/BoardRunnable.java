@@ -12,7 +12,7 @@ import net.slipcor.pvparena.core.Debug;
  * 
  * @author slipcor
  * 
- * @version v0.7.0
+ * @version v0.8.10
  * 
  */
 
@@ -43,7 +43,6 @@ public class BoardRunnable implements Runnable {
 				ArenaBoardManager.globalBoard.update(); 
 			}
 		} else {
-			a.leaveCheck();
 			for (ArenaBoard ab : abm.boards.values()) {
 				if (ab.arena.name.equals(a.name)) {
 					ab.update();
