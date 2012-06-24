@@ -1,13 +1,16 @@
 package net.slipcor.pvparena.modules.colorteams;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
 
+import net.minecraft.server.EntityPlayer;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
@@ -19,6 +22,7 @@ import net.slipcor.pvparena.neworder.ArenaModule;
 
 public class CTManager extends ArenaModule {
 	protected static String spoutHandler = null;
+	private Field name = null;
 
 	public CTManager() {
 		super("ColorTeams");
@@ -26,7 +30,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.7.0";
+		return "v0.8.10.10";
 	}
 
 	@Override
@@ -45,6 +49,8 @@ public class CTManager extends ArenaModule {
 			db.i("> arena is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
+			} else {
+				disguise(player, player.getName());
 			}
 			return;
 		}
@@ -55,6 +61,8 @@ public class CTManager extends ArenaModule {
 			db.i("> team is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
+			} else {
+				disguise(player, player.getName());
 			}
 			return;
 		} else {
@@ -69,9 +77,29 @@ public class CTManager extends ArenaModule {
 		}
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(n);
+		} else {
+			disguise(player, n);
 		}
 	}
 	
+	private void disguise(Player player, String name) {
+		String listName = name;
+		if(listName.length() >= 16) {
+			listName = listName.substring(0, 16);
+		}
+		// does this actually help?
+		player.setDisplayName(name);
+		try {
+			player.setPlayerListName(listName);
+		} catch (Exception e) {
+			// don't print the error
+		}
+		// then the rest
+		CraftPlayer cp = (CraftPlayer) player;
+		EntityPlayer ep = cp.getHandle();
+		ep.name = name;
+	}
+
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config, String type) {
 		config.addDefault("game.hideName", Boolean.valueOf(false));
@@ -90,6 +118,18 @@ public class CTManager extends ArenaModule {
 	public void onEnable() {
 		if (Bukkit.getServer().getPluginManager().getPlugin("Spout") != null) {
 			spoutHandler = SpoutManager.getInstance().toString();
+		} else {
+			try {
+				// Grab the field
+				for(Field field : EntityPlayer.class.getFields()) {
+					if(field.getName().equalsIgnoreCase("name")) {
+						name = field;
+					}
+				}
+				name.setAccessible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		Language.log_info((spoutHandler == null) ? "nospout" : "spout");
 	}
@@ -108,7 +148,6 @@ public class CTManager extends ArenaModule {
 		if (arena.cfg.getBoolean("messages.colorNick", true)) {
 			colorizePlayer(player);	
 		}
-		
 	}
 	
 	@Override
