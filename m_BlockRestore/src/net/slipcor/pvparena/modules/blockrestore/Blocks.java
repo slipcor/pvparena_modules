@@ -29,7 +29,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.10.8";
+		return "v0.8.10.10";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -228,6 +228,17 @@ public class Blocks extends ArenaModule {
 	public void teleportAllToSpawn(Arena arena) {
 		ArenaRegion region = arena.regions.get("battlefield");
 		
+		saveRegion(arena, region);
+		
+		for(ArenaRegion r : arena.regions.values()) {
+			if (r.name.startsWith("restore")) {
+				saveRegion(arena, r);
+			}
+		}
+		
+	}
+
+	private void saveRegion(Arena arena, ArenaRegion region) {
 		if (region == null) {
 			return;
 		}
@@ -236,7 +247,7 @@ public class Blocks extends ArenaModule {
 		
 		saveChests(arena);
 		
-		if (!arena.cfg.getBoolean("blockRestore.hard")) {
+		if (!arena.cfg.getBoolean("blockRestore.hard") && !region.name.startsWith("restore")) {
 			return;
 		}
 
