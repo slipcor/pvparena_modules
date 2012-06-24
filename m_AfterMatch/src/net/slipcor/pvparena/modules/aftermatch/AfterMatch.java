@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -21,7 +23,6 @@ import net.slipcor.pvparena.neworder.ArenaModule;
 
 public class AfterMatch extends ArenaModule {
 	protected HashMap<Arena, Integer> runnables = new HashMap<Arena, Integer>();
-	private HashMap<Arena, Integer> playerCount = new HashMap<Arena, Integer>();
 
 	public AfterMatch() {
 		super("AfterMatch");
@@ -29,7 +30,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.10.1";
+		return "v0.8.10.2";
 	}
 
 	public void afterMatch(Arena a) {
@@ -43,15 +44,26 @@ public class AfterMatch extends ArenaModule {
 			}
 		}
 		a.tellEveryone(Language.parse("aftermatch"));
+		HashSet<String> lives = new HashSet<String>();
+		
+		for (String s : a.lives.keySet()) {
+			lives.add(s);
+		}
+		
+		for (String s : lives) {
+			a.lives.put(s, 0);
+		}
 	}
 
 	public String checkSpawns(Set<String> list) {
+		/*
 		for (String s : list) {
 			if (s.startsWith("after")) {
 				return null;
 			}
 		}
-		return "after not set";
+		return "after not set";*/
+		return null;
 	}
 
 	@Override
@@ -59,6 +71,11 @@ public class AfterMatch extends ArenaModule {
 		db.i("aftermatch command?");
 		if (!(sender instanceof Player)) {
 			Language.parse("onlyplayers");
+			return;
+		}
+		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+
+		if (pu.equals("off")) {
 			return;
 		}
 		if (!args[0].startsWith("after")) {
@@ -80,12 +97,44 @@ public class AfterMatch extends ArenaModule {
 	}
 
 	@Override
+	public void commitPlayerDeath(Arena arena, Player player,
+			EntityDamageEvent cause) {
+		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+
+		if (pu.equals("off")) {
+			return;
+		}
+		
+		String[] ss = pu.split(":");
+		if (pu.startsWith("time") || runnables.containsKey(arena)) {
+			return;
+		}
+
+		int i = Integer.parseInt(ss[1]);
+
+		for (ArenaTeam t : arena.getTeams()) {
+			for (ArenaPlayer p : t.getTeamMembers()) {
+				if (!p.getStatus().equals(Status.FIGHT)) {
+					continue;
+				}
+				if (--i < 0) {
+					return;
+				}
+			}
+		}
+
+		runnables.put(arena, 0);
+
+		afterMatch(arena);
+	}
+
+	@Override
 	public void configParse(Arena arena, YamlConfiguration config, String type) {
 		String pu = config.getString("aftermatch.aftermatch", "off");
 
-		String[] ss = pu.split(":");
+		//String[] ss = pu.split(":");
 		if (pu.startsWith("death")) {
-			playerCount.put(arena, Integer.parseInt(ss[1]));
+			//
 		} else if (pu.startsWith("time")) {
 			// later
 		} else {
@@ -118,8 +167,7 @@ public class AfterMatch extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§bAfterMatch:§f "
-				+ StringParser.colorVar(playerCount.containsKey(arena)
-						|| runnables.containsKey(arena))
+				+ StringParser.colorVar(!arena.cfg.getString("aftermatch.aftermatch").equals("off"))
 				+ "("
 				+ StringParser.colorVar(arena.cfg
 						.getString("aftermatch.aftermatch")) + ")");
@@ -127,40 +175,53 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public void reset(Arena arena, boolean force) {
+		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+
+		if (pu.equals("off")) {
+			return;
+		}
 		if (runnables.containsKey(arena)) {
 			Bukkit.getScheduler().cancelTask(runnables.get(arena));
 			runnables.remove(arena);
 		}
+		/*
 		if (playerCount.containsKey(arena)) {
 			Bukkit.getScheduler().cancelTask(playerCount.get(arena));
 			playerCount.remove(arena);
-		}
+		}*/
 	}
 
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
-		if (runnables.containsKey(arena)) {
-			int i = 0;
-			String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
-			String[] ss = pu.split(":");
-			if (pu.startsWith("time")) {
-				// arena.powerupTrigger = "time";
-				i = Integer.parseInt(ss[1]);
-			} else {
-				return;
-			}
+		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
 
-			db.i("using aftermatch : "
-					+ arena.cfg.getString("aftermatch.aftermatch", "off") + " : " + i);
-			if (i > 0) {
-				db.i("aftermatch time trigger!");
-				Bukkit.getScheduler().cancelTask(runnables.get(arena));
-				playerCount.put(
-						arena,
-						Bukkit.getScheduler().scheduleSyncDelayedTask(
-								PVPArena.instance,
-								new AfterRunnable(arena, this), i * 20L));
-			}
+		if (pu.equals("off")) {
+			return;
+		}
+		if (runnables.containsKey(arena)) {
+			Bukkit.getScheduler().cancelTask(runnables.get(arena));
+			runnables.remove(arena);
+		}
+
+		int i = 0;
+		String[] ss = pu.split(":");
+		if (pu.startsWith("time")) {
+			// arena.powerupTrigger = "time";
+			i = Integer.parseInt(ss[1]);
+		} else {
+			return;
+		}
+
+		db.i("using aftermatch : "
+				+ arena.cfg.getString("aftermatch.aftermatch", "off") + " : "
+				+ i);
+		if (i > 0) {
+			db.i("aftermatch time trigger!");
+			runnables.put(
+					arena,
+					Bukkit.getScheduler().scheduleSyncDelayedTask(
+							PVPArena.instance, new AfterRunnable(arena, this),
+							i * 20L));
 		}
 	}
 }
