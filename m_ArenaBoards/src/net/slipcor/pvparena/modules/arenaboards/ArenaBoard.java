@@ -110,7 +110,7 @@ public class ArenaBoard {
 			}
 			db.i("found! reading!");
 			String[] s = Statistics.read(
-					Statistics.getStats(this.arena, sortBy), t, arena==null);
+					Statistics.getStats(this.arena, sortBy), t, arena == null);
 			columns.get(t).write(s);
 		}
 	}
@@ -123,21 +123,34 @@ public class ArenaBoard {
 	 * @return true if the player clicked a leaderboard sign, false otherwise
 	 */
 	public static boolean checkInteract(PlayerInteractEvent event) {
-		
+
+		db.i("checking ArenaBoard interact");
+
 		Player player = event.getPlayer();
-		
+
 		if (event.getClickedBlock() == null) {
 			return false;
 		}
 
-		if (!abm.boards.containsKey(event.getClickedBlock().getLocation())) {
+		db.i("block is not null");
+
+		if (!abm.boards.containsKey(event.getClickedBlock().getLocation())
+				&& ArenaBoardManager.globalBoard == null
+				|| !ArenaBoardManager.globalBoard.getLocation().equals(
+						event.getClickedBlock().getLocation())) {
 			return false;
 		}
 
-		ArenaBoard ab = abm.boards
-				.get(event.getClickedBlock().getLocation());
-		
+		db.i("arenaboard exists");
+
+		ArenaBoard ab = abm.boards.get(event.getClickedBlock().getLocation());
+
+		if (ab == null) {
+			ab = ArenaBoardManager.globalBoard;
+		}
+
 		if (ab.arena == null) {
+			db.i("global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = Statistics.type.next(ab.sortBy);
 				Arenas.tellPlayer(player,
@@ -150,19 +163,22 @@ public class ArenaBoard {
 				return true;
 			}
 		} else {
+			db.i("not global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = Statistics.type.next(ab.sortBy);
 				Arenas.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()), ab.arena);
+						Language.parse("sortingby", ab.sortBy.toString()),
+						ab.arena);
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 				ab.sortBy = Statistics.type.last(ab.sortBy);
 				Arenas.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()), ab.arena);
+						Language.parse("sortingby", ab.sortBy.toString()),
+						ab.arena);
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 

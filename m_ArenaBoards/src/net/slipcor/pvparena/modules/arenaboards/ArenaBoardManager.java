@@ -1,10 +1,13 @@
 package net.slipcor.pvparena.modules.arenaboards;
 
 import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import net.slipcor.pvparena.PVPArena;
@@ -29,7 +32,7 @@ public class ArenaBoardManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.10.0";
+		return "v0.8.10.1";
 	}
 
 	@Override
@@ -76,8 +79,21 @@ public class ArenaBoardManager extends ArenaModule {
 			Bukkit.getScheduler().cancelTask(GLOBAL_ID);
 			GLOBAL_ID = -1;
 		} else if (boards.containsKey(block.getLocation())) {
-			
 			boards.get(block.getLocation()).destroy();
+			boards.remove(block.getLocation());
+		} else {
+			return;
+		}
+
+		String msg = Language.parse("arenaboarddestroyed");
+		for (Entity e : Bukkit.getWorld(arena.getWorld()).getEntities()) {
+			if (e instanceof Player) {
+				Player player = (Player) e;
+				if (player.getLocation().distance(block.getLocation()) > 5) {
+					continue;
+				}
+				Arenas.tellPlayer(player, msg, arena);
+			}
 		}
 	}
 
