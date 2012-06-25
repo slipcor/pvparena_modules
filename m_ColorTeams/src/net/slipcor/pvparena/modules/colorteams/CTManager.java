@@ -39,9 +39,10 @@ public class CTManager extends ArenaModule {
 		types.put("game.mustbesafe", "boolean");
 		types.put("game.woolFlagHead", "boolean");
 		types.put("messages.colorNick", "boolean");
+		types.put("colors.requireVault", "boolean");
 	}
 
-	private void colorizePlayer(Player player) {
+	private void colorizePlayer(Arena a, Player player) {
 		db.i("colorizing player " + player.getName() + ";");
 
 		Arena arena = Arenas.getArenaByPlayer(player);
@@ -49,7 +50,7 @@ public class CTManager extends ArenaModule {
 			db.i("> arena is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else {
+			} else if (!a.cfg.getBoolean("colors.requireVault")) {
 				disguise(player, player.getName());
 			}
 			return;
@@ -61,7 +62,7 @@ public class CTManager extends ArenaModule {
 			db.i("> team is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else {
+			} else if (!a.cfg.getBoolean("colors.requireVault")) {
 				disguise(player, player.getName());
 			}
 			return;
@@ -77,7 +78,7 @@ public class CTManager extends ArenaModule {
 		}
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(n);
-		} else {
+		} else if (!a.cfg.getBoolean("colors.requireVault")) {
 			disguise(player, n);
 		}
 	}
@@ -104,6 +105,7 @@ public class CTManager extends ArenaModule {
 	public void configParse(Arena arena, YamlConfiguration config, String type) {
 		config.addDefault("game.hideName", Boolean.valueOf(false));
 		config.addDefault("messages.colorNick", Boolean.valueOf(true));
+		config.addDefault("colors.requireVault", Boolean.valueOf(false));
 		config.options().copyDefaults(true);
 	}
 	
@@ -140,13 +142,35 @@ public class CTManager extends ArenaModule {
 		player.sendMessage("§6ColoredTeams:§f "
 				+ StringParser.colorVar("hideName", arena.cfg.getBoolean("game.hideName"))
 				+ " || "
-				+ StringParser.colorVar("colorNick", arena.cfg.getBoolean("messages.colorNick")));
+				+ StringParser.colorVar("colorNick", arena.cfg.getBoolean("messages.colorNick"))
+				+ " || "
+				+ StringParser.colorVar("requireVaualt", arena.cfg.getBoolean("colors.requireVault")));
 	}
 
 	@Override
 	public void tpPlayerToCoordName(Arena arena, Player player, String place) {
 		if (arena.cfg.getBoolean("messages.colorNick", true)) {
-			colorizePlayer(player);	
+			if (spoutHandler != null) {
+				colorizePlayer(arena, player);	
+			} else {
+				ArenaTeam team = Teams.getTeam(arena, ArenaPlayer.parsePlayer(player));
+				String n;
+				if (team == null) {
+					db.i("> team is null");
+					n = player.getName();
+				} else {
+					n = team.getColorString() + player.getName();
+				}
+				n = n.replaceAll("(&([a-f0-9]))", "§$2");
+				
+				player.setDisplayName(n);
+
+				if (team != null && arena.cfg.getBoolean("game.hideName")) {
+					n = " ";
+				}
+				
+				updateName(player, n);
+			}
 		}
 	}
 	
@@ -155,5 +179,20 @@ public class CTManager extends ArenaModule {
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(player.getName());
 		}
+	}
+	
+	public void updateName(Player player, String team) {
+		
+		// Update the name
+		disguise(player, team);
+		Player[] players = Bukkit.getOnlinePlayers();
+		for(Player p : players) {
+			if(p != player) {
+				// Refresh the packet!
+				p.hidePlayer(player);
+				p.showPlayer(player);
+			}
+		}
+		//setName(player, ChatColor.stripColor(n));
 	}
 }
