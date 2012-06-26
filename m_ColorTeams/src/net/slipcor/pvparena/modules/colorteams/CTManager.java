@@ -30,14 +30,12 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.10.10";
+		return "v0.8.10.14";
 	}
 
 	@Override
 	public void addSettings(HashMap<String, String> types) {
 		types.put("game.hideName", "boolean");
-		types.put("game.mustbesafe", "boolean");
-		types.put("game.woolFlagHead", "boolean");
 		types.put("messages.colorNick", "boolean");
 		types.put("colors.requireVault", "boolean");
 	}
