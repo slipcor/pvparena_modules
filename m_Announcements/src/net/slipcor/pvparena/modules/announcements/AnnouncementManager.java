@@ -23,7 +23,7 @@ public class AnnouncementManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.7.2";
+		return "v0.8.11.6";
 	}
 
 	@Override
@@ -37,6 +37,11 @@ public class AnnouncementManager extends ArenaModule {
 		types.put("announcements.custom", "boolean");
 		types.put("announcements.radius", "int");
 		types.put("announcements.color", "string");
+	}
+
+	@Override
+	public void announceCustom(Arena arena, String message) {
+		Announcement.announce(arena, Announcement.type.CUSTOM, message);
 	}
 
 	@Override

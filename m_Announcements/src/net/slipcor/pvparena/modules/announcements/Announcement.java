@@ -37,7 +37,7 @@ public class Announcement {
 	 * @param message
 	 *            the message to announce
 	 */
-	public static void announce(Arena a, type t, String message) {
+	protected static void announce(Arena a, type t, String message) {
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
@@ -65,7 +65,7 @@ public class Announcement {
 	 * @param message
 	 *            the message to announce
 	 */
-	public static void announce(Arena a, String sType, String message) {
+	protected static void announce(Arena a, String sType, String message) {
 		type t = type.valueOf(sType);
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
