@@ -29,7 +29,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.10.10";
+		return "v0.8.11.11";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -38,6 +38,12 @@ public class Blocks extends ArenaModule {
 	private static HashMap<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
 
 	private static Debug db = new Debug(24);
+
+	@Override
+	public void addSettings(HashMap<String, String> types) {
+		types.put("blockRestore.hard", "boolean");
+		types.put("blockRestore.offset", "int");
+	}
 	
 	private void checkBlock(Block b, BlockFace bf) {
 		if (b.getType().equals(Material.LADDER) ||
