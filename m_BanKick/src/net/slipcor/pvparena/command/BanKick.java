@@ -55,6 +55,7 @@ public class BanKick extends ArenaModule {
 					Language.parse("nopermto", Language.parse("admin")), arena);
 			return;
 		}
+		
 		/*
 /pa [arenaname] kick [player]
 /pa [arenaname] tempban [player] [timediff*]
