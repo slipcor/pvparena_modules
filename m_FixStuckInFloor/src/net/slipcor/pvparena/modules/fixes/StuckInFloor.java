@@ -2,8 +2,6 @@ package net.slipcor.pvparena.modules.fixes;
 
 import java.util.HashMap;
 
-import org.bukkit.Chunk;
-import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import net.slipcor.pvparena.arena.Arena;
@@ -17,7 +15,7 @@ public class StuckInFloor extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.8.8";
+		return "v0.8.11.6";
 	}
 
 	@Override
@@ -34,11 +32,7 @@ public class StuckInFloor extends ArenaModule {
 	@Override
 	public void onPlayerTeleport(Arena arena, PlayerTeleportEvent event) {
 		if (arena.cfg.getBoolean("fix.stuckInFloor")) {
-			World world = event.getTo().getWorld();
-			Chunk chunk = world.getChunkAt(event.getTo());
-			int x = chunk.getX();
-			int z = chunk.getZ();
-			world.refreshChunk(x, z);
+			event.setTo(event.getTo().add(0, 0.1, 0));
 		}
 	}
 }
