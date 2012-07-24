@@ -30,14 +30,14 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.10.14";
+		return "v0.8.11.10";
 	}
 
 	@Override
 	public void addSettings(HashMap<String, String> types) {
 		types.put("game.hideName", "boolean");
 		types.put("messages.colorNick", "boolean");
-		types.put("colors.requireVault", "boolean");
+		types.put("colors.requireSpout", "boolean");
 	}
 
 	private void colorizePlayer(Arena a, Player player) {
@@ -48,7 +48,7 @@ public class CTManager extends ArenaModule {
 			db.i("> arena is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.cfg.getBoolean("colors.requireVault")) {
+			} else if (!a.cfg.getBoolean("colors.requireSpout")) {
 				disguise(player, player.getName());
 			}
 			return;
@@ -60,7 +60,7 @@ public class CTManager extends ArenaModule {
 			db.i("> team is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.cfg.getBoolean("colors.requireVault")) {
+			} else if (!a.cfg.getBoolean("colors.requireSpout")) {
 				disguise(player, player.getName());
 			}
 			return;
@@ -76,12 +76,13 @@ public class CTManager extends ArenaModule {
 		}
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(n);
-		} else if (!a.cfg.getBoolean("colors.requireVault")) {
+		} else if (!a.cfg.getBoolean("colors.requireSpout")) {
 			disguise(player, n);
 		}
 	}
 	
 	private void disguise(Player player, String name) {
+		
 		String listName = name;
 		if(listName.length() >= 16) {
 			listName = listName.substring(0, 16);
@@ -97,13 +98,14 @@ public class CTManager extends ArenaModule {
 		CraftPlayer cp = (CraftPlayer) player;
 		EntityPlayer ep = cp.getHandle();
 		ep.name = name;
+		
 	}
 
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config, String type) {
 		config.addDefault("game.hideName", Boolean.valueOf(false));
 		config.addDefault("messages.colorNick", Boolean.valueOf(true));
-		config.addDefault("colors.requireVault", Boolean.valueOf(false));
+		config.addDefault("colors.requireSpout", Boolean.valueOf(false));
 		config.options().copyDefaults(true);
 	}
 	
@@ -142,7 +144,7 @@ public class CTManager extends ArenaModule {
 				+ " || "
 				+ StringParser.colorVar("colorNick", arena.cfg.getBoolean("messages.colorNick"))
 				+ " || "
-				+ StringParser.colorVar("requireVaualt", arena.cfg.getBoolean("colors.requireVault")));
+				+ StringParser.colorVar("requireVaualt", arena.cfg.getBoolean("colors.requireSpout")));
 	}
 
 	@Override
