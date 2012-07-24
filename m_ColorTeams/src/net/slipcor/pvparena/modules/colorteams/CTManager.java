@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
 
@@ -84,7 +83,7 @@ public class CTManager extends ArenaModule {
 	}
 	
 	private void disguise(Player player, String name) {
-		
+		/*
 		String listName = name;
 		if(listName.length() >= 16) {
 			listName = listName.substring(0, 16);
@@ -100,7 +99,7 @@ public class CTManager extends ArenaModule {
 		CraftPlayer cp = (CraftPlayer) player;
 		EntityPlayer ep = cp.getHandle();
 		ep.name = name;
-		
+		*/
 	}
 
 	@Override
