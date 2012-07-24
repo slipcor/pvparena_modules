@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
 
 import net.minecraft.server.EntityPlayer;
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
@@ -30,7 +31,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.11.10";
+		return "v0.8.11.11";
 	}
 
 	@Override
@@ -38,6 +39,7 @@ public class CTManager extends ArenaModule {
 		types.put("game.hideName", "boolean");
 		types.put("messages.colorNick", "boolean");
 		types.put("colors.requireSpout", "boolean");
+		types.put("colors.tagapi", "boolean");
 	}
 
 	private void colorizePlayer(Arena a, Player player) {
@@ -106,6 +108,7 @@ public class CTManager extends ArenaModule {
 		config.addDefault("game.hideName", Boolean.valueOf(false));
 		config.addDefault("messages.colorNick", Boolean.valueOf(true));
 		config.addDefault("colors.requireSpout", Boolean.valueOf(false));
+		config.addDefault("colors.tagapi", Boolean.valueOf(true));
 		config.options().copyDefaults(true);
 	}
 	
@@ -114,6 +117,7 @@ public class CTManager extends ArenaModule {
 		config.addDefault("log.nospout",
 				"Spout not found, you are missing some features ;)");
 		config.addDefault("log.spout", "Hooking into Spout!");
+		config.addDefault("log.tagapi", "Hooking into TagAPI!");
 	}
 	
 	@Override
@@ -134,6 +138,11 @@ public class CTManager extends ArenaModule {
 			}
 		}
 		Language.log_info((spoutHandler == null) ? "nospout" : "spout");
+
+		if (Bukkit.getServer().getPluginManager().getPlugin("TagAPI") != null) {
+			Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
+			Language.log_info("tagapi");
+		}
 	}
 
 	@Override
@@ -144,7 +153,7 @@ public class CTManager extends ArenaModule {
 				+ " || "
 				+ StringParser.colorVar("colorNick", arena.cfg.getBoolean("messages.colorNick"))
 				+ " || "
-				+ StringParser.colorVar("requireVaualt", arena.cfg.getBoolean("colors.requireSpout")));
+				+ StringParser.colorVar("requireSpout", arena.cfg.getBoolean("colors.requireSpout")));
 	}
 
 	@Override
