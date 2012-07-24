@@ -38,7 +38,7 @@ public class EconomySupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.9.0";
+		return "v0.8.11.5";
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class EconomySupport extends ArenaModule {
 			
 			PAA_Command command = new PAAJoin();
 			
-			if (!command.checkJoin(arena, player)) {
+			if (!command.checkJoin(arena, player, false)) {
 				return;
 			}
 
