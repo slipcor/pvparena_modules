@@ -40,7 +40,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.9.0";
+		return "v0.8.11.5";
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class VaultSupport extends ArenaModule {
 
 			PAA_Command command = new PAAJoin();
 			
-			if (!command.checkJoin(arena, player)) {
+			if (!command.checkJoin(arena, player, false)) {
 				return;
 			}
 
@@ -499,7 +499,19 @@ public class VaultSupport extends ArenaModule {
 	
 	@Override
 	public void resetPlayer(Arena arena, Player player) {
+		if (player == null) {
+			System.out.print("resetPlayer: Player NULL!");
+			return;
+		}
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
+		if (ap == null) {
+			System.out.print("ArenaPlayer NULL for player " + player.getName());
+			return;
+		}
+		if (ap.getStatus() == null) {
+			System.out.print("Status NULL for player " + player.getName());
+			return;
+		}
 		if (ap.getStatus().equals(Status.LOBBY) ||
 				ap.getStatus().equals(Status.READY)) {
 			int entryfee = arena.cfg.getInt("money.entry", 0);
