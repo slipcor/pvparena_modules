@@ -19,6 +19,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.material.Attachable;
 
 public class Blocks extends ArenaModule {
@@ -29,7 +30,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.11.11";
+		return "v0.8.11.12";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -43,6 +44,7 @@ public class Blocks extends ArenaModule {
 	public void addSettings(HashMap<String, String> types) {
 		types.put("blockRestore.hard", "boolean");
 		types.put("blockRestore.offset", "int");
+		types.put("protection.pickup", "boolean");
 	}
 	
 	private void checkBlock(Block b, BlockFace bf) {
@@ -75,6 +77,7 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config, String type) {
 		config.addDefault("blockRestore.hard", Boolean.valueOf(false));
+		config.addDefault("protection.pickup", Boolean.valueOf(false));
 		config.addDefault("blockRestore.offset", Integer.valueOf(0));
 		config.options().copyDefaults(true);
 	}
@@ -124,6 +127,15 @@ public class Blocks extends ArenaModule {
 				&& arena.cfg.getBoolean("protection.restore")
 				&& !arena.cfg.getBoolean("blockRestore.hard")) {
 			saveBlock(block, mat);
+		}
+	}
+	
+	@Override
+	public void onPlayerPickupItem(Arena arena, PlayerPickupItemEvent event) {
+		if (arena.fightInProgress
+				&& arena.cfg.getBoolean("protection.restore")
+				&& !arena.cfg.getBoolean("protection.pickup")) {
+			event.setCancelled(true);
 		}
 	}
 	
