@@ -14,11 +14,14 @@ public class VisibilityFix extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.7.13.1";
+		return "v0.8.13.2";
 	}
 	
 	public void onPlayerTeleport(Arena arena, PlayerTeleportEvent event) {
 		for (ArenaPlayer ap : arena.getPlayers()) {
+			if (ap.get() == null) {
+				continue;
+			}
 			ap.get().hidePlayer(event.getPlayer());
 			ap.get().showPlayer(event.getPlayer());
 		}

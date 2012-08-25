@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.blockrestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,7 +38,8 @@ public class RestoreContainer {
 	private Debug db = new Debug(55);
 
 	protected void restoreChests() {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RestoreRunner(arena, chests, furnaces, dispensers));
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
+				new RestoreRunner(arena, chests, furnaces, dispensers));
 	}
 
 	protected static ItemStack[] cloneIS(ItemStack[] contents) {
@@ -64,16 +66,18 @@ public class RestoreContainer {
 
 		if (arena.cfg.get("inventories") != null) {
 
-			List<String> tempList = arena.cfg.getStringList("inventories", null);
+			List<String> tempList = arena.cfg
+					.getStringList("inventories", null);
 
 			db.i("reading inventories");
-			
+
 			for (String s : tempList) {
 				Location loc = parseStringToLocation(s);
-				
-				saveBlock(loc.getWorld(),loc.getBlockX(),loc.getBlockY(), loc.getBlockZ());
+
+				saveBlock(loc.getWorld(), loc.getBlockX(), loc.getBlockY(),
+						loc.getBlockZ());
 			}
-			
+
 			return;
 		}
 		db.i("NO inventories");
@@ -89,15 +93,15 @@ public class RestoreContainer {
 		Location max = bfRegion.getAbsoluteMaximum();
 
 		World world = bfRegion.getAbsoluteMaximum().getWorld();
-		
+
 		List<String> result = new ArrayList<String>();
-		
+
 		if (bfRegion.getShape().equals(RegionShape.CUBOID)) {
 
 			for (x = min.getBlockX(); x <= max.getBlockX(); x++) {
 				for (y = min.getBlockY(); y <= max.getBlockY(); y++) {
 					for (z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-						Location loc = saveBlock(world,x,y,z);
+						Location loc = saveBlock(world, x, y, z);
 						if (loc == null) {
 							continue;
 						}
@@ -110,7 +114,7 @@ public class RestoreContainer {
 			for (x = min.getBlockX(); x <= max.getBlockX(); x++) {
 				for (y = min.getBlockY(); y <= max.getBlockY(); y++) {
 					for (z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-						Location loc = saveBlock(world,x,y,z);
+						Location loc = saveBlock(world, x, y, z);
 						if (loc == null) {
 							continue;
 						}
@@ -129,20 +133,19 @@ public class RestoreContainer {
 		if (b.getType() == Material.CHEST) {
 			Chest c = (Chest) b.getState();
 
-			chests.put(b.getLocation(), cloneIS(c
-					.getInventory().getContents()));
+			chests.put(b.getLocation(), cloneIS(c.getInventory().getContents()));
 			return b.getLocation();
 		} else if (b.getType() == Material.FURNACE) {
 			Furnace c = (Furnace) b.getState();
 
-			furnaces.put(b.getLocation(), cloneIS(c
-					.getInventory().getContents()));
+			furnaces.put(b.getLocation(), cloneIS(c.getInventory()
+					.getContents()));
 			return b.getLocation();
 		} else if (b.getType() == Material.DISPENSER) {
 			Dispenser c = (Dispenser) b.getState();
 
-			dispensers.put(b.getLocation(), cloneIS(c
-					.getInventory().getContents()));
+			dispensers.put(b.getLocation(), cloneIS(c.getInventory()
+					.getContents()));
 			return b.getLocation();
 		}
 		return null;
