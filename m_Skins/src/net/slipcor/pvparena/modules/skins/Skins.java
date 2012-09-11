@@ -9,8 +9,8 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Teams;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class Skins extends ArenaModule {
 	protected static boolean mdHandler = false;
@@ -25,7 +25,7 @@ public class Skins extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		if (config.get("skins") == null) {
 			for (ArenaTeam team : arena.getTeams()) {
 				String sName = team.getName();
@@ -55,13 +55,13 @@ public class Skins extends ArenaModule {
 		if (!mdHandler || !place.contains("lounge")) {
 			return;
 		}
-		if (arena.isPartOf(player)) {
+		if (arena.hasPlayer(player)) {
 			ArenaTeam team = Teams.getTeam(arena,
 					ArenaPlayer.parsePlayer(player));
 			if (team == null) {
 				return;
 			}
-			String disguise = arena.cfg.getString("skins." + team.getName());
+			String disguise = arena.getArenaConfig().getString("skins." + team.getName());
 			
 			if (!MobDisguiseAPI.disguisePlayer(player, disguise)) {
 				if (!MobDisguiseAPI.disguisePlayerAsPlayer(player, disguise)) {

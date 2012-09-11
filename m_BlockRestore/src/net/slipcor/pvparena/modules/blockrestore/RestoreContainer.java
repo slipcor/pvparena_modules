@@ -64,9 +64,9 @@ public class RestoreContainer {
 
 	public void saveChests() {
 
-		if (arena.cfg.get("inventories") != null) {
+		if (arena.getArenaConfig().get("inventories") != null) {
 
-			List<String> tempList = arena.cfg
+			List<String> tempList = arena.getArenaConfig()
 					.getStringList("inventories", null);
 
 			db.i("reading inventories");
@@ -124,8 +124,8 @@ public class RestoreContainer {
 				}
 			}
 		}
-		arena.cfg.set("inventories", result);
-		arena.cfg.save();
+		arena.getArenaConfig().set("inventories", result);
+		arena.getArenaConfig().save();
 	}
 
 	private Location saveBlock(World world, int x, int y, int z) {

@@ -2,7 +2,7 @@ package net.slipcor.pvparena.modules.redstone;
 
 import org.bukkit.Bukkit;
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class RedStoneTriggers extends ArenaModule {
 	public RedStoneTriggers() {

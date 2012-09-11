@@ -44,7 +44,7 @@ public class BoardRunnable implements Runnable {
 			}
 		} else {
 			for (ArenaBoard ab : abm.boards.values()) {
-				if (ab.arena.name.equals(a.name)) {
+				if (ab.arena.getName().equals(a.getName())) {
 					ab.update();
 				}
 			}

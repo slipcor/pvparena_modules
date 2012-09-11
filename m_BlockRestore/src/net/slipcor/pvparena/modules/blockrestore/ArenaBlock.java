@@ -2,7 +2,7 @@ package net.slipcor.pvparena.modules.blockrestore;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.managers.Arenas;
+import net.slipcor.pvparena.managers.ArenaManager;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,7 +46,7 @@ public class ArenaBlock {
 				+ "; data " + String.valueOf(data));
 
 		try {
-			arena = Arenas.getArenaByRegionLocation(location).name;
+			arena = ArenaManager.getArenaByRegionLocation(location).name;
 		} catch (Exception e) {
 			arena = "";
 		}
@@ -68,7 +68,7 @@ public class ArenaBlock {
 	public ArenaBlock(Block block, Material type) {
 		location = block.getLocation();
 		try {
-			arena = Arenas.getArenaByRegionLocation(location).name;
+			arena = ArenaManager.getArenaByRegionLocation(location).name;
 		} catch (Exception e) {
 			arena = "";
 		}

@@ -14,7 +14,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class TempPerms extends ArenaModule {
 	public TempPerms() {
@@ -34,8 +34,8 @@ public class TempPerms extends ArenaModule {
 	private HashMap<String, Boolean> getTempPerms(Arena arena) {
 		HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 
-		if (arena.cfg.getYamlConfiguration().contains("perms.default")) {
-			List<String> list = arena.cfg.getStringList("perms.default",
+		if (arena.getArenaConfig().getYamlConfiguration().contains("perms.default")) {
+			List<String> list = arena.getArenaConfig().getStringList("perms.default",
 					new ArrayList<String>());
 			for (String key : list) {
 				result.put(key.replace("-", "").replace("^", ""),

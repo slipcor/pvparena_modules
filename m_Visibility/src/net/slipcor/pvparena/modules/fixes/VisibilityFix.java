@@ -4,7 +4,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class VisibilityFix extends ArenaModule {
 	

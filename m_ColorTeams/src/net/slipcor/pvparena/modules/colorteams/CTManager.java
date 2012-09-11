@@ -16,9 +16,9 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Teams;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class CTManager extends ArenaModule {
 	protected static String spoutHandler = null;
@@ -44,12 +44,12 @@ public class CTManager extends ArenaModule {
 	private void colorizePlayer(Arena a, Player player) {
 		db.i("colorizing player " + player.getName() + ";");
 
-		Arena arena = Arenas.getArenaByPlayer(player);
+		Arena arena = ArenaManager.getArenaByPlayer(player);
 		if (arena == null) {
 			db.i("> arena is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.cfg.getBoolean("colors.requireSpout")) {
+			} else if (!a.getArenaConfig().getBoolean("colors.requireSpout")) {
 				disguise(player, player.getName());
 			}
 			return;
@@ -61,7 +61,7 @@ public class CTManager extends ArenaModule {
 			db.i("> team is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.cfg.getBoolean("colors.requireSpout")) {
+			} else if (!a.getArenaConfig().getBoolean("colors.requireSpout")) {
 				disguise(player, player.getName());
 			}
 			return;
@@ -72,12 +72,12 @@ public class CTManager extends ArenaModule {
 		
 		player.setDisplayName(n);
 
-		if (arena.cfg.getBoolean("game.hideName")) {
+		if (arena.getArenaConfig().getBoolean("game.hideName")) {
 			n = " ";
 		}
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(n);
-		} else if (!a.cfg.getBoolean("colors.requireSpout")) {
+		} else if (!a.getArenaConfig().getBoolean("colors.requireSpout")) {
 			disguise(player, n);
 		}
 	}
@@ -103,7 +103,7 @@ public class CTManager extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("game.hideName", Boolean.valueOf(false));
 		config.addDefault("messages.colorNick", Boolean.valueOf(true));
 		config.addDefault("colors.requireSpout", Boolean.valueOf(false));
@@ -148,16 +148,16 @@ public class CTManager extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6ColoredTeams:§f "
-				+ StringParser.colorVar("hideName", arena.cfg.getBoolean("game.hideName"))
+				+ StringParser.colorVar("hideName", arena.getArenaConfig().getBoolean("game.hideName"))
 				+ " || "
-				+ StringParser.colorVar("colorNick", arena.cfg.getBoolean("messages.colorNick"))
+				+ StringParser.colorVar("colorNick", arena.getArenaConfig().getBoolean("messages.colorNick"))
 				+ " || "
-				+ StringParser.colorVar("requireSpout", arena.cfg.getBoolean("colors.requireSpout")));
+				+ StringParser.colorVar("requireSpout", arena.getArenaConfig().getBoolean("colors.requireSpout")));
 	}
 
 	@Override
 	public void tpPlayerToCoordName(Arena arena, Player player, String place) {
-		if (arena.cfg.getBoolean("messages.colorNick", true)) {
+		if (arena.getArenaConfig().getBoolean("messages.colorNick", true)) {
 			if (spoutHandler != null) {
 				colorizePlayer(arena, player);	
 			} else {
@@ -173,7 +173,7 @@ public class CTManager extends ArenaModule {
 				
 				player.setDisplayName(n);
 
-				if (team != null && arena.cfg.getBoolean("game.hideName")) {
+				if (team != null && arena.getArenaConfig().getBoolean("game.hideName")) {
 					n = " ";
 				}
 				

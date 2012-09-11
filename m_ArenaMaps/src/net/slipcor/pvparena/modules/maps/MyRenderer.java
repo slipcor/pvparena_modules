@@ -9,8 +9,9 @@ import java.util.HashSet;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Spawns;
+import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -97,7 +98,7 @@ public class MyRenderer extends MapRenderer {
 			if (Maps.hasCustomMap(player.getName()) && !done.contains(map.getId())) {
 				
 				playerName = player.getName();
-				arena = Arenas.getArenaByPlayer(player);
+				arena = ArenaPlayer.parsePlayer(playerName).getArena();
 				if ((playerMaps.get(player.getName()) == null)) {
 					playerMaps.set(player.getName(), map.getId());
 					savePlayers();
@@ -110,9 +111,9 @@ public class MyRenderer extends MapRenderer {
 
 				done.add(map.getId());
 
-				showSpawns = arena.cfg.getBoolean("maps.showSpawns", Boolean.valueOf(true));
-				showPlayers = arena.cfg.getBoolean("maps.showPlayers", Boolean.valueOf(true));
-				showLives = arena.cfg.getBoolean("maps.showLives", Boolean.valueOf(true));
+				showSpawns = arena.getArenaConfig().getBoolean("maps.showSpawns", Boolean.valueOf(true));
+				showPlayers = arena.getArenaConfig().getBoolean("maps.showPlayers", Boolean.valueOf(true));
+				showLives = arena.getArenaConfig().getBoolean("maps.showLives", Boolean.valueOf(true));
 			}
 			return;
 		}
@@ -121,14 +122,14 @@ public class MyRenderer extends MapRenderer {
 			return;
 		}
 		
-		if (arena != null && arena.cfg.getBoolean("maps.playerPosition", false)) {
+		if (arena != null && arena.getArenaConfig().getBoolean("maps.playerPosition", false)) {
 		
 			map.setCenterX(player.getLocation().getBlockX());
 			map.setCenterZ(player.getLocation().getBlockZ());
 		} else if (arena != null) {
-			Location loc = Spawns.getRegionCenter(arena);
-			map.setCenterX(loc.getBlockX());
-			map.setCenterZ(loc.getBlockZ());
+			PABlockLocation loc = SpawnManager.getRegionCenter(arena);
+			map.setCenterX(loc.getX());
+			map.setCenterZ(loc.getZ());
 		} else {
 			System.out.print("arena null");
 		}

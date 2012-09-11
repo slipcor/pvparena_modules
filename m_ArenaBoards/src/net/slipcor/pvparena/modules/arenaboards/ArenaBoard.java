@@ -4,10 +4,11 @@ import java.util.HashMap;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Statistics;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.StatisticsManager;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -20,13 +21,13 @@ public class ArenaBoard {
 
 	public static final Debug db = new Debug(10);
 
-	private Location location;
+	private PALocation location;
 	protected static ArenaBoardManager abm;
 	public Arena arena;
 
-	public Statistics.type sortBy = Statistics.type.KILLS;
+	public StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
-	private HashMap<Statistics.type, ArenaBoardColumn> columns = new HashMap<Statistics.type, ArenaBoardColumn>();
+	private HashMap<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
 
 	/**
 	 * create an arena board instance
@@ -36,7 +37,7 @@ public class ArenaBoard {
 	 * @param a
 	 *            the arena to save the board to
 	 */
-	public ArenaBoard(Location loc, Arena a) {
+	public ArenaBoard(PALocation loc, Arena a) {
 		location = loc;
 		arena = a;
 
@@ -48,31 +49,31 @@ public class ArenaBoard {
 	 * actually construct the arena board, read colums, save signs etc
 	 */
 	private void construct() {
-		Location l = location;
+		PALocation l = location;
 		int border = 10;
 		try {
-			Sign s = (Sign) l.getBlock().getState();
+			Sign s = (Sign) l.toLocation().getBlock().getState();
 			BlockFace bf = getRightDirection(s);
 			db.i("parsing signs:");
 			do {
-				Statistics.type t = null;
+				StatisticsManager.type t = null;
 				try {
-					t = Statistics.getTypeBySignLine(s.getLine(0));
+					t = StatisticsManager.getTypeBySignLine(s.getLine(0));
 				} catch (Exception e) {
 					// nothing
 				}
 
 				columns.put(t, new ArenaBoardColumn(this, l));
 				db.i("putting column type " + toString());
-				l = l.getBlock().getRelative(bf).getLocation();
-				s = (Sign) l.getBlock().getState();
+				l = new PALocation(l.toLocation().getBlock().getRelative(bf).getLocation());
+				s = (Sign) l.toLocation().getBlock().getState();
 			} while (border-- > 0);
 		} catch (Exception e) {
 			// no more signs, out!
 		}
 	}
 
-	public Location getLocation() {
+	public PALocation getLocation() {
 		return location;
 	}
 
@@ -103,14 +104,14 @@ public class ArenaBoard {
 	 */
 	public void update() {
 		db.i("ArenaBoard update()");
-		for (Statistics.type t : Statistics.type.values()) {
+		for (StatisticsManager.type t : StatisticsManager.type.values()) {
 			db.i("checking stat: " + t.name());
 			if (!columns.containsKey(t)) {
 				continue;
 			}
 			db.i("found! reading!");
-			String[] s = Statistics.read(
-					Statistics.getStats(this.arena, sortBy), t, arena == null);
+			String[] s = StatisticsManager.read(
+					StatisticsManager.getStats(this.arena, sortBy), t, arena == null);
 			columns.get(t).write(s);
 		}
 	}
@@ -152,27 +153,27 @@ public class ArenaBoard {
 		if (ab.arena == null) {
 			db.i("global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.next(ab.sortBy);
-				Arenas.tellPlayer(player,
+				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
+				ArenaManager.tellPlayer(player,
 						Language.parse("sortingby", ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.last(ab.sortBy);
-				Arenas.tellPlayer(player,
+				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
+				ArenaManager.tellPlayer(player,
 						Language.parse("sortingby", ab.sortBy.toString()));
 				return true;
 			}
 		} else {
 			db.i("not global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.next(ab.sortBy);
-				Arenas.tellPlayer(player,
+				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
+				ArenaManager.tellPlayer(player,
 						Language.parse("sortingby", ab.sortBy.toString()),
 						ab.arena);
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.last(ab.sortBy);
-				Arenas.tellPlayer(player,
+				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
+				ArenaManager.tellPlayer(player,
 						Language.parse("sortingby", ab.sortBy.toString()),
 						ab.arena);
 				return true;
@@ -188,8 +189,8 @@ public class ArenaBoard {
 			PVPArena.instance.getConfig().set("leaderboard", null);
 			PVPArena.instance.saveConfig();
 		} else {
-			arena.cfg.set("spawns.leaderboard", null);
-			arena.cfg.save();
+			arena.getArenaConfig().set("spawns.leaderboard", null);
+			arena.getArenaConfig().save();
 		}
 	}
 }

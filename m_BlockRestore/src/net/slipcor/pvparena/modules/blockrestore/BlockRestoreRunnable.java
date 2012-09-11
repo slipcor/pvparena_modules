@@ -29,7 +29,7 @@ public class BlockRestoreRunnable implements Runnable {
 			removals.remove(l);
 			Blocks.blocks.remove(l);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-					this, arena.cfg.getInt("blockRestore.offset") * 1L);
+					this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
 			return;
 		}
 		arena.edit = false;
@@ -47,7 +47,7 @@ public class BlockRestoreRunnable implements Runnable {
 
 		db.i("reading all arenablocks");
 		for (Location l : Blocks.blocks.keySet()) {
-			if (Blocks.blocks.get(l).arena.equals(arena.name)
+			if (Blocks.blocks.get(l).arena.equals(arena.getName())
 					|| Blocks.blocks.get(l).arena.equals("")) {
 				result.put(l, Blocks.blocks.get(l));
 				db.i(" - " + l.toString());

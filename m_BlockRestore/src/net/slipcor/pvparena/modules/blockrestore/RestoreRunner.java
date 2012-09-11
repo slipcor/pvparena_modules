@@ -48,7 +48,7 @@ public class RestoreRunner implements Runnable {
 				db.i("success!");
 				chests.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-						this, arena.cfg.getInt("blockRestore.offset") * 1L);
+						this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
 				return;
 			} catch (Exception e) {
 				//
@@ -72,7 +72,7 @@ public class RestoreRunner implements Runnable {
 				db.i("success!");
 				dispensers.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-						this, arena.cfg.getInt("blockRestore.offset") * 1L);
+						this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
 				return;
 			} catch (Exception e) {
 				//
@@ -89,7 +89,7 @@ public class RestoreRunner implements Runnable {
 				db.i("success!");
 				furnaces.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-						this, arena.cfg.getInt("blockRestore.offset") * 1L);
+						this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
 				return;
 			} catch (Exception e) {
 				//

@@ -6,9 +6,10 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Teams;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -65,7 +66,7 @@ public class AnnouncementManager extends ArenaModule {
 		Announcement.announce(
 				arena,
 				Announcement.type.JOIN,
-				Language.parse("playerjoined" + (arena.type().getName().equals("free") ? "free" : ""),
+				Language.parse(MSG.PLAYER_JOINED_TEAM,
 						player.getName(),
 						coloredTeam));
 	}
@@ -79,7 +80,7 @@ public class AnnouncementManager extends ArenaModule {
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("announcements.join", Boolean.valueOf(false));
 		config.addDefault("announcements.start", Boolean.valueOf(false));
 		config.addDefault("announcements.end", Boolean.valueOf(false));
@@ -98,20 +99,20 @@ public class AnnouncementManager extends ArenaModule {
 
 		if (Teams.countPlayersInTeams(arena) < 2) {
 			Announcement.announce(arena, Announcement.type.START,
-					Language.parse("joinarena", arena.name));
+					Language.parse("joinarena", arena.getName()));
 		}
 		Announcement.announce(arena, Announcement.type.JOIN,
-				Language.parse("playerjoined", player.getName(), coloredTeam));
+				Language.parse(MSG.PLAYER_JOINED_TEAM, player.getName(), coloredTeam));
 	}
 
 	@Override
 	public void playerLeave(Arena arena, Player player, ArenaTeam team) {
 		if (team == null) {
 			Announcement.announce(arena, Announcement.type.LOSER,
-					Language.parse("playerleave", player.getName()));
+					Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName()));
 		} else {
 			Announcement.announce(arena, Announcement.type.LOSER,
-					Language.parse("playerleave", team.colorizePlayer(player)));
+					Language.parse(MSG.FIGHT_PLAYER_LEFT, team.colorizePlayer(player)));
 		}
 	}
 
@@ -119,22 +120,22 @@ public class AnnouncementManager extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Announcements:§f radius: "
-				+ StringParser.colorVar(arena.cfg.getInt("announcements.radius", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt("announcements.radius", 0))
 				+ " || color: "
-				+ StringParser.colorVar(arena.cfg.getString("announcements.color"))
+				+ StringParser.colorVar(arena.getArenaConfig().getString("announcements.color"))
 				+ " || "
-				+ StringParser.colorVar("join", arena.cfg.getBoolean("announcements.join")));
-		player.sendMessage(StringParser.colorVar("start", arena.cfg.getBoolean("announcements.start"))
+				+ StringParser.colorVar("join", arena.getArenaConfig().getBoolean("announcements.join")));
+		player.sendMessage(StringParser.colorVar("start", arena.getArenaConfig().getBoolean("announcements.start"))
 				+ " || "
-				+ StringParser.colorVar("end", arena.cfg.getBoolean("announcements.end"))
+				+ StringParser.colorVar("end", arena.getArenaConfig().getBoolean("announcements.end"))
 				+ " || "
-				+ StringParser.colorVar("winner", arena.cfg.getBoolean("announcements.winner"))
+				+ StringParser.colorVar("winner", arena.getArenaConfig().getBoolean("announcements.winner"))
 				+ " || "
-				+ StringParser.colorVar("loser", arena.cfg.getBoolean("announcements.loser"))
+				+ StringParser.colorVar("loser", arena.getArenaConfig().getBoolean("announcements.loser"))
 				+ " || "
-				+ StringParser.colorVar("prize", arena.cfg.getBoolean("announcements.prize"))
+				+ StringParser.colorVar("prize", arena.getArenaConfig().getBoolean("announcements.prize"))
 				+ " || "
-				+ StringParser.colorVar("custom", arena.cfg.getBoolean("announcements.custom")));
+				+ StringParser.colorVar("custom", arena.getArenaConfig().getBoolean("announcements.custom")));
 	}
 
 	@Override

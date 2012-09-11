@@ -11,8 +11,8 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.command.PAAJoin;
 import net.slipcor.pvparena.command.PAA_Command;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class LateLounge extends ArenaModule {
 	public LateLounge() {
@@ -42,7 +42,7 @@ public class LateLounge extends ArenaModule {
 	 */
 	@Override
 	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.cfg.getInt("ready.min") < 1 || !arena.cfg.getBoolean("latelounge.latelounge")) {
+		if (arena.getArenaConfig().getInt("ready.min") < 1 || !arena.getArenaConfig().getBoolean("latelounge.latelounge")) {
 			return true;
 		}
 		HashSet<String> list = new HashSet<String>();
@@ -52,11 +52,11 @@ public class LateLounge extends ArenaModule {
 		}
 		
 		if (list.contains(player.getName())) {
-			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
-			return list.size() >= arena.cfg.getInt("ready.min");
+			ArenaManager.tellPlayer(player, Language.parse("lateloungewait"));
+			return list.size() >= arena.getArenaConfig().getInt("ready.min");
 		}
 		
-		if (arena.cfg.getInt("ready.min") > list.size() + 1) {
+		if (arena.getArenaConfig().getInt("ready.min") > list.size() + 1) {
 			// not enough players
 			list.add(player.getName());
 			players.put(arena, list);
@@ -67,14 +67,14 @@ public class LateLounge extends ArenaModule {
 					continue;
 				}
 				try {
-					Arenas.tellPlayer(p, Language.parse("lateloungeannounce", arena.name, player.getName()));
+					ArenaManager.tellPlayer(p, Language.parse("lateloungeannounce", arena.getName(), player.getName()));
 				} catch (Exception e) {
 					//
 				}
 			}
-			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
+			ArenaManager.tellPlayer(player, Language.parse("lateloungewait"));
 			return false;
-		} else if (arena.cfg.getInt("ready.min") == list.size() + 1) {
+		} else if (arena.getArenaConfig().getInt("ready.min") == list.size() + 1) {
 			// not enough players
 			list.add(player.getName());
 			players.put(arena, list);
@@ -86,7 +86,7 @@ public class LateLounge extends ArenaModule {
 				if (p == null || !PVPArena.instance.getAmm().checkJoin(arena, player)) {
 					removals.add(s);
 					if (p != null) {
-						Arenas.tellPlayer(p, Language.parse("lateloungerejoin"));
+						ArenaManager.tellPlayer(p, Language.parse("lateloungerejoin"));
 					}
 				}
 			}
@@ -104,7 +104,7 @@ public class LateLounge extends ArenaModule {
 				}
 				return true;
 			}
-			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
+			ArenaManager.tellPlayer(player, Language.parse("lateloungewait"));
 			return false;
 		}
 		
@@ -112,7 +112,7 @@ public class LateLounge extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("latelounge.latelounge", Boolean.valueOf(false));
 
 		config.options().copyDefaults(true);

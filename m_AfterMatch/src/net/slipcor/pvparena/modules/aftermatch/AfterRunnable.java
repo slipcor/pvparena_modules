@@ -42,7 +42,7 @@ public class AfterRunnable implements Runnable {
 	@Override
 	public void run() {
 		db.i("AfterRunnable commiting");
-		if (a.fightInProgress) {
+		if (!a.isLocked()) {
 			
 			pum.afterMatch(a);
 		} else {

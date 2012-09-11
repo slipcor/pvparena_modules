@@ -21,8 +21,8 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Teams;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.TeamManager;
 
 /**
  * powerup effect class
@@ -235,13 +235,13 @@ public class PowerupEffect {
 				}
 				return true;
 			} else if (this.type == classes.LIVES) {
-				int lives = Arenas.getArenaByPlayer(player).lives.get(player
+				int lives = ArenaManager.getArenaByPlayer(player).lives.get(player
 						.getName());
 				if (lives > 0) {
-					Arenas.getArenaByPlayer(player).lives.put(
+					ArenaManager.getArenaByPlayer(player).lives.put(
 							player.getName(), lives + diff);
 				} else {
-					Arena arena = Arenas.getArenaByPlayer(player);
+					Arena arena = ArenaManager.getArenaByPlayer(player);
 
 					// pasted from onEntityDeath;
 					ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
@@ -261,7 +261,7 @@ public class PowerupEffect {
 					arena.removePlayer(player, "lose", true);
 					Teams.removeTeam(arena, ap);
 
-					Arenas.checkAndCommit(arena);
+					ArenaManager.checkAndCommit(arena);
 				}
 
 				return true;

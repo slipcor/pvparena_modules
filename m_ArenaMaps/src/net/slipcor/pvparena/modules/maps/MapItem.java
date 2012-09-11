@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PALocation;
 
 public class MapItem {
 	private final int x;
@@ -22,12 +24,12 @@ public class MapItem {
 		z = 0;
 	}
 	
-	public MapItem(Arena a, Location coord, ChatColor c) {
+	public MapItem(Arena a, PABlockLocation coord, ChatColor c) {
 		player = false;
 		name = null;
 		color = c;
-		x = coord.getBlockX();
-		z = coord.getBlockZ();
+		x = coord.getX();
+		z = coord.getZ();
 	}
 	
 	public int getX() {

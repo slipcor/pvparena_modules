@@ -7,8 +7,8 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.neworder.ArenaRegion;
 
 import org.bukkit.Bukkit;
@@ -65,17 +65,17 @@ public class Blocks extends ArenaModule {
 		if (args[0].toLowerCase().startsWith("clearinv")) {
 			if (!PVPArena.hasAdminPerms(sender)
 					&& !(PVPArena.hasCreatePerms(sender, arena))) {
-				Arenas.tellPlayer(sender,
+				ArenaManager.tellPlayer(sender,
 						Language.parse("nopermto", Language.parse("admin")));
 				return;
 			}
-			arena.cfg.set("inventories", null);
-			Arenas.tellPlayer(sender, "Inventories cleared. Expect lag on next arena start!");
+			arena.getArenaConfig().set("inventories", null);
+			ArenaManager.tellPlayer(sender, "Inventories cleared. Expect lag on next arena start!");
 		}
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("blockRestore.hard", Boolean.valueOf(false));
 		config.addDefault("protection.pickup", Boolean.valueOf(false));
 		config.addDefault("blockRestore.offset", Integer.valueOf(0));
@@ -84,8 +84,8 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public void onEntityExplode(Arena arena, EntityExplodeEvent event) {
-		if (arena.fightInProgress &&
-				!arena.cfg.getBoolean("blockRestore.hard")) {
+		if (!arena.isLocked() &&
+				!arena.getArenaConfig().getBoolean("blockRestore.hard")) {
 			for (Block b : event.blockList()) {
 				saveBlock(b);
 			}
@@ -96,12 +96,12 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void onBlockBreak(Arena arena, Block block) {
 		db.i("block break in blockRestore");
-		if (arena == null || arena.cfg.getBoolean("blockRestore.hard")) {
-			db.i(arena + " || blockRestore.hard: " + arena.cfg.getBoolean("blockRestore.hard"));
+		if (arena == null || arena.getArenaConfig().getBoolean("blockRestore.hard")) {
+			db.i(arena + " || blockRestore.hard: " + arena.getArenaConfig().getBoolean("blockRestore.hard"));
 			return;
 		}
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")) {
+		if (!arena.isLocked()
+				&& arena.getArenaConfig().getBoolean("protection.restore")) {
 			
 			checkBlock(block.getRelative(BlockFace.NORTH), BlockFace.SOUTH);
 			checkBlock(block.getRelative(BlockFace.SOUTH), BlockFace.NORTH);
@@ -110,31 +110,31 @@ public class Blocks extends ArenaModule {
 			
 			saveBlock(block);
 		}
-		db.i("arena.fightInProgress " + arena.fightInProgress + " && restore " + arena.cfg.getBoolean("protection.restore"));
+		db.i("!arena.isLocked() " + !arena.isLocked() + " && restore " + arena.getArenaConfig().getBoolean("protection.restore"));
 	}
 	@Override
 	public void onBlockPiston(Arena arena, Block block) {
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")
-				&& !arena.cfg.getBoolean("blockRestore.hard")) {
+		if (!arena.isLocked()
+				&& arena.getArenaConfig().getBoolean("protection.restore")
+				&& !arena.getArenaConfig().getBoolean("blockRestore.hard")) {
 			saveBlock(block);
 		}
 	}
 
 	@Override
 	public void onBlockPlace(Arena arena, Block block, Material mat) {
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")
-				&& !arena.cfg.getBoolean("blockRestore.hard")) {
+		if (!arena.isLocked()
+				&& arena.getArenaConfig().getBoolean("protection.restore")
+				&& !arena.getArenaConfig().getBoolean("blockRestore.hard")) {
 			saveBlock(block, mat);
 		}
 	}
 	
 	@Override
 	public void onPlayerPickupItem(Arena arena, PlayerPickupItemEvent event) {
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")
-				&& !arena.cfg.getBoolean("protection.pickup")) {
+		if (!arena.isLocked()
+				&& arena.getArenaConfig().getBoolean("protection.restore")
+				&& !arena.getArenaConfig().getBoolean("protection.pickup")) {
 			event.setCancelled(true);
 		}
 	}
@@ -148,7 +148,7 @@ public class Blocks extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6BlockRestore:§f "
-				+ StringParser.colorVar("hard", arena.cfg.getBoolean("blockRestore.hard")));
+				+ StringParser.colorVar("hard", arena.getArenaConfig().getBoolean("blockRestore.hard")));
 	}
 	
 	@Override
@@ -183,7 +183,7 @@ public class Blocks extends ArenaModule {
 			return;
 		}
 
-		if (!arena.cfg.getBoolean("general.restoreChests")) {
+		if (!arena.getArenaConfig().getBoolean("general.restoreChests")) {
 			db.i("not restoring chests, skipping restoreChests");
 			return;
 		}
@@ -234,7 +234,7 @@ public class Blocks extends ArenaModule {
 			return;
 		}
 
-		if (!arena.cfg.getBoolean("general.restoreChests")) {
+		if (!arena.getArenaConfig().getBoolean("general.restoreChests")) {
 			db.i("not restoring chests, skipping saveChests");
 			return;
 		}
@@ -265,7 +265,7 @@ public class Blocks extends ArenaModule {
 		
 		saveChests(arena);
 		
-		if (!arena.cfg.getBoolean("blockRestore.hard") && !region.name.startsWith("restore")) {
+		if (!arena.getArenaConfig().getBoolean("blockRestore.hard") && !region.name.startsWith("restore")) {
 			return;
 		}
 

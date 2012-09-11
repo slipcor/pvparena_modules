@@ -15,8 +15,10 @@ import org.bukkit.map.MapView;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.managers.Spawns;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.managers.SpawnManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class Maps extends ArenaModule {
 	private static HashMap<Arena, HashSet<String>> mappings = new HashMap<Arena, HashSet<String>>();
@@ -32,7 +34,7 @@ public class Maps extends ArenaModule {
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("maps.playerPosition", Boolean.valueOf(false));
 		config.addDefault("maps.showSpawns", Boolean.valueOf(true));
 		config.addDefault("maps.showPlayers", Boolean.valueOf(true));
@@ -78,15 +80,15 @@ public class Maps extends ArenaModule {
 		HashSet<MapItem> locations = new HashSet<MapItem>();
 		
 		for (ArenaTeam team : arena.getTeams()) {
-			HashSet<Location> locs = Spawns.getSpawns(arena, team.getName());
-			for (Location loc : locs) {
-				locations.add(new MapItem(arena, loc, team.getColor()));
+			HashSet<PALocation> locs = SpawnManager.getSpawns(arena, team.getName());
+			for (PALocation loc : locs) {
+				locations.add(new MapItem(arena, new PABlockLocation(loc.toLocation()), team.getColor()));
 			}
 			
 			if (arena.type().usesFlags()) {
-				locs = Spawns.getSpawns(arena, team.getName() + "flag");
-				for (Location loc : locs) {
-					locations.add(new MapItem(arena, loc, team.getColor()));
+				locs = SpawnManager.getSpawns(arena, team.getName() + "flag");
+				for (PALocation loc : locs) {
+					locations.add(new MapItem(arena, new PABlockLocation(loc.toLocation()), team.getColor()));
 				}
 			}
 		}
@@ -111,7 +113,7 @@ public class Maps extends ArenaModule {
 			if (player == null) {
 				continue;
 			}
-			if (!arena.isPartOf(player)) {
+			if (!arena.hasPlayer(player)) {
 				continue;
 			}
 			Short value = MyRenderer.getId(playerName);

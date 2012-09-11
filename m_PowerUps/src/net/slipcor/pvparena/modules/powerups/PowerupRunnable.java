@@ -42,7 +42,7 @@ public class PowerupRunnable implements Runnable {
 	@Override
 	public void run() {
 		db.i("PowerupRunnable commiting spawn");
-		if (a.fightInProgress) {
+		if (!a.isLocked()) {
 			
 			pum.calcPowerupSpawn(a);
 		} else {

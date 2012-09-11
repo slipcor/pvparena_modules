@@ -16,10 +16,11 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Spawns;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.SpawnManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class AfterMatch extends ArenaModule {
 	protected HashMap<Arena, Integer> runnables = new HashMap<Arena, Integer>();
@@ -70,10 +71,10 @@ public class AfterMatch extends ArenaModule {
 	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
 		db.i("aftermatch command?");
 		if (!(sender instanceof Player)) {
-			Language.parse("onlyplayers");
+			Language.parse(MSG.ERROR_ONLY_PLAYERS);
 			return;
 		}
-		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
 
 		if (pu.equals("off")) {
 			return;
@@ -87,19 +88,19 @@ public class AfterMatch extends ArenaModule {
 
 		if (!PVPArena.hasAdminPerms(player)
 				&& !(PVPArena.hasCreatePerms(player, arena))) {
-			Arenas.tellPlayer(player,
-					Language.parse("nopermto", Language.parse("admin")), arena);
+			arena.msg(player,
+					Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
 			return;
 		}
-		Spawns.setCoords(arena, player, args[0]);
-		Arenas.tellPlayer(player, Language.parse("setspawn", args[0]));
+		SpawnManager.setCoords(arena, player, args[0]);
+		ArenaManager.tellPlayer(player, Language.parse(MSG.SPAWN_SET, args[0]));
 		return;
 	}
 
 	@Override
 	public void commitPlayerDeath(Arena arena, Player player,
 			EntityDamageEvent cause) {
-		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
 
 		if (pu.equals("off")) {
 			return;
@@ -129,7 +130,7 @@ public class AfterMatch extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		String pu = config.getString("aftermatch.aftermatch", "off");
 
 		//String[] ss = pu.split(":");
@@ -167,15 +168,15 @@ public class AfterMatch extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§bAfterMatch:§f "
-				+ StringParser.colorVar(!arena.cfg.getString("aftermatch.aftermatch").equals("off"))
+				+ StringParser.colorVar(!arena.getArenaConfig().getString("aftermatch.aftermatch").equals("off"))
 				+ "("
-				+ StringParser.colorVar(arena.cfg
+				+ StringParser.colorVar(arena.getArenaConfig()
 						.getString("aftermatch.aftermatch")) + ")");
 	}
 
 	@Override
 	public void reset(Arena arena, boolean force) {
-		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
 
 		if (pu.equals("off")) {
 			return;
@@ -193,7 +194,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
-		String pu = arena.cfg.getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
 
 		if (pu.equals("off")) {
 			return;
@@ -213,7 +214,7 @@ public class AfterMatch extends ArenaModule {
 		}
 
 		db.i("using aftermatch : "
-				+ arena.cfg.getString("aftermatch.aftermatch", "off") + " : "
+				+ arena.getArenaConfig().getString("aftermatch.aftermatch", "off") + " : "
 				+ i);
 		if (i > 0) {
 			db.i("aftermatch time trigger!");

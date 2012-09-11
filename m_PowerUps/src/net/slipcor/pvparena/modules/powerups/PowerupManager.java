@@ -25,9 +25,9 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
+import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.Spawns;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class PowerupManager extends ArenaModule {
 
@@ -89,19 +89,19 @@ public class PowerupManager extends ArenaModule {
 		
 		if (!PVPArena.hasAdminPerms(player)
 				&& !(PVPArena.hasCreatePerms(player, arena))) {
-			Arenas.tellPlayer(player,
+			ArenaManager.tellPlayer(player,
 					Language.parse("nopermto", Language.parse("admin")), arena);
 			return;
 		}
-		Spawns.setCoords(arena, player, args[0]);
-		Arenas.tellPlayer(player, Language.parse("setspawn", args[0]));
+		SpawnManager.setCoords(arena, player, args[0]);
+		ArenaManager.tellPlayer(player, Language.parse(MSG.SPAWN_SET, args[0]));
 		return;
 	}
 
 	@Override
 	public boolean commitEnd(Arena arena, ArenaTeam arg1) {
 		if (usesPowerups.containsKey(arena)) {
-			if (arena.cfg.getString("game.powerups", "off").startsWith("death")) {
+			if (arena.getArenaConfig().getString("game.powerups", "off").startsWith("death")) {
 				db.i("calculating powerup trigger death");
 				powerupDiffI = ++powerupDiffI % powerupDiff;
 				if (powerupDiffI == 0) {
@@ -120,7 +120,7 @@ public class PowerupManager extends ArenaModule {
 	 */
 	protected void commitPowerupItemSpawn(Arena arena, Material item) {
 		db.i("dropping item?");
-		if (arena.cfg.getBoolean("game.dropSpawn")) {
+		if (arena.getArenaConfig().getBoolean("game.dropSpawn")) {
 			dropItemOnSpawn(arena, item);
 		} else {
 			if (arena.regions.get("battlefield") != null) {
@@ -130,7 +130,7 @@ public class PowerupManager extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		HashMap<String, Object> powerups = new HashMap<String, Object>();
 		if (config.getConfigurationSection("powerups") != null) {
 			HashMap<String, Object> map = (HashMap<String, Object>) config
@@ -193,7 +193,7 @@ public class PowerupManager extends ArenaModule {
 	 */
 	protected void dropItemOnSpawn(Arena arena, Material item) {
 		db.i("calculating item spawn location");
-		Location aim = Spawns.getCoords(arena, "powerup").getBlock()
+		Location aim = SpawnManager.getCoords(arena, "powerup").getBlock()
 				.getRelative(BlockFace.UP).getLocation();
 
 		db.i("dropping item on spawn: " + aim.toString());
@@ -319,7 +319,7 @@ public class PowerupManager extends ArenaModule {
 		player.sendMessage("§6Powerups:§f "
 				+ StringParser.colorVar(usesPowerups.containsKey(arena))
 				+ "("
-				+ StringParser.colorVar(arena.cfg.getString("game.powerups"))
+				+ StringParser.colorVar(arena.getArenaConfig().getString("game.powerups"))
 				+ ")");
 	}
 
@@ -378,7 +378,7 @@ public class PowerupManager extends ArenaModule {
 	 */
 	protected void powerupTick() {
 		for (Arena arena : usesPowerups.keySet()) {
-			db.i("ticking: arena " + arena.name);
+			db.i("ticking: arena " + arena.getName());
 			usesPowerups.get(arena).tick();
 		}
 	}
@@ -393,7 +393,7 @@ public class PowerupManager extends ArenaModule {
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
 		if (usesPowerups.containsKey(arena)) {
-			String pu = arena.cfg.getString("game.powerups", "off");
+			String pu = arena.getArenaConfig().getString("game.powerups", "off");
 			String[] ss = pu.split(":");
 			if (pu.startsWith("time")) {
 				// arena.powerupTrigger = "time";
@@ -403,7 +403,7 @@ public class PowerupManager extends ArenaModule {
 			}
 
 			db.i("using powerups : "
-					+ arena.cfg.getString("game.powerups", "off") + " : "
+					+ arena.getArenaConfig().getString("game.powerups", "off") + " : "
 					+ powerupDiff);
 			if (powerupDiff > 0) {
 				db.i("powerup time trigger!");

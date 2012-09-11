@@ -5,7 +5,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.listeners.PlayerListener;
-import net.slipcor.pvparena.managers.Arenas;
+import net.slipcor.pvparena.managers.ArenaManager;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -18,7 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 public class RedStoneListener implements Listener {
 	@EventHandler
 	public void onRedStone(BlockRedstoneEvent event) {
-		Arena arena = Arenas.getArenaByRegionLocation(event.getBlock().getLocation());
+		Arena arena = ArenaManager.getArenaByRegionLocation(event.getBlock().getLocation());
 		if (arena == null) {
 			return;
 		}

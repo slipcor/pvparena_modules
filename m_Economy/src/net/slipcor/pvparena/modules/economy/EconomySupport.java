@@ -20,9 +20,9 @@ import net.slipcor.pvparena.command.PAAJoin;
 import net.slipcor.pvparena.command.PAA_Command;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Teams;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.register.payment.Method;
 import net.slipcor.pvparena.register.payment.Method.MethodAccount;
 
@@ -56,7 +56,7 @@ public class EconomySupport extends ArenaModule {
 	}
 
 	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.cfg.getInt("money.entry", 0) > 0) {
+		if (arena.getArenaConfig().getInt("money.entry", 0) > 0) {
 			if (EconomySupport.eco != null) {
 				MethodAccount ma = EconomySupport.eco.getAccount(player
 						.getName());
@@ -64,10 +64,10 @@ public class EconomySupport extends ArenaModule {
 					db.s("Account not found: " + player.getName());
 					return false;
 				}
-				if (!ma.hasEnough(arena.cfg.getInt("money.entry", 0))) {
+				if (!ma.hasEnough(arena.getArenaConfig().getInt("money.entry", 0))) {
 					// no money, no entry!
-					Arenas.tellPlayer(player, Language.parse("notenough",
-							EconomySupport.eco.format(arena.cfg.getInt(
+					ArenaManager.tellPlayer(player, Language.parse("notenough",
+							EconomySupport.eco.format(arena.getArenaConfig().getInt(
 									"money.entry", 0))), arena);
 					return false;
 				}
@@ -91,7 +91,7 @@ public class EconomySupport extends ArenaModule {
 		
 		// /pa bet [name] [amount]
 		if (Teams.getTeam(arena, ap) != null) {
-			Arenas.tellPlayer(player, Language.parse("betnotyours"), arena);
+			ArenaManager.tellPlayer(player, Language.parse("betnotyours"), arena);
 			return;
 		}
 
@@ -106,7 +106,7 @@ public class EconomySupport extends ArenaModule {
 			}
 			if ((p == null) && (Teams.getTeam(arena, args[1]) == null)
 					&& (Teams.getTeam(arena, ap) == null)) {
-				Arenas.tellPlayer(player, Language.parse("betoptions"), arena);
+				ArenaManager.tellPlayer(player, Language.parse("betoptions"), arena);
 				return;
 			}
 
@@ -115,7 +115,7 @@ public class EconomySupport extends ArenaModule {
 			try {
 				amount = Double.parseDouble(args[2]);
 			} catch (Exception e) {
-				Arenas.tellPlayer(player,
+				ArenaManager.tellPlayer(player,
 						Language.parse("invalidamount", args[2]), arena);
 				return;
 			}
@@ -126,26 +126,26 @@ public class EconomySupport extends ArenaModule {
 			}
 			if (!ma.hasEnough(amount)) {
 				// no money, no entry!
-				Arenas.tellPlayer(
+				ArenaManager.tellPlayer(
 						player,
 						Language.parse("notenough",
 								EconomySupport.eco.format(amount)), arena);
 				return;
 			}
 
-			if (amount < arena.cfg.getDouble("money.minbet")
-					|| (amount > arena.cfg.getDouble("money.maxbet"))) {
+			if (amount < arena.getArenaConfig().getDouble("money.minbet")
+					|| (amount > arena.getArenaConfig().getDouble("money.maxbet"))) {
 				// wrong amount!
-				Arenas.tellPlayer(player, Language.parse("wrongamount",
-						EconomySupport.eco.format(arena.cfg
+				ArenaManager.tellPlayer(player, Language.parse("wrongamount",
+						EconomySupport.eco.format(arena.getArenaConfig()
 								.getDouble("money.minbet")), EconomySupport.eco
-								.format(arena.cfg.getDouble("money.maxbet"))),
+								.format(arena.getArenaConfig().getDouble("money.maxbet"))),
 						arena);
 				return;
 			}
 
 			ma.subtract(amount);
-			Arenas.tellPlayer(player, Language.parse("betplaced", args[1]),
+			ArenaManager.tellPlayer(player, Language.parse("betplaced", args[1]),
 					arena);
 			paPlayersBetAmount.put(player.getName() + ":" + args[1], amount);
 		} else {
@@ -164,7 +164,7 @@ public class EconomySupport extends ArenaModule {
 			}
 			if (!ma.hasEnough(amount)) {
 				// no money, no entry!
-				Arenas.tellPlayer(
+				ArenaManager.tellPlayer(
 						player,
 						Language.parse("notenough",
 								EconomySupport.eco.format(amount)), arena);
@@ -178,7 +178,7 @@ public class EconomySupport extends ArenaModule {
 			}
 
 			ma.subtract(amount);
-			Arenas.tellPlayer(player, Language.parse("betplaced", args[1]),
+			ArenaManager.tellPlayer(player, Language.parse("betplaced", args[1]),
 					arena);
 			paPlayersJoinAmount.put(player.getName(), amount);
 			command.commit(arena, player, null);
@@ -199,13 +199,13 @@ public class EconomySupport extends ArenaModule {
 					continue;
 
 				if (nSplit[1].equalsIgnoreCase(aTeam.getName())) {
-					double teamFactor = arena.cfg
+					double teamFactor = arena.getArenaConfig()
 							.getDouble("money.betTeamWinFactor")
 							* arena.teamCount;
 					if (teamFactor <= 0) {
 						teamFactor = 1;
 					}
-					teamFactor *= arena.cfg.getDouble("money.betWinFactor");
+					teamFactor *= arena.getArenaConfig().getDouble("money.betWinFactor");
 
 					double amount = paPlayersBetAmount.get(nKey) * teamFactor;
 
@@ -216,7 +216,7 @@ public class EconomySupport extends ArenaModule {
 					}
 					ma.add(amount);
 					try {
-						Arenas.tellPlayer(
+						ArenaManager.tellPlayer(
 								Bukkit.getPlayer(nSplit[0]),
 								Language.parse("youwon",
 										EconomySupport.eco.format(amount)),
@@ -236,7 +236,7 @@ public class EconomySupport extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("money.entry", Integer.valueOf(0));
 		config.addDefault("money.reward", Integer.valueOf(0));
 		config.addDefault("money.killreward", Double.valueOf(0));
@@ -259,13 +259,13 @@ public class EconomySupport extends ArenaModule {
 
 				if (nSplit[1].equalsIgnoreCase(player.getName())) {
 					double playerFactor = arena.playerCount
-							* arena.cfg.getDouble("money.betPlayerWinFactor");
+							* arena.getArenaConfig().getDouble("money.betPlayerWinFactor");
 
 					if (playerFactor <= 0) {
 						playerFactor = 1;
 					}
 
-					playerFactor *= arena.cfg.getDouble("money.betWinFactor");
+					playerFactor *= arena.getArenaConfig().getDouble("money.betWinFactor");
 
 					double amount = paPlayersBetAmount.get(nKey) * playerFactor;
 
@@ -277,7 +277,7 @@ public class EconomySupport extends ArenaModule {
 								arena,
 								Language.parse("awarded",
 										EconomySupport.eco.format(amount)));
-						Arenas.tellPlayer(
+						ArenaManager.tellPlayer(
 								Bukkit.getPlayer(nSplit[0]),
 								Language.parse("youwon",
 										EconomySupport.eco.format(amount)),
@@ -287,20 +287,20 @@ public class EconomySupport extends ArenaModule {
 					}
 				}
 			}
-			if (arena.cfg.getInt("money.reward", 0) > 0) {
+			if (arena.getArenaConfig().getInt("money.reward", 0) > 0) {
 				if (EconomySupport.eco != null) {
 					MethodAccount ma = EconomySupport.eco.getAccount(player
 							.getName());
-					ma.add(arena.cfg.getInt("money.reward", 0));
-					Arenas.tellPlayer(player, Language.parse("awarded",
-							EconomySupport.eco.format(arena.cfg.getInt(
+					ma.add(arena.getArenaConfig().getInt("money.reward", 0));
+					ArenaManager.tellPlayer(player, Language.parse("awarded",
+							EconomySupport.eco.format(arena.getArenaConfig().getInt(
 									"money.reward", 0))), arena);
 				}
 			}
 			for (String nKey : paPlayersJoinAmount.keySet()) {
 
 				if (nKey.equalsIgnoreCase(player.getName())) {
-					double playerFactor = arena.cfg.getDouble("money.betWinFactor");
+					double playerFactor = arena.getArenaConfig().getDouble("money.betWinFactor");
 
 					double amount = paPlayersJoinAmount.get(nKey) * playerFactor;
 
@@ -312,7 +312,7 @@ public class EconomySupport extends ArenaModule {
 								arena,
 								Language.parse("awarded",
 										EconomySupport.eco.format(amount)));
-						Arenas.tellPlayer(
+						ArenaManager.tellPlayer(
 								Bukkit.getPlayer(nKey),
 								Language.parse("youwon",
 										EconomySupport.eco.format(amount)),
@@ -375,36 +375,36 @@ public class EconomySupport extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Economy:§f entry: "
-				+ StringParser.colorVar(arena.cfg.getInt("money.entry", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt("money.entry", 0))
 				+ " || reward: "
-				+ StringParser.colorVar(arena.cfg.getInt("money.reward", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt("money.reward", 0))
 				+ " || killreward: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.killreward", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.killreward", 0))
 				+ " || winFactor: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.winFactor", 0)));
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.winFactor", 0)));
 
 		player.sendMessage("minbet: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.minbet", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.minbet", 0))
 				+ " || maxbet: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.maxbet", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.maxbet", 0))
 				+ " || betWinFactor: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.betWinFactor", 0)));
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.betWinFactor", 0)));
 		
 		player.sendMessage("betTeamWinFactor: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.betTeamWinFactor", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.betTeamWinFactor", 0))
 				+ " || betPlayerWinFactor: "
-				+ StringParser.colorVar(arena.cfg.getDouble("money.betPlayerWinFactor", 0)));
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.betPlayerWinFactor", 0)));
 	}
 	
 	@Override
 	public void parseJoin(Arena arena, Player player, String coloredTeam) {
-		int entryfee = arena.cfg.getInt("money.entry", 0);
+		int entryfee = arena.getArenaConfig().getInt("money.entry", 0);
 		if (entryfee > 0) {
 			if (EconomySupport.eco != null) {
 				MethodAccount ma = EconomySupport.eco.getAccount(player
 						.getName());
 				ma.subtract(entryfee);
-				Arenas.tellPlayer(
+				ArenaManager.tellPlayer(
 						player,
 						Language.parse("joinpay",
 								EconomySupport.eco.format(entryfee)), arena);
@@ -452,18 +452,18 @@ public class EconomySupport extends ArenaModule {
 
 					double amount = 0;
 					
-					if (arena.cfg.getBoolean("money.usePot")) {
+					if (arena.getArenaConfig().getBoolean("money.usePot")) {
 						if (winpot > 0) {
 							amount = pot * paPlayersBetAmount.get(nKey) / winpot;
 						}
 					} else {
-						double teamFactor = arena.cfg
+						double teamFactor = arena.getArenaConfig()
 								.getDouble("money.betTeamWinFactor")
 								* arena.teamCount;
 						if (teamFactor <= 0) {
 							teamFactor = 1;
 						}
-						teamFactor *= arena.cfg.getDouble("money.betWinFactor");
+						teamFactor *= arena.getArenaConfig().getDouble("money.betWinFactor");
 						amount = paPlayersBetAmount.get(nKey) * teamFactor;
 					}
 
@@ -474,7 +474,7 @@ public class EconomySupport extends ArenaModule {
 					}
 					ma.add(amount);
 					try {
-						Arenas.tellPlayer(
+						ArenaManager.tellPlayer(
 								Bukkit.getPlayer(nSplit[0]),
 								Language.parse("youwon",
 										EconomySupport.eco.format(amount)),
@@ -498,11 +498,11 @@ public class EconomySupport extends ArenaModule {
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
 		if (ap.getStatus().equals(Status.LOBBY) ||
 				ap.getStatus().equals(Status.READY)) {
-			int entryfee = arena.cfg.getInt("money.entry", 0);
+			int entryfee = arena.getArenaConfig().getInt("money.entry", 0);
 			if (entryfee < 1) {
 				return;
 			}
-			Arenas.tellPlayer(player, Language.parse("refunding", eco.format(entryfee)));
+			ArenaManager.tellPlayer(player, Language.parse("refunding", eco.format(entryfee)));
 			MethodAccount ma = EconomySupport.eco.getAccount(player.getName());
 			if (ma == null) {
 				db.s("Account not found: " + player.getName());

@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.arenaboards;
 
+import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Debug;
 
 import org.bukkit.Location;
@@ -17,7 +18,7 @@ import org.bukkit.block.Sign;
 
 public class ArenaBoardColumn {
 	protected ArenaBoard board;
-	private Location location;
+	private PALocation location;
 	private Debug db = new Debug(11);
 
 	private ArenaBoardSign[] signs = new ArenaBoardSign[5];
@@ -27,12 +28,12 @@ public class ArenaBoardColumn {
 	 * 
 	 * @param ab
 	 *            the arena board to hook to
-	 * @param loc
+	 * @param l
 	 *            the location of the column header
 	 */
-	public ArenaBoardColumn(ArenaBoard ab, Location loc) {
+	public ArenaBoardColumn(ArenaBoard ab, PALocation l) {
 		board = ab;
-		location = loc;
+		location = l;
 
 		db.i("fetching sign column");
 		fetchSigns();
@@ -42,7 +43,7 @@ public class ArenaBoardColumn {
 	 * fetch sub signs and attach them to the sign array
 	 */
 	private void fetchSigns() {
-		Location l = location.getBlock().getRelative(BlockFace.DOWN)
+		Location l = location.toLocation().getBlock().getRelative(BlockFace.DOWN)
 				.getLocation();
 		int i = 0;
 		try {

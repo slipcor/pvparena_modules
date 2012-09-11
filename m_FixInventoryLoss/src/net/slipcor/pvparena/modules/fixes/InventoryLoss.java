@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class InventoryLoss extends ArenaModule {
 
@@ -34,22 +34,22 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.cfg.getBoolean("join.gamemodeSurvival")) {
+		if (arena.getArenaConfig().getBoolean("join.gamemodeSurvival")) {
 			if (!player.getGameMode().equals(GameMode.SURVIVAL)) {
-				Arenas.tellPlayer(player, Language.parse("gamemodeSurvival"));
+				ArenaManager.tellPlayer(player, Language.parse("gamemodeSurvival"));
 				return false;
 			}
 		}
-		if (arena.cfg.getBoolean("join.emptyInventory")) {
+		if (arena.getArenaConfig().getBoolean("join.emptyInventory")) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					Arenas.tellPlayer(player, Language.parse("emptyInventory"));
+					ArenaManager.tellPlayer(player, Language.parse("emptyInventory"));
 					return false;
 				}
 			}
 			for (ItemStack item : player.getInventory().getArmorContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					Arenas.tellPlayer(player, Language.parse("emptyInventory"));
+					ArenaManager.tellPlayer(player, Language.parse("emptyInventory"));
 					return false;
 				}
 			}
@@ -58,7 +58,7 @@ public class InventoryLoss extends ArenaModule {
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("join.emptyInventory", Boolean.valueOf(false));
 		config.addDefault("join.gamemodeSurvival", Boolean.valueOf(false));
 		config.options().copyDefaults(true);
@@ -75,8 +75,8 @@ public class InventoryLoss extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6FixInventoryLoss:§f "
-				+ StringParser.colorVar("emptyInventory", arena.cfg.getBoolean("join.emptyInventory"))
+				+ StringParser.colorVar("emptyInventory", arena.getArenaConfig().getBoolean("join.emptyInventory"))
 				+ " || "
-				+ StringParser.colorVar("gamemodeSurvival", arena.cfg.getBoolean("join.gamemodeSurvival")));
+				+ StringParser.colorVar("gamemodeSurvival", arena.getArenaConfig().getBoolean("join.gamemodeSurvival")));
 	}
 }

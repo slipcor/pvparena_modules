@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class StartFreeze extends ArenaModule {
 	protected static HashMap<Arena, StartFreezer> runnables = new HashMap<Arena, StartFreezer>();
@@ -25,7 +25,7 @@ public class StartFreeze extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("freeze.timer", Integer.valueOf(10));
 	}
 
@@ -50,9 +50,9 @@ public class StartFreeze extends ArenaModule {
 		ids.put(arena,
 				Bukkit.getScheduler().scheduleSyncDelayedTask(
 						PVPArena.instance, sf,
-						arena.cfg.getInt("freeze.timer") * 20L));
+						arena.getArenaConfig().getInt("freeze.timer") * 20L));
 		arena.tellEveryone(Language.parse("startfreeze",
-				String.valueOf(arena.cfg.getInt("freeze.timer"))));
+				String.valueOf(arena.getArenaConfig().getInt("freeze.timer"))));
 	}
 
 	@Override

@@ -12,14 +12,15 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Spawns;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.SpawnManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class ArenaBoardManager extends ArenaModule {
-	protected HashMap<Location, ArenaBoard> boards = new HashMap<Location, ArenaBoard>();
+	protected HashMap<PALocation, ArenaBoard> boards = new HashMap<PALocation, ArenaBoard>();
 	protected int BOARD_ID = -1;
 	protected static int GLOBAL_ID = -1;
 	protected static ArenaBoard globalBoard = null;
@@ -36,14 +37,12 @@ public class ArenaBoardManager extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(Arena arena, YamlConfiguration config) {
 		if (config.get("spawns") != null) {
 			db.i("checking for leaderboard");
 			if (config.get("spawns.leaderboard") != null) {
 				db.i("leaderboard exists");
-				Location loc = Config.parseLocation(
-						Bukkit.getWorld(arena.getWorld()),
-						config.getString("spawns.leaderboard"));
+				PALocation loc = Config.parseLocation(config.getString("spawns.leaderboard"));
 
 				boards.put(loc, new ArenaBoard(loc, arena));
 			}
@@ -63,7 +62,7 @@ public class ArenaBoardManager extends ArenaModule {
 		String leaderboard = PVPArena.instance.getConfig().getString(
 				"leaderboard");
 		if (leaderboard != null) {
-			Location lbLoc = Config.parseWorldLocation(leaderboard);
+			PALocation lbLoc = Config.parseLocation(leaderboard);
 			globalBoard = new ArenaBoard(lbLoc, null);
 
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
@@ -92,7 +91,7 @@ public class ArenaBoardManager extends ArenaModule {
 				if (player.getLocation().distance(block.getLocation()) > 5) {
 					continue;
 				}
-				Arenas.tellPlayer(player, msg, arena);
+				arena.msg(player, msg);
 			}
 		}
 	}
@@ -111,19 +110,19 @@ public class ArenaBoardManager extends ArenaModule {
 
 		headline = headline.replace("[PAA]", "");
 
-		Arena a = Arenas.getArenaByName(headline);
+		Arena a = ArenaManager.getArenaByName(headline);
 
 		// trying to create an arena leaderboard
 
 		if (boards.containsKey(event.getBlock().getLocation())) {
-			Arenas.tellPlayer(event.getPlayer(), Language.parse("boardexists"));
+			ArenaManager.tellPlayer(event.getPlayer(), Language.parse("boardexists"));
 			return;
 		}
 
 		if (!PVPArena.hasAdminPerms(event.getPlayer())
 				&& ((a != null) && !PVPArena.hasCreatePerms(event.getPlayer(),
 						a))) {
-			Arenas.tellPlayer(
+			ArenaManager.tellPlayer(
 					event.getPlayer(),
 					Language.parse("nopermto",
 							Language.parse("createarenaboard")), a);
@@ -133,7 +132,7 @@ public class ArenaBoardManager extends ArenaModule {
 		event.setLine(0, headline);
 		if (a == null) {
 			db.i("creating global leaderboard");
-			globalBoard = new ArenaBoard(event.getBlock().getLocation(), null);
+			globalBoard = new ArenaBoard(new PALocation(event.getBlock().getLocation()), null);
 			Location loc = event.getBlock().getLocation();
 			Integer x = Integer.valueOf(loc.getBlockX());
 			Integer y = Integer.valueOf(loc.getBlockY());
@@ -150,9 +149,9 @@ public class ArenaBoardManager extends ArenaModule {
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
 					PVPArena.instance, new BoardRunnable(null), 100L, 100L);
 		} else {
-			boards.put(event.getBlock().getLocation(), new ArenaBoard(event
-					.getBlock().getLocation(), a));
-			Spawns.setCoords(a, event.getBlock().getLocation(), "leaderboard");
+			PALocation loc = new PALocation(event.getBlock().getLocation());
+			boards.put(loc, new ArenaBoard(loc, a));
+			SpawnManager.setCoords(a, event.getBlock().getLocation(), "leaderboard");
 		}
 	}
 
