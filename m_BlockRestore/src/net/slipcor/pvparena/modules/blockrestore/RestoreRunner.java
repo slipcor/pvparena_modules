@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.core.Config.CFG;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,7 +35,7 @@ public class RestoreRunner implements Runnable {
 
 	@Override
 	public void run() {
-		arena.edit = true;
+		PAA_Edit.activeSelections.put("server", arena);
 		World world = Bukkit.getWorld(arena.getWorld());
 		for (Location loc : chests.keySet()) {
 			if (loc == null) {
@@ -48,7 +50,7 @@ public class RestoreRunner implements Runnable {
 				db.i("success!");
 				chests.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-						this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
+						this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 				return;
 			} catch (Exception e) {
 				//
@@ -72,7 +74,7 @@ public class RestoreRunner implements Runnable {
 				db.i("success!");
 				dispensers.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-						this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
+						this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 				return;
 			} catch (Exception e) {
 				//
@@ -89,13 +91,13 @@ public class RestoreRunner implements Runnable {
 				db.i("success!");
 				furnaces.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-						this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
+						this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 				return;
 			} catch (Exception e) {
 				//
 			}
 		}
-		arena.edit = false;
+		PAA_Edit.activeSelections.remove("server");
 	}
 
 }

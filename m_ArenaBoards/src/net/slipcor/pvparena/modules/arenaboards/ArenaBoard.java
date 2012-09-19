@@ -7,6 +7,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.StatisticsManager;
 
@@ -155,27 +156,25 @@ public class ArenaBoard {
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
 				ArenaManager.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()));
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
 				ArenaManager.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()));
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			}
 		} else {
 			db.i("not global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
-				ArenaManager.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()),
-						ab.arena);
+				ab.arena.msg(player,
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
-				ArenaManager.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()),
-						ab.arena);
+				ab.arena.msg(player,
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			}
 		}
@@ -189,7 +188,7 @@ public class ArenaBoard {
 			PVPArena.instance.getConfig().set("leaderboard", null);
 			PVPArena.instance.saveConfig();
 		} else {
-			arena.getArenaConfig().set("spawns.leaderboard", null);
+			arena.getArenaConfig().setManually("spawns.leaderboard", null);
 			arena.getArenaConfig().save();
 		}
 	}

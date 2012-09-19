@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class StuckInFloor extends ArenaModule {
@@ -15,7 +16,7 @@ public class StuckInFloor extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.11.6";
+		return "v0.9.0.0";
 	}
 
 	@Override
@@ -24,14 +25,8 @@ public class StuckInFloor extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("fix.stuckInFloor", Boolean.valueOf(false));
-		config.options().copyDefaults(true);
-	}
-
-	@Override
 	public void onPlayerTeleport(Arena arena, PlayerTeleportEvent event) {
-		if (arena.getArenaConfig().getBoolean("fix.stuckInFloor")) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXSTUCKINFLOOR_FSIF)) {
 			event.setTo(event.getTo().add(0, 0.1, 0));
 		}
 	}

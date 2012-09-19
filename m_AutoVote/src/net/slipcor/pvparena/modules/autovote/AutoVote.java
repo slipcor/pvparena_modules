@@ -10,8 +10,11 @@ import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PACheckResult;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -27,17 +30,22 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.11.8";
+		return "v0.9.0.0";
 	}
 
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
-		if (a != null && !arena.equals(a)) {
-			ArenaManager.tellPlayer(player,
-					Language.parse("arenarunning", arena.getName()));
-			return false;
+	public PACheckResult checkJoin(Arena arena, CommandSender sender,
+			PACheckResult res, boolean b) {
+		if (res.hasError()) {
+			return res;
 		}
-		return true;
+		
+		if (a != null && !arena.equals(a)) {
+			res.setError(Language.parse(MSG.MODULE_AUTOVOTE_ARENARUNNING, arena.getName()));
+			return res;
+		}
+		
+		return res;
 	}
 
 	@Override
@@ -55,9 +63,9 @@ public class AutoVote extends ArenaModule {
 		}
 
 		votes.put(sender.getName(), arena.getName());
-		ArenaManager.tellPlayer(sender, Language.parse("youvoted", arena.getName()));
+		ArenaManager.tellPlayer(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
 		
-		if (!arena.getArenaConfig().getBoolean("arenavote.everyone")) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
 			return;
 		}
 		
@@ -65,7 +73,7 @@ public class AutoVote extends ArenaModule {
 			if (p == null) {
 				continue;
 			}
-			ArenaManager.tellPlayer(p, Language.parse("playervoted", arena.getName(), sender.getName()));
+			ArenaManager.tellPlayer(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
 		}
 	}
 
@@ -76,18 +84,7 @@ public class AutoVote extends ArenaModule {
 		config.addDefault("arenavote.everyone", Boolean.valueOf(false));
 		config.options().copyDefaults(true);
 	}
-
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.arenarunning", "Arena running: %1%");
-		config.addDefault("lang.autojoin", "Arena auto join started!");
-		config.addDefault(
-				"lang.votenow",
-				"Vote for your arena! %1% left!\nVote with /pa [arenaname] vote\nAvailable arenas: "
-						+ ArenaManager.getNames());
-		config.addDefault("lang.youvoted", "You voted for arena %1%!");
-		config.addDefault("lang.playervoted", "%2% voted for arena %1%!");
-	}
-
+	
 	@Override
 	public boolean parseCommand(String cmd) {
 		return cmd.startsWith("vote");
@@ -97,9 +94,9 @@ public class AutoVote extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6ArenaVote:§f "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt("arenavote.seconds"))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS))
 				+ " | "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt("arenavote.readyup")));
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP)));
 	}
 
 	@Override
@@ -107,8 +104,8 @@ public class AutoVote extends ArenaModule {
 		votes.clear();
 		a = null;
 
-		AutoVoteRunnable fr = new AutoVoteRunnable(
-				arena.getArenaConfig().getInt("arenavote.seconds"), 0);
+		AutoVoteRunnable fr = new AutoVoteRunnable(arena,
+				arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
 		fr.setId(Bukkit.getScheduler().scheduleSyncRepeatingTask(
 				PVPArena.instance, fr, 20L, 20L));
 	}
@@ -147,7 +144,7 @@ public class AutoVote extends ArenaModule {
 
 		HashSet<String> toTeleport = new HashSet<String>();
 		
-		if (a.getArenaConfig().getBoolean("arenavote.everyone")) {
+		if (a.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				toTeleport.add(p.getName());
 			}
@@ -167,6 +164,6 @@ public class AutoVote extends ArenaModule {
 		}
 
 		new StartRunnable(a,
-				a.getArenaConfig().getInt("arenavote.readyup"));
+				a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
 	}
 }

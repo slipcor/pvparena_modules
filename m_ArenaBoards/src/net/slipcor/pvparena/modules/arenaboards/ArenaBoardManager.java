@@ -15,6 +15,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -50,14 +51,6 @@ public class ArenaBoardManager extends ArenaModule {
 	}
 
 	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.createarenaboard", "create an ArenaBoard");
-		config.addDefault("lang.boardexists", "ArenaBoard already exists!'");
-		config.addDefault("lang.sortingby", "ArenaBoard now sorted by %1%");
-		config.addDefault("lang.arenaboarddestroyed", "ArenaBoard destroyed!");
-	}
-
-	@Override
 	public void load_arenas() {
 		String leaderboard = PVPArena.instance.getConfig().getString(
 				"leaderboard");
@@ -84,7 +77,7 @@ public class ArenaBoardManager extends ArenaModule {
 			return;
 		}
 
-		String msg = Language.parse("arenaboarddestroyed");
+		String msg = Language.parse(MSG.MODULE_ARENABOARDS_DESTROYED);
 		for (Entity e : Bukkit.getWorld(arena.getWorld()).getEntities()) {
 			if (e instanceof Player) {
 				Player player = (Player) e;
@@ -115,17 +108,17 @@ public class ArenaBoardManager extends ArenaModule {
 		// trying to create an arena leaderboard
 
 		if (boards.containsKey(event.getBlock().getLocation())) {
-			ArenaManager.tellPlayer(event.getPlayer(), Language.parse("boardexists"));
+			ArenaManager.tellPlayer(event.getPlayer(), Language.parse(MSG.MODULE_ARENABOARDS_EXISTS));
 			return;
 		}
 
 		if (!PVPArena.hasAdminPerms(event.getPlayer())
 				&& ((a != null) && !PVPArena.hasCreatePerms(event.getPlayer(),
 						a))) {
-			ArenaManager.tellPlayer(
+			a.msg(
 					event.getPlayer(),
-					Language.parse("nopermto",
-							Language.parse("createarenaboard")), a);
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.MODULE_ARENABOARDS_CREATE)));
 			return;
 		}
 

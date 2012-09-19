@@ -6,6 +6,7 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,9 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.goals.GoalFlags;
 import net.slipcor.pvparena.managers.SpawnManager;
+import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class Maps extends ArenaModule {
@@ -52,7 +55,8 @@ public class Maps extends ArenaModule {
 	}
 	
 	@Override
-	public void parseJoin(Arena arena, Player player, String coloredTeam) {
+	public void parseJoin(Arena arena, CommandSender sender, ArenaTeam team) {
+		Player player = (Player) sender;
 		HashSet<String> maps = new HashSet<String>();
 		if (mappings.get(arena) == null) {
 			maps = new HashSet<String>();
@@ -63,11 +67,7 @@ public class Maps extends ArenaModule {
 		
 		maps.add(player.getName());
 		
-		for (ArenaTeam team : arena.getTeams()) {
-			if (coloredTeam.contains(team.getName())) {
-				items.get(arena).add(new MapItem(arena, player, team.getColor()));
-			}
-		}
+		items.get(arena).add(new MapItem(arena, player, team.getColor()));
 		mappings.put(arena, maps);
 	}
 	
@@ -85,7 +85,10 @@ public class Maps extends ArenaModule {
 				locations.add(new MapItem(arena, new PABlockLocation(loc.toLocation()), team.getColor()));
 			}
 			
-			if (arena.type().usesFlags()) {
+			for (ArenaGoal goal : arena.getGoals()) {
+				if (!(goal instanceof GoalFlags)) {
+					continue;
+				}
 				locs = SpawnManager.getSpawns(arena, team.getName() + "flag");
 				for (PALocation loc : locs) {
 					locations.add(new MapItem(arena, new PABlockLocation(loc.toLocation()), team.getColor()));

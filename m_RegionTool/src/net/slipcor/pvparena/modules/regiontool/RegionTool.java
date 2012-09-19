@@ -1,14 +1,18 @@
 package net.slipcor.pvparena.modules.regiontool;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.neworder.ArenaRegion;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
 
 public class RegionTool extends ArenaModule {
 	public RegionTool() {
@@ -17,7 +21,7 @@ public class RegionTool extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.6.14";
+		return "v0.9.0.0";
 	}
 
 	public boolean onPlayerInteract(PlayerInteractEvent event) {
@@ -32,27 +36,27 @@ public class RegionTool extends ArenaModule {
 
 		for (Arena arena : ArenaManager.getArenas()) {
 			Material mMat = Material.STICK;
-			if (arena.getArenaConfig().get("setup.wand") != null) {
+			if (arena.getArenaConfig().getInt(CFG.GENERAL_WAND) > 0) {
 				db.i("reading wand");
 				try {
-					mMat = Material.getMaterial(arena.getArenaConfig().getInt("setup.wand"));
+					mMat = Material.getMaterial(arena.getArenaConfig().getInt(CFG.GENERAL_WAND));
 				} catch (Exception e) {
 					db.i("exception reading ready block");
-					String sMat = arena.getArenaConfig().getString("setup.wand");
-					Language.log_warning("matnotfound", sMat);
+					String sMat = arena.getArenaConfig().getString(CFG.GENERAL_WAND);
+					Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.ERROR_MAT_NOT_FOUND, sMat));
 					return false;
 				}
 				db.i("mMat now is " + mMat.name());
 				if (event.getPlayer().getItemInHand().getType() == mMat) {
-					Location loc = event.getPlayer().getLocation();
+					PABlockLocation loc = new PABlockLocation(event.getPlayer().getLocation());
 					if (event.getClickedBlock() != null) {
-						loc = event.getClickedBlock().getLocation();
+						loc = new PABlockLocation(event.getClickedBlock().getLocation());
 					}
-					for (ArenaRegion region : arena.regions.values()) {
+					for (ArenaRegionShape region : arena.getRegions()) {
 						if (region.contains(loc)) {
 							ArenaManager.tellPlayer(event.getPlayer(), "§fArena §b"
 									+ arena.getName() + "§f: region §b"
-									+ region.name);
+									+ region.getName());
 						}
 					}
 				}

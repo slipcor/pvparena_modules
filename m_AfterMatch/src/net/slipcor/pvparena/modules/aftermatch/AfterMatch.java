@@ -15,6 +15,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
@@ -31,7 +32,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.10.2";
+		return "v0.9.0.0";
 	}
 
 	public void afterMatch(Arena a) {
@@ -44,27 +45,19 @@ public class AfterMatch extends ArenaModule {
 				a.tpPlayerToCoordName(player, "after");
 			}
 		}
-		a.tellEveryone(Language.parse("aftermatch"));
-		HashSet<String> lives = new HashSet<String>();
-		
-		for (String s : a.lives.keySet()) {
-			lives.add(s);
-		}
-		
-		for (String s : lives) {
-			a.lives.put(s, 0);
-		}
+		a.broadcast(Language.parse(MSG.MODULE_AFTERMATCH_STARTING));
+		PVPArena.instance.getAgm().setPlayerLives(a, 0);
 	}
 
-	public String checkSpawns(Set<String> list) {
-		/*
+	@Override
+	public String checkForMissingSpawns(Arena arena, Set<String> list) {
+		
 		for (String s : list) {
 			if (s.startsWith("after")) {
 				return null;
 			}
 		}
-		return "after not set";*/
-		return null;
+		return MSG.MODULE_AFTERMATCH_SPAWNNOTSET.toString();
 	}
 
 	@Override
@@ -74,7 +67,7 @@ public class AfterMatch extends ArenaModule {
 			Language.parse(MSG.ERROR_ONLY_PLAYERS);
 			return;
 		}
-		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
 		if (pu.equals("off")) {
 			return;
@@ -100,7 +93,7 @@ public class AfterMatch extends ArenaModule {
 	@Override
 	public void commitPlayerDeath(Arena arena, Player player,
 			EntityDamageEvent cause) {
-		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
 		if (pu.equals("off")) {
 			return;
@@ -155,10 +148,6 @@ public class AfterMatch extends ArenaModule {
 		return result;
 	}
 
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.aftermatch", "The aftermatch has begun!");
-	}
-
 	@Override
 	public boolean parseCommand(String cmd) {
 		return cmd.startsWith("after");
@@ -168,15 +157,15 @@ public class AfterMatch extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§bAfterMatch:§f "
-				+ StringParser.colorVar(!arena.getArenaConfig().getString("aftermatch.aftermatch").equals("off"))
+				+ StringParser.colorVar(!arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH).equals("off"))
 				+ "("
 				+ StringParser.colorVar(arena.getArenaConfig()
-						.getString("aftermatch.aftermatch")) + ")");
+						.getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)) + ")");
 	}
 
 	@Override
 	public void reset(Arena arena, boolean force) {
-		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
 		if (pu.equals("off")) {
 			return;
@@ -194,7 +183,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
-		String pu = arena.getArenaConfig().getString("aftermatch.aftermatch", "off");
+		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH, "off");
 
 		if (pu.equals("off")) {
 			return;
@@ -214,7 +203,7 @@ public class AfterMatch extends ArenaModule {
 		}
 
 		db.i("using aftermatch : "
-				+ arena.getArenaConfig().getString("aftermatch.aftermatch", "off") + " : "
+				+ arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH, "off") + " : "
 				+ i);
 		if (i > 0) {
 			db.i("aftermatch time trigger!");

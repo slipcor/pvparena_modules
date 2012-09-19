@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PACheckResult;
 import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.commands.PAI_Ready;
 import net.slipcor.pvparena.commands.PAI_Version;
@@ -38,12 +39,15 @@ public class BanKick extends ArenaModule {
 	public static HashMap<Arena, List<String>> bans = new HashMap<Arena, List<String>>();
 	
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
-		if (bans.get(arena).contains(player.getName())) {
-			ArenaManager.tellPlayer(player, Language.parse("youwerebanned", arena.getName()));
-			return false;
+	public PACheckResult checkJoin(Arena arena, CommandSender sender,
+			PACheckResult res, boolean b) {
+		if (res.hasError()) {
+			return res;
 		}
-		return true;
+		if (bans.get(arena).contains(sender.getName())) {
+			res.setError(Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
+		}
+		return res;
 	}
 	
 	@Override
@@ -133,34 +137,21 @@ public class BanKick extends ArenaModule {
 	protected static void doBan(CommandSender admin, Arena arena, String player) {
 		bans.get(arena).add(player);
 		if (admin != null) {
-			ArenaManager.tellPlayer(admin, Language.parse("playerbanned", player), arena);
+			arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_BANNED, player));
 		}
-		tryNotify(player, Language.parse("youwerebanned", arena.getName()));
-		arena.getArenaConfig().set("bans", bans.get(arena));
+		tryNotify(admin, arena, player, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
+		arena.getArenaConfig().setManually("bans", bans.get(arena));
 		arena.getArenaConfig().save();
 	}
 
 	protected static void doUnBan(CommandSender admin, Arena arena, String player) {
 		bans.get(arena).remove(player);
 		if (admin != null) {
-			ArenaManager.tellPlayer(admin, Language.parse("playerunbanned", player), arena);
+			arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_UNBANNED, player));
 		}
-		tryNotify(player, Language.parse("youwereunbanned", arena.getName()));
-		arena.getArenaConfig().set("bans", bans.get(arena));
+		tryNotify(admin, arena, player, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
+		arena.getArenaConfig().setManually("bans", bans.get(arena));
 		arena.getArenaConfig().save();
-	}
-
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.playerkicked", "Player kicked: %1%");
-		config.addDefault("lang.playerbanned", "Player banned: %1%");
-		config.addDefault("lang.playerunbanned", "Player unbanned: %1%");
-		config.addDefault("lang.playernotkicked", "Player not kicked: %1%");
-		config.addDefault("lang.playernotonline", "Player is not online: %1%");
-		config.addDefault("lang.youwerebanned", "You are banned from arena %1%");
-		config.addDefault("lang.youwerekicked", "You were kicked from arena %1%");
-		config.addDefault("lang.youwereunbanned", "You are unbanned from arena %1%");
-		config.options().copyDefaults(true);
 	}
 	
 	@Override
@@ -213,12 +204,20 @@ public class BanKick extends ArenaModule {
 	private void tryKick(CommandSender sender, Arena arena, String string) {
 		Player p = Bukkit.getPlayer(string);
 		if (p == null) {
-			ArenaManager.tellPlayer(sender, Language.parse("playernotkicked",string), arena);
+			arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_NOTKICKED,string));
 			return;
 		}
 		arena.playerLeave(p, "exit");
-		ArenaManager.tellPlayer(p, Language.parse("youwerekicked", arena.getName()), arena);
-		ArenaManager.tellPlayer(sender, Language.parse("playerkicked",string), arena);
+		arena.msg(p, Language.parse(MSG.MODULE_BANVOTE_YOUKICKED, arena.getName()));
+		arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_KICKED,string));
+	}
+
+	private static void tryNotify(CommandSender sender, Arena arena, String player, String string) {
+		Player p = Bukkit.getPlayer(string);
+		if (p == null) {
+			return;
+		}
+		arena.msg(p, string);
 	}
 	/*
 /pa tempban [player] [timediff*]                             <----- This means banning the Player temporary from ALL Arenas!

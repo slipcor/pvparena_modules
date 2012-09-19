@@ -1,25 +1,17 @@
 package net.slipcor.pvparena.modules.announcements;
 
+import java.util.HashSet;
+
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * announcement class
- * 
- * -
- * 
- * provides methods to announce texts publicly
- * 
- * @author slipcor
- * 
- * @version v0.8.7
- * 
- */
 public class Announcement {
 	private static Debug db = new Debug(7);
 
@@ -50,7 +42,7 @@ public class Announcement {
 			}
 			send(a, p,
 					message.replace(ChatColor.WHITE.toString(), ChatColor
-							.valueOf(a.getArenaConfig().getString("announcements.color"))
+							.valueOf(a.getArenaConfig().getString(CFG.MODULES_ANNOUNCEMENTS_COLOR))
 							.toString()));
 		}
 	}
@@ -74,7 +66,7 @@ public class Announcement {
 		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
 		
 		message = message.replace(ChatColor.WHITE.toString(), ChatColor
-				.valueOf(a.getArenaConfig().getString("announcements.color"))
+				.valueOf(a.getArenaConfig().getString(CFG.MODULES_ANNOUNCEMENTS_COLOR))
 				.toString());
 		
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -96,7 +88,7 @@ public class Announcement {
 	 *         false otherwise
 	 */
 	private static boolean sendCheck(Arena a, type t) {
-		return a.getArenaConfig().getBoolean("announcements." + t.name().toLowerCase());
+		return (Boolean) a.getArenaConfig().getUnsafe("announcements." + t.name().toLowerCase());
 	}
 
 	/**
@@ -110,12 +102,14 @@ public class Announcement {
 	 *            the message to send
 	 */
 	private static void send(Arena a, Player p, String message) {
-		if (a.getArenaConfig().getInt("announcements.radius") > 0) {
-			if (a.regions.get("battlefield") == null
-					|| a.regions.get("battlefield").tooFarAway(
-							a.getArenaConfig().getInt("announcements.radius"),
-							p.getLocation())) {
-				return; // too far away: out (checks world!)
+		if (a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS) > 0) {
+			HashSet<ArenaRegionShape> bfs = a.getRegionsByType(RegionType.BATTLE);
+			for (ArenaRegionShape ars : bfs) {
+				if (ars.tooFarAway(
+								a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS),
+								p.getLocation())) {
+					return; // too far away: out (checks world!)
+				}
 			}
 		}
 		a.msg(
@@ -124,7 +118,7 @@ public class Announcement {
 						+ a.getName()
 						+ "§f] "
 						+ ChatColor.valueOf(a.getArenaConfig()
-								.getString("announcements.color")) + message);
+								.getString(CFG.MODULES_ANNOUNCEMENTS_COLOR)) + message);
 	}
 
 }

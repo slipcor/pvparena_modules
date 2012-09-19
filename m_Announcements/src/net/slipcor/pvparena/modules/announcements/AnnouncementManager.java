@@ -6,6 +6,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.TeamManager;
@@ -74,7 +75,7 @@ public class AnnouncementManager extends ArenaModule {
 	@Override
 	public void commitPlayerDeath(Arena arena, Player player,
 			EntityDamageEvent cause) {
-		Announcement.announce(arena, Announcement.type.LOSER, Language.parse("killedby",
+		Announcement.announce(arena, Announcement.type.LOSER, Language.parse(MSG.FIGHT_KILLED_BY,
 				player.getName(), arena.parseDeathCause(player, cause.getCause(), ArenaPlayer
 						.getLastDamagingPlayer(cause))));
 	}
@@ -95,14 +96,14 @@ public class AnnouncementManager extends ArenaModule {
 	}
 	
 	@Override
-	public void parseJoin(Arena arena, Player player, String coloredTeam) {
+	public void parseJoin(Arena arena, CommandSender sender, ArenaTeam team) {
 
-		if (Teams.countPlayersInTeams(arena) < 2) {
+		if (TeamManager.countPlayersInTeams(arena) < 2) {
 			Announcement.announce(arena, Announcement.type.START,
-					Language.parse("joinarena", arena.getName()));
+					Language.parse(MSG.ANNOUNCE_ARENA_STARTING, arena.getName()));
 		}
 		Announcement.announce(arena, Announcement.type.JOIN,
-				Language.parse(MSG.PLAYER_JOINED_TEAM, player.getName(), coloredTeam));
+				Language.parse(MSG.PLAYER_JOINED_TEAM, sender.getName(), team.getColoredName()));
 	}
 
 	@Override
@@ -120,27 +121,27 @@ public class AnnouncementManager extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Announcements:§f radius: "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt("announcements.radius", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS, 0))
 				+ " || color: "
-				+ StringParser.colorVar(arena.getArenaConfig().getString("announcements.color"))
+				+ StringParser.colorVar(arena.getArenaConfig().getString(CFG.MODULES_ANNOUNCEMENTS_COLOR))
 				+ " || "
-				+ StringParser.colorVar("join", arena.getArenaConfig().getBoolean("announcements.join")));
-		player.sendMessage(StringParser.colorVar("start", arena.getArenaConfig().getBoolean("announcements.start"))
+				+ StringParser.colorVar("join", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_JOIN)));
+		player.sendMessage(StringParser.colorVar("start", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_START))
 				+ " || "
-				+ StringParser.colorVar("end", arena.getArenaConfig().getBoolean("announcements.end"))
+				+ StringParser.colorVar("end", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_END))
 				+ " || "
-				+ StringParser.colorVar("winner", arena.getArenaConfig().getBoolean("announcements.winner"))
+				+ StringParser.colorVar("winner", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_WINNER))
 				+ " || "
-				+ StringParser.colorVar("loser", arena.getArenaConfig().getBoolean("announcements.loser"))
+				+ StringParser.colorVar("loser", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_LOSER))
 				+ " || "
-				+ StringParser.colorVar("prize", arena.getArenaConfig().getBoolean("announcements.prize"))
+				+ StringParser.colorVar("prize", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_PRIZE))
 				+ " || "
-				+ StringParser.colorVar("custom", arena.getArenaConfig().getBoolean("announcements.custom")));
+				+ StringParser.colorVar("custom", arena.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_CUSTOM)));
 	}
 
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
 		Announcement.announce(arena, Announcement.type.START,
-				Language.parse("begin"));
+				Language.parse(MSG.FIGHT_BEGINS));
 	}
 }

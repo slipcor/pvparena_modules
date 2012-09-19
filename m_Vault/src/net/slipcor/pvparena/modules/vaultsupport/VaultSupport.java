@@ -19,9 +19,12 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
-import net.slipcor.pvparena.command.PAAJoin;
-import net.slipcor.pvparena.command.PAA_Command;
+import net.slipcor.pvparena.classes.PACheckResult;
+import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.TeamManager;
@@ -40,7 +43,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.11.5";
+		return "v0.9.0.0";
 	}
 
 	@Override
@@ -58,42 +61,47 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.getArenaConfig().getInt("money.entry", 0) > 0) {
+	public PACheckResult checkJoin(Arena arena, CommandSender sender,
+			PACheckResult res, boolean join) {
+		
+		if (res.hasError() || !join) {
+			return res;
+		}
+		
+		if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE) > 0) {
 			if (economy != null) {
-				if (!economy.hasAccount(player.getName())) {
-					db.s("Account not found: " + player.getName());
-					return false;
+				if (!economy.hasAccount(sender.getName())) {
+					db.s("Account not found: " + sender.getName());
+					res.setError("account not found: " + sender.getName());
+					return res;
 				}
-				if (!economy.has(player.getName(),
-						arena.getArenaConfig().getInt("money.entry", 0))) {
+				if (!economy.has(sender.getName(),
+						arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))) {
 					// no money, no entry!
-					ArenaManager.tellPlayer(
-							player,
-							Language.parse("notenough", economy
-									.format(arena.getArenaConfig().getInt("money.entry", 0))),
-							arena);
-					return false;
+					
+					res.setError(Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
+							.format(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))));
+					return res;
 				}
 			}
 		}
-		return true;
+		return res;
 	}
 
 	@Override
 	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
-			Language.parse("onlyplayers");
+			Language.parse(MSG.ERROR_ONLY_PLAYERS);
 			return;
 		}
 
 		Player player = (Player) sender;
 
-		ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 
 		// /pa bet [name] [amount]
-		if (Teams.getTeam(arena, ap) != null) {
-			ArenaManager.tellPlayer(player, Language.parse("betnotyours"), arena);
+		if (ap.getArenaTeam() != null) {
+			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETNOTYOURS));
 			return;
 		}
 
@@ -104,11 +112,11 @@ public class VaultSupport extends ArenaModule {
 
 			Player p = Bukkit.getPlayer(args[1]);
 			if (p != null) {
-				ap = ArenaPlayer.parsePlayer(p);
+				ap = ArenaPlayer.parsePlayer(p.getName());
 			}
-			if ((p == null) && (Teams.getTeam(arena, args[1]) == null)
-					&& (Teams.getTeam(arena, ap) == null)) {
-				ArenaManager.tellPlayer(player, Language.parse("betoptions"), arena);
+			if ((p == null) && (arena.getTeam(args[1]) == null)
+					&& (ap.getArenaTeam() == null)) {
+				arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETOPTIONS));
 				return;
 			}
 
@@ -117,8 +125,8 @@ public class VaultSupport extends ArenaModule {
 			try {
 				amount = Double.parseDouble(args[2]);
 			} catch (Exception e) {
-				ArenaManager.tellPlayer(player,
-						Language.parse("invalidamount", args[2]), arena);
+				arena.msg(player,
+						Language.parse(MSG.MODULE_VAULT_INVALIDAMOUNT, args[2]));
 				return;
 			}
 			if (!economy.hasAccount(player.getName())) {
@@ -127,25 +135,22 @@ public class VaultSupport extends ArenaModule {
 			}
 			if (!economy.has(player.getName(), amount)) {
 				// no money, no entry!
-				ArenaManager.tellPlayer(player,
-						Language.parse("notenough", economy.format(amount)),
-						arena);
+				arena.msg(player,
+						Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy.format(amount)));
 				return;
 			}
 
-			if (amount < arena.getArenaConfig().getDouble("money.minbet")
-					|| (amount > arena.getArenaConfig().getDouble("money.maxbet"))) {
+			if (amount < arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MINIMUMBET)
+					|| (amount > arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))) {
 				// wrong amount!
-				ArenaManager.tellPlayer(player, Language.parse("wrongamount",
-						economy.format(arena.getArenaConfig().getDouble("money.minbet")),
-						economy.format(arena.getArenaConfig().getDouble("money.maxbet"))),
-						arena);
+				arena.msg(player, Language.parse(MSG.ERROR_INVALID_VALUE,
+						economy.format(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MINIMUMBET)),
+						economy.format(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))));
 				return;
 			}
 
 			economy.withdrawPlayer(player.getName(), amount);
-			ArenaManager.tellPlayer(player, Language.parse("betplaced", args[1]),
-					arena);
+			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
 			paPlayersBetAmount.put(player.getName() + ":" + args[1], amount);
 			return;
 		} else {
@@ -163,23 +168,22 @@ public class VaultSupport extends ArenaModule {
 			}
 			if (!economy.has(player.getName(), amount)) {
 				// no money, no entry!
-				ArenaManager.tellPlayer(player,
-						Language.parse("notenough", economy.format(amount)),
-						arena);
+				arena.msg(player,
+						Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy.format(amount)));
 				return;
 			}
-
-			PAA_Command command = new PAAJoin();
+			PACheckResult res = new PACheckResult();
+			checkJoin(arena, sender, res, true);
 			
-			if (!command.checkJoin(arena, player, false)) {
+			if (res.hasError()) {
+				arena.msg(sender, res.getError());
 				return;
 			}
 
 			economy.withdrawPlayer(player.getName(), amount);
-			ArenaManager.tellPlayer(player, Language.parse("betplaced", args[1]),
-					arena);
+			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
 			paPlayersJoinAmount.put(player.getName(), amount);
-			command.commit(arena, player, null);
+			commitCommand(arena, player, null);
 		}
 	}
 	
@@ -197,19 +201,19 @@ public class VaultSupport extends ArenaModule {
 				db.i("bet: " + nKey);
 				String[] nSplit = nKey.split(":");
 
-				if (Teams.getTeam(arena, nSplit[1]) == null
-						|| Teams.getTeam(arena, nSplit[1]).getName()
+				if (arena.getTeam(nSplit[1]) == null
+						|| arena.getTeam(nSplit[1]).getName()
 								.equals("free"))
 					continue;
 
 				if (nSplit[1].equalsIgnoreCase(aTeam.getName())) {
 					double teamFactor = arena.getArenaConfig()
-							.getDouble("money.betTeamWinFactor")
-							* arena.teamCount;
+							.getDouble(CFG.MODULES_VAULT_BETWINTEAMFACTOR)
+							* arena.getTeamNames().size();
 					if (teamFactor <= 0) {
 						teamFactor = 1;
 					}
-					teamFactor *= arena.getArenaConfig().getDouble("money.betWinFactor");
+					teamFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
 
 					double amount = paPlayersBetAmount.get(nKey) * teamFactor;
 
@@ -219,8 +223,8 @@ public class VaultSupport extends ArenaModule {
 					}
 					economy.depositPlayer(nSplit[0], amount);
 					try {
-						ArenaManager.tellPlayer(Bukkit.getPlayer(nSplit[0]), Language
-								.parse("youwon", economy.format(amount)), arena);
+						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 					} catch (Exception e) {
 						// nothing
 					}
@@ -252,14 +256,14 @@ public class VaultSupport extends ArenaModule {
 				String[] nSplit = nKey.split(":");
 
 				if (nSplit[1].equalsIgnoreCase(player.getName())) {
-					double playerFactor = arena.playerCount
-							* arena.getArenaConfig().getDouble("money.betPlayerWinFactor");
+					double playerFactor = arena.getFighters().size()
+							* arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINPLAYERFACTOR);
 
 					if (playerFactor <= 0) {
 						playerFactor = 1;
 					}
 
-					playerFactor *= arena.getArenaConfig().getDouble("money.betWinFactor");
+					playerFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
 
 					double amount = paPlayersBetAmount.get(nKey) * playerFactor;
 
@@ -267,29 +271,28 @@ public class VaultSupport extends ArenaModule {
 					try {
 						PVPArena.instance.getAmm().announcePrize(
 								arena,
-								Language.parse("awarded",
+								Language.parse(MSG.NOTICE_PLAYERAWARDED,
 										economy.format(amount)));
-						ArenaManager.tellPlayer(Bukkit.getPlayer(nSplit[0]), Language
-								.parse("youwon", economy.format(amount)), arena);
+						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 					} catch (Exception e) {
 						// nothing
 					}
 				}
 			}
 
-			if (arena.getArenaConfig().getInt("money.reward", 0) > 0) {
+			if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0) > 0) {
 				economy.depositPlayer(player.getName(),
-						arena.getArenaConfig().getInt("money.reward", 0));
-				ArenaManager.tellPlayer(player, Language.parse("awarded",
-						economy.format(arena.getArenaConfig().getInt("money.reward", 0))),
-						arena);
+						arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0));
+				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
+						economy.format(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0))));
 
 			}
 
 			for (String nKey : paPlayersJoinAmount.keySet()) {
 
 				if (nKey.equalsIgnoreCase(player.getName())) {
-					double playerFactor = arena.getArenaConfig().getDouble("money.winFactor");
+					double playerFactor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINFACTOR);
 
 					double amount = paPlayersJoinAmount.get(nKey) * playerFactor;
 
@@ -297,44 +300,16 @@ public class VaultSupport extends ArenaModule {
 					try {
 						PVPArena.instance.getAmm().announcePrize(
 								arena,
-								Language.parse("awarded",
+								Language.parse(MSG.NOTICE_PLAYERAWARDED,
 										economy.format(amount)));
-						ArenaManager.tellPlayer(Bukkit.getPlayer(nKey), Language
-								.parse("youwon", economy.format(amount)), arena);
+						arena.msg(Bukkit.getPlayer(nKey), Language
+								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 					} catch (Exception e) {
 						// nothing
 					}
 				}
 			}
 		}
-	}
-
-	@Override
-	public boolean hasPerms(CommandSender player, String perms) {
-		return permission == null ? player.hasPermission(perms) : permission
-				.has(player, perms);
-	}
-
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("log.iconomyon", "<3 eConomy");
-		config.addDefault("log.iconomyoff", "</3 eConomy");
-
-		config.addDefault("lang.notenough", "You don't have %1%.");
-		config.addDefault("lang.betnotyours",
-				"Cannot place bets on your own match!");
-		config.addDefault("lang.betoptions",
-				"You can only bet on team name or arena player!");
-		config.addDefault("lang.wrongamount",
-				"Bet amount must be between %1% and %2%!");
-		config.addDefault("lang.invalidamount", "Invalid amount: %1%");
-		config.addDefault("lang.betplaced", "Your bet on %1% has been placed.");
-		config.addDefault("lang.youwon", "You won %1%");
-		config.addDefault("lang.joinpay", "You paid %1% to join the arena!");
-
-		config.addDefault("lang.killreward", "You received %1% for killing %2%!");
-		
-		config.addDefault("lang.refunding", "Refunding %1%!");
 	}
 
 	private void killreward(Arena arena, Player p, Entity damager) {
@@ -346,7 +321,7 @@ public class VaultSupport extends ArenaModule {
 			return;
 		}
 		double amount = arena.getArenaConfig()
-				.getDouble("money.killreward");
+				.getDouble(CFG.MODULES_VAULT_KILLREWARD);
 
 		if (amount < 0.01) {
 			return;
@@ -358,8 +333,8 @@ public class VaultSupport extends ArenaModule {
 		}
 		economy.depositPlayer(player.getName(), amount);
 		try {
-			ArenaManager.tellPlayer(Bukkit.getPlayer(player.getName()), Language
-					.parse("youwon", economy.format(amount)), arena);
+			arena.msg(Bukkit.getPlayer(player.getName()), Language
+					.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 		} catch (Exception e) {
 			// nothing
 		}
@@ -389,48 +364,47 @@ public class VaultSupport extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Economy (Vault): §f entry: "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt("money.entry", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))
 				+ " || reward: "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt("money.reward", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD))
 				+ " || killreward: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.killreward", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_KILLREWARD))
 				+ " || winFactor: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.winFactor", 0)));
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINFACTOR)));
 
 		player.sendMessage("minbet: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.minbet", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MINIMUMBET))
 				+ " || maxbet: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.maxbet", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))
 				+ " || betWinFactor: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.betWinFactor", 0)));
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR)));
 		
 		player.sendMessage("betTeamWinFactor: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.betTeamWinFactor", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINTEAMFACTOR))
 				+ " || betPlayerWinFactor: "
-				+ StringParser.colorVar(arena.getArenaConfig().getDouble("money.betPlayerWinFactor", 0)));
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINPLAYERFACTOR)));
 	}
 
 	@Override
-	public void parseJoin(Arena arena, Player player, String coloredTeam) {
-		int entryfee = arena.getArenaConfig().getInt("money.entry", 0);
+	public void parseJoin(Arena arena, CommandSender sender, ArenaTeam team) {
+		int entryfee = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE, 0);
 		if (entryfee > 0) {
 			if (economy != null) {
-				economy.withdrawPlayer(player.getName(), entryfee);
-				ArenaManager.tellPlayer(player,
-						Language.parse("joinpay", economy.format(entryfee)),
-						arena);
+				economy.withdrawPlayer(sender.getName(), entryfee);
+				arena.msg(sender,
+						Language.parse(MSG.MODULE_VAULT_JOINPAY, economy.format(entryfee)));
 			}
 		}
 	}
 
 	@Override
 	public void parseRespawn(Arena arena, Player player, ArenaTeam team,
-			int lives, DamageCause cause, Entity damager) {
+			DamageCause cause, Entity damager) {
 		killreward(arena, player, damager);
 	}
 
 	protected void pay(Arena arena, HashSet<String> result) {
-		if (result == null || result.size() == arena.teamCount) {
+		if (result == null || result.size() == arena.getTeamNames().size()) {
 			return;
 		}
 		if (economy != null) {
@@ -450,7 +424,7 @@ public class VaultSupport extends ArenaModule {
 			
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");
-				ArenaTeam team = Teams.getTeam(arena, nSplit[1]);
+				ArenaTeam team = arena.getTeam(nSplit[1]);
 				if (team == null || team.getName().equals("free")) {
 					if (Bukkit.getPlayerExact(nSplit[1]) == null) {
 						continue;
@@ -460,18 +434,18 @@ public class VaultSupport extends ArenaModule {
 				if (result.contains(nSplit[1])) {
 					double amount = 0;
 					
-					if (arena.getArenaConfig().getBoolean("money.usePot")) {
+					if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_USEPOT)) {
 						if (winpot > 0) {
 							amount = pot * paPlayersBetAmount.get(nKey) / winpot;
 						}
 					} else {
 						double teamFactor = arena.getArenaConfig()
-								.getDouble("money.betTeamWinFactor")
-								* arena.teamCount;
+								.getDouble(CFG.MODULES_VAULT_BETWINTEAMFACTOR)
+								* arena.getTeamNames().size();
 						if (teamFactor <= 0) {
 							teamFactor = 1;
 						}
-						teamFactor *= arena.getArenaConfig().getDouble("money.betWinFactor");
+						teamFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
 						amount = paPlayersBetAmount.get(nKey) * teamFactor;
 					}
 
@@ -481,8 +455,8 @@ public class VaultSupport extends ArenaModule {
 					}
 					economy.depositPlayer(nSplit[0], amount);
 					try {
-						ArenaManager.tellPlayer(Bukkit.getPlayer(nSplit[0]), Language
-								.parse("youwon", economy.format(amount)), arena);
+						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 					} catch (Exception e) {
 						// nothing
 					}
@@ -500,25 +474,22 @@ public class VaultSupport extends ArenaModule {
 	@Override
 	public void resetPlayer(Arena arena, Player player) {
 		if (player == null) {
-			System.out.print("resetPlayer: Player NULL!");
 			return;
 		}
-		ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		if (ap == null) {
-			System.out.print("ArenaPlayer NULL for player " + player.getName());
 			return;
 		}
 		if (ap.getStatus() == null) {
-			System.out.print("Status NULL for player " + player.getName());
 			return;
 		}
-		if (ap.getStatus().equals(Status.LOBBY) ||
+		if (ap.getStatus().equals(Status.LOUNGE) ||
 				ap.getStatus().equals(Status.READY)) {
-			int entryfee = arena.getArenaConfig().getInt("money.entry", 0);
+			int entryfee = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE);
 			if (entryfee < 1) {
 				return;
 			}
-			ArenaManager.tellPlayer(player, Language.parse("refunding", economy.format(entryfee)));
+			arena.msg(player, Language.parse(MSG.MODULE_VAULT_REFUNDING, economy.format(entryfee)));
 			if (!economy.hasAccount(player.getName())) {
 				db.s("Account not found: " + player.getName());
 				return;

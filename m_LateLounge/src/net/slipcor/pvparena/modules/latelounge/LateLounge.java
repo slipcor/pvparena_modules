@@ -4,13 +4,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.command.PAAJoin;
-import net.slipcor.pvparena.command.PAA_Command;
+import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.classes.PACheckResult;
+import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
@@ -19,9 +23,11 @@ public class LateLounge extends ArenaModule {
 		super("LateLounge");
 	}
 	
+	int priority = 3; 
+	
 	@Override
 	public String version() {
-		return "v0.8.8.5";
+		return "v0.9.0.0";
 	}
 	
 	private static HashMap<Arena, HashSet<String>> players = new HashMap<Arena, HashSet<String>>();
@@ -41,9 +47,18 @@ public class LateLounge extends ArenaModule {
 	 * @return false if a player should not be granted permission
 	 */
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
+	public PACheckResult checkJoin(Arena arena, CommandSender sender,
+			PACheckResult res, boolean b) {
+		if (res.hasError() || res.getPriority() > priority) {
+			return res;
+		}
+
+		/*
+		Player player = (Player) sender;
+		
+		
 		if (arena.getArenaConfig().getInt("ready.min") < 1 || !arena.getArenaConfig().getBoolean("latelounge.latelounge")) {
-			return true;
+			return res;
 		}
 		HashSet<String> list = new HashSet<String>();
 		
@@ -52,8 +67,10 @@ public class LateLounge extends ArenaModule {
 		}
 		
 		if (list.contains(player.getName())) {
-			ArenaManager.tellPlayer(player, Language.parse("lateloungewait"));
-			return list.size() >= arena.getArenaConfig().getInt("ready.min");
+			if (list.size() < arena.getArenaConfig().getInt("ready.min")) {
+				res.setError(Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
+			}
+			return res;
 		}
 		
 		if (arena.getArenaConfig().getInt("ready.min") > list.size() + 1) {
@@ -67,13 +84,12 @@ public class LateLounge extends ArenaModule {
 					continue;
 				}
 				try {
-					ArenaManager.tellPlayer(p, Language.parse("lateloungeannounce", arena.getName(), player.getName()));
+					ArenaManager.tellPlayer(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, arena.getName(), player.getName()));
 				} catch (Exception e) {
 					//
 				}
 			}
-			ArenaManager.tellPlayer(player, Language.parse("lateloungewait"));
-			return false;
+			res.setError(Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 		} else if (arena.getArenaConfig().getInt("ready.min") == list.size() + 1) {
 			// not enough players
 			list.add(player.getName());
@@ -86,7 +102,7 @@ public class LateLounge extends ArenaModule {
 				if (p == null || !PVPArena.instance.getAmm().checkJoin(arena, player)) {
 					removals.add(s);
 					if (p != null) {
-						ArenaManager.tellPlayer(p, Language.parse("lateloungerejoin"));
+						ArenaManager.tellPlayer(p, Language.parse(MSG.MODULE_LATELOUNGE_REJOIN));
 					}
 				}
 			}
@@ -99,30 +115,22 @@ public class LateLounge extends ArenaModule {
 			} else {
 				for (String s : list) {
 					Player p = Bukkit.getPlayerExact(s);
-					PAA_Command command = new PAAJoin();
+					PAA__Command command = new PAG_Join();
 					command.commit(arena, p, null);
 				}
-				return true;
+				return res;
 			}
-			ArenaManager.tellPlayer(player, Language.parse("lateloungewait"));
-			return false;
+			res.setError(Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 		}
-		
-		return true;
+		*/
+		res.setPriority(priority);
+		res.setModName(getName());
+		return res;
 	}
 
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("latelounge.latelounge", Boolean.valueOf(false));
-
-		config.options().copyDefaults(true);
-	}
-
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.lateloungewait", "Arena will be starting soon, please wait!");
-		config.addDefault("lang.lateloungeannounce", "Arena %1% is starting! Player %2% wants to start. Join with /pa %1%");
-		config.addDefault("lang.lateloungerejoin", "Ready check has caught you not being able to join. Rejoin when you can!");
 		config.options().copyDefaults(true);
 	}
 	

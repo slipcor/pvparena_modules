@@ -18,19 +18,20 @@ import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.neworder.ArenaRegion;
-import net.slipcor.pvparena.neworder.ArenaRegion.RegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionShape;
 
 public class RestoreContainer {
 	private Arena arena;
-	private ArenaRegion bfRegion;
+	private ArenaRegionShape bfRegion;
 
 	private HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
 	private HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
 	private HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
 
-	public RestoreContainer(Arena a, ArenaRegion r) {
+	public RestoreContainer(Arena a, ArenaRegionShape r) {
 		arena = a;
 		bfRegion = r;
 	}
@@ -64,7 +65,7 @@ public class RestoreContainer {
 
 	public void saveChests() {
 
-		if (arena.getArenaConfig().get("inventories") != null) {
+		if (arena.getArenaConfig().getUnsafe("inventories") != null) {
 
 			List<String> tempList = arena.getArenaConfig()
 					.getStringList("inventories", null);
@@ -88,19 +89,19 @@ public class RestoreContainer {
 		int x;
 		int y;
 		int z;
+		
+		PABlockLocation min = bfRegion.getMinimumLocation();
+		PABlockLocation max = bfRegion.getMaximumLocation();
 
-		Location min = bfRegion.getAbsoluteMinimum();
-		Location max = bfRegion.getAbsoluteMaximum();
-
-		World world = bfRegion.getAbsoluteMaximum().getWorld();
+		World world = Bukkit.getWorld(max.getWorldName());
 
 		List<String> result = new ArrayList<String>();
 
 		if (bfRegion.getShape().equals(RegionShape.CUBOID)) {
 
-			for (x = min.getBlockX(); x <= max.getBlockX(); x++) {
-				for (y = min.getBlockY(); y <= max.getBlockY(); y++) {
-					for (z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+			for (x = min.getX(); x <= max.getX(); x++) {
+				for (y = min.getY(); y <= max.getY(); y++) {
+					for (z = min.getZ(); z <= max.getZ(); z++) {
 						Location loc = saveBlock(world, x, y, z);
 						if (loc == null) {
 							continue;
@@ -111,9 +112,9 @@ public class RestoreContainer {
 				}
 			}
 		} else if (bfRegion.getShape().equals(RegionShape.SPHERIC)) {
-			for (x = min.getBlockX(); x <= max.getBlockX(); x++) {
-				for (y = min.getBlockY(); y <= max.getBlockY(); y++) {
-					for (z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
+			for (x = min.getX(); x <= max.getX(); x++) {
+				for (y = min.getY(); y <= max.getY(); y++) {
+					for (z = min.getZ(); z <= max.getZ(); z++) {
 						Location loc = saveBlock(world, x, y, z);
 						if (loc == null) {
 							continue;
@@ -124,7 +125,7 @@ public class RestoreContainer {
 				}
 			}
 		}
-		arena.getArenaConfig().set("inventories", result);
+		arena.getArenaConfig().setManually("inventories", result);
 		arena.getArenaConfig().save();
 	}
 

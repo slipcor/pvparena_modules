@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class StartFreeze extends ArenaModule {
@@ -21,18 +23,12 @@ public class StartFreeze extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.7.20.0";
+		return "v0.9.0.0";
 	}
 
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config) {
 		config.addDefault("freeze.timer", Integer.valueOf(10));
-	}
-
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.startfreeze",
-				"The game will start in %1% seconds!");
 	}
 
 	@Override
@@ -50,9 +46,9 @@ public class StartFreeze extends ArenaModule {
 		ids.put(arena,
 				Bukkit.getScheduler().scheduleSyncDelayedTask(
 						PVPArena.instance, sf,
-						arena.getArenaConfig().getInt("freeze.timer") * 20L));
-		arena.tellEveryone(Language.parse("startfreeze",
-				String.valueOf(arena.getArenaConfig().getInt("freeze.timer"))));
+						arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) * 20L));
+		arena.broadcast(Language.parse(MSG.MODULE_STARTFREEZE_ANNOUNCE,
+				String.valueOf(arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER))));
 	}
 
 	@Override

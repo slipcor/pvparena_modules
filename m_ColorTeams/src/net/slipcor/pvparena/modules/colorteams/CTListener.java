@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.colorteams;
 
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.core.Config.CFG;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,9 +19,9 @@ public class CTListener implements Listener {
 			return;
 		}
 		
-		ArenaPlayer ap = ArenaPlayer.parsePlayer(p);
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName() );
 		
-		if (ap == null || ap.getArena() == null || !ap.getArena().cfg.getBoolean("colors.tagapi")) {
+		if (ap == null || ap.getArena() == null || !ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_TAGAPI)) {
 			return;
 		}
 		

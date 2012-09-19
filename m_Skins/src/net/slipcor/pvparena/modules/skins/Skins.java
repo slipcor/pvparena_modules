@@ -5,10 +5,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import me.desmin88.mobdisguise.api.MobDisguiseAPI;
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
@@ -21,7 +23,7 @@ public class Skins extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.6.19";
+		return "v0.9.0.0";
 	}
 
 	@Override
@@ -36,18 +38,11 @@ public class Skins extends ArenaModule {
 	}
 
 	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("log.nomd",
-				"MobDisguise not found, Skins module is inactive!");
-		config.addDefault("log.md", "Hooking into MobDisguise!");
-	}
-
-	@Override
 	public void onEnable() {
 		if (Bukkit.getServer().getPluginManager().getPlugin("MobDisguise") != null) {
 			mdHandler = true;
 		}
-		Language.log_info((!mdHandler) ? "nomd" : "md");
+		Arena.pmsg(Bukkit.getConsoleSender(), Language.parse((!mdHandler) ? MSG.MODULE_SKINS_NOMOBDISGUISE : MSG.MODULE_SKINS_MOBDISGUISE));
 	}
 
 	@Override
@@ -56,16 +51,15 @@ public class Skins extends ArenaModule {
 			return;
 		}
 		if (arena.hasPlayer(player)) {
-			ArenaTeam team = Teams.getTeam(arena,
-					ArenaPlayer.parsePlayer(player));
+			ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 			if (team == null) {
 				return;
 			}
-			String disguise = arena.getArenaConfig().getString("skins." + team.getName());
+			String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
 			
 			if (!MobDisguiseAPI.disguisePlayer(player, disguise)) {
 				if (!MobDisguiseAPI.disguisePlayerAsPlayer(player, disguise)) {
-					System.out.print("Unable to disguise " + player.getName() + " as " + disguise);
+					PVPArena.instance.getLogger().warning("Unable to disguise " + player.getName() + " as " + disguise);
 				}
 			}
 		}

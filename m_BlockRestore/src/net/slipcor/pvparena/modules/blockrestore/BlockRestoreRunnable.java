@@ -7,7 +7,9 @@ import org.bukkit.Location;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.core.Config.CFG;
 
 public class BlockRestoreRunnable implements Runnable {
 	private HashMap<Location, ArenaBlock> removals;
@@ -22,17 +24,17 @@ public class BlockRestoreRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		arena.edit = true;
+		PAA_Edit.activeSelections.put("server", arena);
 		for (Location l : removals.keySet()) {
 			db.i("location: " + l.toString());
 			removals.get(l).reset();
 			removals.remove(l);
 			Blocks.blocks.remove(l);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-					this, arena.getArenaConfig().getInt("blockRestore.offset") * 1L);
+					this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 			return;
 		}
-		arena.edit = false;
+		PAA_Edit.activeSelections.remove("server");
 	}
 
 	/**

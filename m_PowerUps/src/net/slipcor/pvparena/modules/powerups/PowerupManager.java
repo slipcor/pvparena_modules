@@ -9,6 +9,7 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,11 +24,16 @@ import org.bukkit.inventory.ItemStack;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.ArenaManager;
-import net.slipcor.pvparena.managers.Spawns;
+import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 
 public class PowerupManager extends ArenaModule {
 
@@ -45,7 +51,7 @@ public class PowerupManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.7.25.0";
+		return "v0.9.0.0";
 	}
 
 	/**
@@ -69,7 +75,7 @@ public class PowerupManager extends ArenaModule {
 			if (--i > 0)
 				continue;
 			commitPowerupItemSpawn(arena, p.item);
-			arena.tellEveryone(Language.parse("serverpowerup", p.name));
+			arena.broadcast(Language.parse(MSG.MODULE_POWERUPS_SERVER, p.name));
 			return;
 		}
 
@@ -78,7 +84,7 @@ public class PowerupManager extends ArenaModule {
 	@Override
 	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
-			Language.parse("onlyplayers");
+			Language.parse(MSG.ERROR_ONLY_PLAYERS);
 			return;
 		}
 		if (!args[0].startsWith("powerup")) {
@@ -89,8 +95,8 @@ public class PowerupManager extends ArenaModule {
 		
 		if (!PVPArena.hasAdminPerms(player)
 				&& !(PVPArena.hasCreatePerms(player, arena))) {
-			ArenaManager.tellPlayer(player,
-					Language.parse("nopermto", Language.parse("admin")), arena);
+			arena.msg(player,
+					Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
 			return;
 		}
 		SpawnManager.setCoords(arena, player, args[0]);
@@ -101,7 +107,7 @@ public class PowerupManager extends ArenaModule {
 	@Override
 	public boolean commitEnd(Arena arena, ArenaTeam arg1) {
 		if (usesPowerups.containsKey(arena)) {
-			if (arena.getArenaConfig().getString("game.powerups", "off").startsWith("death")) {
+			if (arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE).startsWith("death")) {
 				db.i("calculating powerup trigger death");
 				powerupDiffI = ++powerupDiffI % powerupDiff;
 				if (powerupDiffI == 0) {
@@ -120,11 +126,25 @@ public class PowerupManager extends ArenaModule {
 	 */
 	protected void commitPowerupItemSpawn(Arena arena, Material item) {
 		db.i("dropping item?");
-		if (arena.getArenaConfig().getBoolean("game.dropSpawn")) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
 			dropItemOnSpawn(arena, item);
 		} else {
-			if (arena.regions.get("battlefield") != null) {
-				arena.regions.get("battlefield").dropItemRandom(item);
+			HashSet<ArenaRegionShape> ars = arena.getRegionsByType(RegionType.BATTLE);
+			for (ArenaRegionShape ar : ars) {
+				
+				PABlockLocation min = ar.getMinimumLocation();
+				PABlockLocation max = ar.getMaximumLocation();
+				
+				Random r = new Random();
+
+				int x = r.nextInt(max.getX() - min.getX());
+				int z = r.nextInt(max.getZ() - min.getZ());
+				
+				World w = Bukkit.getWorld(min.getWorldName());
+				
+				w.dropItem(w.getHighestBlockAt(min.getX() + x, min.getZ() + z).getRelative(BlockFace.UP).getLocation(), new ItemStack(item,1));
+				
+				break;
 			}
 		}
 	}
@@ -193,8 +213,7 @@ public class PowerupManager extends ArenaModule {
 	 */
 	protected void dropItemOnSpawn(Arena arena, Material item) {
 		db.i("calculating item spawn location");
-		Location aim = SpawnManager.getCoords(arena, "powerup").getBlock()
-				.getRelative(BlockFace.UP).getLocation();
+		Location aim = SpawnManager.getCoords(arena, "powerup").add(0, 1, 0).toLocation();
 
 		db.i("dropping item on spawn: " + aim.toString());
 		Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1));
@@ -208,11 +227,6 @@ public class PowerupManager extends ArenaModule {
 		result.add("powerup");
 		
 		return result;
-	}
-
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.serverpowerup", "PowerUp deployed!");
-		config.addDefault("lang.playerpowerup", "Player %1% has collected PowerUp %2%!");
 	}
 	
 	@Override
@@ -279,7 +293,7 @@ public class PowerupManager extends ArenaModule {
 						pus.puActive.get(player).disable();
 					}
 					pus.puActive.put(player, newP);
-					arena.tellEveryone(Language.parse("playerpowerup",
+					arena.broadcast(Language.parse(MSG.MODULE_POWERUPS_PLAYER,
 							player.getName(), newP.name));
 					event.setCancelled(true);
 					event.getItem().remove();
@@ -319,7 +333,7 @@ public class PowerupManager extends ArenaModule {
 		player.sendMessage("§6Powerups:§f "
 				+ StringParser.colorVar(usesPowerups.containsKey(arena))
 				+ "("
-				+ StringParser.colorVar(arena.getArenaConfig().getString("game.powerups"))
+				+ StringParser.colorVar(arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE))
 				+ ")");
 	}
 
@@ -393,7 +407,7 @@ public class PowerupManager extends ArenaModule {
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
 		if (usesPowerups.containsKey(arena)) {
-			String pu = arena.getArenaConfig().getString("game.powerups", "off");
+			String pu = arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE);
 			String[] ss = pu.split(":");
 			if (pu.startsWith("time")) {
 				// arena.powerupTrigger = "time";
@@ -403,7 +417,7 @@ public class PowerupManager extends ArenaModule {
 			}
 
 			db.i("using powerups : "
-					+ arena.getArenaConfig().getString("game.powerups", "off") + " : "
+					+ arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE) + " : "
 					+ powerupDiff);
 			if (powerupDiff > 0) {
 				db.i("powerup time trigger!");

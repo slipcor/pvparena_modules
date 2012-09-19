@@ -23,7 +23,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.4.2";
+		return "v0.9.0.0";
 	}
 	
 	/**
@@ -44,12 +44,6 @@ public class TempPerms extends ArenaModule {
 		}
 
 		return result;
-	}
-	
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("log.noperms",
-				"Permissions plugin not found, defaulting to OP.");
 	}
 	
 	@Override
@@ -76,14 +70,14 @@ public class TempPerms extends ArenaModule {
 		if (perms == null || perms.isEmpty())
 			return;
 
-		ArenaPlayer player = ArenaPlayer.parsePlayer(p);
+		ArenaPlayer player = ArenaPlayer.parsePlayer(p.getName());
 		PermissionAttachment pa = p.addAttachment(PVPArena.instance);
 
 		for (String entry : perms.keySet()) {
 			pa.setPermission(entry, perms.get(entry));
 		}
 		p.recalculatePermissions();
-		player.tempPermissions.add(pa);
+		player.getTempPermissions().add(pa);
 	}
 
 	/**
@@ -93,11 +87,11 @@ public class TempPerms extends ArenaModule {
 	 *            the player to reset
 	 */
 	private void removePermissions(Player p) {
-		ArenaPlayer player = ArenaPlayer.parsePlayer(p);
-		if (player == null || player.tempPermissions == null) {
+		ArenaPlayer player = ArenaPlayer.parsePlayer(p.getName());
+		if (player == null || player.getTempPermissions() == null) {
 			return;
 		}
-		for (PermissionAttachment pa : player.tempPermissions) {
+		for (PermissionAttachment pa : player.getTempPermissions()) {
 			if (pa != null) {
 				pa.remove();
 			}

@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.blockrestore;
 
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.managers.ArenaManager;
 
@@ -25,7 +26,7 @@ public class ArenaBlock {
 	private Debug db = new Debug(9);
 
 	public String arena;
-	private final Location location;
+	private final PABlockLocation location;
 	public final Material material;
 	private final byte data;
 	private final String[] lines;
@@ -37,7 +38,7 @@ public class ArenaBlock {
 	 *            the block to copy
 	 */
 	public ArenaBlock(Block block) {
-		location = block.getLocation();
+		location = new PABlockLocation(block.getLocation());
 		material = block.getType();
 		data = block.getData();
 
@@ -46,7 +47,7 @@ public class ArenaBlock {
 				+ "; data " + String.valueOf(data));
 
 		try {
-			arena = ArenaManager.getArenaByRegionLocation(location).name;
+			arena = ArenaManager.getArenaByRegionLocation(location).getName();
 		} catch (Exception e) {
 			arena = "";
 		}
@@ -66,9 +67,9 @@ public class ArenaBlock {
 	 *            the Material to override (the Material before placing)
 	 */
 	public ArenaBlock(Block block, Material type) {
-		location = block.getLocation();
+		location = new PABlockLocation(block.getLocation());
 		try {
-			arena = ArenaManager.getArenaByRegionLocation(location).name;
+			arena = ArenaManager.getArenaByRegionLocation(location).getName();
 		} catch (Exception e) {
 			arena = "";
 		}
@@ -86,7 +87,7 @@ public class ArenaBlock {
 	 * reset an arena block
 	 */
 	public void reset() {
-		Block b = location.getBlock();
+		Block b = location.toLocation().getBlock();
 		b.setType(material);
 		b.setData(data);
 		if (lines != null) {

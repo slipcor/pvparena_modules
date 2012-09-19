@@ -6,6 +6,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 import org.bukkit.command.CommandSender;
@@ -31,7 +32,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.10.10";
+		return "v0.9.0.0";
 	}
 
 	@Override
@@ -44,13 +45,13 @@ public class BetterFight extends ArenaModule {
 	@Override
 	public void commitPlayerDeath(Arena arena, Player player,
 			EntityDamageEvent cause) {
-		if (!arena.getArenaConfig().getBoolean("betterfight.activate")) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_ACTIVE)) {
 			return;
 		}
 		
 		Player p = ArenaPlayer.getLastDamagingPlayer(cause);
 		
-		if (arena.getArenaConfig().getBoolean("betterfight.resetonkill")) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
 			kills.put(player.getName(), 0);
 		}
 		
@@ -61,7 +62,7 @@ public class BetterFight extends ArenaModule {
 
 		kills.put(player.getName(), ++killcount);
 		
-		String msg = arena.getArenaConfig().getString("betterfight.messages.m"+killcount);
+		String msg = (String) arena.getArenaConfig().getUnsafe("betterfight.messages.m"+killcount);
 		
 		if (msg == null || msg.equals("")) {
 			return;
@@ -93,11 +94,11 @@ public class BetterFight extends ArenaModule {
 	@Override
 	public void onEntityDamageByEntity(Arena arena, Player attacker,
 			Player defender, EntityDamageByEntityEvent event) {
-		if (!arena.getArenaConfig().getBoolean("betterfight.activate")) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_ACTIVE)) {
 			return;
 		}
 		
-		String s = arena.getArenaConfig().getString("betterfight.oneHit");
+		String s = arena.getArenaConfig().getString(CFG.MODULES_BETTERFIGHT_ONEHITITEMS);
 		if (s.equalsIgnoreCase("none")) {
 			return;
 		}
@@ -130,14 +131,14 @@ public class BetterFight extends ArenaModule {
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Betterfight:§f "
-				+ StringParser.colorVar(arena.getArenaConfig().getBoolean("betterfight.activate")));
+				+ StringParser.colorVar(arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_ACTIVE)));
 	}
 
 	@Override
 	public void parseRespawn(Arena arena, Player player, ArenaTeam team,
 			DamageCause cause, Entity damager) {
 		
-		if (arena.getArenaConfig().getBoolean("betterfight.resetonkill")) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
 			kills.put(player.getName(), 0);
 		}
 		
@@ -152,7 +153,7 @@ public class BetterFight extends ArenaModule {
 
 		kills.put(player.getName(), ++killcount);
 		
-		String msg = arena.getArenaConfig().getString("betterfight.messages.m"+killcount);
+		String msg = (String) arena.getArenaConfig().getUnsafe("betterfight.messages.m"+killcount);
 		
 		if (msg == null || msg.equals("")) {
 			return;

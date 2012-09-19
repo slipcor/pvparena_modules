@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
@@ -111,9 +113,9 @@ public class MyRenderer extends MapRenderer {
 
 				done.add(map.getId());
 
-				showSpawns = arena.getArenaConfig().getBoolean("maps.showSpawns", Boolean.valueOf(true));
-				showPlayers = arena.getArenaConfig().getBoolean("maps.showPlayers", Boolean.valueOf(true));
-				showLives = arena.getArenaConfig().getBoolean("maps.showLives", Boolean.valueOf(true));
+				showSpawns = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_SHOWSPAWNS);
+				showPlayers = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_SHOWPLAYERS);
+				showLives = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_SHOWLIVES);
 			}
 			return;
 		}
@@ -122,7 +124,7 @@ public class MyRenderer extends MapRenderer {
 			return;
 		}
 		
-		if (arena != null && arena.getArenaConfig().getBoolean("maps.playerPosition", false)) {
+		if (arena != null && arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_ALIGNTOPLAYER)) {
 		
 			map.setCenterX(player.getLocation().getBlockX());
 			map.setCenterZ(player.getLocation().getBlockZ());
@@ -131,7 +133,7 @@ public class MyRenderer extends MapRenderer {
 			map.setCenterX(loc.getX());
 			map.setCenterZ(loc.getZ());
 		} else {
-			System.out.print("arena null");
+			PVPArena.instance.getLogger().severe("arena null");
 		}
 		int mapcenterx = map.getCenterX();
 		int mapcenterz = map.getCenterZ();
@@ -223,9 +225,7 @@ public class MyRenderer extends MapRenderer {
 				continue;
 			}
 			for (ArenaPlayer ap : team.getTeamMembers()) {
-				
-
-				lives.put(team.getName(), arena.type().getLives(ap.get()));
+				lives.put(team.getName(), PVPArena.instance.getAgm().getLives(ap.getArena(), ap));
 				break;
 			}
 		}

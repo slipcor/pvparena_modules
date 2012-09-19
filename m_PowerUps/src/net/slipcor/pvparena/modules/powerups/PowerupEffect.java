@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -21,7 +22,10 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.listeners.EntityListener;
 import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.StatisticsManager;
 import net.slipcor.pvparena.managers.TeamManager;
 
 /**
@@ -202,7 +206,7 @@ public class PowerupEffect {
 				EntityDamageByEntityEvent reflectEvent = new EntityDamageByEntityEvent(
 						defender, attacker, event.getCause(),
 						(int) Math.round(event.getDamage() * factor));
-				PVPArena.entityListener.onEntityDamageByEntity(reflectEvent);
+				(new EntityListener()).onEntityDamageByEntity(reflectEvent);
 			} // else: chance fail :D
 		} else if (this.type == classes.IGNITE) {
 			Random r = new Random();
@@ -235,31 +239,27 @@ public class PowerupEffect {
 				}
 				return true;
 			} else if (this.type == classes.LIVES) {
-				int lives = ArenaManager.getArenaByPlayer(player).lives.get(player
-						.getName());
-				if (lives > 0) {
-					ArenaManager.getArenaByPlayer(player).lives.put(
-							player.getName(), lives + diff);
+				ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+				int lives = PVPArena.instance.getAgm().getLives(ap.getArena(), ap);
+				if (lives + diff > 0) {
+					PVPArena.instance.getAgm().setPlayerLives(ap.getArena(), ap, lives + diff);
 				} else {
-					Arena arena = ArenaManager.getArenaByPlayer(player);
-
-					// pasted from onEntityDeath;
-					ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
-					ArenaTeam team = Teams.getTeam(arena, ap);
+					ArenaTeam team = ap.getArenaTeam();
+					Arena arena = ap.getArena();
 
 					PVPArena.instance.getAmm().announceLoser(
 							arena,
-							Language.parse("killedby", player.getName(),
+							Language.parse(MSG.FIGHT_KILLED_BY, player.getName(),
 									arena.parseDeathCause(player,
 											DamageCause.MAGIC, player)));
-					arena.tellEveryone(Language.parse("killedby",
+					arena.broadcast(Language.parse(MSG.FIGHT_KILLED_BY,
 							team.colorizePlayer(player) + ChatColor.YELLOW,
 							arena.parseDeathCause(player,
 									DamageCause.MAGIC, player)));
-					ap.losses++;
+					ap.getStatistics(arena).incStat(StatisticsManager.type.LOSSES);
 					// needed so player does not get found when dead
 					arena.removePlayer(player, "lose", true);
-					Teams.removeTeam(arena, ap);
+					ap.getArenaTeam().remove(ap);
 
 					ArenaManager.checkAndCommit(arena);
 				}
@@ -365,8 +365,8 @@ public class PowerupEffect {
 			try {
 				duration = Integer.parseInt(s[1]);
 			} catch (Exception e) {
-				Language.log_warning("warn",
-						"invalid duration for PotionEffect " + eClass);
+				Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_POWERUPS_INVALIDPUEFF,
+						eClass));
 			}
 
 			if (s.length > 2) {
@@ -374,8 +374,8 @@ public class PowerupEffect {
 				try {
 					amplifyer = Integer.parseInt(s[2]);
 				} catch (Exception e) {
-					Language.log_warning("warn",
-							"invalid duration for PotionEffect " + eClass);
+					Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_POWERUPS_INVALIDPUEFF,
+							eClass));
 				}
 			}
 		}

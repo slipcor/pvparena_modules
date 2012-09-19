@@ -10,7 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PACheckResult;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -23,7 +26,7 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.7.25.0";
+		return "v0.9.0.0";
 	}
 	
 	@Override
@@ -33,28 +36,36 @@ public class InventoryLoss extends ArenaModule {
 	}
 
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.getArenaConfig().getBoolean("join.gamemodeSurvival")) {
+	public PACheckResult checkJoin(Arena arena, CommandSender sender,
+			PACheckResult res, boolean b) {
+		Player player = (Player) sender;
+		int priority = 5;
+		
+		if (res.hasError() || res.getPriority() > priority) {
+			return res;
+		}
+		
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE)) {
 			if (!player.getGameMode().equals(GameMode.SURVIVAL)) {
-				ArenaManager.tellPlayer(player, Language.parse("gamemodeSurvival"));
-				return false;
+				ArenaManager.tellPlayer(player, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_GAMEMODE));
+				return res;
 			}
 		}
-		if (arena.getArenaConfig().getBoolean("join.emptyInventory")) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY)) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					ArenaManager.tellPlayer(player, Language.parse("emptyInventory"));
-					return false;
+					res.setError(Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
+					return res;
 				}
 			}
 			for (ItemStack item : player.getInventory().getArmorContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					ArenaManager.tellPlayer(player, Language.parse("emptyInventory"));
-					return false;
+					res.setError(Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
+					return res;
 				}
 			}
 		}
-		return true;
+		return res;
 	}
 	
 	@Override
@@ -63,20 +74,13 @@ public class InventoryLoss extends ArenaModule {
 		config.addDefault("join.gamemodeSurvival", Boolean.valueOf(false));
 		config.options().copyDefaults(true);
 	}
-	
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.emptyInventory", "Clear your inventory before joining!");
-		config.addDefault("lang.gamemodeSurvival", "Enter survival gamemode before joining!");
-		config.options().copyDefaults(true);
-	}
 
 	@Override
 	public void parseInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6FixInventoryLoss:§f "
-				+ StringParser.colorVar("emptyInventory", arena.getArenaConfig().getBoolean("join.emptyInventory"))
+				+ StringParser.colorVar("emptyInventory", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY))
 				+ " || "
-				+ StringParser.colorVar("gamemodeSurvival", arena.getArenaConfig().getBoolean("join.gamemodeSurvival")));
+				+ StringParser.colorVar("gamemodeSurvival", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE)));
 	}
 }
