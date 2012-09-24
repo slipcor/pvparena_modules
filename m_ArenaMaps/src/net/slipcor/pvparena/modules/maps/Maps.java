@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,7 +32,7 @@ public class Maps extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.4.0";
+		return "v0.9.0.0";
 	}
 	
 	@Override

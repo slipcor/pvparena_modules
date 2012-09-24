@@ -7,12 +7,9 @@ import java.util.List;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PACheckResult;
-import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.commands.PAI_Ready;
-import net.slipcor.pvparena.commands.PAI_Version;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 import org.bukkit.Bukkit;
@@ -33,7 +30,7 @@ public class BanKick extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.7.2";
+		return "v0.9.0.0";
 	}
 
 	public static HashMap<Arena, List<String>> bans = new HashMap<Arena, List<String>>();

@@ -26,7 +26,6 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.listeners.EntityListener;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.StatisticsManager;
-import net.slipcor.pvparena.managers.TeamManager;
 
 /**
  * powerup effect class

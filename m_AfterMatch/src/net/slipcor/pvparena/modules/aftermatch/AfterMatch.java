@@ -29,6 +29,9 @@ public class AfterMatch extends ArenaModule {
 	public AfterMatch() {
 		super("AfterMatch");
 	}
+	
+	private HashSet<Arena> aftermatchs = new HashSet<Arena>();
+	
 
 	@Override
 	public String version() {
@@ -47,6 +50,7 @@ public class AfterMatch extends ArenaModule {
 		}
 		a.broadcast(Language.parse(MSG.MODULE_AFTERMATCH_STARTING));
 		PVPArena.instance.getAgm().setPlayerLives(a, 0);
+		aftermatchs.add(a);
 	}
 
 	@Override
@@ -95,7 +99,7 @@ public class AfterMatch extends ArenaModule {
 			EntityDamageEvent cause) {
 		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
-		if (pu.equals("off")) {
+		if (pu.equals("off") || aftermatchs.contains(arena)) {
 			return;
 		}
 		
@@ -140,27 +144,27 @@ public class AfterMatch extends ArenaModule {
 	}
 
 	@Override
-	public HashSet<String> getAddedSpawns() {
-		HashSet<String> result = new HashSet<String>();
-
-		result.add("after");
-
-		return result;
-	}
-
-	@Override
-	public boolean parseCommand(String cmd) {
-		return cmd.startsWith("after");
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
+	public void displayInfo(Arena arena, CommandSender player) {
 		player.sendMessage("§bAfterMatch:§f "
 				+ StringParser.colorVar(!arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH).equals("off"))
 				+ "("
 				+ StringParser.colorVar(arena.getArenaConfig()
 						.getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)) + ")");
+	}
+	
+	@Override
+	public boolean hasSpawn(Arena arena, String string) {
+		return string.equals("after");
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return (arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH).contains(":"));
+	}
+
+	@Override
+	public boolean parseCommand(String cmd) {
+		return cmd.startsWith("after");
 	}
 
 	@Override
@@ -174,20 +178,13 @@ public class AfterMatch extends ArenaModule {
 			Bukkit.getScheduler().cancelTask(runnables.get(arena));
 			runnables.remove(arena);
 		}
-		/*
-		if (playerCount.containsKey(arena)) {
-			Bukkit.getScheduler().cancelTask(playerCount.get(arena));
-			playerCount.remove(arena);
-		}*/
+		aftermatchs.remove(arena);
 	}
 
 	@Override
 	public void teleportAllToSpawn(Arena arena) {
-		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH, "off");
+		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
-		if (pu.equals("off")) {
-			return;
-		}
 		if (runnables.containsKey(arena)) {
 			Bukkit.getScheduler().cancelTask(runnables.get(arena));
 			runnables.remove(arena);
@@ -203,7 +200,7 @@ public class AfterMatch extends ArenaModule {
 		}
 
 		db.i("using aftermatch : "
-				+ arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH, "off") + " : "
+				+ arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH) + " : "
 				+ i);
 		if (i > 0) {
 			db.i("aftermatch time trigger!");

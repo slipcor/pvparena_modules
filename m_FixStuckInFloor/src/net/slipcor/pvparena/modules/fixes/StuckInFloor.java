@@ -2,7 +2,6 @@ package net.slipcor.pvparena.modules.fixes;
 
 import java.util.HashMap;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Config.CFG;

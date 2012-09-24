@@ -20,14 +20,10 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.classes.PACheckResult;
-import net.slipcor.pvparena.commands.PAA__Command;
-import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.ArenaManager;
-import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class VaultSupport extends ArenaModule {

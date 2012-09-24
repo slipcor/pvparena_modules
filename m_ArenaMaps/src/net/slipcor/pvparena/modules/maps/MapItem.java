@@ -2,12 +2,10 @@ package net.slipcor.pvparena.modules.maps;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.classes.PALocation;
 
 public class MapItem {
 	private final int x;
