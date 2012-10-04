@@ -40,7 +40,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.11.5";
+		return "v0.8.12.6";
 	}
 
 	@Override
@@ -368,8 +368,18 @@ public class VaultSupport extends ArenaModule {
 	@Override
 	public void onEnable() {
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
-			setupPermissions();
-			setupEconomy();
+			if (!setupPermissions()) {
+				PVPArena.instance.getLogger().warning("Error! PVP Arena will not manage perms!");
+			} else {
+				PVPArena.instance.getLogger().info("<3 Vault Perms");
+			}
+			if (!setupEconomy()) {
+				PVPArena.instance.getLogger().warning("Error! PVP Arena will not manage economy!");
+			} else {
+				PVPArena.instance.getLogger().info("<3 Vault Eco");
+			}
+		} else {
+			PVPArena.instance.getLogger().severe("Vault not found! PVP Arena will not manage economy!");
 		}
 	}
 
