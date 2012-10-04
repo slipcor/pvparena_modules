@@ -35,7 +35,7 @@ public class RestoreRunner implements Runnable {
 
 	@Override
 	public void run() {
-		PAA_Edit.activeSelections.put("server", arena);
+		PAA_Edit.activeEdits.put("server", arena);
 		World world = Bukkit.getWorld(arena.getWorld());
 		for (Location loc : chests.keySet()) {
 			if (loc == null) {
@@ -97,7 +97,7 @@ public class RestoreRunner implements Runnable {
 				//
 			}
 		}
-		PAA_Edit.activeSelections.remove("server");
+		PAA_Edit.activeEdits.remove("server");
 	}
 
 }

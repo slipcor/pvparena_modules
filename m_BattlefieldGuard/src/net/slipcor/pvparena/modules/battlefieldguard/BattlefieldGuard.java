@@ -4,6 +4,7 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class BattlefieldGuard extends ArenaModule {
@@ -19,8 +20,8 @@ public class BattlefieldGuard extends ArenaModule {
 	}
 	
 	@Override
-	public boolean isActive(Arena a) {
-		return true;
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ACTIVE);
 	}
 	
 	@Override

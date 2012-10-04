@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -13,7 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -28,7 +26,6 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class VaultSupport extends ArenaModule {
 
-	public static Permission permission = null;
 	public static Economy economy = null;
 	private static HashMap<String, Double> paPlayersBetAmount = new HashMap<String, Double>();
 	private HashMap<String, Double> paPlayersJoinAmount = new HashMap<String, Double>();
@@ -40,20 +37,6 @@ public class VaultSupport extends ArenaModule {
 	@Override
 	public String version() {
 		return "v0.9.0.0";
-	}
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("money.entry", "int");
-		types.put("money.reward", "int");
-		types.put("money.killreward", "double");
-		types.put("money.minbet", "double");
-		types.put("money.maxbet", "double");
-		types.put("money.betWinFactor", "double");
-		types.put("money.betTeamWinFactor", "double");
-		types.put("money.betPlayerWinFactor", "double");
-		types.put("money.usePot", "boolean");
-		types.put("money.winFactor", "double");
 	}
 
 	@Override
@@ -229,22 +212,7 @@ public class VaultSupport extends ArenaModule {
 		}
 		return false;
 	}
-
-	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("money.entry", Integer.valueOf(0));
-		config.addDefault("money.reward", Integer.valueOf(0));
-		config.addDefault("money.killreward", Double.valueOf(0));
-		config.addDefault("money.minbet", Double.valueOf(0));
-		config.addDefault("money.maxbet", Double.valueOf(0));
-		config.addDefault("money.betWinFactor", Double.valueOf(1));
-		config.addDefault("money.betTeamWinFactor", Double.valueOf(1));
-		config.addDefault("money.betPlayerWinFactor", Double.valueOf(1));
-		config.addDefault("money.winFactor", Double.valueOf(2));
-
-		config.options().copyDefaults(true);
-	}
-
+	
 	@Override
 	public void giveRewards(Arena arena, Player player) {
 		if (economy != null) {
@@ -265,10 +233,10 @@ public class VaultSupport extends ArenaModule {
 
 					economy.depositPlayer(nSplit[0], amount);
 					try {
-						PVPArena.instance.getAmm().announcePrize(
+						PVPArena.instance.getAmm().announce(
 								arena,
 								Language.parse(MSG.NOTICE_PLAYERAWARDED,
-										economy.format(amount)));
+										economy.format(amount)), "PRIZE");
 						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
 								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 					} catch (Exception e) {
@@ -294,10 +262,10 @@ public class VaultSupport extends ArenaModule {
 
 					economy.depositPlayer(nKey, amount);
 					try {
-						PVPArena.instance.getAmm().announcePrize(
+						PVPArena.instance.getAmm().announce(
 								arena,
 								Language.parse(MSG.NOTICE_PLAYERAWARDED,
-										economy.format(amount)));
+										economy.format(amount)), "PRIZE");
 						arena.msg(Bukkit.getPlayer(nKey), Language
 								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 					} catch (Exception e) {
@@ -306,6 +274,11 @@ public class VaultSupport extends ArenaModule {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public boolean isActive(Arena a) {
+		return true;
 	}
 
 	private void killreward(Arena arena, Player p, Entity damager) {
@@ -339,7 +312,6 @@ public class VaultSupport extends ArenaModule {
 	@Override
 	public void onEnable() {
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
-			setupPermissions();
 			setupEconomy();
 		}
 	}
@@ -357,7 +329,7 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
+	public void displayInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Economy (Vault): §f entry: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))
@@ -504,17 +476,7 @@ public class VaultSupport extends ArenaModule {
 
 		return (economy != null);
 	}
-
-	private boolean setupPermissions() {
-		RegisteredServiceProvider<Permission> permissionProvider = Bukkit
-				.getServicesManager().getRegistration(
-						net.milkbowl.vault.permission.Permission.class);
-		if (permissionProvider != null) {
-			permission = permissionProvider.getProvider();
-		}
-		return (permission != null);
-	}
-
+	
 	public void timedEnd(Arena arena, HashSet<String> result) {
 		pay(arena, result);
 	}

@@ -246,11 +246,11 @@ public class PowerupEffect {
 					ArenaTeam team = ap.getArenaTeam();
 					Arena arena = ap.getArena();
 
-					PVPArena.instance.getAmm().announceLoser(
+					PVPArena.instance.getAmm().announce(
 							arena,
 							Language.parse(MSG.FIGHT_KILLED_BY, player.getName(),
 									arena.parseDeathCause(player,
-											DamageCause.MAGIC, player)));
+											DamageCause.MAGIC, player)), "LOSER");
 					arena.broadcast(Language.parse(MSG.FIGHT_KILLED_BY,
 							team.colorizePlayer(player) + ChatColor.YELLOW,
 							arena.parseDeathCause(player,

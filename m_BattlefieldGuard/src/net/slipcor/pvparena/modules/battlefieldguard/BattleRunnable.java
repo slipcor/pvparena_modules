@@ -47,6 +47,10 @@ public class BattleRunnable implements Runnable {
 				
 				String name = PVPArenaAPI.getArenaNameByLocation(p.getLocation());
 				
+				if (p.hasPermission("pvparena.admin")) {
+					continue;
+				}
+				
 				db.i("arena: " + String.valueOf(name));
 				
 				if (name == null || name.equals("")) {

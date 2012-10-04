@@ -1,11 +1,8 @@
 package net.slipcor.pvparena.modules.colorteams;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
 
@@ -31,14 +28,6 @@ public class CTManager extends ArenaModule {
 	@Override
 	public String version() {
 		return "v0.9.0.0";
-	}
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("game.hideName", "boolean");
-		types.put("messages.colorNick", "boolean");
-		types.put("colors.requireSpout", "boolean");
-		types.put("colors.tagapi", "boolean");
 	}
 
 	private void colorizePlayer(Arena a, Player player) {
@@ -105,12 +94,19 @@ public class CTManager extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("game.hideName", Boolean.valueOf(false));
-		config.addDefault("messages.colorNick", Boolean.valueOf(true));
-		config.addDefault("colors.requireSpout", Boolean.valueOf(false));
-		config.addDefault("colors.tagapi", Boolean.valueOf(true));
-		config.options().copyDefaults(true);
+	public void displayInfo(Arena arena, CommandSender player) {
+		player.sendMessage("");
+		player.sendMessage("§6ColoredTeams:§f "
+				+ StringParser.colorVar("hideName", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME))
+				+ " || "
+				+ StringParser.colorVar("colorNick", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_COLORNICK))
+				+ " || "
+				+ StringParser.colorVar("requireSpout", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY)));
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_COLORNICK);
 	}
 	
 	@Override
@@ -136,17 +132,6 @@ public class CTManager extends ArenaModule {
 			Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
 			Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_COLORTEAMS_TAGAPI));
 		}
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6ColoredTeams:§f "
-				+ StringParser.colorVar("hideName", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME))
-				+ " || "
-				+ StringParser.colorVar("colorNick", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_COLORNICK))
-				+ " || "
-				+ StringParser.colorVar("requireSpout", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY)));
 	}
 
 	@Override

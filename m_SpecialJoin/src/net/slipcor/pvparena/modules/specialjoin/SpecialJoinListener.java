@@ -17,6 +17,20 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SpecialJoinListener implements Listener {
+	/*
+	 * PlayerInteract: 
+	 *     ButtonJoin
+	 *       preset like flags
+	 *       'now hit blue join'
+	 * OnPortalEvent
+	 *     PortalJoin
+	 *       cmd toset
+	 *       enter portal to set
+	 * Runnable
+	 *     Check JoinRegions
+	 * 
+	 * 
+	 */
 	@EventHandler
 	public void onRedStone(BlockRedstoneEvent event) {
 		Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));

@@ -34,13 +34,6 @@ public class BetterFight extends ArenaModule {
 	public String version() {
 		return "v0.9.0.0";
 	}
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("betterfight.activate", "boolean");
-		types.put("betterfight.resetonkill", "boolean");
-		types.put("betterfight.oneHit", "string");
-	}
 	
 	@Override
 	public void commitPlayerDeath(Arena arena, Player player,
@@ -73,9 +66,6 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("betterfight.activate", Boolean.valueOf(false));
-		config.addDefault("betterfight.resetonkill", Boolean.valueOf(true));
-		config.addDefault("betterfight.oneHit", "none");
 		
 		if (config.get("betterfight.messages") == null) {
 			config.addDefault("betterfight.messages.m0", "This is a dummy message. You can remove the other messages if you don't want messages!");
@@ -89,6 +79,11 @@ public class BetterFight extends ArenaModule {
 		}
 		
 		config.options().copyDefaults(true);
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_ACTIVE);
 	}
 	
 	@Override
@@ -125,13 +120,6 @@ public class BetterFight extends ArenaModule {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6Betterfight:§f "
-				+ StringParser.colorVar(arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_ACTIVE)));
 	}
 
 	@Override

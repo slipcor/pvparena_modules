@@ -24,7 +24,7 @@ public class BlockRestoreRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		PAA_Edit.activeSelections.put("server", arena);
+		PAA_Edit.activeEdits.put("server", arena);
 		for (Location l : removals.keySet()) {
 			db.i("location: " + l.toString());
 			removals.get(l).reset();
@@ -34,7 +34,7 @@ public class BlockRestoreRunnable implements Runnable {
 					this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 			return;
 		}
-		PAA_Edit.activeSelections.remove("server");
+		PAA_Edit.activeEdits.remove("server");
 	}
 
 	/**

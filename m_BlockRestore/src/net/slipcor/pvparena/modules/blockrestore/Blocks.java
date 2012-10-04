@@ -23,7 +23,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.material.Attachable;
@@ -45,13 +44,6 @@ public class Blocks extends ArenaModule {
 	private static HashMap<ArenaRegionShape, RestoreContainer> containers = new HashMap<ArenaRegionShape, RestoreContainer>();
 
 	private static Debug db = new Debug(24);
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("blockRestore.hard", "boolean");
-		types.put("blockRestore.offset", "int");
-		types.put("protection.pickup", "boolean");
-	}
 	
 	private void checkBlock(Block b, BlockFace bf) {
 		if (b.getType().equals(Material.LADDER) ||
@@ -79,13 +71,17 @@ public class Blocks extends ArenaModule {
 			ArenaManager.tellPlayer(sender, "Inventories cleared. Expect lag on next arena start!");
 		}
 	}
+
+	@Override
+	public void displayInfo(Arena arena, CommandSender player) {
+		player.sendMessage("");
+		player.sendMessage("§6BlockRestore:§f "
+				+ StringParser.colorVar("hard", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)));
+	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("blockRestore.hard", Boolean.valueOf(false));
-		config.addDefault("protection.pickup", Boolean.valueOf(false));
-		config.addDefault("blockRestore.offset", Integer.valueOf(0));
-		config.options().copyDefaults(true);
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_ACTIVE);
 	}
 	
 	@Override
@@ -147,13 +143,6 @@ public class Blocks extends ArenaModule {
 	@Override
 	public boolean parseCommand(String s) {
 		return (s.toLowerCase().startsWith("clearinv"));
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6BlockRestore:§f "
-				+ StringParser.colorVar("hard", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)));
 	}
 	
 	@Override

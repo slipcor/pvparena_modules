@@ -46,6 +46,11 @@ public class TempPerms extends ArenaModule {
 	}
 	
 	@Override
+	public boolean isActive(Arena arena) {
+		return true;
+	}
+	
+	@Override
 	public void lateJoin(Arena arena, Player player) {
 		setPermissions(arena, player);
 	}

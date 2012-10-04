@@ -10,6 +10,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
@@ -34,6 +35,11 @@ public class Skins extends ArenaModule {
 			}
 			config.options().copyDefaults(true);
 		}
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_SKINS_ACTIVE);
 	}
 
 	@Override

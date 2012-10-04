@@ -152,6 +152,11 @@ public class BanKick extends ArenaModule {
 	}
 	
 	@Override
+	public boolean isActive(Arena arena) {
+		return true;
+	}
+	
+	@Override
 	public boolean parseCommand(String s) {
 		return commands.contains(s.toLowerCase());
 	}

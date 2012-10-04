@@ -18,6 +18,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
@@ -58,6 +59,11 @@ public class EventActions extends ArenaModule {
 		arena.getArenaConfig().setManually("event.start", items);
 		arena.getArenaConfig().setManually("event.win", items);
 		arena.getArenaConfig().save();
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_EVENTACTIONS_ACTIVE);
 	}
 	
 	@Override
@@ -131,7 +137,7 @@ public class EventActions extends ArenaModule {
 			return false;
 		}
 		db.i("interact eventactions");
-		Arena a = PAA_Edit.activeSelections.get(event.getPlayer().getName());
+		Arena a = PAA_Edit.activeEdits.get(event.getPlayer().getName());
 		
 		if (a != null) {
 			db.i("found edit arena");

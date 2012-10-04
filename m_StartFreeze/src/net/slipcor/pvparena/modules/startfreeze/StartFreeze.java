@@ -3,17 +3,20 @@ package net.slipcor.pvparena.modules.startfreeze;
 import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
-public class StartFreeze extends ArenaModule {
+public class StartFreeze extends ArenaModule implements Listener {
 	protected static HashMap<Arena, StartFreezer> runnables = new HashMap<Arena, StartFreezer>();
 	protected static HashMap<Arena, Integer> ids = new HashMap<Arena, Integer>();
 
@@ -25,10 +28,10 @@ public class StartFreeze extends ArenaModule {
 	public String version() {
 		return "v0.9.0.0";
 	}
-
+	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("freeze.timer", Integer.valueOf(10));
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) > -1;
 	}
 
 	@Override
@@ -52,8 +55,18 @@ public class StartFreeze extends ArenaModule {
 	}
 
 	@Override
-	public void parseMove(Arena arena, PlayerMoveEvent event) {
-		if (runnables.containsKey(arena)) {
+	public void onEnable() {
+		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+	}
+
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		Player p = event.getPlayer();
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+		if (ap.getArena() == null || !isActive(ap.getArena())) {
+			return;
+		}
+		if (runnables.containsKey(ap.getArena())) {
 			Location from = event.getFrom();
 			Location to = event.getTo();
 			if ((from.getBlockX() != to.getBlockX()) ||

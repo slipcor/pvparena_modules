@@ -15,6 +15,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
@@ -48,6 +49,11 @@ public class ArenaBoardManager extends ArenaModule {
 				boards.put(loc, new ArenaBoard(loc, arena));
 			}
 		}
+	}
+	
+	@Override
+	public boolean isActive(Arena a) {
+		return a.getArenaConfig().getBoolean(CFG.MODULES_ARENABOARDS_ACTIVE);
 	}
 
 	@Override

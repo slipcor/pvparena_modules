@@ -1,11 +1,8 @@
 package net.slipcor.pvparena.modules.fixes;
 
-import java.util.HashMap;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,12 +24,6 @@ public class InventoryLoss extends ArenaModule {
 	@Override
 	public String version() {
 		return "v0.9.0.0";
-	}
-	
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("join.emptyInventory", "boolean");
-		types.put("join.gamemodeSurvival", "boolean");
 	}
 
 	@Override
@@ -67,20 +58,18 @@ public class InventoryLoss extends ArenaModule {
 		}
 		return res;
 	}
-	
-	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("join.emptyInventory", Boolean.valueOf(false));
-		config.addDefault("join.gamemodeSurvival", Boolean.valueOf(false));
-		config.options().copyDefaults(true);
-	}
 
 	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
+	public void displayInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6FixInventoryLoss:§f "
 				+ StringParser.colorVar("emptyInventory", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY))
 				+ " || "
 				+ StringParser.colorVar("gamemodeSurvival", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE)));
+	}
+	
+	@Override
+	public boolean isActive(Arena a) {
+		return true;
 	}
 }

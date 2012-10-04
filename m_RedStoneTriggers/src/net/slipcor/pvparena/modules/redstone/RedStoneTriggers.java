@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.redstone;
 
 import org.bukkit.Bukkit;
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class RedStoneTriggers extends ArenaModule {
@@ -12,6 +13,11 @@ public class RedStoneTriggers extends ArenaModule {
 	@Override
 	public String version() {
 		return "v0.9.0.0";
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return true;
 	}
 	
 	@Override

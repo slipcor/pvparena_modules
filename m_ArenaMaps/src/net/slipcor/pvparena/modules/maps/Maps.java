@@ -17,6 +17,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.goals.GoalFlags;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaGoal;
@@ -36,21 +37,17 @@ public class Maps extends ArenaModule {
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("maps.playerPosition", Boolean.valueOf(false));
-		config.addDefault("maps.showSpawns", Boolean.valueOf(true));
-		config.addDefault("maps.showPlayers", Boolean.valueOf(true));
-		config.addDefault("maps.showLives", Boolean.valueOf(true));
-		config.options().copyDefaults(true);
-	}
-	
-	@Override
 	public void onEnable() {
 		Bukkit.getPluginManager().registerEvents(new MapListener(), PVPArena.instance);
 	}
 
 	public static HashSet<MapItem> getItems(Arena arena) {
 		return items.get(arena) != null ? items.get(arena) : new HashSet<MapItem>();
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_ACTIVE);
 	}
 	
 	@Override

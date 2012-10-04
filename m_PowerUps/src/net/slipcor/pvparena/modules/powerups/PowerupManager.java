@@ -204,6 +204,16 @@ public class PowerupManager extends ArenaModule {
 		config.addDefault("game.powerups", "off");
 		config.options().copyDefaults(true);
 	}
+	
+	@Override
+	public void displayInfo(Arena arena, CommandSender player) {
+		player.sendMessage("");
+		player.sendMessage("§6Powerups:§f "
+				+ StringParser.colorVar(usesPowerups.containsKey(arena))
+				+ "("
+				+ StringParser.colorVar(arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE))
+				+ ")");
+	}
 
 	/**
 	 * drop an item at a powerup spawn point
@@ -221,12 +231,13 @@ public class PowerupManager extends ArenaModule {
 	}
 
 	@Override
-	public HashSet<String> getAddedSpawns() {
-		HashSet<String> result = new HashSet<String>();
-
-		result.add("powerup");
-		
-		return result;
+	public boolean hasSpawn(Arena arena, String s) {
+		return s.toLowerCase().startsWith("powerup");
+	}
+	
+	@Override
+	public boolean isActive(Arena a) {
+		return a.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE).contains(":");
 	}
 	
 	@Override
@@ -320,21 +331,6 @@ public class PowerupManager extends ArenaModule {
 				}
 			}
 		}
-	}
-	
-	@Override
-	public boolean parseCommand(String cmd) {
-		return cmd.startsWith("powerup");
-	}
-	
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6Powerups:§f "
-				+ StringParser.colorVar(usesPowerups.containsKey(arena))
-				+ "("
-				+ StringParser.colorVar(arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE))
-				+ ")");
 	}
 
 	/**

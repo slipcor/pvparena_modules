@@ -1,9 +1,9 @@
 package net.slipcor.pvparena.modules.factions;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class FactionsSupport extends ArenaModule {
@@ -18,10 +18,8 @@ public class FactionsSupport extends ArenaModule {
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("factions.support", Boolean.valueOf(false));
-		config.addDefault("factions.overrideteamkill", Boolean.valueOf(false));
-		config.options().copyDefaults(true);
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_FACTIONS_ACTIVE);
 	}
 	
 	@Override

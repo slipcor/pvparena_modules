@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.PVPArena;
@@ -49,13 +48,6 @@ public class AutoVote extends ArenaModule {
 	}
 
 	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("arenavote.seconds", "int");
-		types.put("arenavote.readyup", "int");
-		types.put("arenavote.everyone", "bool");
-	}
-
-	@Override
 	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
 
 		if (!args[0].startsWith("vote")) {
@@ -78,25 +70,22 @@ public class AutoVote extends ArenaModule {
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		config.addDefault("arenavote.seconds", Integer.valueOf(30));
-		config.addDefault("arenavote.readyup", Integer.valueOf(30));
-		config.addDefault("arenavote.everyone", Boolean.valueOf(false));
-		config.options().copyDefaults(true);
-	}
-	
-	@Override
-	public boolean parseCommand(String cmd) {
-		return cmd.startsWith("vote");
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
+	public void displayInfo(Arena arena, CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6ArenaVote:§f "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS))
 				+ " | "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP)));
+	}
+	
+	@Override
+	public boolean isActive(Arena arena) {
+		return arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ACTIVE);
+	}
+	
+	@Override
+	public boolean parseCommand(String cmd) {
+		return cmd.startsWith("vote");
 	}
 
 	@Override
