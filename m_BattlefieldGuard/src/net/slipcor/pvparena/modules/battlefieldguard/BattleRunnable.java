@@ -30,6 +30,9 @@ public class BattleRunnable implements Runnable {
 		db.i("BattleRunnable commiting");
 		try {
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+				if (p.hasPermission("pvparena.admin")) {
+					continue;
+				}
 				ArenaPlayer ap = ArenaPlayer.parsePlayer(p);
 				
 				String name = PVPArenaAPI.getArenaNameByLocation(p.getLocation());
