@@ -59,6 +59,7 @@ public class Announcement {
 	 */
 	protected static void announce(Arena a, String sType, String message) {
 		type t = type.valueOf(sType);
+		db.i("announce?");
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
@@ -88,7 +89,9 @@ public class Announcement {
 	 *         false otherwise
 	 */
 	private static boolean sendCheck(Arena a, type t) {
-		return (Boolean) a.getArenaConfig().getUnsafe("announcements." + t.name().toLowerCase());
+		CFG cfg = CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name());
+		System.out.print(cfg.toString());
+		return (Boolean) a.getArenaConfig().getBoolean(cfg);
 	}
 
 	/**

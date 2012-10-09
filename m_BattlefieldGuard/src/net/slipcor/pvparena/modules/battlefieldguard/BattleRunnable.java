@@ -18,7 +18,7 @@ import net.slipcor.pvparena.managers.ArenaManager;
  * 
  * @author slipcor
  * 
- * @version v0.7.0
+ * @version v0.9.2
  * 
  */
 

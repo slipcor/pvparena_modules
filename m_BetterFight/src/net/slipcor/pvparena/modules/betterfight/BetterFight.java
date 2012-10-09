@@ -5,11 +5,9 @@ import java.util.HashMap;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
@@ -68,7 +66,7 @@ public class BetterFight extends ArenaModule {
 	public void configParse(Arena arena, YamlConfiguration config) {
 		
 		if (config.get("betterfight.messages") == null) {
-			config.addDefault("betterfight.messages.m0", "This is a dummy message. You can remove the other messages if you don't want messages!");
+			config.addDefault("betterfight.messages.m1", "First Kill!");
 			config.addDefault("betterfight.messages.m2", "Double Kill!");
 			config.addDefault("betterfight.messages.m3", "Triple Kill!");
 			config.addDefault("betterfight.messages.m4", "Quadra Kill!");
@@ -125,6 +123,10 @@ public class BetterFight extends ArenaModule {
 	@Override
 	public void parseRespawn(Arena arena, Player player, ArenaTeam team,
 			DamageCause cause, Entity damager) {
+		
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
+			return;
+		}
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
 			kills.put(player.getName(), 0);

@@ -1,3 +1,4 @@
+
 package net.slipcor.pvparena.modules.vaultsupport;
 
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class VaultSupport extends ArenaModule {
 	public static Economy economy = null;
 	private static HashMap<String, Double> paPlayersBetAmount = new HashMap<String, Double>();
 	private HashMap<String, Double> paPlayersJoinAmount = new HashMap<String, Double>();
+	private HashMap<String, Double> paPots = new HashMap<String, Double>();
 
 	public VaultSupport() {
 		super("Vault");
@@ -36,7 +38,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.2.6";
 	}
 
 	@Override
@@ -215,6 +217,17 @@ public class VaultSupport extends ArenaModule {
 	
 	@Override
 	public void giveRewards(Arena arena, Player player) {
+
+		int winners = 0;
+		
+		for (ArenaPlayer p : arena.getFighters()) {
+			if (p.getStatus() != null && p.getStatus().equals(Status.FIGHT)) {
+				if (p.getStatus().equals(Status.FIGHT)) {
+					winners++;
+				}
+			}
+		}
+		
 		if (economy != null) {
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");
@@ -246,11 +259,23 @@ public class VaultSupport extends ArenaModule {
 			}
 
 			if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0) > 0) {
-				economy.depositPlayer(player.getName(),
-						arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0));
-				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
-						economy.format(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0))));
 
+				double amount = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0);
+				
+				if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
+					amount += paPots.get(arena.getName()) / winners;
+				}
+				
+				economy.depositPlayer(player.getName(), amount);
+				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
+						economy.format(amount)));
+
+			} else if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
+				double amount = paPots.get(arena.getName()) / winners;
+				
+				economy.depositPlayer(player.getName(), amount);
+				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
+						economy.format(amount)));
 			}
 
 			for (String nKey : paPlayersJoinAmount.keySet()) {
@@ -361,6 +386,11 @@ public class VaultSupport extends ArenaModule {
 				economy.withdrawPlayer(sender.getName(), entryfee);
 				arena.msg(sender,
 						Language.parse(MSG.MODULE_VAULT_JOINPAY, economy.format(entryfee)));
+				if (paPots.containsKey(arena.getName())) {
+					paPots.put(arena.getName(), paPots.get(arena.getName()) + entryfee);
+				} else {
+					paPots.put(arena.getName(), (double) entryfee);
+				}
 			}
 		}
 	}
@@ -402,7 +432,7 @@ public class VaultSupport extends ArenaModule {
 				if (result.contains(nSplit[1])) {
 					double amount = 0;
 					
-					if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_USEPOT)) {
+					if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
 						if (winpot > 0) {
 							amount = pot * paPlayersBetAmount.get(nKey) / winpot;
 						}

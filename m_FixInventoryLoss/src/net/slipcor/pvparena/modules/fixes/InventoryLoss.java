@@ -45,12 +45,14 @@ public class InventoryLoss extends ArenaModule {
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY)) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
+					res.setModName(getName());
 					res.setError(Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
 					return res;
 				}
 			}
 			for (ItemStack item : player.getInventory().getArmorContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
+					res.setModName(getName());
 					res.setError(Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
 					return res;
 				}
