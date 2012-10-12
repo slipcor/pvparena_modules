@@ -20,6 +20,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -239,7 +240,7 @@ public class PowerupEffect {
 				return true;
 			} else if (this.type == classes.LIVES) {
 				ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-				int lives = PVPArena.instance.getAgm().getLives(ap.getArena(), ap);
+				int lives = PACheck.handleGetLives(ap.getArena(), ap);
 				if (lives + diff > 0) {
 					PVPArena.instance.getAgm().setPlayerLives(ap.getArena(), ap, lives + diff);
 				} else {

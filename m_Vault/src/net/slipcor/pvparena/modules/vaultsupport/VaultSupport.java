@@ -18,7 +18,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
-import net.slipcor.pvparena.classes.PACheckResult;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -38,12 +38,24 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.2.6";
+		return "v0.9.3.8";
 	}
 
 	@Override
-	public PACheckResult checkJoin(Arena arena, CommandSender sender,
-			PACheckResult res, boolean join) {
+	public boolean checkCommand(String cmd) {
+		try {
+			double amount = Double.parseDouble(cmd);
+			db.i("parsing join bet amount: " + amount);
+			return true;
+		} catch (Exception e) {
+			return cmd.equalsIgnoreCase("bet");
+		}
+
+	}
+
+	@Override
+	public PACheck checkJoin(Arena arena, CommandSender sender,
+			PACheck res, boolean join) {
 		
 		if (res.hasError() || !join) {
 			return res;
@@ -53,14 +65,14 @@ public class VaultSupport extends ArenaModule {
 			if (economy != null) {
 				if (!economy.hasAccount(sender.getName())) {
 					db.s("Account not found: " + sender.getName());
-					res.setError("account not found: " + sender.getName());
+					res.setError(this, "account not found: " + sender.getName());
 					return res;
 				}
 				if (!economy.has(sender.getName(),
 						arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))) {
 					// no money, no entry!
-					
-					res.setError(Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
+
+					res.setError(this, Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
 							.format(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))));
 					return res;
 				}
@@ -71,7 +83,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
-		if (!(sender instanceof Player)) {
+		if (!(sender instanceof Player)) { //TODO move to new parseCommand
 			Language.parse(MSG.ERROR_ONLY_PLAYERS);
 			return;
 		}
@@ -153,7 +165,7 @@ public class VaultSupport extends ArenaModule {
 						Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy.format(amount)));
 				return;
 			}
-			PACheckResult res = new PACheckResult();
+			PACheck res = new PACheck();
 			checkJoin(arena, sender, res, true);
 			
 			if (res.hasError()) {
@@ -339,18 +351,6 @@ public class VaultSupport extends ArenaModule {
 		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
 			setupEconomy();
 		}
-	}
-
-	@Override
-	public boolean parseCommand(String cmd) {
-		try {
-			double amount = Double.parseDouble(cmd);
-			db.i("parsing join bet amount: " + amount);
-			return true;
-		} catch (Exception e) {
-			return cmd.equalsIgnoreCase("bet");
-		}
-
 	}
 
 	@Override

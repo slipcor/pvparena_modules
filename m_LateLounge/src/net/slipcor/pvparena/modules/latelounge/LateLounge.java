@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.classes.PACheckResult;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -26,7 +26,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.3.8";
 	}
 	
 	private static HashMap<Arena, HashSet<String>> players = new HashMap<Arena, HashSet<String>>();
@@ -41,8 +41,8 @@ public class LateLounge extends ArenaModule {
 	 * @return false if a player should not be granted permission
 	 */
 	@Override
-	public PACheckResult checkJoin(Arena arena, CommandSender sender,
-			PACheckResult res, boolean b) {
+	public PACheck checkJoin(Arena arena, CommandSender sender,
+			PACheck res, boolean b) {
 		if (res.hasError() || res.getPriority() > priority) {
 			return res;
 		}
@@ -57,8 +57,7 @@ public class LateLounge extends ArenaModule {
 		
 		if (list.contains(player.getName())) {
 			if (list.size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
-				res.setModName(getName());
-				res.setError(Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
+				res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 				return res;
 			}
 		}
@@ -79,8 +78,7 @@ public class LateLounge extends ArenaModule {
 					//
 				}
 			}
-			res.setModName(getName());
-			res.setError(Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
+			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 			return res;
 		} else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == list.size() + 1) {
 			// not enough players
@@ -96,8 +94,8 @@ public class LateLounge extends ArenaModule {
 				
 				if (p != null) {
 					for (ArenaModule mod : PVPArena.instance.getAmm().getModules()) {
-						if (mod.isActive(arena)) {
-							if (mod.checkJoin(arena, p, new PACheckResult(), true).hasError()) {
+						if (mod.isActive(arena) && !mod.getName().equals(getName())) {
+							if (mod.checkJoin(arena, p, new PACheck(), true).hasError()) {
 								removeMe = true;
 								break;
 							}
@@ -108,8 +106,7 @@ public class LateLounge extends ArenaModule {
 				if (p == null || removeMe) {
 					removals.add(s);
 					if (p != null) {
-						res.setModName(getName());
-						res.setError(Language.parse(MSG.MODULE_LATELOUNGE_REJOIN));
+						res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_REJOIN));
 					}
 				}
 			}
@@ -125,17 +122,10 @@ public class LateLounge extends ArenaModule {
 					PAA__Command command = new PAG_Join();
 					command.commit(arena, p, new String[0]);
 				}
-				//res.setModName(getName());
-				// res.setPriority(priority);
 				return res;
 			}
-			res.setModName(getName());
-			res.setError(Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
-			return res;
+			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 		}
-
-		//res.setModName(getName());
-		//res.setPriority(priority);
 		return res;
 	}
 	

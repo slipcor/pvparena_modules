@@ -35,7 +35,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.3.8";
 	}
 
 	public void afterMatch(Arena a) {
@@ -51,6 +51,11 @@ public class AfterMatch extends ArenaModule {
 		a.broadcast(Language.parse(MSG.MODULE_AFTERMATCH_STARTING));
 		PVPArena.instance.getAgm().setPlayerLives(a, 0);
 		aftermatchs.add(a);
+	}
+
+	@Override
+	public boolean checkCommand(String cmd) {
+		return cmd.startsWith("after");
 	}
 
 	@Override
@@ -160,11 +165,6 @@ public class AfterMatch extends ArenaModule {
 	@Override
 	public boolean isActive(Arena arena) {
 		return (arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH).contains(":"));
-	}
-
-	@Override
-	public boolean parseCommand(String cmd) {
-		return cmd.startsWith("after");
 	}
 
 	@Override

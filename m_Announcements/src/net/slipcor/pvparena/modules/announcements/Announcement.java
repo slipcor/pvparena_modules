@@ -90,7 +90,6 @@ public class Announcement {
 	 */
 	private static boolean sendCheck(Arena a, type t) {
 		CFG cfg = CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name());
-		System.out.print(cfg.toString());
 		return (Boolean) a.getArenaConfig().getBoolean(cfg);
 	}
 

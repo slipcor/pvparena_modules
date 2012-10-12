@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.managers.ArenaManager;
 
 /**
@@ -59,7 +60,7 @@ public class BattleRunnable implements Runnable {
 				
 				if (ap.getArena() == null || !ap.getArena().getName().equals(name)) {
 					if (ap.getArena() != null) {
-						ap.getArena().playerLeave(p, "exit");
+						ap.getArena().playerLeave(p, ap.getArena().getArenaConfig().getString(CFG.TP_EXIT), false);
 						continue;
 					}
 					

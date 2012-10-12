@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.classes.PACheckResult;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -29,18 +29,23 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.3.8";
+	}
+	
+	@Override
+	public boolean checkCommand(String cmd) {
+		return cmd.startsWith("vote");
 	}
 
 	@Override
-	public PACheckResult checkJoin(Arena arena, CommandSender sender,
-			PACheckResult res, boolean b) {
+	public PACheck checkJoin(Arena arena, CommandSender sender,
+			PACheck res, boolean b) {
 		if (res.hasError()) {
 			return res;
 		}
 		
 		if (a != null && !arena.equals(a)) {
-			res.setError(Language.parse(MSG.MODULE_AUTOVOTE_ARENARUNNING, arena.getName()));
+			res.setError(this, Language.parse(MSG.MODULE_AUTOVOTE_ARENARUNNING, arena.getName()));
 			return res;
 		}
 		
@@ -81,11 +86,6 @@ public class AutoVote extends ArenaModule {
 	@Override
 	public boolean isActive(Arena arena) {
 		return arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ACTIVE);
-	}
-	
-	@Override
-	public boolean parseCommand(String cmd) {
-		return cmd.startsWith("vote");
 	}
 
 	@Override

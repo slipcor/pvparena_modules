@@ -11,6 +11,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
@@ -223,7 +224,7 @@ public class MyRenderer extends MapRenderer {
 				continue;
 			}
 			for (ArenaPlayer ap : team.getTeamMembers()) {
-				lives.put(team.getName(), PVPArena.instance.getAgm().getLives(ap.getArena(), ap));
+				lives.put(team.getName(), PACheck.handleGetLives(ap.getArena(), ap));
 				break;
 			}
 		}

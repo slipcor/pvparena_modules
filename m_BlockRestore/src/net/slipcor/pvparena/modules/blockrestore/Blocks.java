@@ -35,7 +35,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.3.8";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -55,6 +55,11 @@ public class Blocks extends ArenaModule {
 				saveBlock(b);
 			}
 		}
+	}
+	
+	@Override
+	public boolean checkCommand(String s) {
+		return (s.toLowerCase().startsWith("clearinv"));
 	}
 	
 	@Override
@@ -138,11 +143,6 @@ public class Blocks extends ArenaModule {
 				&& arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_ACTIVE)) {
 			event.setCancelled(true);
 		}
-	}
-	
-	@Override
-	public boolean parseCommand(String s) {
-		return (s.toLowerCase().startsWith("clearinv"));
 	}
 	
 	@Override

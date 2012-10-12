@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.classes.PACheckResult;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -23,12 +23,12 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.3.8";
 	}
 
 	@Override
-	public PACheckResult checkJoin(Arena arena, CommandSender sender,
-			PACheckResult res, boolean b) {
+	public PACheck checkJoin(Arena arena, CommandSender sender,
+			PACheck res, boolean b) {
 		Player player = (Player) sender;
 		int priority = 5;
 		
@@ -45,15 +45,13 @@ public class InventoryLoss extends ArenaModule {
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY)) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					res.setModName(getName());
-					res.setError(Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
+					res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
 					return res;
 				}
 			}
 			for (ItemStack item : player.getInventory().getArmorContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					res.setModName(getName());
-					res.setError(Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
+					res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
 					return res;
 				}
 			}
