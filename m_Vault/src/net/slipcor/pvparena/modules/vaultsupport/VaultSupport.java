@@ -38,7 +38,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.3.8";
+		return "v0.9.3.33";
 	}
 
 	@Override
@@ -470,7 +470,7 @@ public class VaultSupport extends ArenaModule {
 	}
 	
 	@Override
-	public void resetPlayer(Arena arena, Player player) {
+	public void resetPlayer(Arena arena, Player player, boolean force) {
 		if (player == null) {
 			return;
 		}
@@ -478,7 +478,7 @@ public class VaultSupport extends ArenaModule {
 		if (ap == null) {
 			return;
 		}
-		if (ap.getStatus() == null) {
+		if (ap.getStatus() == null || force) {
 			return;
 		}
 		if (ap.getStatus().equals(Status.LOUNGE) ||

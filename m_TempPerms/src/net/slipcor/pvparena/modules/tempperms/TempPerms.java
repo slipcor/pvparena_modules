@@ -22,7 +22,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.3.33";
 	}
 	
 	/**
@@ -104,7 +104,7 @@ public class TempPerms extends ArenaModule {
 	}
 	
 	@Override
-	public void resetPlayer(Arena arena, Player player) {
+	public void resetPlayer(Arena arena, Player player, boolean force) {
 		removePermissions(player);
 	}
 	
