@@ -258,10 +258,10 @@ public class PowerupEffect {
 									DamageCause.MAGIC, player)));
 					ap.getStatistics(arena).incStat(StatisticsManager.type.LOSSES);
 					// needed so player does not get found when dead
-					arena.removePlayer(player, "lose", true);
+					arena.removePlayer(player, "lose", true, false);
 					ap.getArenaTeam().remove(ap);
 
-					ArenaManager.checkAndCommit(arena);
+					ArenaManager.checkAndCommit(arena, false);
 				}
 
 				return true;
