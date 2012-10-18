@@ -60,7 +60,7 @@ public class BattleRunnable implements Runnable {
 				
 				if (ap.getArena() == null || !ap.getArena().getName().equals(name)) {
 					if (ap.getArena() != null) {
-						ap.getArena().playerLeave(p, ap.getArena().getArenaConfig().getString(CFG.TP_EXIT), false);
+						ap.getArena().playerLeave(p, CFG.TP_EXIT, false);
 						continue;
 					}
 					

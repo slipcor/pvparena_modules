@@ -210,7 +210,7 @@ public class BanKick extends ArenaModule {
 			arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_NOTKICKED,string));
 			return;
 		}
-		arena.playerLeave(p, arena.getArenaConfig().getString(CFG.TP_EXIT), true);
+		arena.playerLeave(p, CFG.TP_EXIT, true);
 		arena.msg(p, Language.parse(MSG.MODULE_BANVOTE_YOUKICKED, arena.getName()));
 		arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_KICKED,string));
 	}
