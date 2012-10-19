@@ -38,7 +38,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.3.33";
+		return "v0.9.3.38";
 	}
 
 	@Override
@@ -231,16 +231,17 @@ public class VaultSupport extends ArenaModule {
 	public void giveRewards(Arena arena, Player player) {
 
 		int winners = 0;
-		
+		db.i("giving Vault rewards to Player " + player);
 		for (ArenaPlayer p : arena.getFighters()) {
+			db.i("- checking fighter " + p.getName());
 			if (p.getStatus() != null && p.getStatus().equals(Status.FIGHT)) {
-				if (p.getStatus().equals(Status.FIGHT)) {
-					winners++;
-				}
+				db.i("-- added!");
+				winners++;
 			}
 		}
 		
 		if (economy != null) {
+			db.i("checking on bet amounts!");
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");
 
@@ -269,8 +270,15 @@ public class VaultSupport extends ArenaModule {
 					}
 				}
 			}
-
-			if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0) > 0) {
+			
+			if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_WINPOT)) {
+				db.i("");
+				double amount = paPots.get(arena.getName()) / winners;
+				
+				economy.depositPlayer(player.getName(), amount);
+				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
+						economy.format(amount)));
+			} else if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0) > 0) {
 
 				double amount = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0);
 				
@@ -282,12 +290,6 @@ public class VaultSupport extends ArenaModule {
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
 						economy.format(amount)));
 
-			} else if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
-				double amount = paPots.get(arena.getName()) / winners;
-				
-				economy.depositPlayer(player.getName(), amount);
-				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
-						economy.format(amount)));
 			}
 
 			for (String nKey : paPlayersJoinAmount.keySet()) {
