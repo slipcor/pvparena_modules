@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.autovote;
 
 import org.bukkit.Bukkit;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.runnables.ArenaRunnable;
@@ -22,5 +23,10 @@ public class AutoVoteRunnable extends ArenaRunnable {
 	
 	public void setId(int i) {
 		id = i;
+	}
+
+	@Override
+	protected void warn() {
+		PVPArena.instance.getLogger().warning("ArenaVoteRunnable");
 	}
 }
