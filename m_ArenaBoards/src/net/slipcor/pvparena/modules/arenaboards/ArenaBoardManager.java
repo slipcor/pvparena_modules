@@ -12,7 +12,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -22,7 +22,7 @@ import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class ArenaBoardManager extends ArenaModule {
-	protected HashMap<PALocation, ArenaBoard> boards = new HashMap<PALocation, ArenaBoard>();
+	protected HashMap<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
 	protected int BOARD_ID = -1;
 	protected static int GLOBAL_ID = -1;
 	protected static ArenaBoard globalBoard = null;
@@ -35,7 +35,7 @@ public class ArenaBoardManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.6.16";
 	}
 
 	@Override
@@ -44,8 +44,10 @@ public class ArenaBoardManager extends ArenaModule {
 			db.i("checking for leaderboard");
 			if (config.get("spawns.leaderboard") != null) {
 				db.i("leaderboard exists");
-				PALocation loc = Config.parseLocation(config.getString("spawns.leaderboard"));
+				PABlockLocation loc = Config.parseBlockLocation(config.getString("spawns.leaderboard"));
 
+				
+				
 				boards.put(loc, new ArenaBoard(loc, arena));
 			}
 		}
@@ -61,7 +63,7 @@ public class ArenaBoardManager extends ArenaModule {
 		String leaderboard = PVPArena.instance.getConfig().getString(
 				"leaderboard");
 		if (leaderboard != null) {
-			PALocation lbLoc = Config.parseLocation(leaderboard);
+			PABlockLocation lbLoc = Config.parseBlockLocation(leaderboard);
 			globalBoard = new ArenaBoard(lbLoc, null);
 
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
@@ -131,7 +133,7 @@ public class ArenaBoardManager extends ArenaModule {
 		event.setLine(0, headline);
 		if (a == null) {
 			db.i("creating global leaderboard");
-			globalBoard = new ArenaBoard(new PALocation(event.getBlock().getLocation()), null);
+			globalBoard = new ArenaBoard(new PABlockLocation(event.getBlock().getLocation()), null);
 			Location loc = event.getBlock().getLocation();
 			Integer x = Integer.valueOf(loc.getBlockX());
 			Integer y = Integer.valueOf(loc.getBlockY());
@@ -148,9 +150,9 @@ public class ArenaBoardManager extends ArenaModule {
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
 					PVPArena.instance, new BoardRunnable(null), 100L, 100L);
 		} else {
-			PALocation loc = new PALocation(event.getBlock().getLocation());
+			PABlockLocation loc = new PABlockLocation(event.getBlock().getLocation());
 			boards.put(loc, new ArenaBoard(loc, a));
-			SpawnManager.setCoords(a, event.getBlock().getLocation(), "leaderboard");
+			SpawnManager.setBlock(a, new PABlockLocation(event.getBlock().getLocation()), "leaderboard");
 		}
 	}
 

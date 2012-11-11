@@ -1,6 +1,6 @@
 package net.slipcor.pvparena.modules.arenaboards;
 
-import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 
 import org.bukkit.Location;
@@ -18,7 +18,7 @@ import org.bukkit.block.Sign;
 
 public class ArenaBoardColumn {
 	protected ArenaBoard board;
-	private PALocation location;
+	private PABlockLocation location;
 	private Debug db = new Debug(11);
 
 	private ArenaBoardSign[] signs = new ArenaBoardSign[5];
@@ -31,7 +31,7 @@ public class ArenaBoardColumn {
 	 * @param l
 	 *            the location of the column header
 	 */
-	public ArenaBoardColumn(ArenaBoard ab, PALocation l) {
+	public ArenaBoardColumn(ArenaBoard ab, PABlockLocation l) {
 		board = ab;
 		location = l;
 

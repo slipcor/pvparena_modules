@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -21,7 +21,7 @@ public class ArenaBoard {
 
 	public static final Debug db = new Debug(10);
 
-	private PALocation location;
+	private PABlockLocation location;
 	protected static ArenaBoardManager abm;
 	public Arena arena;
 
@@ -37,7 +37,7 @@ public class ArenaBoard {
 	 * @param a
 	 *            the arena to save the board to
 	 */
-	public ArenaBoard(PALocation loc, Arena a) {
+	public ArenaBoard(PABlockLocation loc, Arena a) {
 		location = loc;
 		arena = a;
 
@@ -49,7 +49,7 @@ public class ArenaBoard {
 	 * actually construct the arena board, read colums, save signs etc
 	 */
 	private void construct() {
-		PALocation l = location;
+		PABlockLocation l = location;
 		int border = 10;
 		try {
 			Sign s = (Sign) l.toLocation().getBlock().getState();
@@ -65,7 +65,7 @@ public class ArenaBoard {
 
 				columns.put(t, new ArenaBoardColumn(this, l));
 				db.i("putting column type " + toString());
-				l = new PALocation(l.toLocation().getBlock().getRelative(bf).getLocation());
+				l = new PABlockLocation(l.toLocation().getBlock().getRelative(bf).getLocation());
 				s = (Sign) l.toLocation().getBlock().getState();
 			} while (border-- > 0);
 		} catch (Exception e) {
@@ -73,7 +73,7 @@ public class ArenaBoard {
 		}
 	}
 
-	public PALocation getLocation() {
+	public PABlockLocation getLocation() {
 		return location;
 	}
 
