@@ -30,11 +30,11 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.5.5";
 	}
 	
 	@Override
-	public void commitPlayerDeath(Arena arena, Player player,
+	public void parsePlayerDeath(Arena arena, Player player,
 			EntityDamageEvent cause) {
 		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_ACTIVE)) {
 			return;
