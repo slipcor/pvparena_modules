@@ -1,16 +1,15 @@
 package net.slipcor.pvparena.modules.eventactions;
 
-import net.slipcor.pvparena.classes.PALocation;
-
+import net.slipcor.pvparena.classes.PABlockLocation;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
 import org.bukkit.material.MaterialData;
 
 public class EADelay implements Runnable {
-	private final PALocation loc;
+	private final PABlockLocation loc;
 	
-	public EADelay(PALocation l) {
-		loc = l;
+	public EADelay(PABlockLocation loc2) {
+		loc = loc2;
 	}
 	@Override
 	public void run() {

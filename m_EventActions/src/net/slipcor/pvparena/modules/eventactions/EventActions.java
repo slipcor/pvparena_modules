@@ -15,7 +15,7 @@ import org.bukkit.material.MaterialData;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -32,7 +32,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.6.16";
 	}
 	
 	@Override
@@ -108,7 +108,7 @@ public class EventActions extends ArenaModule {
 			} else if (split[0].equalsIgnoreCase("brc")) {
 				Bukkit.broadcastMessage(split[1]);
 			} else if (split[0].equalsIgnoreCase("switch")) {
-				PALocation loc = SpawnManager.getCoords(a, split[1]);
+				PABlockLocation loc = new PABlockLocation(SpawnManager.getCoords(a, split[1]).toLocation());
 				
 				System.out.print(loc.toLocation().toVector().toBlockVector().toString());
 				/*
@@ -157,7 +157,7 @@ public class EventActions extends ArenaModule {
 					}
 				}
 				
-				SpawnManager.setCoords(a, loc, s+i);
+				SpawnManager.setBlock(a, new PABlockLocation(loc), s+i);
 				ArenaManager.tellPlayer(event.getPlayer(), Language.parse(MSG.SPAWN_SET, s+i));
 				return true;
 			}
