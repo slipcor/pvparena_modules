@@ -1,5 +1,7 @@
 package net.slipcor.pvparena.modules.colorteams;
 
+import java.util.HashSet;
+
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -10,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 
 public class CTListener implements Listener {
+	HashSet<String> removals = new HashSet<String>();
 
 	@EventHandler
 	public void onNameReceive(PlayerReceiveNameTagEvent event) {
@@ -22,12 +25,16 @@ public class CTListener implements Listener {
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName() );
 		
 		if (ap == null || ap.getArena() == null || !ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_TAGAPI)) {
+			if (removals.contains(ap.getName())) {
+				event.setTag(ap.getName());
+			}
 			return;
 		}
 		
 		for (ArenaTeam at : ap.getArena().getTeams()) {
 			if (at.getTeamMembers().contains(ap)) {
 				event.setTag(at.colorizePlayer(p));
+				removals.add(ap.getName());
 				return;
 			}
 		}

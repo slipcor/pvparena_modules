@@ -27,7 +27,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.0.0";
+		return "v0.9.6.16";
 	}
 
 	private void colorizePlayer(Arena a, Player player) {
@@ -40,8 +40,6 @@ public class CTManager extends ArenaModule {
 			db.i("> arena is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY)) {
-				disguise(player, player.getName());
 			}
 			return;
 		}
@@ -52,8 +50,6 @@ public class CTManager extends ArenaModule {
 			db.i("> team is null");
 			if (spoutHandler != null) {
 				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY)) {
-				disguise(player, player.getName());
 			}
 			return;
 		} else {
@@ -68,29 +64,7 @@ public class CTManager extends ArenaModule {
 		}
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(n);
-		} else if (!a.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY)) {
-			disguise(player, n);
 		}
-	}
-	
-	private void disguise(Player player, String name) {
-		/*
-		String listName = name;
-		if(listName.length() >= 16) {
-			listName = listName.substring(0, 16);
-		}
-		// does this actually help?
-		player.setDisplayName(name);
-		try {
-			player.setPlayerListName(listName);
-		} catch (Exception e) {
-			// don't print the error
-		}
-		// then the rest
-		CraftPlayer cp = (CraftPlayer) player;
-		EntityPlayer ep = cp.getHandle();
-		ep.name = name;
-		*/
 	}
 
 	@Override
@@ -165,13 +139,14 @@ public class CTManager extends ArenaModule {
 	public void unload(Player player) {
 		if (spoutHandler != null) {
 			SpoutManager.getPlayer(player).setTitle(player.getName());
+		} else {
+			player.setDisplayName(player.getName());
 		}
 	}
 	
 	public void updateName(Player player, String team) {
 		
 		// Update the name
-		disguise(player, team);
 		Player[] players = Bukkit.getOnlinePlayers();
 		for(Player p : players) {
 			if(p != player) {

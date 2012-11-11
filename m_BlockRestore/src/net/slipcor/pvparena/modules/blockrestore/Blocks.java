@@ -35,7 +35,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.3.8";
+		return "v0.9.6.16";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -170,6 +170,7 @@ public class Blocks extends ArenaModule {
 	 *            the arena to restore
 	 */
 	public void restoreChests(Arena arena) {
+		db.i("resetting chests");
 		HashSet<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
 		
 		if (bfs.size() < 1) {
@@ -183,9 +184,12 @@ public class Blocks extends ArenaModule {
 		}
 		
 		for (ArenaRegionShape bfRegion : bfs) {
+			db.i("resetting arena: " + bfRegion.getName());
 
-			if (containers.get(bfRegion) != null)
+			if (containers.get(bfRegion) != null) {
+				db.i("container not null!");
 				containers.get(bfRegion).restoreChests();
+			}
 		
 		}
 	}

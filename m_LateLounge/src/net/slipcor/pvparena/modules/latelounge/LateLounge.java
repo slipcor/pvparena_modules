@@ -26,7 +26,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.3.8";
+		return "v0.9.6.16";
 	}
 	
 	private static HashMap<Arena, HashSet<String>> players = new HashMap<Arena, HashSet<String>>();

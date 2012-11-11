@@ -17,7 +17,9 @@ import org.bukkit.inventory.ItemStack;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionShape;
 
@@ -34,7 +36,7 @@ public class RestoreContainer {
 		bfRegion = r;
 	}
 
-	private Debug db = new Debug(55);
+	private static Debug db = new Debug(55);
 
 	protected void restoreChests() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
@@ -57,13 +59,14 @@ public class RestoreContainer {
 						is.getEnchantments().get(ench));
 			}
 		}
+		db.i(StringParser.getStringFromItemStacks(result));
 
 		return result;
 	}
 
 	public void saveChests() {
 
-		if (arena.getArenaConfig().getUnsafe("inventories") != null) {
+		if (arena.getArenaConfig().getStringList("inventories", new ArrayList<String>()).size() > 0) {
 
 			List<String> tempList = arena.getArenaConfig()
 					.getStringList("inventories", null);
@@ -91,11 +94,15 @@ public class RestoreContainer {
 		PABlockLocation min = bfRegion.getMinimumLocation();
 		PABlockLocation max = bfRegion.getMaximumLocation();
 
+		db.i("min: "+min.toString());
+		db.i("max: "+max.toString());
+
 		World world = Bukkit.getWorld(max.getWorldName());
 
 		List<String> result = new ArrayList<String>();
 
 		if (bfRegion.getShape().equals(RegionShape.CUBOID)) {
+			db.i("cube!");
 
 			for (x = min.getX(); x <= max.getX(); x++) {
 				for (y = min.getY(); y <= max.getY(); y++) {
@@ -110,6 +117,7 @@ public class RestoreContainer {
 				}
 			}
 		} else if (bfRegion.getShape().equals(RegionShape.SPHERIC)) {
+			db.i("sphere!");
 			for (x = min.getX(); x <= max.getX(); x++) {
 				for (y = min.getY(); y <= max.getY(); y++) {
 					for (z = min.getZ(); z <= max.getZ(); z++) {

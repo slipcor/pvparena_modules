@@ -7,10 +7,13 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.StringParser;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
@@ -27,10 +30,22 @@ public class RestoreRunner implements Runnable {
 	public RestoreRunner(Arena arena, HashMap<Location, ItemStack[]> chests,
 			HashMap<Location, ItemStack[]> furnaces,
 			HashMap<Location, ItemStack[]> dispensers) {
+		db.i("RestoreRunner contructor: " + arena.getName());
+		
 		this.arena = arena;
 		this.chests = chests;
 		this.furnaces = furnaces;
 		this.dispensers = dispensers;
+
+		if (chests != null) {
+			db.i("chests: " + chests.size());
+		}
+		if (furnaces != null) {
+			db.i("furnaces: " + furnaces.size());
+		}
+		if (dispensers != null) {
+			db.i("dispensers: " + dispensers.size());
+		}
 	}
 
 	@Override
@@ -43,17 +58,23 @@ public class RestoreRunner implements Runnable {
 			}
 			try {
 				db.i("trying to restore chest: " + loc.toString());
-				Inventory inv = ((Chest) world.getBlockAt(loc).getState())
+				Block b = world.getBlockAt(loc);
+				b.setType(Material.CHEST);
+				Inventory inv = ((Chest) b.getState())
 						.getInventory();
 				inv.clear();
-				inv.setContents(chests.get(loc));
+				int i = 0;
+				for (ItemStack is : chests.get(loc)) {
+					db.i("restoring: " + StringParser.getStringFromItemStack(is));
+					inv.setItem(i++,is);
+				}
 				db.i("success!");
 				chests.remove(loc);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
 						this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 				return;
 			} catch (Exception e) {
-				//
+				e.printStackTrace();
 			}
 		}
 		for (Location loc : dispensers.keySet()) {

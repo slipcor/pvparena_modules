@@ -22,7 +22,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.3.33";
+		return "v0.9.6.16";
 	}
 	
 	/**
