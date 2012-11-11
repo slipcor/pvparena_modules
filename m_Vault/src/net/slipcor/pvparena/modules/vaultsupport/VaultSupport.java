@@ -38,7 +38,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.3.38";
+		return "v0.9.5.5";
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class VaultSupport extends ArenaModule {
 		}
 	}
 	
-	public void commitPlayerDeath(Arena arena, Player p,
+	public void parsePlayerDeath(Arena arena, Player p,
 			EntityDamageEvent cause) {
 		killreward(arena,p,ArenaPlayer.getLastDamagingPlayer(cause));
 	}
@@ -495,6 +495,9 @@ public class VaultSupport extends ArenaModule {
 				return;
 			}
 			economy.depositPlayer(player.getName(), entryfee);
+			if (paPots.containsKey(arena.getName())) {
+				paPots.put(arena.getName(), paPots.get(arena.getName()) - entryfee);
+			}
 		}
 	}
 
