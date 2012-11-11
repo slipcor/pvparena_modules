@@ -19,8 +19,6 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.ArenaManager;
-import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class AfterMatch extends ArenaModule {
@@ -35,7 +33,7 @@ public class AfterMatch extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.3.8";
+		return "v0.9.6.16";
 	}
 
 	public void afterMatch(Arena a) {
@@ -54,11 +52,6 @@ public class AfterMatch extends ArenaModule {
 	}
 
 	@Override
-	public boolean checkCommand(String cmd) {
-		return cmd.startsWith("after");
-	}
-
-	@Override
 	public String checkForMissingSpawns(Arena arena, Set<String> list) {
 		
 		for (String s : list) {
@@ -70,37 +63,7 @@ public class AfterMatch extends ArenaModule {
 	}
 
 	@Override
-	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
-		db.i("aftermatch command?");
-		if (!(sender instanceof Player)) {
-			Language.parse(MSG.ERROR_ONLY_PLAYERS);
-			return;
-		}
-		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
-
-		if (pu.equals("off")) {
-			return;
-		}
-		if (!args[0].startsWith("after")) {
-			return;
-		}
-		db.i("aftermatch command!");
-
-		Player player = (Player) sender;
-
-		if (!PVPArena.hasAdminPerms(player)
-				&& !(PVPArena.hasCreatePerms(player, arena))) {
-			arena.msg(player,
-					Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
-			return;
-		}
-		SpawnManager.setCoords(arena, player, args[0]);
-		ArenaManager.tellPlayer(player, Language.parse(MSG.SPAWN_SET, args[0]));
-		return;
-	}
-
-	@Override
-	public void commitPlayerDeath(Arena arena, Player player,
+	public void parsePlayerDeath(Arena arena, Player player,
 			EntityDamageEvent cause) {
 		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
