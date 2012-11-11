@@ -29,7 +29,6 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
@@ -51,7 +50,7 @@ public class PowerupManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.3.8";
+		return "v0.9.5.5";
 	}
 
 	/**
@@ -79,29 +78,6 @@ public class PowerupManager extends ArenaModule {
 			return;
 		}
 
-	}
-
-	@Override
-	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
-		if (!(sender instanceof Player)) {
-			Language.parse(MSG.ERROR_ONLY_PLAYERS);
-			return;
-		}
-		if (!args[0].startsWith("powerup")) {
-			return;
-		}
-		
-		Player player = (Player) sender;
-		
-		if (!PVPArena.hasAdminPerms(player)
-				&& !(PVPArena.hasCreatePerms(player, arena))) {
-			arena.msg(player,
-					Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
-			return;
-		}
-		SpawnManager.setCoords(arena, player, args[0]);
-		ArenaManager.tellPlayer(player, Language.parse(MSG.SPAWN_SET, args[0]));
-		return;
 	}
 
 	@Override
@@ -201,7 +177,6 @@ public class PowerupManager extends ArenaModule {
 			db.w("error activating powerup module");
 		}
 
-		config.addDefault("game.powerups", "off");
 		config.options().copyDefaults(true);
 	}
 	
