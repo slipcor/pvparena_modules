@@ -19,7 +19,7 @@ import net.slipcor.pvparena.managers.ArenaManager;
  * 
  * @author slipcor
  * 
- * @version v0.9.2
+ * @version v0.9.8
  * 
  */
 
@@ -41,7 +41,8 @@ public class BattleRunnable implements Runnable {
 	 */
 	@Override
 	public void run() {
-		db.i("BattleRunnable commiting");
+		if (!Debug.override)
+			db.i("BattleRunnable commiting");
 		try {
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
@@ -51,7 +52,8 @@ public class BattleRunnable implements Runnable {
 				if (p.hasPermission("pvparena.admin")) {
 					continue;
 				}
-				
+
+				if (!Debug.override)
 				db.i("arena: " + String.valueOf(name));
 				
 				if (name == null || name.equals("")) {
@@ -64,7 +66,7 @@ public class BattleRunnable implements Runnable {
 						continue;
 					}
 					
-					ArenaManager.getArenaByName(name).tpPlayerToCoordName(p, "exit");
+					ArenaManager.getArenaByName(name).playerLeave(p, CFG.TP_EXIT, false);
 				}
 			}
 		} catch (Exception e) {

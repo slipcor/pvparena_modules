@@ -22,7 +22,7 @@ public class AnnouncementManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.9.8.21";
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class AnnouncementManager extends ArenaModule {
 		db.i("parseJoin ... ");
 
 		if (TeamManager.countPlayersInTeams(arena) < 2) {
-			Announcement.announce(arena, Announcement.type.START,
+			Announcement.announce(arena, Announcement.type.ADVERT,
 					Language.parse(MSG.ANNOUNCE_ARENA_STARTING, arena.getName()));
 		}
 		

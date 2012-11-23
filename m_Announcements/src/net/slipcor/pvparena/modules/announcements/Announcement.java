@@ -16,9 +16,9 @@ public class Announcement {
 	private static Debug db = new Debug(7);
 
 	public static enum type {
-		JOIN, START, END, WINNER, LOSER, PRIZE, CUSTOM;
+		JOIN, ADVERT, START, END, WINNER, LOSER, PRIZE, CUSTOM;
 	}
-
+	
 	/**
 	 * Announce a message to the public
 	 * 

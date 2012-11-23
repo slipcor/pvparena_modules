@@ -85,6 +85,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public void onEnable() {
+		
 		if (Bukkit.getServer().getPluginManager().getPlugin("Spout") != null) {
 			spoutHandler = SpoutManager.getInstance().toString();
 		} else {
