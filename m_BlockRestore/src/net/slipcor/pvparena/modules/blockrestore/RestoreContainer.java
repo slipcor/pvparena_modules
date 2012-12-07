@@ -15,24 +15,22 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
-import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionShape;
 
 public class RestoreContainer {
-	private Arena arena;
+	private Blocks blocks;
 	private ArenaRegionShape bfRegion;
 
 	private HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
 	private HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
 	private HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
 
-	public RestoreContainer(Arena a, ArenaRegionShape r) {
-		arena = a;
+	public RestoreContainer(Blocks b, ArenaRegionShape r) {
+		blocks = b;
 		bfRegion = r;
 	}
 
@@ -40,7 +38,7 @@ public class RestoreContainer {
 
 	protected void restoreChests() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-				new RestoreRunner(arena, chests, furnaces, dispensers));
+				new RestoreRunner(blocks, chests, furnaces, dispensers));
 	}
 
 	protected static ItemStack[] cloneIS(ItemStack[] contents) {
@@ -66,9 +64,9 @@ public class RestoreContainer {
 
 	public void saveChests() {
 
-		if (arena.getArenaConfig().getStringList("inventories", new ArrayList<String>()).size() > 0) {
+		if (blocks.getArena().getArenaConfig().getStringList("inventories", new ArrayList<String>()).size() > 0) {
 
-			List<String> tempList = arena.getArenaConfig()
+			List<String> tempList = blocks.getArena().getArenaConfig()
 					.getStringList("inventories", null);
 
 			db.i("reading inventories");
@@ -131,8 +129,8 @@ public class RestoreContainer {
 				}
 			}
 		}
-		arena.getArenaConfig().setManually("inventories", result);
-		arena.getArenaConfig().save();
+		blocks.getArena().getArenaConfig().setManually("inventories", result);
+		blocks.getArena().getArenaConfig().save();
 	}
 
 	private Location saveBlock(World world, int x, int y, int z) {

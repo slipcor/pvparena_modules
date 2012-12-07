@@ -19,7 +19,7 @@ public class BlockRestoreRunnable implements Runnable {
 	public BlockRestoreRunnable(Arena arena,
 			HashMap<Location, ArenaBlock> blocks) {
 		this.arena = arena;
-		removals = getBlocks(arena);
+		removals = getBlocks();
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class BlockRestoreRunnable implements Runnable {
 	 *            the arena to check
 	 * @return a map of location=>block to reset
 	 */
-	private HashMap<Location, ArenaBlock> getBlocks(Arena arena) {
+	private HashMap<Location, ArenaBlock> getBlocks() {
 		HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
 
 		db.i("reading all arenablocks");

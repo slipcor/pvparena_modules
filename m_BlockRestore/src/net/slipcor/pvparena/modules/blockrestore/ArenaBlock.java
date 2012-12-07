@@ -9,18 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-/**
- * arena block class
- * 
- * -
- * 
- * defines a block to recreate on match end
- * 
- * @author slipcor
- * 
- * @version v0.6.29
- * 
- */
 public class ArenaBlock {
 	private Debug db = new Debug(9);
 
