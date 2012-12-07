@@ -11,6 +11,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -19,6 +20,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class CTManager extends ArenaModule {
 	protected static String spoutHandler = null;
+	protected static boolean enabled = false;
 	private Field name = null;
 
 	public CTManager() {
@@ -27,10 +29,15 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.10.0.0";
+	}
+	
+	@Override
+	public boolean checkCommand(String s) {
+		return s.equals("!ct") || s.equals("colorteams");
 	}
 
-	private void colorizePlayer(Arena a, Player player) {
+	private void colorizePlayer(Player player) {
 		db.i("colorizing player " + player.getName() + ";");
 
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
@@ -66,27 +73,63 @@ public class CTManager extends ArenaModule {
 			SpoutManager.getPlayer(player).setTitle(n);
 		}
 	}
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !ct [value]
+		
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+			return;
+		}
+		
+		CFG c = null;
+		
+		if (args[1].equals("hidename")) {
+			c = CFG.MODULES_COLORTEAMS_HIDENAME;
+		} else if (args[1].equals("spoutonly")) {
+			c = CFG.MODULES_COLORTEAMS_SPOUTONLY;
+		} else if (args[1].equals("tagapi")) {
+			c = CFG.MODULES_COLORTEAMS_TAGAPI;
+		}
+		
+		if (c == null) {
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "hidename | spoutonly | tagapi"));
+			return;
+		}
+		
+		boolean b = arena.getArenaConfig().getBoolean(c);
+		arena.getArenaConfig().set(c, !b);
+		arena.getArenaConfig().save();
+		arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
+		
+	}
 
 	@Override
-	public void displayInfo(Arena arena, CommandSender player) {
+	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
-		player.sendMessage("§6ColoredTeams:§f "
-				+ StringParser.colorVar("hideName", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME))
+		player.sendMessage("§6ColorTeams:§f "
+				+ StringParser.colorVar("hidename", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME))
 				+ " || "
-				+ StringParser.colorVar("colorNick", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_COLORNICK))
+				+ StringParser.colorVar("spoutonly", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY))
 				+ " || "
-				+ StringParser.colorVar("requireSpout", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SPOUTONLY)));
+				+ StringParser.colorVar("tagapi", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_TAGAPI)));
 	}
 	
 	@Override
-	public boolean isActive(Arena arena) {
-		return arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_COLORNICK);
-	}
-	
-	@Override
-	public void onEnable() {
-		
-		if (Bukkit.getServer().getPluginManager().getPlugin("Spout") != null) {
+	public void parseEnable() {
+		if (enabled) {
+			return;
+		}
+		if (spoutHandler == null && Bukkit.getServer().getPluginManager().getPlugin("Spout") != null) {
 			spoutHandler = SpoutManager.getInstance().toString();
 		} else {
 			try {
@@ -103,6 +146,8 @@ public class CTManager extends ArenaModule {
 		}
 		Arena.pmsg(Bukkit.getConsoleSender(), Language.parse((spoutHandler == null) ? MSG.MODULE_COLORTEAMS_NOSPOUT : MSG.MODULE_COLORTEAMS_SPOUT));
 
+		enabled = true;
+		
 		if (Bukkit.getServer().getPluginManager().getPlugin("TagAPI") != null) {
 			Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
 			Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_COLORTEAMS_TAGAPI));
@@ -110,10 +155,10 @@ public class CTManager extends ArenaModule {
 	}
 
 	@Override
-	public void tpPlayerToCoordName(Arena arena, Player player, String place) {
+	public void tpPlayerToCoordName(Player player, String place) {
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_COLORNICK)) {
 			if (spoutHandler != null) {
-				colorizePlayer(arena, player);	
+				colorizePlayer(player);	
 			} else {
 				ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 				String n;
