@@ -7,15 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
-/**
- * arena board column class
- * 
- * @author slipcor
- * 
- * @version v0.6.15
- * 
- */
-
 public class ArenaBoardColumn {
 	protected ArenaBoard board;
 	private PABlockLocation location;

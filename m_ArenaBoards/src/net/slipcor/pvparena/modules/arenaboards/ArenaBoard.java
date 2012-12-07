@@ -22,8 +22,8 @@ public class ArenaBoard {
 	public static final Debug db = new Debug(10);
 
 	private PABlockLocation location;
-	protected static ArenaBoardManager abm;
-	public Arena arena;
+	protected ArenaBoardManager abm;
+	public boolean global;
 
 	public StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
@@ -37,9 +37,10 @@ public class ArenaBoard {
 	 * @param a
 	 *            the arena to save the board to
 	 */
-	public ArenaBoard(PABlockLocation loc, Arena a) {
+	public ArenaBoard(ArenaBoardManager m, PABlockLocation loc, Arena a) {
+		abm = m;
 		location = loc;
-		arena = a;
+		global = a == null;
 
 		db.i("constructing arena board");
 		construct();
@@ -111,7 +112,7 @@ public class ArenaBoard {
 			}
 			db.i("found! reading!");
 			String[] s = StatisticsManager.read(
-					StatisticsManager.getStats(this.arena, sortBy), t, arena == null);
+					StatisticsManager.getStats(global?null:abm.getArena(), sortBy), t, global);
 			columns.get(t).write(s);
 		}
 	}
@@ -123,7 +124,7 @@ public class ArenaBoard {
 	 *            the InteractEvent
 	 * @return true if the player clicked a leaderboard sign, false otherwise
 	 */
-	public static boolean checkInteract(PlayerInteractEvent event) {
+	public static boolean checkInteract(ArenaBoardManager abm, PlayerInteractEvent event) {
 
 		db.i("checking ArenaBoard interact");
 
@@ -136,8 +137,8 @@ public class ArenaBoard {
 		db.i("block is not null");
 
 		if (!abm.boards.containsKey(event.getClickedBlock().getLocation())
-				&& ArenaBoardManager.globalBoard == null
-				|| !ArenaBoardManager.globalBoard.getLocation().equals(
+				&& abm.globalBoard == null
+				|| !abm.globalBoard.getLocation().equals(
 						event.getClickedBlock().getLocation())) {
 			return false;
 		}
@@ -147,10 +148,10 @@ public class ArenaBoard {
 		ArenaBoard ab = abm.boards.get(event.getClickedBlock().getLocation());
 
 		if (ab == null) {
-			ab = ArenaBoardManager.globalBoard;
+			ab = abm.globalBoard;
 		}
 
-		if (ab.arena == null) {
+		if (ab.global) {
 			db.i("global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
@@ -167,12 +168,12 @@ public class ArenaBoard {
 			db.i("not global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
-				ab.arena.msg(player,
+				ab.abm.getArena().msg(player,
 						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
-				ab.arena.msg(player,
+				ab.abm.getArena().msg(player,
 						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			}
@@ -183,12 +184,12 @@ public class ArenaBoard {
 
 	public void destroy() {
 		// TODO clear signs
-		if (arena == null) {
+		if (global) {
 			PVPArena.instance.getConfig().set("leaderboard", null);
 			PVPArena.instance.saveConfig();
 		} else {
-			arena.getArenaConfig().setManually("spawns.leaderboard", null);
-			arena.getArenaConfig().save();
+			abm.getArena().getArenaConfig().setManually("spawns.leaderboard", null);
+			abm.getArena().getArenaConfig().save();
 		}
 	}
 }

@@ -12,7 +12,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA_Install;
+import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -77,7 +77,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 			return;
 		}
 
-		if (!(new PAA_Install()).argCountValid(sender, args, new Integer[] { 2,3 })) {
+		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
 			return;
 		}
 		

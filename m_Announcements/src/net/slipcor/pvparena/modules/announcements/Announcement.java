@@ -18,7 +18,7 @@ public class Announcement {
 	public static enum type {
 		JOIN, ADVERT, START, END, WINNER, LOSER, PRIZE, CUSTOM;
 	}
-	
+
 	/**
 	 * Announce a message to the public
 	 * 
@@ -33,16 +33,18 @@ public class Announcement {
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
-		db.i("announce [" + a.getName() + "] type: " + t.name() + " : " + message);
-		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
+		db.i("announce [" + a.getName() + "] type: " + t.name() + " : "
+				+ message);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (a.hasPlayer(p)) {
 				continue;
 			}
-			send(a, p,
-					message.replace(ChatColor.WHITE.toString(), ChatColor
-							.valueOf(a.getArenaConfig().getString(CFG.MODULES_ANNOUNCEMENTS_COLOR))
+			send(a, p, message.replace(
+					ChatColor.WHITE.toString(),
+					ChatColor.valueOf(
+							a.getArenaConfig().getString(
+									CFG.MODULES_ANNOUNCEMENTS_COLOR))
 							.toString()));
 		}
 	}
@@ -63,13 +65,16 @@ public class Announcement {
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
-		db.i("announce [" + a.getName() + "] type: " + t.name() + " : " + message);
+		db.i("announce [" + a.getName() + "] type: " + t.name() + " : "
+				+ message);
 		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
-		
-		message = message.replace(ChatColor.WHITE.toString(), ChatColor
-				.valueOf(a.getArenaConfig().getString(CFG.MODULES_ANNOUNCEMENTS_COLOR))
-				.toString());
-		
+
+		message = message.replace(
+				ChatColor.WHITE.toString(),
+				ChatColor.valueOf(
+						a.getArenaConfig().getString(
+								CFG.MODULES_ANNOUNCEMENTS_COLOR)).toString());
+
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (a.hasPlayer(p)) {
 				continue;
@@ -105,22 +110,23 @@ public class Announcement {
 	 */
 	private static void send(Arena a, Player p, String message) {
 		if (a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS) > 0) {
-			HashSet<ArenaRegionShape> bfs = a.getRegionsByType(RegionType.BATTLE);
+			HashSet<ArenaRegionShape> bfs = a
+					.getRegionsByType(RegionType.BATTLE);
 			for (ArenaRegionShape ars : bfs) {
 				if (ars.tooFarAway(
-								a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS),
-								p.getLocation())) {
+						a.getArenaConfig().getInt(
+								CFG.MODULES_ANNOUNCEMENTS_RADIUS),
+						p.getLocation())) {
 					return; // too far away: out (checks world!)
 				}
 			}
 		}
-		a.msg(
-				p,
+		a.msg(p,
 				"§f[§a"
 						+ a.getName()
 						+ "§f] "
-						+ ChatColor.valueOf(a.getArenaConfig()
-								.getString(CFG.MODULES_ANNOUNCEMENTS_COLOR)) + message);
+						+ ChatColor.valueOf(a.getArenaConfig().getString(
+								CFG.MODULES_ANNOUNCEMENTS_COLOR)) + message);
 	}
 
 }

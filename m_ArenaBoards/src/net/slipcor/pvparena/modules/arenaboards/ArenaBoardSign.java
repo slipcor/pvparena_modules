@@ -6,15 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
-/**
- * arena board sign class
- * 
- * @author slipcor
- * 
- * @version v0.6.40
- * 
- */
-
 public class ArenaBoardSign {
 	protected ArenaBoardColumn column;
 	private BlockState state;
