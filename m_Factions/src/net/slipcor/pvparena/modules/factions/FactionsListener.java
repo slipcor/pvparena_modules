@@ -15,8 +15,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class FactionsListener implements Listener {
 	private Debug db = new Debug(66);
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onMapInit(EntityDamageByEntityEvent event) {
+	private final FactionsSupport fs;
+	
+	public FactionsListener(FactionsSupport fs) {
+		this.fs = fs;
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!event.isCancelled()) {
 			// not cancelled, no problem ^^
 			return;
@@ -60,8 +66,8 @@ public class FactionsListener implements Listener {
 		}
 
 		Arena arena = ArenaPlayer.parsePlayer(((Player) p2).getName()).getArena();
-		if (arena == null) {
-			// defender no arena player => out
+		if (arena == null || !arena.equals(fs.getArena())) {
+			// defender not part of our arena => out
 			return;
 		}
 
