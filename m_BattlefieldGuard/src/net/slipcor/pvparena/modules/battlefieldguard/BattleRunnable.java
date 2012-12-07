@@ -2,26 +2,15 @@ package net.slipcor.pvparena.modules.battlefieldguard;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import net.slipcor.pvparena.api.PVPArenaAPI;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.managers.ArenaManager;
-
-/**
- * custom runnable class
- * 
- * -
- * 
- * implements an own runnable class in order to commit a powerup spawn in the
- * arena it is running in
- * 
- * @author slipcor
- * 
- * @version v0.9.8
- * 
- */
 
 public class BattleRunnable implements Runnable {
 	private Debug db = new Debug(42);
@@ -61,12 +50,25 @@ public class BattleRunnable implements Runnable {
 				}
 				
 				if (ap.getArena() == null || !ap.getArena().getName().equals(name)) {
+					
 					if (ap.getArena() != null) {
-						ap.getArena().playerLeave(p, CFG.TP_EXIT, false);
+						if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
+							ap.get().setLastDamageCause(new EntityDamageEvent(ap.get(), DamageCause.CUSTOM, 1000));
+							ap.get().setHealth(0);
+							ap.get().damage(1000);
+						} else {
+							ap.getArena().playerLeave(p, CFG.TP_EXIT, false);
+						}
 						continue;
 					}
 					
-					ArenaManager.getArenaByName(name).playerLeave(p, CFG.TP_EXIT, false);
+					Arena a = ArenaManager.getArenaByName(name);
+					if (a.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
+						p.setHealth(0);
+						p.damage(1000);
+					} else {
+						a.tpPlayerToCoordName(p, "exit");
+					}
 				}
 			}
 		} catch (Exception e) {
