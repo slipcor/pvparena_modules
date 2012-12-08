@@ -14,7 +14,6 @@ import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.managers.SpawnManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,10 +33,12 @@ public class MyRenderer extends MapRenderer {
 	private boolean showPlayers;
 	private boolean showSpawns;
 	private boolean showLives;
+	private Maps maps;
 
-	public MyRenderer() {
+	public MyRenderer(Maps m) {
 		playerName = null;
 		arena = null;
+		maps = m;
 	}
 
 	static {
@@ -58,14 +59,17 @@ public class MyRenderer extends MapRenderer {
 		colors.put(ChatColor.WHITE, MapPalette.matchColor(255, 255, 255));
 		colors.put(ChatColor.YELLOW, MapPalette.matchColor(255, 255, 0));
 
-		new File("plugins/pvparena").mkdir();
-		File configFile = new File("plugins/pvparena/maps.yml");
+		PVPArena.instance.getDataFolder().mkdir();
+		
+		
+		
+		File configFile = new File(PVPArena.instance.getDataFolder(),"maps.yml");
 		if (!(configFile.exists())) {
 			try {
 				configFile.createNewFile();
 			} catch (Exception e) {
-				Bukkit.getLogger().severe(
-						"[PVP Arena] Error when creating map file.");
+				PVPArena.instance.getLogger().severe(
+						"Error when creating map file.");
 			}
 		}
 
@@ -83,7 +87,7 @@ public class MyRenderer extends MapRenderer {
 
 	private static void savePlayers() {
 		try {
-			playerMaps.save(new File("plugins/pvparena/maps.yml"));
+			playerMaps.save(new File(PVPArena.instance.getDataFolder(),"maps.yml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,7 +100,7 @@ public class MyRenderer extends MapRenderer {
 		if (playerName == null) { 
 			// map.removeRenderer(this);
 			// eventual first initialisation
-			if (Maps.hasCustomMap(player.getName()) && !done.contains(map.getId())) {
+			if (maps.hasCustomMap(player.getName()) && !done.contains(map.getId())) {
 				
 				playerName = player.getName();
 				arena = ArenaPlayer.parsePlayer(playerName).getArena();
@@ -143,7 +147,7 @@ public class MyRenderer extends MapRenderer {
 			}
 		}
 
-		HashSet<MapItem> items = Maps.getItems(arena);
+		HashSet<MapItem> items = maps.getItems();
 		
 		if (showSpawns) {
 		

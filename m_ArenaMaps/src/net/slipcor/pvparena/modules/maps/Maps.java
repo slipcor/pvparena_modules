@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.modules.maps;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
@@ -12,19 +11,21 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.goals.GoalFlags;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class Maps extends ArenaModule {
-	private static HashMap<Arena, HashSet<String>> mappings = new HashMap<Arena, HashSet<String>>();
-	private static HashMap<Arena, HashSet<MapItem>> items = new HashMap<Arena, HashSet<MapItem>>();
+	private HashSet<String> mappings = new HashSet<String>();
+	private HashSet<MapItem> items = new HashSet<MapItem>();
 	
 	public Maps() {
 		super("ArenaMaps");
@@ -32,43 +33,92 @@ public class Maps extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.10.0.0";
 	}
 	
 	@Override
-	public void onEnable() {
-		Bukkit.getPluginManager().registerEvents(new MapListener(), PVPArena.instance);
+	public boolean checkCommand(String s) {
+		return s.equals("!map") || s.equals("arenamaps");
+	}
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !map align
+		// !map lives
+		// !map players
+		// !map spawns
+		
+		
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+			return;
+		}
+		
+		if (args[0].equals("!map") || args[0].equals("arenamaps")) {
+			CFG c = null;
+			if (args[1].equals("align")) {
+				c = CFG.MODULES_ARENAMAPS_ALIGNTOPLAYER;
+			}
+			if (args[1].equals("lives")) {
+				c = CFG.MODULES_ARENAMAPS_SHOWLIVES;
+			}
+			if (args[1].equals("players")) {
+				c = CFG.MODULES_ARENAMAPS_SHOWPLAYERS;
+			}
+			if (args[1].equals("spawns")) {
+				c = CFG.MODULES_ARENAMAPS_SHOWSPAWNS;
+				
+			}
+			if (c == null) {
+			
+				arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "align | lives | players | spawns"));
+				return;
+			}
+			boolean b = arena.getArenaConfig().getBoolean(c);
+			arena.getArenaConfig().set(c, !b);
+			arena.getArenaConfig().save();
+			arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
+			return;
+		}
 	}
 
-	public static HashSet<MapItem> getItems(Arena arena) {
-		return items.get(arena) != null ? items.get(arena) : new HashSet<MapItem>();
+	public HashSet<MapItem> getItems() {
+		return items;
 	}
 	
 	@Override
-	public boolean isActive(Arena arena) {
-		return arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_ACTIVE);
+	public void parseEnable() {
+		Bukkit.getPluginManager().registerEvents(new MapListener(this), PVPArena.instance);
 	}
 	
 	@Override
-	public void parseJoin(Arena arena, CommandSender sender, ArenaTeam team) {
+	public void parseJoin(CommandSender sender, ArenaTeam team) {
 		Player player = (Player) sender;
 		HashSet<String> maps = new HashSet<String>();
-		if (mappings.get(arena) == null) {
+		if (mappings.isEmpty()) {
 			maps = new HashSet<String>();
-			prepareSpawnLocations(arena);
+			prepareSpawnLocations();
 		} else {
-			maps = mappings.get(arena);
+			maps = mappings;
 		}
 		
 		maps.add(player.getName());
 		
-		items.get(arena).add(new MapItem(arena, player, team.getColor()));
-		mappings.put(arena, maps);
+		items.add(new MapItem(arena, player, team.getColor()));
+		mappings = maps;
 	}
 	
-	private void prepareSpawnLocations(Arena arena) {
-		if (items.containsKey(arena)) {
-			items.remove(arena);
+	private void prepareSpawnLocations() {
+		if (!items.isEmpty()) {
+			items.clear();
 			// recalculate, in case admin added stuff
 		}
 		
@@ -90,23 +140,22 @@ public class Maps extends ArenaModule {
 				}
 			}
 		}
-		items.put(arena, locations);
+		items = locations;
 	}
 
 	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		mappings.remove(arena);
 	}
 	
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
-		HashSet<String> maps = mappings.get(arena);
+	public void parseStart() {
 		
-		if (maps == null) {
+		if (mappings.isEmpty()) {
 			return;
 		}
 		
-		for (String playerName : maps) {
+		for (String playerName : mappings) {
 			Player player = Bukkit.getPlayerExact(playerName);
 			if (player == null) {
 				continue;
@@ -116,26 +165,17 @@ public class Maps extends ArenaModule {
 			}
 			Short value = MyRenderer.getId(playerName);
 			player.getInventory().addItem(new ItemStack(Material.MAP, 1, value));
-			maps.add(player.getName());
+			mappings.add(player.getName());
 			if (value != Short.MIN_VALUE) {
 				MapView map = Bukkit.getMap(value);
 
-				MapRenderer mr = new MyRenderer();
+				MapRenderer mr = new MyRenderer(this);
 				map.addRenderer(mr);
 			}
 		}
-		mappings.put(arena, maps);
 	}
 	
-	public static boolean hasCustomMap(String sPlayer) {
-		if (mappings == null) {
-			return false;
-		}
-		for (Arena arena : mappings.keySet()) {
-			if (mappings.get(arena).contains(sPlayer)) {
-				return true;
-			}
-		}
-		return false;
+	public boolean hasCustomMap(String sPlayer) {
+		return mappings.contains(sPlayer);
 	}
 }
