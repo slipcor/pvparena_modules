@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PACheck;
+import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -29,16 +30,16 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.10.0.0";
 	}
 	
 	@Override
 	public boolean checkCommand(String cmd) {
-		return cmd.startsWith("vote");
+		return cmd.startsWith("vote") || cmd.equals("!av") || cmd.equals("autovote");
 	}
 
 	@Override
-	public PACheck checkJoin(Arena arena, CommandSender sender,
+	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean b) {
 		if (res.hasError()) {
 			return res;
@@ -53,43 +54,89 @@ public class AutoVote extends ArenaModule {
 	}
 
 	@Override
-	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
+	public void commitCommand(CommandSender sender, String[] args) {
 
-		if (!args[0].startsWith("vote")) {
-			return;
-		}
+		if (args[0].startsWith("vote")) {
 
-		votes.put(sender.getName(), arena.getName());
-		ArenaManager.tellPlayer(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
-		
-		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
-			return;
-		}
-		
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (p == null) {
-				continue;
+			votes.put(sender.getName(), arena.getName());
+			ArenaManager.tellPlayer(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
+			
+			if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
+				return;
 			}
-			ArenaManager.tellPlayer(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
+			
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (p == null) {
+					continue;
+				}
+				ArenaManager.tellPlayer(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
+			}
+			return;
+		} else {
+			if (!PVPArena.hasAdminPerms(sender)
+					&& !(PVPArena.hasCreatePerms(sender, arena))) {
+				arena.msg(
+						sender,
+						Language.parse(MSG.ERROR_NOPERM,
+								Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+				return;
+			}
+			
+			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
+				return;
+			}
+			
+			// !av everyone
+			// !av readyup X
+			// !av seconds X
+			
+			if (args.length < 3 || args[1].equals("everyone")) {
+				boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE);
+				arena.getArenaConfig().set(CFG.MODULES_ARENAVOTE_EVERYONE, !b);
+				arena.getArenaConfig().save();
+				arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_ARENAVOTE_EVERYONE.getNode(), String.valueOf(!b)));
+				return;
+			} else {
+				CFG c = null;
+				if (args[1].equals("readyup")) {
+					c = CFG.MODULES_ARENAVOTE_READYUP;
+				} else if (args[1].equals("seconds")) {
+					c = CFG.MODULES_ARENAVOTE_SECONDS;
+				}
+				if (c != null) {
+					int i = 0;
+					try {
+						i = Integer.parseInt(args[2]);
+					} catch (Exception e) {
+						arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
+						return;
+					}
+					
+					arena.getArenaConfig().set(c, i);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(i)));
+					return;
+				}
+			}
+			
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "everyone | readyup | seconds"));
+			return;
 		}
 	}
 
 	@Override
-	public void displayInfo(Arena arena, CommandSender player) {
+	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
-		player.sendMessage("§6ArenaVote:§f "
+		player.sendMessage("§6ArenaVote:§f seconds:"
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS))
-				+ " | "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP)));
-	}
-	
-	@Override
-	public boolean isActive(Arena arena) {
-		return arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ACTIVE);
+				+ " | readyup: "
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP))
+				+ " | everyone: "
+				+ StringParser.colorVar(arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)));
 	}
 
 	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		votes.clear();
 		a = null;
 
