@@ -1,13 +1,11 @@
 package net.slipcor.pvparena.modules.latelounge;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.PAA__Command;
@@ -26,10 +24,10 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.10.0.0";
 	}
 	
-	private static HashMap<Arena, HashSet<String>> players = new HashMap<Arena, HashSet<String>>();
+	private static HashSet<String> players = new HashSet<String>();
 	
 	/**
 	 * hook into a player trying to join the arena
@@ -41,31 +39,24 @@ public class LateLounge extends ArenaModule {
 	 * @return false if a player should not be granted permission
 	 */
 	@Override
-	public PACheck checkJoin(Arena arena, CommandSender sender,
+	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean b) {
 		if (res.hasError() || res.getPriority() > priority) {
 			return res;
 		}
 		
-		HashSet<String> list = new HashSet<String>();
-		
-		if (players.get(arena) != null) {
-			list = players.get(arena);
-		}
-		
 		Player player = (Player) sender;
 		
-		if (list.contains(player.getName())) {
-			if (list.size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
+		if (players.contains(player.getName())) {
+			if (players.size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
 				res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 				return res;
 			}
 		}
 		
-		if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > list.size() + 1) {
+		if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > players.size() + 1) {
 			// not enough players
-			list.add(player.getName());
-			players.put(arena, list);
+			players.add(player.getName());
 			Player[] aPlayers = Bukkit.getOnlinePlayers();
 			
 			for (Player p : aPlayers) {
@@ -80,22 +71,21 @@ public class LateLounge extends ArenaModule {
 			}
 			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 			return res;
-		} else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == list.size() + 1) {
+		} else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == players.size() + 1) {
 			// not enough players
-			list.add(player.getName());
-			players.put(arena, list);
+			players.add(player.getName());
 			
 			HashSet<String> removals = new HashSet<String>();
 			
-			for (String s : list) {
+			for (String s : players) {
 				Player p = Bukkit.getPlayerExact(s);
 				
 				boolean removeMe = false;
 				
 				if (p != null) {
-					for (ArenaModule mod : PVPArena.instance.getAmm().getModules()) {
-						if (mod.isActive(arena) && !mod.getName().equals(getName())) {
-							if (mod.checkJoin(arena, p, new PACheck(), true).hasError()) {
+					for (ArenaModule mod : arena.getMods()) {
+						if (!mod.getName().equals(getName())) {
+							if (mod.checkJoin(p, new PACheck(), true).hasError()) {
 								removeMe = true;
 								break;
 							}
@@ -113,11 +103,14 @@ public class LateLounge extends ArenaModule {
 
 			if (removals.size() > 0) {
 				for (String s : removals) {
-					list.remove(s);
+					players.remove(s);
 				}
-				players.put(arena, list);
 			} else {
-				for (String s : list) {
+				// SUCCESS!
+				for (String s : players) {
+					if (s.equals(sender.getName())) {
+						continue;
+					}
 					Player p = Bukkit.getPlayerExact(s);
 					PAA__Command command = new PAG_Join();
 					command.commit(arena, p, new String[0]);
@@ -126,16 +119,12 @@ public class LateLounge extends ArenaModule {
 			}
 			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 		}
+		// enough, ignore and let something else handle the start!
 		return res;
 	}
 	
 	@Override
-	public boolean isActive(Arena arena) {
-		return arena.getArenaConfig().getBoolean(CFG.MODULES_LATELOUNGE_ACTIVE);
-	}
-	
-	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		players.remove(arena);
 	}
 }
