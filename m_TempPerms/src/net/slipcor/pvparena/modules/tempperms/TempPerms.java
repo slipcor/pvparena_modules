@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.permissions.PermissionAttachment;
 
@@ -13,6 +13,10 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class TempPerms extends ArenaModule {
@@ -22,7 +26,91 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.10.0.0";
+	}
+	
+	@Override
+	public boolean checkCommand(String s) {
+		return s.equals("!tps") || s.equals("tempperms");
+	}
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !tps | list perms
+		// !tps add [perm] | add perm
+		// !tps rem [perm] | remove perm
+		
+		// !tps [classname] | list class perms
+		// !tps [classname] add [perm] | add class perm
+		// !tps [classname] rem [perm] | remove class perm
+		
+		// !tps [teamname] | list team perms
+		// !tps [teamname] add [perm] | add team perm
+		// !tps [teamname] rem [perm] | remove team perm
+		
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 1,2,3,4 })) {
+			return;
+		}
+		
+		HashMap<String, Boolean> map = getTempPerms(arena, "default");
+		
+		if (args.length == 1) {
+			arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, "default"));
+			for (String s : map.keySet()) {
+				arena.msg(sender, s + " - " + StringParser.colorVar(map.get(s)));
+			}
+			return;
+		}
+		
+		if (args.length == 3 && (args[1].equals("add") || args[1].equals("rem"))) {
+			if (args[1].equals("add")) {
+				map.put(args[2], true);
+				arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[2], "default"));
+			} else {
+				map.remove(args[2]);
+				arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[2], "default"));
+			}
+			setTempPerms(arena, map, "default");
+			return;
+		}
+		
+		if (args.length == 3) {
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "add | remove"));
+			return;
+		}
+		
+		map = getTempPerms(arena, args[1]);
+		if (args.length == 2) {
+			arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, args[1]));
+			for (String s : map.keySet()) {
+				arena.msg(sender, s + " - " + StringParser.colorVar(map.get(s)));
+			}
+			return;
+		}
+		
+		if (args.length == 4 && (args[2].equals("add") || args[2].equals("rem"))) {
+			if (args[2].equals("add")) {
+				map.put(args[3], true);
+				arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[3], args[1]));
+			} else {
+				map.remove(args[3]);
+				arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[3], args[1]));
+			}
+			setTempPerms(arena, map, args[1]);
+			return;
+		}
+		
+		arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[2], "add | remove"));
+		return;
 	}
 	
 	/**
@@ -30,11 +118,11 @@ public class TempPerms extends ArenaModule {
 	 * 
 	 * @return the temporary permissions map
 	 */
-	private HashMap<String, Boolean> getTempPerms(Arena arena) {
+	private HashMap<String, Boolean> getTempPerms(Arena arena, String node) {
 		HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 
-		if (arena.getArenaConfig().getYamlConfiguration().contains("perms.default")) {
-			List<String> list = arena.getArenaConfig().getStringList("perms.default",
+		if (arena.getArenaConfig().getYamlConfiguration().contains("perms."+node)) {
+			List<String> list = arena.getArenaConfig().getStringList("perms."+node,
 					new ArrayList<String>());
 			for (String key : list) {
 				result.put(key.replace("-", "").replace("^", ""),
@@ -45,43 +133,56 @@ public class TempPerms extends ArenaModule {
 		return result;
 	}
 	
-	@Override
-	public boolean isActive(Arena arena) {
-		return true;
+	private void setTempPerms(Arena arena, HashMap<String, Boolean> map, String node) {
+		List<String> result = new ArrayList<String>();
+		for (String s : map.keySet()) {
+			result.add((map.get(s)?"":"^")+s);
+		}
+		arena.getArenaConfig().setManually("perms." + node, result);
+		arena.getArenaConfig().save();
 	}
 	
 	@Override
-	public void lateJoin(Arena arena, Player player) {
-		setPermissions(arena, player);
+	public void lateJoin(Player player) {
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+		setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaClass().getName()));
 	}
 	
 	public boolean onPlayerInteract(PlayerInteractEvent event) {
 		return false;
 	}
 	
-	public void onSignChange(SignChangeEvent event) {
-
-	}
-
 	/**
 	 * set temporary permissions for a player
 	 * 
 	 * @param p
 	 *            the player to set
 	 */
-	private void setPermissions(Arena arena, Player p) {
-		HashMap<String, Boolean> perms = getTempPerms(arena);
-		if (perms == null || perms.isEmpty())
+	private void setPermissions(Arena arena, ArenaPlayer ap, HashMap<String, Boolean> mGlobal, HashMap<String, Boolean> mTeam) {
+		
+		HashMap<String, Boolean> mClass = getTempPerms(arena, ap.getArenaClass().getName());
+		
+		HashMap<String, Boolean> total = new HashMap<String, Boolean>();
+		for (String s : mGlobal.keySet()) {
+			total.put(s, mGlobal.get(s));
+		}
+		for (String s : mTeam.keySet()) {
+			total.put(s, mTeam.get(s));
+		}
+		for (String s : mClass.keySet()) {
+			total.put(s, mClass.get(s));
+		}
+		
+		if (total.isEmpty())
 			return;
 
-		ArenaPlayer player = ArenaPlayer.parsePlayer(p.getName());
-		PermissionAttachment pa = p.addAttachment(PVPArena.instance);
+		PermissionAttachment pa = ap.get().addAttachment(PVPArena.instance);
 
-		for (String entry : perms.keySet()) {
-			pa.setPermission(entry, perms.get(entry));
+		for (String entry : total.keySet()) {
+			pa.setPermission(entry, total.get(entry));
 		}
-		p.recalculatePermissions();
-		player.getTempPermissions().add(pa);
+		ap.get().recalculatePermissions();
+		ap.getTempPermissions().add(pa);
 	}
 
 	/**
@@ -104,15 +205,18 @@ public class TempPerms extends ArenaModule {
 	}
 	
 	@Override
-	public void resetPlayer(Arena arena, Player player, boolean force) {
+	public void resetPlayer(Player player, boolean force) {
 		removePermissions(player);
 	}
 	
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
+	public void parseStart() {
+		HashMap<String, Boolean> mGlobal = getTempPerms(arena, "default");
+		
 		for (ArenaTeam team : arena.getTeams()) {
+			HashMap<String, Boolean> mTeam = getTempPerms(arena, team.getName());
 			for (ArenaPlayer ap : team.getTeamMembers()) {
-				setPermissions(arena, ap.get());
+				setPermissions(arena, ap, mGlobal, mTeam);
 			}
 		}
 	}
