@@ -1,12 +1,11 @@
 package net.slipcor.pvparena.modules.colorteams;
 
-import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.getspout.spoutapi.SpoutManager;
+import org.kitteh.tag.TagAPI;
 
-import net.minecraft.server.EntityPlayer;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -21,7 +20,6 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 public class CTManager extends ArenaModule {
 	protected static String spoutHandler = null;
 	protected static boolean enabled = false;
-	private Field name = null;
 
 	public CTManager() {
 		super("ColorTeams");
@@ -29,7 +27,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.1";
 	}
 	
 	@Override
@@ -131,18 +129,6 @@ public class CTManager extends ArenaModule {
 		}
 		if (spoutHandler == null && Bukkit.getServer().getPluginManager().getPlugin("Spout") != null) {
 			spoutHandler = SpoutManager.getInstance().toString();
-		} else {
-			try {
-				// Grab the field
-				for(Field field : EntityPlayer.class.getFields()) {
-					if(field.getName().equalsIgnoreCase("name")) {
-						name = field;
-					}
-				}
-				name.setAccessible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 		Arena.pmsg(Bukkit.getConsoleSender(), Language.parse((spoutHandler == null) ? MSG.MODULE_COLORTEAMS_NOSPOUT : MSG.MODULE_COLORTEAMS_SPOUT));
 
@@ -187,6 +173,7 @@ public class CTManager extends ArenaModule {
 			SpoutManager.getPlayer(player).setTitle(player.getName());
 		} else {
 			player.setDisplayName(player.getName());
+			TagAPI.refreshPlayer(player);
 		}
 	}
 	
