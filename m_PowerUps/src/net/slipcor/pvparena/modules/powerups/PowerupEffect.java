@@ -25,21 +25,9 @@ import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.listeners.EntityListener;
+import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.StatisticsManager;
-
-/**
- * powerup effect class
- * 
- * -
- * 
- * contains definitions and values of a powerup effect
- * 
- * @author slipcor
- * 
- * @version v0.7.16
- * 
- */
 
 public class PowerupEffect {
 	protected boolean active = false;
@@ -247,7 +235,8 @@ public class PowerupEffect {
 					ArenaTeam team = ap.getArenaTeam();
 					Arena arena = ap.getArena();
 
-					PVPArena.instance.getAmm().announce(
+					PVPArena.instance.getAmm();
+					ArenaModuleManager.announce(
 							arena,
 							Language.parse(MSG.FIGHT_KILLED_BY, player.getName(),
 									arena.parseDeathCause(player,

@@ -11,19 +11,6 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.modules.powerups.PowerupEffect.classes;
 
-/**
- * powerup class
- * 
- * -
- * 
- * contains basic powerup methods and variables
- * 
- * @author slipcor
- * 
- * @version v0.6.15
- * 
- */
-
 public class Powerup {
 	public String name; // PowerUp display name
 	public Material item; // item that triggers this Powerup
