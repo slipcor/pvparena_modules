@@ -3,8 +3,11 @@ package net.slipcor.pvparena.modules.skins;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
@@ -14,16 +17,18 @@ import pgDev.bukkit.DisguiseCraft.disguise.DisguiseType;
 import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class Skins extends ArenaModule {
 	protected static boolean mdHandler = false;
 	protected static boolean dcHandler = false;
+	protected static boolean enabled = false;
 	DisguiseCraftAPI dapi = null;
 	
 	HashSet<String> disguised = new HashSet<String>();
@@ -34,11 +39,79 @@ public class Skins extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.8.20";
+		return "v0.10.0.0";
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
+	public boolean checkCommand(String s) {
+		return s.equals("!sk") || s.startsWith("skins");
+	}
+
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !sk [teamname] [skin] | 
+		// !sk [classname] [skin] | 
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 3 })) {
+			return;
+		}
+
+		ArenaClass c = arena.getClass(args[1]);
+
+		if (c == null) {
+			ArenaTeam team = arena.getTeam(args[1]);
+			if (team != null) {
+				// !sk [teamname] [skin]
+
+				if (args.length == 2) {
+					arena.msg(sender, Language.parse(
+							MSG.MODULE_SKINS_SHOWTEAM,
+							team.getColoredName(),
+							(String) arena.getArenaConfig().getUnsafe("skins." + team.getName())));
+					return;
+				}
+
+				arena.getArenaConfig().setManually("skins." + team.getName(), args[2]);
+				arena.getArenaConfig().save();
+				arena.msg(sender, Language.parse(MSG.SET_DONE, team.getName(), args[2]));
+
+				return;
+			}
+			// no team AND no class!
+
+			arena.msg(sender,
+					Language.parse(MSG.ERROR_CLASS_NOT_FOUND, args[1]));
+			arena.msg(sender, Language.parse(MSG.ERROR_TEAMNOTFOUND, args[1]));
+			printHelp(arena, sender);
+			return;
+		}
+		// !sk [classname] | show
+		// !bg [classname] [skin]
+
+		if (args.length == 2) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.MODULE_SKINS_SHOWCLASS,
+							(String) arena.getArenaConfig().getUnsafe("skins." + c.getName())));
+			return;
+		}
+
+		arena.getArenaConfig().setManually("skins." + c.getName(), args[2]);
+		arena.getArenaConfig().save();
+		arena.msg(sender, Language.parse(MSG.SET_DONE, c.getName(), args[2]));
+
+	}
+
+	@Override
+	public void configParse(YamlConfiguration config) {
 		if (config.get("skins") == null) {
 			for (ArenaTeam team : arena.getTeams()) {
 				String sName = team.getName();
@@ -49,12 +122,19 @@ public class Skins extends ArenaModule {
 	}
 	
 	@Override
-	public boolean isActive(Arena arena) {
-		return arena.getArenaConfig().getBoolean(CFG.MODULES_SKINS_ACTIVE) && (mdHandler || dcHandler);
+	public void parseRespawn(Player player, ArenaTeam team, DamageCause lastDamageCause, Entity damager) {
+		if (dcHandler) {
+			if (dapi.isDisguised(player)) {
+				dapi.undisguisePlayer(player);
+			}
+		}
 	}
 
 	@Override
-	public void onEnable() {
+	public void parseEnable() {
+		if (enabled) {
+			return;
+		}
 		MSG m = MSG.MODULE_SKINS_NOMOD;
 		if (Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft") != null) {
 			dcHandler = true;
@@ -66,11 +146,20 @@ public class Skins extends ArenaModule {
 			m = MSG.MODULE_SKINS_MOBDISGUISE;
 		}
 		
+		enabled = true;
+		
 		Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(m));
+	}
+	
+	private void printHelp(Arena arena, CommandSender sender) {
+		arena.msg(sender, "/pa [arenaname] !sk [teamname]  | show team disguise");
+		arena.msg(sender, "/pa [arenaname] !sk [teamname] [skin] | set team disguise");
+		arena.msg(sender, "/pa [arenaname] !sk [classname]  | show class disguise");
+		arena.msg(sender, "/pa [arenaname] !sk [classname] [skin] | set class disguise");
 	}
 
 	@Override
-	public void tpPlayerToCoordName(Arena arena, Player player, String place) {
+	public void tpPlayerToCoordName(Player player, String place) {
 		if (dcHandler) {
 			dapi = DisguiseCraft.getAPI();
 		}
@@ -91,10 +180,10 @@ public class Skins extends ArenaModule {
 				Disguise d = new Disguise(dapi.newEntityID(), disguise, t == null ? DisguiseType.Player : t);
 				if (dapi.isDisguised(player)) {
 					dapi.undisguisePlayer(player);
-					Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DisguiseRunnable(player, d), 3L);
-				} else {
-					dapi.disguisePlayer(player, d);
 				}
+					
+				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DisguiseRunnable(player, d), 3L);
+				
 			} else if (mdHandler) {
 				if (!MobDisguiseAPI.disguisePlayer(player, disguise)) {
 					if (!MobDisguiseAPI.disguisePlayerAsPlayer(player, disguise)) {
