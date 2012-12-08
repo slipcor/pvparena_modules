@@ -10,6 +10,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.ArenaManager;
 
 public class BattleRunnable implements Runnable {
@@ -42,8 +43,10 @@ public class BattleRunnable implements Runnable {
 					continue;
 				}
 
-				if (!Debug.override)
-				db.i("arena: " + String.valueOf(name));
+				if (!Debug.override) {
+					db.i("arena pos: " + String.valueOf(name));
+					db.i("arena IN : " + StringParser.verify(ap.getArena()));
+				}
 				
 				if (name == null || name.equals("")) {
 					continue; // not physically in an arena
@@ -64,6 +67,7 @@ public class BattleRunnable implements Runnable {
 					
 					Arena a = ArenaManager.getArenaByName(name);
 					if (a.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
+						p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM, 1000));
 						p.setHealth(0);
 						p.damage(1000);
 					} else {

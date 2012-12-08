@@ -14,7 +14,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.economy.Economy;
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
@@ -24,6 +23,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModuleManager;
 
 public class VaultSupport extends ArenaModule {
 
@@ -38,7 +38,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.9.5.5";
+		return "v0.10.0.0";
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public PACheck checkJoin(Arena arena, CommandSender sender,
+	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean join) {
 		
 		if (res.hasError() || !join) {
@@ -82,7 +82,7 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
+	public void commitCommand(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) { //TODO move to new parseCommand
 			Language.parse(MSG.ERROR_ONLY_PLAYERS);
 			return;
@@ -166,7 +166,7 @@ public class VaultSupport extends ArenaModule {
 				return;
 			}
 			PACheck res = new PACheck();
-			checkJoin(arena, sender, res, true);
+			checkJoin(sender, res, true);
 			
 			if (res.hasError()) {
 				arena.msg(sender, res.getError());
@@ -176,17 +176,17 @@ public class VaultSupport extends ArenaModule {
 			economy.withdrawPlayer(player.getName(), amount);
 			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
 			paPlayersJoinAmount.put(player.getName(), amount);
-			commitCommand(arena, player, null);
+			commitCommand(player, null);
 		}
 	}
 	
-	public void parsePlayerDeath(Arena arena, Player p,
+	public void parsePlayerDeath(Player p,
 			EntityDamageEvent cause) {
-		killreward(arena,p,ArenaPlayer.getLastDamagingPlayer(cause));
+		killreward(p,ArenaPlayer.getLastDamagingPlayer(cause));
 	}
 
 	@Override
-	public boolean commitEnd(Arena arena, ArenaTeam aTeam) {
+	public boolean commitEnd(ArenaTeam aTeam) {
 
 		if (economy != null) {
 			db.i("eConomy set, parse bets");
@@ -228,7 +228,7 @@ public class VaultSupport extends ArenaModule {
 	}
 	
 	@Override
-	public void giveRewards(Arena arena, Player player) {
+	public void giveRewards(Player player) {
 
 		int winners = 0;
 		db.i("giving Vault rewards to Player " + player);
@@ -259,7 +259,8 @@ public class VaultSupport extends ArenaModule {
 
 					economy.depositPlayer(nSplit[0], amount);
 					try {
-						PVPArena.instance.getAmm().announce(
+						PVPArena.instance.getAmm();
+						ArenaModuleManager.announce(
 								arena,
 								Language.parse(MSG.NOTICE_PLAYERAWARDED,
 										economy.format(amount)), "PRIZE");
@@ -301,7 +302,8 @@ public class VaultSupport extends ArenaModule {
 
 					economy.depositPlayer(nKey, amount);
 					try {
-						PVPArena.instance.getAmm().announce(
+						PVPArena.instance.getAmm();
+						ArenaModuleManager.announce(
 								arena,
 								Language.parse(MSG.NOTICE_PLAYERAWARDED,
 										economy.format(amount)), "PRIZE");
@@ -314,13 +316,8 @@ public class VaultSupport extends ArenaModule {
 			}
 		}
 	}
-	
-	@Override
-	public boolean isActive(Arena a) {
-		return true;
-	}
 
-	private void killreward(Arena arena, Player p, Entity damager) {
+	private void killreward(Player p, Entity damager) {
 		Player player = null;
 		if (damager instanceof Player) {
 			player = (Player) damager;
@@ -349,14 +346,14 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public void onEnable() {
-		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
+	public void parseEnable() {
+		if (economy == null && Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
 			setupEconomy();
 		}
 	}
 
 	@Override
-	public void displayInfo(Arena arena, CommandSender player) {
+	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Economy (Vault): §f entry: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))
@@ -381,7 +378,7 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public void parseJoin(Arena arena, CommandSender sender, ArenaTeam team) {
+	public void parseJoin(CommandSender sender, ArenaTeam team) {
 		int entryfee = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE, 0);
 		if (entryfee > 0) {
 			if (economy != null) {
@@ -398,12 +395,12 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public void parseRespawn(Arena arena, Player player, ArenaTeam team,
+	public void parseRespawn(Player player, ArenaTeam team,
 			DamageCause cause, Entity damager) {
-		killreward(arena, player, damager);
+		killreward(player, damager);
 	}
 
-	protected void pay(Arena arena, HashSet<String> result) {
+	protected void pay(HashSet<String> result) {
 		if (result == null || result.size() == arena.getTeamNames().size()) {
 			return;
 		}
@@ -466,13 +463,13 @@ public class VaultSupport extends ArenaModule {
 	}
 
 	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		paPlayersBetAmount.clear();
 		paPlayersJoinAmount.clear();
 	}
 	
 	@Override
-	public void resetPlayer(Arena arena, Player player, boolean force) {
+	public void resetPlayer(Player player, boolean force) {
 		if (player == null) {
 			return;
 		}
@@ -512,8 +509,7 @@ public class VaultSupport extends ArenaModule {
 		return (economy != null);
 	}
 	
-	public void timedEnd(Arena arena, HashSet<String> result) {
-		pay(arena, result);
+	public void timedEnd(HashSet<String> result) {
+		pay(result);
 	}
-
 }

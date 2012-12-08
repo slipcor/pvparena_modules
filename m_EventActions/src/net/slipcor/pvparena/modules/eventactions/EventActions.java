@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Button;
@@ -18,7 +17,6 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
@@ -32,48 +30,18 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.6.16";
+		return "v0.9.9.9";
 	}
-	
-	@Override
-	public void configParse(Arena arena, YamlConfiguration config) {
-		
-		List<String> items = new ArrayList<String>();
 
-		if (config.get("event") != null) {
-			return;
-		}
-		
-		items.add("cmd<=>deop %player%");
-		items.add("brc<=>Join %arena%!");
-		items.add("switch<=>switch1");
-		items.add("msg<=>Welcome to %arena%!");
-
-		arena.getArenaConfig().setManually("event.death", items);
-		arena.getArenaConfig().setManually("event.end", items);
-		arena.getArenaConfig().setManually("event.exit", items);
-		arena.getArenaConfig().setManually("event.join", items);
-		arena.getArenaConfig().setManually("event.kill", items);
-		arena.getArenaConfig().setManually("event.leave", items);
-		arena.getArenaConfig().setManually("event.lose", items);
-		arena.getArenaConfig().setManually("event.start", items);
-		arena.getArenaConfig().setManually("event.win", items);
-		arena.getArenaConfig().save();
-	}
 	
 	@Override
-	public boolean isActive(Arena arena) {
-		return arena.getArenaConfig().getBoolean(CFG.MODULES_EVENTACTIONS_ACTIVE);
-	}
-	
-	@Override
-	public void onEnable() {
+	public void parseEnable() {
 		Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
 	}
 
 	protected void catchEvent(String string, Player p, Arena a) {
 		
-		if (a == null) {
+		if (a == null || !a.equals(arena)) {
 			return;
 		}
 		
@@ -165,4 +133,5 @@ public class EventActions extends ArenaModule {
 		
 		return false;
 	}
+
 }
