@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.economy.Economy;
-import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
@@ -38,7 +37,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.6";
 	}
 
 	@Override
@@ -259,7 +258,7 @@ public class VaultSupport extends ArenaModule {
 
 					economy.depositPlayer(nSplit[0], amount);
 					try {
-						PVPArena.instance.getAmm();
+						
 						ArenaModuleManager.announce(
 								arena,
 								Language.parse(MSG.NOTICE_PLAYERAWARDED,
@@ -302,7 +301,7 @@ public class VaultSupport extends ArenaModule {
 
 					economy.depositPlayer(nKey, amount);
 					try {
-						PVPArena.instance.getAmm();
+						
 						ArenaModuleManager.announce(
 								arena,
 								Language.parse(MSG.NOTICE_PLAYERAWARDED,

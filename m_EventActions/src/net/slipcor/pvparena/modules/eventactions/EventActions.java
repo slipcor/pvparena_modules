@@ -18,7 +18,6 @@ import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
@@ -30,7 +29,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.9.9.9";
+		return "v0.10.0.6";
 	}
 
 	
@@ -126,7 +125,7 @@ public class EventActions extends ArenaModule {
 				}
 				
 				SpawnManager.setBlock(a, new PABlockLocation(loc), s+i);
-				ArenaManager.tellPlayer(event.getPlayer(), Language.parse(MSG.SPAWN_SET, s+i));
+				Arena.pmsg(event.getPlayer(), Language.parse(MSG.SPAWN_SET, s+i));
 				return true;
 			}
 		}

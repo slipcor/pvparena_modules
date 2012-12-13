@@ -35,7 +35,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.6";
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 		}
 
 		if (boards.containsKey(event.getBlock().getLocation())) {
-			ArenaManager.tellPlayer(event.getPlayer(), Language.parse(MSG.MODULE_ARENABOARDS_EXISTS));
+			Arena.pmsg(event.getPlayer(), Language.parse(MSG.MODULE_ARENABOARDS_EXISTS));
 			return;
 		}
 

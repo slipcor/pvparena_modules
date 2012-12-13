@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA__Command;
 import net.slipcor.pvparena.core.Debug;
@@ -11,7 +12,6 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
@@ -35,7 +35,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.6";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -71,7 +71,7 @@ public class Blocks extends ArenaModule {
 		
 		if (!PVPArena.hasAdminPerms(sender)
 				&& !(PVPArena.hasCreatePerms(sender, arena))) {
-			ArenaManager.tellPlayer(sender,
+			Arena.pmsg(sender,
 					Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
 			return;
 		}
@@ -84,7 +84,7 @@ public class Blocks extends ArenaModule {
 			
 			arena.getArenaConfig().setManually("inventories", null);
 			arena.getArenaConfig().save();
-			ArenaManager.tellPlayer(sender, Language.parse(MSG.MODULE_BLOCKRESTORE_CLEARINVDONE));
+			Arena.pmsg(sender, Language.parse(MSG.MODULE_BLOCKRESTORE_CLEARINVDONE));
 			return;
 		}
 

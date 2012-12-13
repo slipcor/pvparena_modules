@@ -28,7 +28,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.6";
 	}
 	
 	@Override
@@ -36,7 +36,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 	}
 	
-	@EventHandler
+	@EventHandler	
 	public void onRedStone(BlockRedstoneEvent event) {
 		db.i("redstone");
 		Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));

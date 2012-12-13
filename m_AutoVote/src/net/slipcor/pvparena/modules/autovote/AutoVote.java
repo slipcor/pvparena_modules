@@ -30,7 +30,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.6";
 	}
 	
 	@Override
@@ -59,7 +59,7 @@ public class AutoVote extends ArenaModule {
 		if (args[0].startsWith("vote")) {
 
 			votes.put(sender.getName(), arena.getName());
-			ArenaManager.tellPlayer(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
+			Arena.pmsg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
 			
 			if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
 				return;
@@ -69,7 +69,7 @@ public class AutoVote extends ArenaModule {
 				if (p == null) {
 					continue;
 				}
-				ArenaManager.tellPlayer(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
+				Arena.pmsg(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
 			}
 			return;
 		} else {

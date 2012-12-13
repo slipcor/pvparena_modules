@@ -8,7 +8,6 @@ import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.StatisticsManager;
 
 import org.bukkit.block.BlockFace;
@@ -155,12 +154,12 @@ public class ArenaBoard {
 			db.i("global!");
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
-				ArenaManager.tellPlayer(player,
+				Arena.pmsg(player,
 						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
-				ArenaManager.tellPlayer(player,
+				Arena.pmsg(player,
 						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			}

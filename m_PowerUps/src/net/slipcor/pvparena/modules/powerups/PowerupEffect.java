@@ -235,7 +235,7 @@ public class PowerupEffect {
 					ArenaTeam team = ap.getArenaTeam();
 					Arena arena = ap.getArena();
 
-					PVPArena.instance.getAmm();
+					
 					ArenaModuleManager.announce(
 							arena,
 							Language.parse(MSG.FIGHT_KILLED_BY, player.getName(),
