@@ -21,7 +21,7 @@ public class FactionsListener implements Listener {
 		this.fs = fs;
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!event.isCancelled()) {
 			// not cancelled, no problem ^^

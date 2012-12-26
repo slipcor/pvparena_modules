@@ -50,7 +50,8 @@ public class RestoreContainer {
 			}
 			ItemStack is = contents[i];
 			result[i] = new ItemStack(is.getType(), is.getAmount(),
-					is.getDurability(), is.getData().getData());
+					is.getDurability());
+			result[i].setData(is.getData());
 
 			for (Enchantment ench : is.getEnchantments().keySet()) {
 				result[i].addUnsafeEnchantment(ench,

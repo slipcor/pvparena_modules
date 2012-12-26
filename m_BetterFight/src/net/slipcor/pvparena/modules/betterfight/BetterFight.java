@@ -16,14 +16,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class BetterFight extends ArenaModule {
 	
@@ -35,7 +33,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.9";
 	}
 	
 	@Override
@@ -98,7 +96,7 @@ public class BetterFight extends ArenaModule {
 				return;
 			}
 			
-			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "time | death"));
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | items | messages"));
 			return;
 		}
 	}
@@ -151,7 +149,7 @@ public class BetterFight extends ArenaModule {
 			}
 		}
 	}
-
+/*
 	@Override
 	public void parseRespawn(Player player, ArenaTeam team,
 			DamageCause cause, Entity damager) {
@@ -182,7 +180,7 @@ public class BetterFight extends ArenaModule {
 		}
 		
 		arena.broadcast(msg);
-	}
+	}*/
 	
 	@Override
 	public void parsePlayerDeath(Player player,

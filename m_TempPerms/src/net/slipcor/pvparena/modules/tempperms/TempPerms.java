@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -26,7 +27,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.0.8";
 	}
 	
 	@Override
@@ -191,7 +192,7 @@ public class TempPerms extends ArenaModule {
 	 * @param p
 	 *            the player to reset
 	 */
-	private void removePermissions(Player p) {
+	void removePermissions(Player p) {
 		ArenaPlayer player = ArenaPlayer.parsePlayer(p.getName());
 		if (player == null || player.getTempPermissions() == null) {
 			return;
@@ -206,7 +207,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public void resetPlayer(Player player, boolean force) {
-		removePermissions(player);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new ResetRunnable(this, player), 5L);
 	}
 	
 	@Override

@@ -97,7 +97,7 @@ public class BanKick extends ArenaModule {
 			tryKick(sender, args[1]);
 			long time = parseStringToSeconds(args[2]);
 			BanRunnable run = new BanRunnable(this, sender, args[1], false);
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(PVPArena.instance, run, 20 * time);
+			Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, run, 20 * time);
 			doBan(sender, args[1]);
 		} else if (cmd.equals("ban")) {
 			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{2})) {
@@ -116,7 +116,7 @@ public class BanKick extends ArenaModule {
 			}
 			long time = parseStringToSeconds(args[2]);
 			BanRunnable run = new BanRunnable(this, sender, args[1], true);
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(PVPArena.instance, run, 20 * time);
+			Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, run, 20 * time);
 			doUnBan(sender, args[1]);
 		}
 	}
@@ -165,16 +165,16 @@ public class BanKick extends ArenaModule {
 		char type = 's';
 		
 		while (pos < string.length()) {
-			String sChar = string.substring(pos, pos+1);
+			Character c = string.charAt(pos);
 			
 			try {
-				int i = Integer.parseInt(sChar);
+				int i = Integer.parseInt("" + c);
 				input += String.valueOf(i);
 			} catch (Exception e) {
-				if (sChar.equals(".") || sChar.equals(",")) {
+				if (c == '.' || c == ',') {
 					input += ".";
 				} else {
-					type = sChar.charAt(0);
+					type = c;
 					break;
 				}
 			}

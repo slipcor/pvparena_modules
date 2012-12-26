@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.economy.Economy;
@@ -37,7 +36,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.6";
+		return "v0.10.0.16";
 	}
 
 	@Override
@@ -177,11 +176,6 @@ public class VaultSupport extends ArenaModule {
 			paPlayersJoinAmount.put(player.getName(), amount);
 			commitCommand(player, null);
 		}
-	}
-	
-	public void parsePlayerDeath(Player p,
-			EntityDamageEvent cause) {
-		killreward(p,ArenaPlayer.getLastDamagingPlayer(cause));
 	}
 
 	@Override
@@ -392,11 +386,10 @@ public class VaultSupport extends ArenaModule {
 			}
 		}
 	}
-
-	@Override
-	public void parseRespawn(Player player, ArenaTeam team,
-			DamageCause cause, Entity damager) {
-		killreward(player, damager);
+	
+	public void parsePlayerDeath(Player p,
+			EntityDamageEvent cause) {
+		killreward(p,ArenaPlayer.getLastDamagingPlayer(cause));
 	}
 
 	protected void pay(HashSet<String> result) {

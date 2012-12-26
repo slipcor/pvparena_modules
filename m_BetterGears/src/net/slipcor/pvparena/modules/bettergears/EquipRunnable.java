@@ -18,7 +18,7 @@ public class EquipRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		m.handler.equip(p);
+		m.equip(p);
 	}
 
 }

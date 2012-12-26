@@ -1,14 +1,20 @@
 package net.slipcor.pvparena.modules.bettergears;
 
 import java.util.HashMap;
-import org.bukkit.Bukkit;
+import java.util.Random;
+
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
@@ -26,7 +32,6 @@ public class BetterGears extends ArenaModule {
 
 	HashMap<ArenaTeam, Short[]> colors = new HashMap<ArenaTeam, Short[]>();
 	HashMap<ArenaClass, Short> levels = new HashMap<ArenaClass, Short>();
-	HandlerAbstract handler;
 
 	public BetterGears() {
 		super("BetterGears");
@@ -35,7 +40,7 @@ public class BetterGears extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.1";
+		return "v0.10.0.11";
 	}
 
 	@Override
@@ -160,41 +165,72 @@ public class BetterGears extends ArenaModule {
 		}
 	}
 
+	void equip(ArenaPlayer ap) {
+
+		short r = 0;
+		short g = 0;
+		short b = 0;
+		
+		if (getArena().isFreeForAll()) {
+			r = (short) ((new Random()).nextInt(256));
+			g = (short) ((new Random()).nextInt(256));
+			b = (short) ((new Random()).nextInt(256));
+		} else {
+			r = colors.get(ap.getArenaTeam())[0];
+			g = colors.get(ap.getArenaTeam())[1];
+			b = colors.get(ap.getArenaTeam())[2];
+		}
+		
+
+		ItemStack[] isArmor = new ItemStack[4];
+		isArmor[0] = new ItemStack(Material.LEATHER_HELMET, 1);
+		isArmor[1] = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+		isArmor[2] = new ItemStack(Material.LEATHER_LEGGINGS, 1);
+		isArmor[3] = new ItemStack(Material.LEATHER_BOOTS, 1);
+
+		Color c = Color.fromBGR(b, g, r);
+		for (int i = 0; i < 4; i++) {
+			LeatherArmorMeta lam = (LeatherArmorMeta) isArmor[i].getItemMeta();
+			
+			lam.setColor(c);
+			isArmor[i].setItemMeta(lam);
+		}
+
+		Short s = levels.get(ap.getArenaClass());
+		
+		if (s == null) {
+			String autoClass = getArena().getArenaConfig().getString(CFG.READY_AUTOCLASS);
+			ArenaClass ac = getArena().getClass(autoClass);
+			s = levels.get(ac);
+		}
+		
+
+		isArmor[0].addUnsafeEnchantment(
+				Enchantment.PROTECTION_ENVIRONMENTAL, s);
+		isArmor[0]
+				.addUnsafeEnchantment(Enchantment.PROTECTION_EXPLOSIONS, s);
+		isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FALL, s);
+		isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, s);
+		isArmor[0]
+				.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, s);
+
+		ap.get().getInventory().setHelmet(isArmor[0]);
+		ap.get().getInventory().setChestplate(isArmor[1]);
+		ap.get().getInventory().setLeggings(isArmor[2]);
+		ap.get().getInventory().setBoots(isArmor[3]);
+	}
+
 	@Override
 	public void initiate(Player player) {
 		if (colors.isEmpty()) {
 			setup();
 		}
-
-		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-		new EquipRunnable(ap, this);
 	}
 
 	@Override
 	public void reset(boolean force) {
 		colors.remove(arena);
 		levels.remove(arena);
-	}
-
-	@Override
-	public void parseEnable() {
-		if (handler == null) {
-			try {
-				Class.forName("org.bukkit.craftbukkit.inventory.CraftItemStack");
-				this.handler = new net.slipcor.pvparena.modules.bettergears.HandlerPre145(this);
-				return;
-			} catch (ClassNotFoundException e) {
-			}
-			try {
-				Class.forName("org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack");
-				this.handler = new net.slipcor.pvparena.modules.bettergears.HandlerV145(this);
-				return;
-			} catch (ClassNotFoundException e) {
-			}
-		}
-		
-		Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.ERROR_ERROR, "Your MC version is not supported by BetterGears, tell SLiPCoR about that, and nag here: http://goo.gl/KOteq"));
-		this.unload(); // unload, we have no supported
 	}
 
 	@Override
@@ -206,7 +242,7 @@ public class BetterGears extends ArenaModule {
 		// debug();
 
 		for (ArenaPlayer ap : arena.getFighters()) {
-			handler.equip(ap);
+			equip(ap);
 		}
 	}
 
@@ -235,17 +271,6 @@ public class BetterGears extends ArenaModule {
 			colors.put(t, s);
 			db.i(t.getName() + " : " + StringParser.joinArray(s, ","));
 		}
-	}
-
-	int calculateTeamColor(Short[] s) {
-		int sum = 0;
-		sum += s[0] << 16;
-		sum += s[1] << 8;
-		sum += s[2];
-
-		db.i("color int: " + sum);
-
-		return sum;
 	}
 
 	private Short parseClassNameToDefaultProtection(String name) {
