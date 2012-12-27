@@ -3,11 +3,14 @@ package net.slipcor.pvparena.modules.skins;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
@@ -39,7 +42,7 @@ public class Skins extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.1.14";
 	}
 
 	@Override
@@ -159,9 +162,43 @@ public class Skins extends ArenaModule {
 	}
 
 	@Override
-	public void tpPlayerToCoordName(Player player, String place) {
+	public void tpPlayerToCoordName(final Player player, String place) {
 		if (dcHandler) {
 			dapi = DisguiseCraft.getAPI();
+		}
+		
+		if (!dcHandler && !mdHandler) {
+			ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+			if (team != null) {
+				final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
+				String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
+				System.out.print(disguise);
+				if (disguise.equals("SKELETON")) {
+					is.setDurability((short) 0);
+				} else if (disguise.equals("WITHER_SKELETON")) {
+					is.setDurability((short) 1);
+				} else if (disguise.equals("ZOMBIE")) {
+					is.setDurability((short) 2);
+				} else if (disguise.equals("PLAYER")) {
+					is.setDurability((short) 3);
+				} else if (disguise.equals("CREEPER")) {
+					is.setDurability((short) 4);
+				} else {
+					is.setDurability((short) 3);
+					SkullMeta sm = (SkullMeta) is.getItemMeta();
+					sm.setOwner(disguise);
+					is.setItemMeta(sm);
+				}
+				
+				class TempRunnable implements Runnable {
+					@Override
+					public void run() {
+						player.getInventory().setHelmet(is);
+					}
+					
+				}
+				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunnable(), 5L);
+			}
 		}
 		
 		if (disguised.contains(player.getName())) {
