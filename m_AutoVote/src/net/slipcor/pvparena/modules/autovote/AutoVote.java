@@ -30,7 +30,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.6";
+		return "v0.10.1.8";
 	}
 	
 	@Override
@@ -41,7 +41,7 @@ public class AutoVote extends ArenaModule {
 	@Override
 	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean b) {
-		if (res.hasError()) {
+		if (res.hasError() || !b) {
 			return res;
 		}
 		
@@ -140,10 +140,8 @@ public class AutoVote extends ArenaModule {
 		votes.clear();
 		a = null;
 
-		AutoVoteRunnable fr = new AutoVoteRunnable(arena,
+		new AutoVoteRunnable(arena,
 				arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
-		fr.setId(Bukkit.getScheduler().scheduleSyncRepeatingTask(
-				PVPArena.instance, fr, 20L, 20L));
 	}
 
 	public static void commit() {
@@ -196,7 +194,7 @@ public class AutoVote extends ArenaModule {
 				continue;
 			}
 
-			pj.commit(a, p, null);
+			pj.commit(a, p, new String[0]);
 		}
 
 		new StartRunnable(a,
