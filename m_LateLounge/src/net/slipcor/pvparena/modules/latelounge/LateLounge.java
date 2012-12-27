@@ -24,7 +24,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.1.14";
 	}
 	
 	private static HashSet<String> players = new HashSet<String>();
@@ -41,7 +41,7 @@ public class LateLounge extends ArenaModule {
 	@Override
 	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean b) {
-		if (res.hasError() || res.getPriority() > priority) {
+		if (!b || res.hasError() || res.getPriority() > priority) {
 			return res;
 		}
 		
