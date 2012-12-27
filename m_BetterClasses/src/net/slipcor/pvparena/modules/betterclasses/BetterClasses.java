@@ -32,12 +32,17 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.1.14";
 	}
 	
 	@Override
 	public boolean cannotSelectClass(Player player,
 			String className) {
+		
+		if (notEnoughEXP(player, className)) {
+			arena.msg(player, Language.parse(MSG.ERROR_CLASS_NOTENOUGHEXP, className));
+			return true;
+		}
 		
 		int max = 0;
 		
@@ -74,7 +79,7 @@ public class BetterClasses extends ArenaModule {
 		
 		return false;
 	}
-	
+
 	@Override
 	public boolean checkCommand(String s) {
 		return s.equals("!bc") || s.startsWith("betterclass");
@@ -86,6 +91,10 @@ public class BetterClasses extends ArenaModule {
 		// !bc [classname] add [def]| add
 		// !bc [classname] remove [type] | remove
 		// !bc [classname] clear | clear
+		
+		// !bc [classname] set exp [level]
+		// !bc [classname] set max [count]
+		
 		if (!PVPArena.hasAdminPerms(sender)
 				&& !(PVPArena.hasCreatePerms(sender, arena))) {
 			arena.msg(sender,
@@ -103,6 +112,29 @@ public class BetterClasses extends ArenaModule {
 			arena.msg(sender, Language.parse(MSG.ERROR_CLASS_NOT_FOUND, args[1]));
 			return;
 		}
+		
+		if (args.length == 5 && args[2].equals("set")) {
+			int value = 0;
+			try {
+				value = Integer.parseInt(args[4]);
+			} catch (Exception e) {
+				arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[4]));
+				return;
+			}
+			
+			if (args[3].equalsIgnoreCase("exp")) {
+				String node = "modules.betterclasses.neededEXPLevel." + c.getName();
+				arena.getArenaConfig().setManually(node, value);
+				arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
+			} else if (args[3].equalsIgnoreCase("max")) {
+				String node = "modules.betterclasses.maxPlayers." + c.getName();
+				arena.getArenaConfig().setManually(node, value);
+				arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
+			}
+			return;
+		}
+		
+		
 		HashSet<PotionEffect> ape = new HashSet<PotionEffect>();
 		
 		String s = (String) arena.getArenaConfig().getUnsafe("modules.betterclasses.permEffects." + c.getName());
@@ -215,7 +247,20 @@ public class BetterClasses extends ArenaModule {
 		for (ArenaClass c : arena.getClasses()) {
 			cfg.addDefault("modules.betterclasses.permEffects." + c.getName(), "none");
 			cfg.addDefault("modules.betterclasses.maxPlayers." + c.getName(), 0);
+			cfg.addDefault("modules.betterclasses.neededEXPLevel." + c.getName(), 0);
 		}
+	}
+	
+	private boolean notEnoughEXP(Player player, String className) {
+		int needed = 0;
+		
+		try {
+			needed = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.neededEXPLevel." + className);
+		} catch (Exception e) {
+			return false;
+		}
+		
+		return player.getLevel() < needed;
 	}
 	
 	@Override
