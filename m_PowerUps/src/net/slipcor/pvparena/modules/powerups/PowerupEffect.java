@@ -23,6 +23,7 @@ import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.listeners.EntityListener;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -234,17 +235,18 @@ public class PowerupEffect {
 				} else {
 					ArenaTeam team = ap.getArenaTeam();
 					Arena arena = ap.getArena();
-
-					
 					ArenaModuleManager.announce(
 							arena,
 							Language.parse(MSG.FIGHT_KILLED_BY, player.getName(),
 									arena.parseDeathCause(player,
 											DamageCause.MAGIC, player)), "LOSER");
-					arena.broadcast(Language.parse(MSG.FIGHT_KILLED_BY,
-							team.colorizePlayer(player) + ChatColor.YELLOW,
-							arena.parseDeathCause(player,
-									DamageCause.MAGIC, player)));
+					
+					if (arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+						arena.broadcast(Language.parse(MSG.FIGHT_KILLED_BY,
+								team.colorizePlayer(player) + ChatColor.YELLOW,
+								arena.parseDeathCause(player,
+										DamageCause.MAGIC, player)));
+					}
 					ap.getStatistics(arena).incStat(StatisticsManager.type.LOSSES);
 					// needed so player does not get found when dead
 					arena.removePlayer(player, "lose", true, false);
