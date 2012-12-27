@@ -18,7 +18,7 @@ public class DuelManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.1.14";
 	}
 
 	public String duel = null;
@@ -46,7 +46,10 @@ public class DuelManager extends ArenaModule {
 		} else if (args[0].toLowerCase().equals("accept")) {
 			if (duel != null) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DuelRunnable(this, duel, sender.getName()), 60L);
-				arena.broadcast(Language.parse(MSG.MODULE_DUEL_STARTING));
+				Player p = Bukkit.getPlayer(duel);
+				if (p != null) {
+					p.sendMessage(Language.parse(MSG.MODULE_DUEL_ACCEPTED, sender.getName()));
+				}
 			}
 		}
 	}

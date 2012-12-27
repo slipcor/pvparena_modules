@@ -4,7 +4,9 @@ import org.bukkit.Bukkit;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.commands.PAI_Ready;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.core.Language;
 
 public class DuelRunnable implements Runnable {
 	private final DuelManager dm;
@@ -27,6 +29,7 @@ public class DuelRunnable implements Runnable {
 		PAG_Join cmd = new PAG_Join();
 		cmd.commit(dm.getArena(), Bukkit.getPlayer(hoster), new String[0]);
 		cmd.commit(dm.getArena(), Bukkit.getPlayer(player), new String[0]);
+		dm.getArena().broadcast(Language.parse(MSG.MODULE_DUEL_STARTING));
 	}
 
 	/**
