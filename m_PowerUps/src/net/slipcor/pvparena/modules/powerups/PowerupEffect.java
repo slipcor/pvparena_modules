@@ -96,7 +96,7 @@ public class PowerupEffect {
 				this.mobtype = (String) puEffectVals.get(evName);
 				db.i("type: " + type.name());
 			} else {
-				db.w("undefined effect class value: " + evName);
+				PVPArena.instance.getLogger().warning("undefined effect class value: " + evName);
 			}
 		}
 	}
@@ -203,7 +203,7 @@ public class PowerupEffect {
 				defender.setFireTicks(20);
 			} // else: chance fail :D
 		} else {
-			db.w("unexpected fight powerup effect: " + this.type.name());
+			PVPArena.instance.getLogger().warning("unexpected fight powerup effect: " + this.type.name());
 		}
 	}
 
@@ -291,7 +291,7 @@ public class PowerupEffect {
 				return true;
 			}
 		}
-		db.w("unexpected " + this.type.name());
+		PVPArena.instance.getLogger().warning("unexpected " + this.type.name());
 		return false;
 	}
 
@@ -311,7 +311,7 @@ public class PowerupEffect {
 				((Player) event.getEntity()).setFoodLevel(20);
 			} // else: chance fail :D
 		} else {
-			db.w("unexpected fight heal effect: " + this.type.name());
+			PVPArena.instance.getLogger().warning("unexpected fight heal effect: " + this.type.name());
 		}
 	}
 
@@ -329,7 +329,7 @@ public class PowerupEffect {
 				event.setVelocity(event.getVelocity().multiply(factor));
 			} // else: chance fail :D
 		} else {
-			db.w("unexpected jump effect: " + this.type.name());
+			PVPArena.instance.getLogger().warning("unexpected jump effect: " + this.type.name());
 		}
 	}
 
@@ -373,12 +373,10 @@ public class PowerupEffect {
 		
 		for (PotionEffectType pet : PotionEffectType.values()) {
 			if (pet == null) {
-				db.s("pet == null");
 				continue;
 			}
 			db.i("parsing PET " + pet.toString());
 			if (pet.getName() == null) {
-				db.s("pet.getName == null");
 				continue;
 			}
 			db.i("parsing PET " + pet.toString());

@@ -122,7 +122,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 		} else if (pu.startsWith("time")) {
 			// later
 		} else {
-			db.w("error activating aftermatch module");
+			PVPArena.instance.getLogger().warning("error activating aftermatch module");
 		}
 	}
 

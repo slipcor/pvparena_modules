@@ -55,7 +55,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v0.10.1.14";
+		return "v0.10.1.22";
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			powerupDiff = Integer.parseInt(ss[1]);
 			usesPowerups = new Powerups(powerups);
 		} else {
-			db.w("error activating powerup module");
+			PVPArena.instance.getLogger().warning("error activating powerup module");
 		}
 
 		config.options().copyDefaults(true);

@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.modules.powerups.PowerupEffect.classes;
 
@@ -36,7 +37,7 @@ public class Powerup {
 			PowerupEffect.classes pec = PowerupEffect.parseClass(eClass);
 			if (pec == null) {
 				if (!eClass.equals("item"))
-					db.w("unknown effect class: " + eClass);
+					PVPArena.instance.getLogger().warning("unknown effect class: " + eClass);
 				continue;
 			}
 			PowerupEffect pe = new PowerupEffect(eClass,
