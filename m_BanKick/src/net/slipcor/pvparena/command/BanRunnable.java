@@ -21,7 +21,7 @@ public class BanRunnable implements Runnable {
 		this.admin = admin;
 		this.player = p;
 		this.ban = b;
-		db.i("BanRunnable constructor");
+		db.i("BanRunnable constructor", admin);
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class BanRunnable implements Runnable {
 	 */
 	@Override
 	public void run() {
-		db.i("BanRunnable commiting");
+		db.i("BanRunnable commiting", admin);
 		if (ban) {
 			bk.doBan(admin, player);
 		} else {

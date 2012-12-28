@@ -32,7 +32,7 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.1.14";
+		return "v0.10.2.0";
 	}
 	
 	@Override
@@ -302,7 +302,7 @@ public class BetterClasses extends ArenaModule {
 	
 	public void parseRespawn(Player player, ArenaTeam team, DamageCause cause, Entity damager) {
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-		db.i("respawning player " + StringParser.verify(ap));
+		db.i("respawning player " + StringParser.verify(ap), player);
 		HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
 		if (map == null) {
 			PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
@@ -313,11 +313,11 @@ public class BetterClasses extends ArenaModule {
 		
 		HashSet<PotionEffect> ape = map.get(c);
 		if (ape == null) {
-			db.i("no effects for team " + StringParser.verify(c));
+			db.i("no effects for team " + StringParser.verify(c), player);
 			return;
 		}
 		for (PotionEffect pe : ape) {
-			db.i("adding " + pe.getType());
+			db.i("adding " + pe.getType(), player);
 			player.addPotionEffect(pe);
 		}
 	}

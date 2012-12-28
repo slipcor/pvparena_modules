@@ -124,16 +124,14 @@ public class ArenaBoard {
 	 * @return true if the player clicked a leaderboard sign, false otherwise
 	 */
 	public static boolean checkInteract(ArenaBoardManager abm, PlayerInteractEvent event) {
-
-		db.i("checking ArenaBoard interact");
-
 		Player player = event.getPlayer();
+		db.i("checking ArenaBoard interact", player);
 
 		if (event.getClickedBlock() == null) {
 			return false;
 		}
 
-		db.i("block is not null");
+		db.i("block is not null", player);
 
 		if (!abm.boards.containsKey(event.getClickedBlock().getLocation())
 				&& abm.globalBoard == null
@@ -142,7 +140,7 @@ public class ArenaBoard {
 			return false;
 		}
 
-		db.i("arenaboard exists");
+		db.i("arenaboard exists", player);
 
 		ArenaBoard ab = abm.boards.get(event.getClickedBlock().getLocation());
 
@@ -151,7 +149,7 @@ public class ArenaBoard {
 		}
 
 		if (ab.global) {
-			db.i("global!");
+			db.i("global!", player);
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
 				Arena.pmsg(player,
@@ -164,7 +162,7 @@ public class ArenaBoard {
 				return true;
 			}
 		} else {
-			db.i("not global!");
+			db.i("not global!", player);
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
 				ab.abm.getArena().msg(player,

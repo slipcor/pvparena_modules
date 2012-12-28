@@ -15,7 +15,7 @@ public class BattlefieldGuard extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.2.0";
 	}
 	
 	@Override

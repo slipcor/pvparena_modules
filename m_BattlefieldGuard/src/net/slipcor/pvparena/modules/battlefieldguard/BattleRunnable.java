@@ -44,8 +44,8 @@ public class BattleRunnable implements Runnable {
 				}
 
 				if (!Debug.override) {
-					db.i("arena pos: " + String.valueOf(name));
-					db.i("arena IN : " + StringParser.verify(ap.getArena()));
+					db.i("arena pos: " + String.valueOf(name), p);
+					db.i("arena IN : " + StringParser.verify(ap.getArena()), p);
 				}
 				
 				if (name == null || name.equals("")) {

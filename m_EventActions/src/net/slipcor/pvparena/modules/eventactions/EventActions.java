@@ -29,7 +29,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.6";
+		return "v0.10.2.0";
 	}
 
 	
@@ -103,16 +103,16 @@ public class EventActions extends ArenaModule {
 		if (!event.hasBlock()) {
 			return false;
 		}
-		db.i("interact eventactions");
+		db.i("interact eventactions", event.getPlayer());
 		Arena a = PAA_Edit.activeEdits.get(event.getPlayer().getName());
 		
 		if (a != null) {
-			db.i("found edit arena");
+			db.i("found edit arena", event.getPlayer());
 			Location loc = event.getClickedBlock().getLocation();
 			MaterialData state = loc.getBlock().getState().getData();
 			
 			if ((state instanceof Lever) || (state instanceof Button)) {
-				db.i("found lever/button");
+				db.i("found lever/button", event.getPlayer());
 				String s = "switch";
 				int i = 0;
 				for (String node : a.getArenaConfig().getKeys("spawns")) {

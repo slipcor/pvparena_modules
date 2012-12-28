@@ -135,7 +135,7 @@ public class PowerupEffect {
 			active = true;
 		}
 
-		db.i("initiating - " + type.name());
+		db.i("initiating - " + type.name(), player);
 
 		if (duration == 0) {
 			active = false;
@@ -175,7 +175,7 @@ public class PowerupEffect {
 	 */
 	public void commit(Player attacker, Player defender,
 			EntityDamageByEntityEvent event) {
-		db.i("committing entitydamagebyentityevent: " + this.type.name());
+		db.i("committing entitydamagebyentityevent: " + this.type.name(), attacker);
 		if (this.type == classes.DMG_RECEIVE) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
@@ -216,7 +216,7 @@ public class PowerupEffect {
 	 */
 	public boolean commit(Player player) {
 
-		db.i("committing " + this.type.name());
+		db.i("committing " + this.type.name(), player);
 		Random r = new Random();
 		if (r.nextFloat() <= chance) {
 			if (this.type == classes.HEALTH) {
@@ -302,7 +302,7 @@ public class PowerupEffect {
 	 *            the triggering event
 	 */
 	public void commit(EntityRegainHealthEvent event) {
-		db.i("committing entityregainhealthevent " + this.type.name());
+		db.i("committing entityregainhealthevent " + this.type.name(), ((Player) event.getEntity()));
 		if (this.type == classes.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
@@ -322,7 +322,7 @@ public class PowerupEffect {
 	 *            the triggering event
 	 */
 	public void commit(PlayerVelocityEvent event) {
-		db.i("committing velocityevent " + this.type.name());
+		db.i("committing velocityevent " + this.type.name(), event.getPlayer());
 		if (this.type == classes.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {

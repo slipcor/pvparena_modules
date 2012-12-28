@@ -24,7 +24,7 @@ public class DuelRunnable implements Runnable {
 		this.dm = dm;
 		this.player = p;
 		this.hoster = h;
-		db.i("DuelRunnable constructor");
+		db.i("DuelRunnable constructor", hoster);
 
 		PAG_Join cmd = new PAG_Join();
 		cmd.commit(dm.getArena(), Bukkit.getPlayer(hoster), new String[0]);
@@ -37,7 +37,7 @@ public class DuelRunnable implements Runnable {
 	 */
 	@Override
 	public void run() {
-		db.i("DuelRunnable commiting");
+		db.i("DuelRunnable commiting", hoster);
 		if (!"none".equals(dm.getArena().getArenaConfig().getString(CFG.READY_AUTOCLASS))) {
 			PAI_Ready cmd = new PAI_Ready();
 			cmd.commit(dm.getArena(), Bukkit.getPlayer(hoster), new String[0]);

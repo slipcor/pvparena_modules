@@ -25,7 +25,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.2.0";
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public class AnnouncementManager extends ArenaModule {
 	@Override
 	public void parseJoin(CommandSender sender, ArenaTeam team) {
 
-		db.i("parseJoin ... ");
+		db.i("parseJoin ... ", sender);
 
 		if (TeamManager.countPlayersInTeams(arena) < 2) {
 			Announcement.announce(arena, Announcement.type.ADVERT, Language

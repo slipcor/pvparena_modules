@@ -55,7 +55,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v0.10.1.22";
+		return "v0.10.2.0";
 	}
 
 	/**
@@ -276,7 +276,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	public void onEntityDamageByEntity(Player attacker,
 			Player defender, EntityDamageByEntityEvent event) {
 		if (usesPowerups != null) {
-			db.i("committing powerup triggers");
+			db.i("committing powerup triggers", attacker);
 			Powerup p = usesPowerups.puActive.get(attacker);
 			if ((p != null) && (p.canBeTriggered()))
 				p.commit(attacker, defender, event);
@@ -314,7 +314,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			return;
 		}
 		if (usesPowerups != null) {
-			db.i("onPlayerPickupItem: fighting player");
+			db.i("onPlayerPickupItem: fighting player", player);
 			Iterator<Powerup> pi = usesPowerups.puTotal.iterator();
 			while (pi.hasNext()) {
 				Powerup p = pi.next();
@@ -339,7 +339,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public void onPlayerVelocity(PlayerVelocityEvent event) {
-		db.i("inPlayerVelocity: fighting player");
+		db.i("inPlayerVelocity: fighting player", event.getPlayer());
 		if (usesPowerups != null) {
 			Powerup p = usesPowerups.puActive.get(event.getPlayer());
 			if (p != null) {
@@ -391,11 +391,11 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			if (p != null) {
 				if (p.canBeTriggered()) {
 					if (p.isEffectActive(PowerupEffect.classes.FREEZE)) {
-						db.i("freeze in effect, cancelling!");
+						db.i("freeze in effect, cancelling!", event.getPlayer());
 						event.setCancelled(true);
 					}
 					if (p.isEffectActive(PowerupEffect.classes.SPRINT)) {
-						db.i("sprint in effect, sprinting!");
+						db.i("sprint in effect, sprinting!", event.getPlayer());
 						event.getPlayer().setSprinting(true);
 					}
 					if (p.isEffectActive(PowerupEffect.classes.SLIP)) {

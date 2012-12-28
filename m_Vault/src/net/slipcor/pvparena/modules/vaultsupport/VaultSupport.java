@@ -36,7 +36,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.1.22";
+		return "v0.10.2.0";
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class VaultSupport extends ArenaModule {
 		if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE) > 0) {
 			if (economy != null) {
 				if (!economy.hasAccount(sender.getName())) {
-					db.i("Account not found: " + sender.getName());
+					db.i("Account not found: " + sender.getName(), sender);
 					res.setError(this, "account not found: " + sender.getName());
 					return res;
 				}
@@ -121,7 +121,7 @@ public class VaultSupport extends ArenaModule {
 				return;
 			}
 			if (!economy.hasAccount(player.getName())) {
-				db.i("Account not found: " + player.getName());
+				db.i("Account not found: " + player.getName(), sender);
 				return;
 			}
 			if (!economy.has(player.getName(), amount)) {
@@ -154,7 +154,7 @@ public class VaultSupport extends ArenaModule {
 				return;
 			}
 			if (!economy.hasAccount(player.getName())) {
-				db.i("Account not found: " + player.getName());
+				db.i("Account not found: " + player.getName(), sender);
 				return;
 			}
 			if (!economy.has(player.getName(), amount)) {
@@ -224,17 +224,17 @@ public class VaultSupport extends ArenaModule {
 	public void giveRewards(Player player) {
 
 		int winners = 0;
-		db.i("giving Vault rewards to Player " + player);
+		db.i("giving Vault rewards to Player " + player, player);
 		for (ArenaPlayer p : arena.getFighters()) {
-			db.i("- checking fighter " + p.getName());
+			db.i("- checking fighter " + p.getName(), p.getName());
 			if (p.getStatus() != null && p.getStatus().equals(Status.FIGHT)) {
-				db.i("-- added!");
+				db.i("-- added!", p.getName());
 				winners++;
 			}
 		}
 		
 		if (economy != null) {
-			db.i("checking on bet amounts!");
+			db.i("checking on bet amounts!", player);
 			for (String nKey : paPlayersBetAmount.keySet()) {
 				String[] nSplit = nKey.split(":");
 
@@ -266,7 +266,6 @@ public class VaultSupport extends ArenaModule {
 			}
 			
 			if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_WINPOT)) {
-				db.i("");
 				double amount = paPots.get(arena.getName()) / winners;
 				
 				economy.depositPlayer(player.getName(), amount);
@@ -326,7 +325,7 @@ public class VaultSupport extends ArenaModule {
 		}
 		
 		if (!economy.hasAccount(player.getName())) {
-			db.i("Account not found: " + player.getName());
+			db.i("Account not found: " + player.getName(), player);
 			return;
 		}
 		economy.depositPlayer(player.getName(), amount);
@@ -480,7 +479,7 @@ public class VaultSupport extends ArenaModule {
 			}
 			arena.msg(player, Language.parse(MSG.MODULE_VAULT_REFUNDING, economy.format(entryfee)));
 			if (!economy.hasAccount(player.getName())) {
-				db.i("Account not found: " + player.getName());
+				db.i("Account not found: " + player.getName(), player);
 				return;
 			}
 			economy.depositPlayer(player.getName(), entryfee);

@@ -35,7 +35,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.0.6";
+		return "v0.10.2.0";
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 		event.setLine(0, headline);
 		if (a == null) {
-			db.i("creating global leaderboard");
+			db.i("creating global leaderboard", event.getPlayer());
 			globalBoard = new ArenaBoard(this, new PABlockLocation(event.getBlock().getLocation()), null);
 			Location loc = event.getBlock().getLocation();
 			Integer x = Integer.valueOf(loc.getBlockX());

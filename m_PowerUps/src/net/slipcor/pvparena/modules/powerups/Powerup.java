@@ -130,7 +130,7 @@ public class Powerup {
 	 *            the player to commit the effect on
 	 */
 	public void activate(Player player) {
-		db.i("activating! - " + name);
+		db.i("activating! - " + name, player);
 		for (PowerupEffect pe : effects) {
 			if (pe.uses != 0 && pe.duration != 0)
 				pe.init(player);
