@@ -33,7 +33,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.13";
+		return "v0.10.2.16";
 	}
 	
 	@Override
@@ -46,6 +46,7 @@ public class BetterFight extends ArenaModule {
 		// !bf messages # 
 		// !bf items [items]
 		// !bf reset
+		// !bf explode
 		
 		if (!PVPArena.hasAdminPerms(sender)
 				&& !(PVPArena.hasCreatePerms(sender, arena))) {
@@ -65,8 +66,15 @@ public class BetterFight extends ArenaModule {
 					arena.getArenaConfig().save();
 					arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH.getNode(), String.valueOf(!b)));
 					return;
+				} else if (args[1].equals("explode")) {
+					boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH);
+					
+					arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH, !b);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH.getNode(), String.valueOf(!b)));
+					return;
 				}
-				arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset"));
+				arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | explode"));
 				return;
 			}
 			if (args[1].equals("items")) {
@@ -96,7 +104,7 @@ public class BetterFight extends ArenaModule {
 				return;
 			}
 			
-			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | items | messages"));
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | items | messages | explode"));
 			return;
 		}
 	}
@@ -189,6 +197,10 @@ public class BetterFight extends ArenaModule {
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
 			kills.put(player.getName(), 0);
+		}
+		
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
+			player.getLocation().getWorld().createExplosion(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 2f);
 		}
 		
 		if (p == null || kills.get(p.getName()) == null) {
