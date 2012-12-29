@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class RespawnRelay extends ArenaModule {
-	HashMap<String, BukkitRunnable> runners = new HashMap<String, BukkitRunnable>();
+	static HashMap<String, BukkitRunnable> runners = new HashMap<String, BukkitRunnable>();
 	
 	public RespawnRelay() {
 		super("RespawnRelay");
@@ -21,7 +21,7 @@ public class RespawnRelay extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.7";
+		return "v0.10.2.13";
 	}
 	
 	@Override

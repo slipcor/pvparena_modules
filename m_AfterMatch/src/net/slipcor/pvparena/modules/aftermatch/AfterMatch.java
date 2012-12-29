@@ -30,7 +30,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.2.13";
 	}
 
 	public void afterMatch() {

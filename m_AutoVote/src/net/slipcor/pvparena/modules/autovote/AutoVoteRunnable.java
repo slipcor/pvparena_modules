@@ -23,7 +23,6 @@ public class AutoVoteRunnable extends ArenaRunnable {
 
 	protected void commit() {
 		db.i("ArenaVoteRunnable commiting");
-		cancel();
 		AutoVote.commit();
 	}
 

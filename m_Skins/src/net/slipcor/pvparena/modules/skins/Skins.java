@@ -42,7 +42,7 @@ public class Skins extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.1.14";
+		return "v0.10.2.13";
 	}
 
 	@Override
@@ -172,7 +172,6 @@ public class Skins extends ArenaModule {
 			if (team != null) {
 				final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
 				String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
-				System.out.print(disguise);
 				if (disguise.equals("SKELETON")) {
 					is.setDurability((short) 0);
 				} else if (disguise.equals("WITHER_SKELETON")) {

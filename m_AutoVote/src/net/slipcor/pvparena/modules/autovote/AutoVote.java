@@ -30,7 +30,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.1.8";
+		return "v0.10.2.13";
 	}
 	
 	@Override

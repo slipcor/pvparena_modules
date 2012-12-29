@@ -36,7 +36,7 @@ public class RelayRunnable extends ArenaRunnable {
 		SpawnManager.respawn(a,  ap);
 		a.unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 		ap.setStatus(Status.FIGHT);
-		
+		RespawnRelay.runners.remove(ap.getName());
 	}
 
 	@Override
