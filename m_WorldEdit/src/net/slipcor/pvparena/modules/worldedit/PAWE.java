@@ -32,27 +32,33 @@ import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 
 public class PAWE extends ArenaModule {
-	private static WorldEditPlugin wep;
+	private static WorldEditPlugin worldEdit;
 	public PAWE() {
 		super("WorldEdit");
 	}
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.2.30";
 	}
 	
 	@Override
 	public void parseEnable() {
-		if (wep != null) {
-			return;
-		}
-		Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldEdit");
-	    if ((pwep != null) && (pwep.isEnabled()) && ((pwep instanceof WorldEditPlugin)))
-	      wep = (WorldEditPlugin)pwep;
-	    
+		getWEP();
 	}
 	
+	private WorldEditPlugin getWEP() {
+		if (worldEdit != null) {
+			return worldEdit;
+		}
+		Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldEdit");
+	    if ((pwep != null) && (pwep.isEnabled()) && ((pwep instanceof WorldEditPlugin))) {
+	    	worldEdit = (WorldEditPlugin)pwep;
+	    	return worldEdit;
+	    }
+	    return null;
+	}
+
 	@Override
 	public void reset(boolean force) {
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) {
@@ -157,23 +163,44 @@ public class PAWE extends ArenaModule {
 		
 			if (args[0].endsWith("load")) {
 				load(ars);
+				arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LOADED, args[1]));
 				return;
 			} else if (args[0].endsWith("save")) {
 				save(ars);
+				arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_SAVED, args[1]));
 				return;
 			} else if (args[0].endsWith("create")) {
 				create((Player) sender, arena, args[1]);
+				arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_CREATED, args[1]));
 				return;
 			} else if (args[0].equals("!we") || args[0].equals("!we")) {
+				
+				if (args[1].endsWith("save")) {
+					boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE);
+					arena.getArenaConfig().set(CFG.MODULES_WORLDEDIT_AUTOSAVE, !b);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WORLDEDIT_AUTOSAVE.getNode(), String.valueOf(!b)));
+					return;
+				} else if (args[1].endsWith("load")) {
+					boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD);
+					arena.getArenaConfig().set(CFG.MODULES_WORLDEDIT_AUTOLOAD, !b);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WORLDEDIT_AUTOLOAD.getNode(), String.valueOf(!b)));
+					return;
+				}
+				
 				create((Player) sender, arena, args[1]);
+				arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_CREATED, args[1]));
 				return;
 			}
 			helpCommands(arena, sender);
 		} else {
 			if (args[0].endsWith("load")) {
 				load(ars, args[2]);
+				arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LOADED, args[1]));
 			} else if (args[0].endsWith("save")) {
 				save(ars, args[2]);
+				arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_SAVED, args[1]));
 			} else {
 				create((Player) sender, arena, args[1], args[2]);
 			}
@@ -183,13 +210,15 @@ public class PAWE extends ArenaModule {
 	private void helpCommands(Arena arena, CommandSender sender) {
 		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regsave [regionname] {filename}"));
 		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regload [regionname] {filename}"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regcreate [regionname]"));
 		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autoload"));
 		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autosave"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we create"));
 		return;
 	}
 
 	private void create(Player p, Arena arena, String regionName, String regionShape) {
-		Selection s = wep.getSelection(p);
+		Selection s = getWEP().getSelection(p);
 		if (s == null) {
 			Arena.pmsg(p, Language.parse(MSG.ERROR_REGION_SELECT_2));
 			return;
