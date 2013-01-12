@@ -18,24 +18,23 @@ public class ChestFiller extends ArenaModule {
 	public ChestFiller() {
 		super("ChestFiller");
 	}
+	boolean setup = false;
 	
 	@Override
 	public String version() {
-		return "v0.10.2.13";
-	}
-	
-	@Override
-	public void parseEnable() {
-		if (arena.getArenaConfig().getUnsafe("modules.chestfiller") == null) {
-			arena.getArenaConfig().setManually("modules.chestfiller.cfitems", "1,2,3,4,5,6,7,8,9");
-			arena.getArenaConfig().setManually("modules.chestfiller.cfmaxitems", 5);
-			arena.getArenaConfig().setManually("modules.chestfiller.cfminitems", 0);
-			arena.getArenaConfig().save();
-		}
+		return "v0.10.2.31";
 	}
 	
 	@Override
 	public void parseStart() {
+		if (!setup) {
+			if (arena.getArenaConfig().getUnsafe("modules.chestfiller") == null) {
+				arena.getArenaConfig().setManually("modules.chestfiller.cfitems", "1,2,3,4,5,6,7,8,9");
+				arena.getArenaConfig().setManually("modules.chestfiller.cfmaxitems", 5);
+				arena.getArenaConfig().setManually("modules.chestfiller.cfminitems", 0);
+				arena.getArenaConfig().save();
+			}
+		}
 		String items = null;
 		try {
 			items = (String) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems");

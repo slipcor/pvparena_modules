@@ -25,7 +25,7 @@ import net.slipcor.pvparena.loadables.ArenaModuleManager;
 
 public class VaultSupport extends ArenaModule {
 
-	public static Economy economy = null;
+	private static Economy economy = null;
 	private static HashMap<String, Double> paPlayersBetAmount = new HashMap<String, Double>();
 	private HashMap<String, Double> paPlayersJoinAmount = new HashMap<String, Double>();
 	private HashMap<String, Double> paPots = new HashMap<String, Double>();
@@ -36,7 +36,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.2.31";
 	}
 
 	@Override
@@ -221,6 +221,13 @@ public class VaultSupport extends ArenaModule {
 	}
 	
 	@Override
+	public void onThisLoad() {
+		if (economy == null && Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
+			setupEconomy();
+		}
+	}
+	
+	@Override
 	public void giveRewards(Player player) {
 
 		int winners = 0;
@@ -283,7 +290,7 @@ public class VaultSupport extends ArenaModule {
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
 						economy.format(amount)));
 
-			}
+			} 	
 
 			for (String nKey : paPlayersJoinAmount.keySet()) {
 
@@ -334,13 +341,6 @@ public class VaultSupport extends ArenaModule {
 					.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
 		} catch (Exception e) {
 			// nothing
-		}
-	}
-
-	@Override
-	public void parseEnable() {
-		if (economy == null && Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
-			setupEconomy();
 		}
 	}
 

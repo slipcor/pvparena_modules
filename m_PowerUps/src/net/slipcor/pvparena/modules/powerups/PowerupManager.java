@@ -47,6 +47,8 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	private int powerupDiffI = 0;
 
 	protected int SPAWN_ID = -1;
+	
+	private boolean setup = false;
 
 	public PowerupManager() {
 		super("PowerUps");
@@ -55,7 +57,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.2.31";
 	}
 
 	/**
@@ -189,6 +191,10 @@ public class PowerupManager extends ArenaModule implements Listener  {
 
 	@Override
 	public void configParse(YamlConfiguration config) {
+		if (!setup) {
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+			setup = true;
+		}
 		HashMap<String, Object> powerups = new HashMap<String, Object>();
 		if (config.getConfigurationSection("powerups") != null) {
 			HashMap<String, Object> map = (HashMap<String, Object>) config
@@ -296,7 +302,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			Powerup p = usesPowerups.puActive.get((Player) event.getEntity());
 			if (p != null) {
 				if (p.canBeTriggered()) {
-					if (p.isEffectActive(PowerupEffect.classes.HEAL)) {
+					if (p.isEffectActive(PowerupType.HEAL)) {
 						event.setCancelled(true);
 						p.commit(event);
 					}
@@ -315,10 +321,13 @@ public class PowerupManager extends ArenaModule implements Listener  {
 		}
 		if (usesPowerups != null) {
 			db.i("onPlayerPickupItem: fighting player", player);
+			db.i("item: " + event.getItem().getItemStack().getType(), player);
 			Iterator<Powerup> pi = usesPowerups.puTotal.iterator();
 			while (pi.hasNext()) {
 				Powerup p = pi.next();
+				db.i("is it " + p.item + "?", player);
 				if (event.getItem().getItemStack().getType().equals(p.item)) {
+					db.i("yes!", player);
 					Powerup newP = new Powerup(p);
 					if (usesPowerups.puActive.containsKey(player)) {
 						usesPowerups.puActive.get(player).disable();
@@ -344,17 +353,12 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			Powerup p = usesPowerups.puActive.get(event.getPlayer());
 			if (p != null) {
 				if (p.canBeTriggered()) {
-					if (p.isEffectActive(PowerupEffect.classes.JUMP)) {
+					if (p.isEffectActive(PowerupType.JUMP)) {
 						p.commit(event);
 					}
 				}
 			}
 		}
-	}
-
-	@Override
-	public void parseEnable() {
-		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 	}
 
 	/**
@@ -390,15 +394,15 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			Powerup p = usesPowerups.puActive.get(event.getPlayer());
 			if (p != null) {
 				if (p.canBeTriggered()) {
-					if (p.isEffectActive(PowerupEffect.classes.FREEZE)) {
+					if (p.isEffectActive(PowerupType.FREEZE)) {
 						db.i("freeze in effect, cancelling!", event.getPlayer());
 						event.setCancelled(true);
 					}
-					if (p.isEffectActive(PowerupEffect.classes.SPRINT)) {
+					if (p.isEffectActive(PowerupType.SPRINT)) {
 						db.i("sprint in effect, sprinting!", event.getPlayer());
 						event.getPlayer().setSprinting(true);
 					}
-					if (p.isEffectActive(PowerupEffect.classes.SLIP)) {
+					if (p.isEffectActive(PowerupType.SLIP)) {
 						//
 					}
 				}

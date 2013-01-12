@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.colorteams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.kitteh.tag.TagAPI;
 
@@ -25,7 +26,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.1.13";
+		return "v0.10.2.31";
 	}
 	
 	@Override
@@ -76,7 +77,7 @@ public class CTManager extends ArenaModule {
 	}
 	
 	@Override
-	public void parseEnable() {
+	public void configParse(YamlConfiguration config) {
 		if (enabled) {
 			return;
 		}
@@ -84,9 +85,8 @@ public class CTManager extends ArenaModule {
 		if (Bukkit.getServer().getPluginManager().getPlugin("TagAPI") != null) {
 			Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
 			Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_COLORTEAMS_TAGAPI));
-
-			enabled = true;
 		}
+		enabled = true;
 	}
 
 	@Override
@@ -119,7 +119,11 @@ public class CTManager extends ArenaModule {
 
 				@Override
 				public void run() {
-					TagAPI.refreshPlayer(player);
+					try {
+						TagAPI.refreshPlayer(player);
+					} catch (Exception e) {
+						
+					}
 				}
 			}
 			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunner()

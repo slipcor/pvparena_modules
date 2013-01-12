@@ -26,6 +26,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 public class Maps extends ArenaModule {
 	private HashSet<String> mappings = new HashSet<String>();
 	private HashSet<MapItem> items = new HashSet<MapItem>();
+	private boolean setup = false;
 	
 	public Maps() {
 		super("ArenaMaps");
@@ -33,7 +34,7 @@ public class Maps extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.2.31";
 	}
 	
 	@Override
@@ -94,13 +95,16 @@ public class Maps extends ArenaModule {
 		return items;
 	}
 	
-	@Override
-	public void parseEnable() {
+	public void trySetup() {
+		if (setup)
+			return;
 		Bukkit.getPluginManager().registerEvents(new MapListener(this), PVPArena.instance);
+		setup = true;
 	}
 	
 	@Override
 	public void parseJoin(CommandSender sender, ArenaTeam team) {
+		trySetup();
 		Player player = (Player) sender;
 		HashSet<String> maps = new HashSet<String>();
 		if (mappings.isEmpty()) {

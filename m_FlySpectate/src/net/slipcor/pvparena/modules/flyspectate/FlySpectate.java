@@ -27,7 +27,7 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.30";
+		return "v0.10.2.32";
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class FlySpectate extends ArenaModule {
 	}
 
 	@Override
-	public void commitSpectate(Player player) {
+	public void commitSpectate(final Player player) {
 		db.i("committing REAL spectate", player);
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, new PlayerStateCreateRunnable(ap, ap.get()), 2L);
@@ -65,8 +65,16 @@ public class FlySpectate extends ArenaModule {
 		ap.setStatus(Status.WATCH);
 		db.i("switching:", player);
 		getListener().hidePlayerLater(player);
-		player.setFlying(true);
-		player.setGameMode(GameMode.CREATIVE);
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+				arena.tpPlayerToCoordName(player, "spectator");
+				player.setGameMode(GameMode.CREATIVE);
+				
+			}
+		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(), 5L);
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ public class PowerupEffect {
 	protected boolean active = false;
 	protected int uses = -1;
 	protected int duration = -1;
-	protected classes type = null;
+	protected PowerupType type = null;
 	protected String mobtype = null;
 	private double factor = 1.0;
 	private double chance = 1.0;
@@ -42,20 +42,6 @@ public class PowerupEffect {
 	private List<String> items = new ArrayList<String>();
 	private static Debug db = new Debug(17);
 	private PotionEffect potEff = null;
-
-	/**
-	 * PowerupEffect classes
-	 */
-	public static enum classes {
-		DMG_CAUSE, DMG_RECEIVE, DMG_REFLECT, FREEZE, HEAL, HEALTH, IGNITE, LIVES, PORTAL, REPAIR, SLIP, SPAWN_MOB, SPRINT, JUMP, POTEFF;
-	}
-
-	/**
-	 * PowerupEffect instant classes (effects that activate when collecting)
-	 */
-	public static enum instants {
-		FREEZE, HEALTH, LIVES, PORTAL, REPAIR, SLIP, SPAWN_MOB, SPRINT, POTEFF;
-	}
 
 	/**
 	 * create a powerup effect class
@@ -108,12 +94,12 @@ public class PowerupEffect {
 	 *            the class name
 	 * @return a powerup effect
 	 */
-	public static classes parseClass(String s) {
-		for (classes c : classes.values()) {
+	public static PowerupType parseClass(String s) {
+		for (PowerupType c : PowerupType.values()) {
 			if (c.name().equalsIgnoreCase(s))
 				return c;
 			if (s.toUpperCase().startsWith("POTION.")) {
-				return classes.POTEFF;
+				return PowerupType.POTEFF;
 			}
 		}
 		return null;
@@ -140,12 +126,11 @@ public class PowerupEffect {
 		if (duration == 0) {
 			active = false;
 		}
-		for (instants i : instants.values()) {
-			if (this.type.toString().equals(i.toString())) {
-				// type is instant. commit!
-				commit(player);
-			}
+		
+		if (type.isActivatedOnPickup()) {
+			commit(player);
 		}
+		
 		if (potEff != null) {
 			player.addPotionEffect(potEff);
 		}
@@ -176,17 +161,17 @@ public class PowerupEffect {
 	public void commit(Player attacker, Player defender,
 			EntityDamageByEntityEvent event) {
 		db.i("committing entitydamagebyentityevent: " + this.type.name(), attacker);
-		if (this.type == classes.DMG_RECEIVE) {
+		if (this.type == PowerupType.DMG_RECEIVE) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
-		} else if (this.type == classes.DMG_CAUSE) {
+		} else if (this.type == PowerupType.DMG_CAUSE) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
-		} else if (this.type == classes.DMG_REFLECT) {
+		} else if (this.type == PowerupType.DMG_REFLECT) {
 			if (attacker == null) {
 				return;
 			}
@@ -197,7 +182,7 @@ public class PowerupEffect {
 						(int) Math.round(event.getDamage() * factor));
 				(new EntityListener()).onEntityDamageByEntity(reflectEvent);
 			} // else: chance fail :D
-		} else if (this.type == classes.IGNITE) {
+		} else if (this.type == PowerupType.IGNITE) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				defender.setFireTicks(20);
@@ -219,7 +204,7 @@ public class PowerupEffect {
 		db.i("committing " + this.type.name(), player);
 		Random r = new Random();
 		if (r.nextFloat() <= chance) {
-			if (this.type == classes.HEALTH) {
+			if (this.type == PowerupType.HEALTH) {
 				if (diff > 0) {
 					player.setHealth(player.getHealth() + diff);
 				} else {
@@ -227,7 +212,7 @@ public class PowerupEffect {
 							* factor));
 				}
 				return true;
-			} else if (this.type == classes.LIVES) {
+			} else if (this.type == PowerupType.LIVES) {
 				ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 				int lives = PACheck.handleGetLives(ap.getArena(), ap);
 				if (lives + diff > 0) {
@@ -256,10 +241,10 @@ public class PowerupEffect {
 				}
 
 				return true;
-			} else if (this.type == classes.PORTAL) {
+			} else if (this.type == PowerupType.PORTAL) {
 				// player.set
 				return true;
-			} else if (this.type == classes.REPAIR) {
+			} else if (this.type == PowerupType.REPAIR) {
 				for (String i : items) {
 					ItemStack is = null;
 					if (i.contains("HELM")) {
@@ -284,9 +269,9 @@ public class PowerupEffect {
 					}
 				}
 				return true;
-			} else if (this.type == classes.SPAWN_MOB) {
+			} else if (this.type == PowerupType.SPAWN_MOB) {
 				return true;
-			} else if (this.type == classes.SPRINT) {
+			} else if (this.type == PowerupType.SPRINT) {
 				player.setSprinting(true);
 				return true;
 			}
@@ -303,7 +288,7 @@ public class PowerupEffect {
 	 */
 	public void commit(EntityRegainHealthEvent event) {
 		db.i("committing entityregainhealthevent " + this.type.name(), ((Player) event.getEntity()));
-		if (this.type == classes.HEAL) {
+		if (this.type == PowerupType.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				event.setAmount((int) Math.round(event.getAmount() * factor));
@@ -323,7 +308,7 @@ public class PowerupEffect {
 	 */
 	public void commit(PlayerVelocityEvent event) {
 		db.i("committing velocityevent " + this.type.name(), event.getPlayer());
-		if (this.type == classes.HEAL) {
+		if (this.type == PowerupType.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				event.setVelocity(event.getVelocity().multiply(factor));

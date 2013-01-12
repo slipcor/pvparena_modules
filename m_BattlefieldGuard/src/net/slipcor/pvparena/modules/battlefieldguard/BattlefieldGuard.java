@@ -2,12 +2,16 @@ package net.slipcor.pvparena.modules.battlefieldguard;
 
 import java.util.HashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class BattlefieldGuard extends ArenaModule {
 	protected HashMap<Arena, Integer> runnables = new HashMap<Arena, Integer>();
+	
+	private boolean setup = false;
 
 	public BattlefieldGuard() {
 		super("BattlefieldGuard");
@@ -15,7 +19,7 @@ public class BattlefieldGuard extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.2.31";
 	}
 	
 	@Override
@@ -24,7 +28,10 @@ public class BattlefieldGuard extends ArenaModule {
 	}
 
 	@Override
-	public void parseEnable() {
+	public void configParse(YamlConfiguration config) {
+		if (setup)
+			return;
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(PVPArena.instance, new BattleRunnable(), 20L, 20L);
+		setup = true;
 	}
 }

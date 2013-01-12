@@ -30,7 +30,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public String version() {
-		return "v0.10.2.13";
+		return "v0.10.2.31";
 	}
 
 	public void afterMatch() {
@@ -209,7 +209,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 				+ i);
 		if (i > 0) {
 			db.i("aftermatch time trigger!");
-			new AfterRunnable(this, arena.getArenaConfig().getInt(CFG.MODULES_AFTERMATCH_AFTERMATCH));
+			new AfterRunnable(this, i);
 		}
 	}
 }

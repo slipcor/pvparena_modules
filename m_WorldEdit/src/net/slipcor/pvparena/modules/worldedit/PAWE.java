@@ -39,24 +39,15 @@ public class PAWE extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.30";
+		return "v0.10.2.31";
 	}
 	
 	@Override
-	public void parseEnable() {
-		getWEP();
-	}
-	
-	private WorldEditPlugin getWEP() {
-		if (worldEdit != null) {
-			return worldEdit;
-		}
+	public void onThisLoad() {
 		Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldEdit");
 	    if ((pwep != null) && (pwep.isEnabled()) && ((pwep instanceof WorldEditPlugin))) {
 	    	worldEdit = (WorldEditPlugin)pwep;
-	    	return worldEdit;
 	    }
-	    return null;
 	}
 
 	@Override
@@ -218,7 +209,7 @@ public class PAWE extends ArenaModule {
 	}
 
 	private void create(Player p, Arena arena, String regionName, String regionShape) {
-		Selection s = getWEP().getSelection(p);
+		Selection s = worldEdit.getSelection(p);
 		if (s == null) {
 			Arena.pmsg(p, Language.parse(MSG.ERROR_REGION_SELECT_2));
 			return;

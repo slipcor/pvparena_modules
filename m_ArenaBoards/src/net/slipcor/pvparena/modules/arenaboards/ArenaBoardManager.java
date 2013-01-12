@@ -35,7 +35,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.2.31";
 	}
 
 	@Override
@@ -51,10 +51,6 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 				boards.put(loc, new ArenaBoard(this, loc, arena));
 			}
 		}
-	}
-
-	@Override
-	public void parseEnable() {
 		String leaderboard = PVPArena.instance.getConfig().getString(
 				"leaderboard");
 		if (leaderboard != null) {

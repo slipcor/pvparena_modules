@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.startfreeze;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,8 +18,9 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class StartFreeze extends ArenaModule implements Listener {
-	protected static StartFreezer runnable = null;
-	protected static int id = -1;
+	StartFreezer runnable = null;
+	private boolean setup = false;
+	
 
 	public StartFreeze() {
 		super("StartFreeze");
@@ -26,7 +28,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.2.13";
+		return "v0.10.2.31";
 	}
 	
 	@Override
@@ -70,25 +72,25 @@ public class StartFreeze extends ArenaModule implements Listener {
 	@Override
 	public void reset(boolean force) {
 		if (runnable != null)
-			Bukkit.getScheduler().cancelTask(id);
+			runnable.cancel();
 		runnable = null;
-		id = -1;
 	}
 
 	@Override
 	public void parseStart() {
-		runnable = new StartFreezer();
-		id = 
-				Bukkit.getScheduler().scheduleSyncDelayedTask(
-						PVPArena.instance, runnable,
-						arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) * 20L);
+		runnable = new StartFreezer(null);
+		runnable.runTaskLater(PVPArena.instance, arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) * 20L);
 		arena.broadcast(Language.parse(MSG.MODULE_STARTFREEZE_ANNOUNCE,
 				String.valueOf(arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER))));
 	}
 
+
 	@Override
-	public void parseEnable() {
-		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+	public void configParse(YamlConfiguration config) {
+		if (!setup) {
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+			setup = true;
+		}
 	}
 
 	@EventHandler

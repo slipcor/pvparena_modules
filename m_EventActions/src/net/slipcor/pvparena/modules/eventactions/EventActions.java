@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Button;
@@ -22,6 +23,7 @@ import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class EventActions extends ArenaModule {
+	private boolean setup = false;
 	
 	public EventActions() {
 		super("EventActions");
@@ -29,13 +31,16 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.2.31";
 	}
 
 	
 	@Override
-	public void parseEnable() {
+	public void configParse(YamlConfiguration config) {
+		if (setup)
+			return;
 		Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
+		setup = true;
 	}
 
 	protected void catchEvent(String string, Player p, Arena a) {

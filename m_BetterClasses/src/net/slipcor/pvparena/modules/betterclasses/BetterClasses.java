@@ -265,6 +265,12 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public void parseStart() {
+		if (!superMap.containsKey(arena)) {
+			init_map();
+		}
+	}
+	
+	private void init_map() {
 		HashMap<ArenaClass, HashSet<PotionEffect>> map = new HashMap<ArenaClass, HashSet<PotionEffect>>();
 		
 		superMap.put(arena, map);
@@ -291,7 +297,7 @@ public class BetterClasses extends ArenaModule {
 			}
 		}
 	}
-	
+
 	private String parsePotionEffectsToString(HashSet<PotionEffect> ape) {
 		HashSet<String> result = new HashSet<String>();
 		for (PotionEffect pe : ape) {
@@ -301,6 +307,9 @@ public class BetterClasses extends ArenaModule {
 	}
 	
 	public void parseRespawn(Player player, ArenaTeam team, DamageCause cause, Entity damager) {
+		if (!superMap.containsKey(arena)) {
+			init_map();
+		}
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		db.i("respawning player " + StringParser.verify(ap), player);
 		HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);

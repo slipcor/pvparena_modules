@@ -3,4 +3,4 @@
 * Fixes
 ** 
 * Features
-** 
+** gamemode per class

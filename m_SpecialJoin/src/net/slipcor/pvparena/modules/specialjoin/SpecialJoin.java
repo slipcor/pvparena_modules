@@ -18,6 +18,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAG_Join;
+import net.slipcor.pvparena.commands.PAG_Spectate;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -29,10 +30,11 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	}
 	static HashMap<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
 	static HashMap<String, Arena> selections = new HashMap<String, Arena>();
+	boolean setup = false;
 	
 	@Override
 	public String version() {
-		return "v0.10.2.13";
+		return "v0.10.2.32";
 	}
 	
 	@Override
@@ -43,14 +45,14 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	@Override
 	public void configParse(YamlConfiguration config) {
 		List<String> res;
-		
+		System.out.print("configparse Specialjoin");
 		try {
 			res = config.getStringList("modules.specialjoin.places");
 			for (String s : res) {
 				places.put(Config.parseBlockLocation(s), arena);
 			}
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -79,44 +81,58 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	}
 	
 	@Override
-	public void parseEnable() {
-		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+	public void onThisLoad() {
+		PVPArena.instance.getLogger().info("Loading SpecialJoin");
+		if (!setup) {
+			PVPArena.instance.getLogger().info("Setting up SpecialJoin");
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+			setup = true;
+		}
 	}
 	
 	@EventHandler
 	public void onSpecialJoin(PlayerInteractEvent event) {
 		if (event.isCancelled()) {
+			db.i("PIA cancelled!", event.getPlayer());
 			return;
 		}
+		db.i("PIA!", event.getPlayer());
 		
 		if (event.getAction().equals(Action.PHYSICAL)) {
 			
-			// Join via pressure plate
+			db.i("Join via pressure plate!", event.getPlayer());
 			
 			if (event.getPlayer() == null) {
+				db.i("wth?", event.getPlayer());
 				return;
 			}
 			PABlockLocation loc = new PABlockLocation(event.getPlayer().getLocation());
 			
-			Arena a = places.get(loc);
-			PAG_Join j = new PAG_Join();
-			if (a == null || !a.equals(arena)) {			
+			PABlockLocation find = null;
+			
+			for (PABlockLocation l : places.keySet()) {
+				if (l.getWorldName().equals(loc.getWorldName())
+						&& l.getDistance(loc) < 0.1f) {
+					find = l;
+				}
+			}
+			
+			if (find == null) {
+				db.i("not contained!", event.getPlayer());
 				return;
 			}
-			j.commit(a, event.getPlayer(), new String[0]);
+			PAG_Join j = new PAG_Join();
+			j.commit(places.get(find), event.getPlayer(), new String[0]);
 			return;
 		}
 		
 		if (!event.hasBlock()) {
+			db.i("not has block, out!", event.getPlayer());
 			return;
 		}
 		
 		if (selections.containsKey(event.getPlayer().getName())) {
-			Arena a = selections.get(event.getPlayer().getName());
-			
-			if (!a.equals(arena)) {
-				return;
-			}
+			db.i("selection contains!", event.getPlayer());
 			
 			Material mat = event.getClickedBlock().getType();
 			String place = null;
@@ -130,6 +146,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 			} else {
 				return;
 			}
+			Arena a = selections.get(event.getPlayer().getName());
 			places.put(new PABlockLocation(event.getClickedBlock().getLocation()), a);
 			selections.remove(event.getPlayer().getName());
 			a.msg(event.getPlayer(),
@@ -141,29 +158,47 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		
 		PABlockLocation loc = new PABlockLocation(event.getClickedBlock().getLocation());
 		
-		Arena a = places.get(loc);
-
-		PAG_Join j = new PAG_Join();
-		if (a == null || !a.equals(arena)) {			
+		PABlockLocation find = null;
+		
+		for (PABlockLocation l : places.keySet()) {
+			if (l.getWorldName().equals(loc.getWorldName())
+					&& l.getDistance(loc) < 0.1f) {
+				find = l;
+			}
+		}
+		
+		
+		if (find == null) {
+			db.i("places does not contain!", event.getPlayer());
 			return;
 		}
+
+		PAG_Join j = new PAG_Join();
 		
 		Material mat = event.getClickedBlock().getType();
 		
 		if (mat == Material.STONE_BUTTON || /*mat == Material.BUTTON || */mat == Material.LEVER) {
-			j.commit(a, event.getPlayer(), new String[0]);
+			j.commit(places.get(find), event.getPlayer(), new String[0]);
 		} else if (mat == Material.SIGN || mat == Material.SIGN_POST || mat == Material.WALL_SIGN) {
 			Sign s = (Sign) event.getClickedBlock().getState();
 			String[] arr = new String[1];
 			arr[0] = s.getLine(2); // third line
-			j.commit(a, event.getPlayer(), arr);
+			
+			
+			if (s.getLine(2) != null && s.getLine(2).length() > 0) {
+				PAG_Spectate jj = new PAG_Spectate();
+				jj.commit(places.get(find), event.getPlayer(), new String[0]);
+			} else {
+				j.commit(places.get(find), event.getPlayer(), arr);
+			}
+			
 		}
 	}
 
-	private void update(Arena a) {
+	private static void update(Arena a) {
 		ArrayList<String> locs = new ArrayList<String>();
 		for (PABlockLocation l : places.keySet()) {
-			if (places.get(l).equals(a)) {
+			if (a.getName().equals(places.get(l).getName())) {
 				locs.add(Config.parseToString(l));
 			}
 		}

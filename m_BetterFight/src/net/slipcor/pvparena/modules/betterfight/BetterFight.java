@@ -12,6 +12,8 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
@@ -33,7 +35,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.16";
+		return "v0.10.2.31";
 	}
 	
 	@Override
@@ -200,7 +202,19 @@ public class BetterFight extends ArenaModule {
 		}
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
-			player.getLocation().getWorld().createExplosion(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 2f);
+			
+			class RunLater implements Runnable {
+				final Location l;
+				public RunLater(Location loc) {
+					l = loc;
+				}
+				@Override
+				public void run() {
+					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2f);
+				}
+				
+			}
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().clone()), 2L);
 		}
 		
 		if (p == null || kills.get(p.getName()) == null) {

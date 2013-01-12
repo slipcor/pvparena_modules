@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.redstone;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
@@ -25,15 +26,19 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 		super("RedStoneTriggers");
 		db = new Debug(403);
 	}
+	private boolean setup = false;
 	
 	@Override
 	public String version() {
-		return "v0.10.0.6";
+		return "v0.10.2.31";
 	}
 	
 	@Override
-	public void parseEnable() {
-		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+	public void configParse(YamlConfiguration config) {
+		if (!setup) {
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+			setup = false;
+		}
 	}
 	
 	@EventHandler	
