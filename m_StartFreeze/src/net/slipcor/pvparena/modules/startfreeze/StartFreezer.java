@@ -1,20 +1,22 @@
 package net.slipcor.pvparena.modules.startfreeze;
 
-import net.slipcor.pvparena.arena.Arena;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class StartFreezer implements Runnable {
-	private final Arena a;
-
-	public StartFreezer(Arena a) {
-		this.a = a;
+public class StartFreezer extends BukkitRunnable {
+	
+	final StartFreeze module;
+	
+	StartFreezer(StartFreeze mod) {
+		module = mod;
 	}
-
+	
 	/**
 	 * the run method, commit arena end
 	 */
 	@Override
 	public void run() {
-		StartFreeze.ids.remove(a);
-		StartFreeze.runnables.remove(a);
+		if (module != null){
+			module.runnable = null;
+		}
 	}
 }

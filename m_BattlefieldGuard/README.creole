@@ -1,6 +1,6 @@
 === Todo
 
 * Fixes
-** 
+** check for aftermatch.aftermatch ; disable (for arena) if not needed
 * Features
-**
+** 

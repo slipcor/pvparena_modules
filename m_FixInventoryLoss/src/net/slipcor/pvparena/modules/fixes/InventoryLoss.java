@@ -1,19 +1,19 @@
 package net.slipcor.pvparena.modules.fixes;
 
-import java.util.HashMap;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.classes.PACheck;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class InventoryLoss extends ArenaModule {
 
@@ -23,60 +23,90 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.7.25.0";
+		return "v0.10.3.0";
 	}
 	
 	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("join.emptyInventory", "boolean");
-		types.put("join.gamemodeSurvival", "boolean");
+	public boolean checkCommand(String s) {
+		return s.equals("!fil") || s.equals("fixinventoryloss");
 	}
 
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.cfg.getBoolean("join.gamemodeSurvival")) {
+	public PACheck checkJoin(CommandSender sender,
+			PACheck res, boolean b) {
+		Player player = (Player) sender;
+		int priority = 5;
+		
+		if (res.hasError() || res.getPriority() > priority) {
+			return res;
+		}
+		
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE)) {
 			if (!player.getGameMode().equals(GameMode.SURVIVAL)) {
-				Arenas.tellPlayer(player, Language.parse("gamemodeSurvival"));
-				return false;
+				res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_GAMEMODE));
+				return res;
 			}
 		}
-		if (arena.cfg.getBoolean("join.emptyInventory")) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY)) {
 			for (ItemStack item : player.getInventory().getContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					Arenas.tellPlayer(player, Language.parse("emptyInventory"));
-					return false;
+					res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
+					return res;
 				}
 			}
 			for (ItemStack item : player.getInventory().getArmorContents()) {
 				if (item != null && !item.getType().equals(Material.AIR)) {
-					Arenas.tellPlayer(player, Language.parse("emptyInventory"));
-					return false;
+					res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
+					return res;
 				}
 			}
 		}
-		return true;
+		return res;
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("join.emptyInventory", Boolean.valueOf(false));
-		config.addDefault("join.gamemodeSurvival", Boolean.valueOf(false));
-		config.options().copyDefaults(true);
-	}
-	
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.emptyInventory", "Clear your inventory before joining!");
-		config.addDefault("lang.gamemodeSurvival", "Enter survival gamemode before joining!");
-		config.options().copyDefaults(true);
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !fil [value]
+		
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+			return;
+		}
+		
+		CFG c = null;
+		
+		if (args[1].equals("gamemode")) {
+			c = CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE;
+		} else if (args[1].equals("inventory")) {
+			c = CFG.MODULES_FIXINVENTORYLOSS_INVENTORY;
+		}
+		
+		if (c == null) {
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "gamemode | inventory"));
+			return;
+		}
+		
+		boolean b = arena.getArenaConfig().getBoolean(c);
+		arena.getArenaConfig().set(c, !b);
+		arena.getArenaConfig().save();
+		arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
+		
 	}
 
 	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
+	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6FixInventoryLoss:§f "
-				+ StringParser.colorVar("emptyInventory", arena.cfg.getBoolean("join.emptyInventory"))
+				+ StringParser.colorVar("inventory", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY))
 				+ " || "
-				+ StringParser.colorVar("gamemodeSurvival", arena.cfg.getBoolean("join.gamemodeSurvival")));
+				+ StringParser.colorVar("gamemode", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE)));
 	}
 }

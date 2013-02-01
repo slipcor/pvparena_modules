@@ -8,71 +8,64 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Spawns;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.SpawnManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
-public class ArenaBoardManager extends ArenaModule {
-	protected HashMap<Location, ArenaBoard> boards = new HashMap<Location, ArenaBoard>();
+public class ArenaBoardManager extends ArenaModule implements Listener {
+	protected HashMap<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
 	protected int BOARD_ID = -1;
-	protected static int GLOBAL_ID = -1;
-	protected static ArenaBoard globalBoard = null;
+	protected int GLOBAL_ID = -1;
+	protected ArenaBoard globalBoard = null;
 
 	public ArenaBoardManager() {
 		super("ArenaBoards");
-		ArenaBoard.abm = this;
-		BoardRunnable.abm = this;
 	}
 
 	@Override
 	public String version() {
-		return "v0.8.10.1";
+		return "v0.10.3.0";
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
+	public void configParse(YamlConfiguration config) {
 		if (config.get("spawns") != null) {
-			db.i("checking for leaderboard");
+			debug.i("checking for leaderboard");
 			if (config.get("spawns.leaderboard") != null) {
-				db.i("leaderboard exists");
-				Location loc = Config.parseLocation(
-						Bukkit.getWorld(arena.getWorld()),
-						config.getString("spawns.leaderboard"));
+				debug.i("leaderboard exists");
+				PABlockLocation loc = Config.parseBlockLocation(config.getString("spawns.leaderboard"));
 
-				boards.put(loc, new ArenaBoard(loc, arena));
+				
+				
+				boards.put(loc, new ArenaBoard(this, loc, arena));
 			}
 		}
-	}
-
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.createarenaboard", "create an ArenaBoard");
-		config.addDefault("lang.boardexists", "ArenaBoard already exists!'");
-		config.addDefault("lang.sortingby", "ArenaBoard now sorted by %1%");
-		config.addDefault("lang.arenaboarddestroyed", "ArenaBoard destroyed!");
-	}
-
-	@Override
-	public void load_arenas() {
 		String leaderboard = PVPArena.instance.getConfig().getString(
 				"leaderboard");
 		if (leaderboard != null) {
-			Location lbLoc = Config.parseWorldLocation(leaderboard);
-			globalBoard = new ArenaBoard(lbLoc, null);
+			PABlockLocation lbLoc = Config.parseBlockLocation(leaderboard);
+			globalBoard = new ArenaBoard(this, lbLoc, null);
 
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-					PVPArena.instance, new BoardRunnable(null), 100L, 100L);
+					PVPArena.instance, new BoardRunnable(this), 100L, 100L);
 		}
+		
+		Bukkit.getServer().getPluginManager().registerEvents(this, PVPArena.instance);
 	}
 	
 	@Override
-	public void onBlockBreak(Arena arena, Block block) {
+	public void onBlockBreak(Block block) {
 		if (globalBoard != null && globalBoard.getLocation().equals(block.getLocation())) {
 			globalBoard.destroy();
 			globalBoard = null;
@@ -85,19 +78,19 @@ public class ArenaBoardManager extends ArenaModule {
 			return;
 		}
 
-		String msg = Language.parse("arenaboarddestroyed");
+		String msg = Language.parse(MSG.MODULE_ARENABOARDS_DESTROYED);
 		for (Entity e : Bukkit.getWorld(arena.getWorld()).getEntities()) {
 			if (e instanceof Player) {
 				Player player = (Player) e;
 				if (player.getLocation().distance(block.getLocation()) > 5) {
 					continue;
 				}
-				Arenas.tellPlayer(player, msg, arena);
+				arena.msg(player, msg);
 			}
 		}
 	}
-
-	@Override
+	
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent event) {
 
 		String headline = event.getLine(0);
@@ -111,29 +104,32 @@ public class ArenaBoardManager extends ArenaModule {
 
 		headline = headline.replace("[PAA]", "");
 
-		Arena a = Arenas.getArenaByName(headline);
+		Arena a = ArenaManager.getArenaByName(headline);
 
 		// trying to create an arena leaderboard
+		if (arena != a) {
+			return;
+		}
 
 		if (boards.containsKey(event.getBlock().getLocation())) {
-			Arenas.tellPlayer(event.getPlayer(), Language.parse("boardexists"));
+			Arena.pmsg(event.getPlayer(), Language.parse(MSG.MODULE_ARENABOARDS_EXISTS));
 			return;
 		}
 
 		if (!PVPArena.hasAdminPerms(event.getPlayer())
 				&& ((a != null) && !PVPArena.hasCreatePerms(event.getPlayer(),
 						a))) {
-			Arenas.tellPlayer(
+			a.msg(
 					event.getPlayer(),
-					Language.parse("nopermto",
-							Language.parse("createarenaboard")), a);
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.MODULE_ARENABOARDS_CREATE)));
 			return;
 		}
 
 		event.setLine(0, headline);
 		if (a == null) {
-			db.i("creating global leaderboard");
-			globalBoard = new ArenaBoard(event.getBlock().getLocation(), null);
+			debug.i("creating global leaderboard", event.getPlayer());
+			globalBoard = new ArenaBoard(this, new PABlockLocation(event.getBlock().getLocation()), null);
 			Location loc = event.getBlock().getLocation();
 			Integer x = Integer.valueOf(loc.getBlockX());
 			Integer y = Integer.valueOf(loc.getBlockY());
@@ -148,29 +144,30 @@ public class ArenaBoardManager extends ArenaModule {
 			PVPArena.instance.saveConfig();
 
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-					PVPArena.instance, new BoardRunnable(null), 100L, 100L);
+					PVPArena.instance, new BoardRunnable(this), 100L, 100L);
 		} else {
-			boards.put(event.getBlock().getLocation(), new ArenaBoard(event
-					.getBlock().getLocation(), a));
-			Spawns.setCoords(a, event.getBlock().getLocation(), "leaderboard");
+			PABlockLocation loc = new PABlockLocation(event.getBlock().getLocation());
+			boards.put(loc, new ArenaBoard(this, loc, a));
+			SpawnManager.setBlock(a, new PABlockLocation(event.getBlock().getLocation()), "leaderboard");
 		}
 	}
 
 	@Override
 	public boolean onPlayerInteract(PlayerInteractEvent event) {
-		return ArenaBoard.checkInteract(event);
+		return ArenaBoard.checkInteract(this, event);
 	}
 
 	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		if (BOARD_ID > -1)
 			Bukkit.getScheduler().cancelTask(BOARD_ID);
 		BOARD_ID = -1;
 	}
 
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
-		this.BOARD_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-				PVPArena.instance, new BoardRunnable(arena), 100L, 100L);
+	public void parseStart() {
+		if (BOARD_ID == -1)
+			this.BOARD_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+				PVPArena.instance, new BoardRunnable(this), 100L, 100L);
 	}
 }

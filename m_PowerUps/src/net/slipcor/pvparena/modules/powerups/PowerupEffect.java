@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -19,50 +20,28 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Teams;
-
-/**
- * powerup effect class
- * 
- * -
- * 
- * contains definitions and values of a powerup effect
- * 
- * @author slipcor
- * 
- * @version v0.7.16
- * 
- */
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.listeners.EntityListener;
+import net.slipcor.pvparena.loadables.ArenaModuleManager;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.managers.StatisticsManager;
 
 public class PowerupEffect {
 	protected boolean active = false;
 	protected int uses = -1;
 	protected int duration = -1;
-	protected classes type = null;
+	protected PowerupType type = null;
 	protected String mobtype = null;
 	private double factor = 1.0;
 	private double chance = 1.0;
 	private int diff = 0;
 	private List<String> items = new ArrayList<String>();
-	private static Debug db = new Debug(17);
+	private static Debug debug = new Debug(17);
 	private PotionEffect potEff = null;
-
-	/**
-	 * PowerupEffect classes
-	 */
-	public static enum classes {
-		DMG_CAUSE, DMG_RECEIVE, DMG_REFLECT, FREEZE, HEAL, HEALTH, IGNITE, LIVES, PORTAL, REPAIR, SLIP, SPAWN_MOB, SPRINT, JUMP, POTEFF;
-	}
-
-	/**
-	 * PowerupEffect instant classes (effects that activate when collecting)
-	 */
-	public static enum instants {
-		FREEZE, HEALTH, LIVES, PORTAL, REPAIR, SLIP, SPAWN_MOB, SPRINT, POTEFF;
-	}
 
 	/**
 	 * create a powerup effect class
@@ -74,36 +53,36 @@ public class PowerupEffect {
 	 */
 	public PowerupEffect(String eClass, HashMap<String, Object> puEffectVals,
 			PotionEffect effect) {
-		db.i("adding effect " + eClass);
+		debug.i("adding effect " + eClass);
 		this.type = parseClass(eClass);
 		this.potEff = effect;
 
-		db.i("effect class is " + type.toString());
+		debug.i("effect class is " + type.toString());
 		for (Object evName : puEffectVals.keySet()) {
 			if (evName.equals("uses")) {
 				this.uses = (Integer) puEffectVals.get(evName);
-				db.i("uses :" + String.valueOf(uses));
+				debug.i("uses :" + String.valueOf(uses));
 			} else if (evName.equals("duration")) {
 				this.duration = (Integer) puEffectVals.get(evName);
-				db.i("duration: " + String.valueOf(duration));
+				debug.i("duration: " + String.valueOf(duration));
 			} else if (evName.equals("factor")) {
 				this.factor = (Double) puEffectVals.get(evName);
-				db.i("factor: " + String.valueOf(factor));
+				debug.i("factor: " + String.valueOf(factor));
 			} else if (evName.equals("chance")) {
 				this.chance = (Double) puEffectVals.get(evName);
-				db.i("chance: " + String.valueOf(chance));
+				debug.i("chance: " + String.valueOf(chance));
 			} else if (evName.equals("diff")) {
 				this.diff = (Integer) puEffectVals.get(evName);
-				db.i("diff: " + String.valueOf(diff));
+				debug.i("diff: " + String.valueOf(diff));
 			} else if (evName.equals("items")) {
 				this.items.add((String) puEffectVals.get(evName));
-				db.i("items: " + items.toString());
+				debug.i("items: " + items.toString());
 			} else if (evName.equals("type")) {
 				// mob type
 				this.mobtype = (String) puEffectVals.get(evName);
-				db.i("type: " + type.name());
+				debug.i("type: " + type.name());
 			} else {
-				db.w("undefined effect class value: " + evName);
+				PVPArena.instance.getLogger().warning("undefined effect class value: " + evName);
 			}
 		}
 	}
@@ -115,12 +94,12 @@ public class PowerupEffect {
 	 *            the class name
 	 * @return a powerup effect
 	 */
-	public static classes parseClass(String s) {
-		for (classes c : classes.values()) {
+	public static PowerupType parseClass(String s) {
+		for (PowerupType c : PowerupType.values()) {
 			if (c.name().equalsIgnoreCase(s))
 				return c;
 			if (s.toUpperCase().startsWith("POTION.")) {
-				return classes.POTEFF;
+				return PowerupType.POTEFF;
 			}
 		}
 		return null;
@@ -142,17 +121,16 @@ public class PowerupEffect {
 			active = true;
 		}
 
-		db.i("initiating - " + type.name());
+		debug.i("initiating - " + type.name(), player);
 
 		if (duration == 0) {
 			active = false;
 		}
-		for (instants i : instants.values()) {
-			if (this.type.toString().equals(i.toString())) {
-				// type is instant. commit!
-				commit(player);
-			}
+		
+		if (type.isActivatedOnPickup()) {
+			commit(player);
 		}
+		
 		if (potEff != null) {
 			player.addPotionEffect(potEff);
 		}
@@ -182,35 +160,44 @@ public class PowerupEffect {
 	 */
 	public void commit(Player attacker, Player defender,
 			EntityDamageByEntityEvent event) {
-		db.i("committing entitydamagebyentityevent: " + this.type.name());
-		if (this.type == classes.DMG_RECEIVE) {
+		debug.i("committing entitydamagebyentityevent: " + this.type.name(), attacker);
+		if (this.type == PowerupType.DMG_RECEIVE) {
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, defender);
+			if (v <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
-		} else if (this.type == classes.DMG_CAUSE) {
+		} else if (this.type == PowerupType.DMG_CAUSE) {
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, attacker);
+			if (v <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
-		} else if (this.type == classes.DMG_REFLECT) {
+		} else if (this.type == PowerupType.DMG_REFLECT) {
 			if (attacker == null) {
 				return;
 			}
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, attacker);
+			debug.i("random r = "+ v, defender);
+			if (v <= chance) {
 				EntityDamageByEntityEvent reflectEvent = new EntityDamageByEntityEvent(
 						defender, attacker, event.getCause(),
 						(int) Math.round(event.getDamage() * factor));
-				PVPArena.entityListener.onEntityDamageByEntity(reflectEvent);
+				(new EntityListener()).onEntityDamageByEntity(reflectEvent);
 			} // else: chance fail :D
-		} else if (this.type == classes.IGNITE) {
+		} else if (this.type == PowerupType.IGNITE) {
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, defender);
+			if (v <= chance) {
 				defender.setFireTicks(20);
 			} // else: chance fail :D
 		} else {
-			db.w("unexpected fight powerup effect: " + this.type.name());
+			PVPArena.instance.getLogger().warning("unexpected fight powerup effect: " + this.type.name());
 		}
 	}
 
@@ -223,10 +210,10 @@ public class PowerupEffect {
 	 */
 	public boolean commit(Player player) {
 
-		db.i("committing " + this.type.name());
+		debug.i("committing " + this.type.name(), player);
 		Random r = new Random();
 		if (r.nextFloat() <= chance) {
-			if (this.type == classes.HEALTH) {
+			if (this.type == PowerupType.HEALTH) {
 				if (diff > 0) {
 					player.setHealth(player.getHealth() + diff);
 				} else {
@@ -234,41 +221,39 @@ public class PowerupEffect {
 							* factor));
 				}
 				return true;
-			} else if (this.type == classes.LIVES) {
-				int lives = Arenas.getArenaByPlayer(player).lives.get(player
-						.getName());
-				if (lives > 0) {
-					Arenas.getArenaByPlayer(player).lives.put(
-							player.getName(), lives + diff);
+			} else if (this.type == PowerupType.LIVES) {
+				ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+				int lives = PACheck.handleGetLives(ap.getArena(), ap);
+				if (lives + diff > 0) {
+					PVPArena.instance.getAgm().setPlayerLives(ap.getArena(), ap, lives + diff);
 				} else {
-					Arena arena = Arenas.getArenaByPlayer(player);
-
-					// pasted from onEntityDeath;
-					ArenaPlayer ap = ArenaPlayer.parsePlayer(player);
-					ArenaTeam team = Teams.getTeam(arena, ap);
-
-					PVPArena.instance.getAmm().announceLoser(
+					ArenaTeam team = ap.getArenaTeam();
+					Arena arena = ap.getArena();
+					ArenaModuleManager.announce(
 							arena,
-							Language.parse("killedby", player.getName(),
+							Language.parse(MSG.FIGHT_KILLED_BY, player.getName(),
 									arena.parseDeathCause(player,
-											DamageCause.MAGIC, player)));
-					arena.tellEveryone(Language.parse("killedby",
-							team.colorizePlayer(player) + ChatColor.YELLOW,
-							arena.parseDeathCause(player,
-									DamageCause.MAGIC, player)));
-					ap.losses++;
+											DamageCause.MAGIC, player)), "LOSER");
+					
+					if (arena.getArenaConfig().getBoolean(CFG.USES_DEATHMESSAGES)) {
+						arena.broadcast(Language.parse(MSG.FIGHT_KILLED_BY,
+								team.colorizePlayer(player) + ChatColor.YELLOW,
+								arena.parseDeathCause(player,
+										DamageCause.MAGIC, player)));
+					}
+					ap.getStatistics(arena).incStat(StatisticsManager.type.LOSSES);
 					// needed so player does not get found when dead
-					arena.removePlayer(player, "lose", true);
-					Teams.removeTeam(arena, ap);
+					arena.removePlayer(player, "lose", true, false);
+					ap.getArenaTeam().remove(ap);
 
-					Arenas.checkAndCommit(arena);
+					ArenaManager.checkAndCommit(arena, false);
 				}
 
 				return true;
-			} else if (this.type == classes.PORTAL) {
+			} else if (this.type == PowerupType.PORTAL) {
 				// player.set
 				return true;
-			} else if (this.type == classes.REPAIR) {
+			} else if (this.type == PowerupType.REPAIR) {
 				for (String i : items) {
 					ItemStack is = null;
 					if (i.contains("HELM")) {
@@ -293,14 +278,14 @@ public class PowerupEffect {
 					}
 				}
 				return true;
-			} else if (this.type == classes.SPAWN_MOB) {
+			} else if (this.type == PowerupType.SPAWN_MOB) {
 				return true;
-			} else if (this.type == classes.SPRINT) {
+			} else if (this.type == PowerupType.SPRINT) {
 				player.setSprinting(true);
 				return true;
 			}
 		}
-		db.w("unexpected " + this.type.name());
+		PVPArena.instance.getLogger().warning("unexpected " + this.type.name());
 		return false;
 	}
 
@@ -311,8 +296,8 @@ public class PowerupEffect {
 	 *            the triggering event
 	 */
 	public void commit(EntityRegainHealthEvent event) {
-		db.i("committing entityregainhealthevent " + this.type.name());
-		if (this.type == classes.HEAL) {
+		debug.i("committing entityregainhealthevent " + this.type.name(), ((Player) event.getEntity()));
+		if (this.type == PowerupType.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				event.setAmount((int) Math.round(event.getAmount() * factor));
@@ -320,7 +305,7 @@ public class PowerupEffect {
 				((Player) event.getEntity()).setFoodLevel(20);
 			} // else: chance fail :D
 		} else {
-			db.w("unexpected fight heal effect: " + this.type.name());
+			PVPArena.instance.getLogger().warning("unexpected fight heal effect: " + this.type.name());
 		}
 	}
 
@@ -331,14 +316,14 @@ public class PowerupEffect {
 	 *            the triggering event
 	 */
 	public void commit(PlayerVelocityEvent event) {
-		db.i("committing velocityevent " + this.type.name());
-		if (this.type == classes.HEAL) {
+		debug.i("committing velocityevent " + this.type.name(), event.getPlayer());
+		if (this.type == PowerupType.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
 				event.setVelocity(event.getVelocity().multiply(factor));
 			} // else: chance fail :D
 		} else {
-			db.w("unexpected jump effect: " + this.type.name());
+			PVPArena.instance.getLogger().warning("unexpected jump effect: " + this.type.name());
 		}
 	}
 
@@ -365,8 +350,8 @@ public class PowerupEffect {
 			try {
 				duration = Integer.parseInt(s[1]);
 			} catch (Exception e) {
-				Language.log_warning("warn",
-						"invalid duration for PotionEffect " + eClass);
+				Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_POWERUPS_INVALIDPUEFF,
+						eClass));
 			}
 
 			if (s.length > 2) {
@@ -374,23 +359,21 @@ public class PowerupEffect {
 				try {
 					amplifyer = Integer.parseInt(s[2]);
 				} catch (Exception e) {
-					Language.log_warning("warn",
-							"invalid duration for PotionEffect " + eClass);
+					Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_POWERUPS_INVALIDPUEFF,
+							eClass));
 				}
 			}
 		}
 		
 		for (PotionEffectType pet : PotionEffectType.values()) {
 			if (pet == null) {
-				db.s("pet == null");
 				continue;
 			}
-			db.i("parsing PET " + pet.toString());
+			debug.i("parsing PET " + pet.toString());
 			if (pet.getName() == null) {
-				db.s("pet.getName == null");
 				continue;
 			}
-			db.i("parsing PET " + pet.toString());
+			debug.i("parsing PET " + pet.toString());
 			if (pet.getName().equals(eClass)) {
 				return new PotionEffect(pet, duration, amplifyer);
 			}

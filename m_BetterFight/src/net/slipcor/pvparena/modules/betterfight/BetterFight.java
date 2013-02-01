@@ -2,24 +2,28 @@ package net.slipcor.pvparena.modules.betterfight;
 
 import java.util.HashMap;
 
-import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class BetterFight extends ArenaModule {
 	
@@ -31,53 +35,87 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.10.10";
-	}
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("betterfight.activate", "boolean");
-		types.put("betterfight.resetonkill", "boolean");
-		types.put("betterfight.oneHit", "string");
+		return "v0.10.3.0";
 	}
 	
 	@Override
-	public void commitPlayerDeath(Arena arena, Player player,
-			EntityDamageEvent cause) {
-		if (!arena.cfg.getBoolean("betterfight.activate")) {
-			return;
-		}
-		
-		Player p = ArenaPlayer.getLastDamagingPlayer(cause);
-		
-		if (arena.cfg.getBoolean("betterfight.resetonkill")) {
-			kills.put(player.getName(), 0);
-		}
-		
-		if (p == null || kills.get(p.getName()) == null) {
-			return;
-		}
-		int killcount = kills.get(p.getName());
-
-		kills.put(player.getName(), ++killcount);
-		
-		String msg = arena.cfg.getString("betterfight.messages.m"+killcount);
-		
-		if (msg == null || msg.equals("")) {
-			return;
-		}
-		
-		arena.tellEveryone(msg);
+	public boolean checkCommand(String s) {
+		return s.equals("!bf") || s.equals("betterfight");
 	}
 	
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("betterfight.activate", Boolean.valueOf(false));
-		config.addDefault("betterfight.resetonkill", Boolean.valueOf(true));
-		config.addDefault("betterfight.oneHit", "none");
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !bf messages # 
+		// !bf items [items]
+		// !bf reset
+		// !bf explode
 		
-		if (config.get("betterfight.messages") == null) {
-			config.addDefault("betterfight.messages.m0", "This is a dummy message. You can remove the other messages if you don't want messages!");
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+		
+		if (args[0].equals("!bf") || args[0].equals("betterfight")) {
+			if (args.length == 2) {
+				if (args[1].equals("reset")) {
+					boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH);
+					
+					arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH, !b);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH.getNode(), String.valueOf(!b)));
+					return;
+				} else if (args[1].equals("explode")) {
+					boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH);
+					
+					arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH, !b);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH.getNode(), String.valueOf(!b)));
+					return;
+				}
+				arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | explode"));
+				return;
+			}
+			if (args[1].equals("items")) {
+
+				if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 3 })) {
+					return;
+				}
+				
+				arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_ONEHITITEMS, args[2]);
+				arena.getArenaConfig().save();
+				arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_ONEHITITEMS.getNode(), args[2]));
+				return;
+				
+			} else if (args[1].equals("messages")) {
+				int i = 0;
+				try {
+					i = Integer.parseInt(args[2]);
+				} catch (Exception e) {
+					arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
+					return;
+				}
+				String value = StringParser.joinArray(StringParser.shiftArrayBy(args, 2), " ");
+				arena.getArenaConfig().setManually("betterfight.messages.m" + i,
+						value);
+				arena.getArenaConfig().save();
+				arena.msg(sender, Language.parse(MSG.SET_DONE, "betterfight.messages.m" + i, value));
+				return;
+			}
+			
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | items | messages | explode"));
+			return;
+		}
+	}
+	
+	@Override
+	public void configParse(YamlConfiguration config) {
+
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
+			config.addDefault("betterfight.messages.m1", "First Kill!");
 			config.addDefault("betterfight.messages.m2", "Double Kill!");
 			config.addDefault("betterfight.messages.m3", "Triple Kill!");
 			config.addDefault("betterfight.messages.m4", "Quadra Kill!");
@@ -91,13 +129,9 @@ public class BetterFight extends ArenaModule {
 	}
 	
 	@Override
-	public void onEntityDamageByEntity(Arena arena, Player attacker,
+	public void onEntityDamageByEntity(Player attacker,
 			Player defender, EntityDamageByEntityEvent event) {
-		if (!arena.cfg.getBoolean("betterfight.activate")) {
-			return;
-		}
-		
-		String s = arena.cfg.getString("betterfight.oneHit");
+		String s = arena.getArenaConfig().getString(CFG.MODULES_BETTERFIGHT_ONEHITITEMS);
 		if (s.equalsIgnoreCase("none")) {
 			return;
 		}
@@ -125,19 +159,16 @@ public class BetterFight extends ArenaModule {
 			}
 		}
 	}
-
+/*
 	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6Betterfight:§f "
-				+ StringParser.colorVar(arena.cfg.getBoolean("betterfight.activate")));
-	}
-
-	@Override
-	public void parseRespawn(Arena arena, Player player, ArenaTeam team,
-			int lives, DamageCause cause, Entity damager) {
+	public void parseRespawn(Player player, ArenaTeam team,
+			DamageCause cause, Entity damager) {
 		
-		if (arena.cfg.getBoolean("betterfight.resetonkill")) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
+			return;
+		}
+		
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
 			kills.put(player.getName(), 0);
 		}
 		
@@ -152,17 +183,62 @@ public class BetterFight extends ArenaModule {
 
 		kills.put(player.getName(), ++killcount);
 		
-		String msg = arena.cfg.getString("betterfight.messages.m"+killcount);
+		String msg = (String) arena.getArenaConfig().getUnsafe("betterfight.messages.m"+killcount);
 		
 		if (msg == null || msg.equals("")) {
 			return;
 		}
 		
-		arena.tellEveryone(msg);
+		arena.broadcast(msg);
+	}*/
+	
+	@Override
+	public void parsePlayerDeath(Player player,
+			EntityDamageEvent cause) {
+		Player p = ArenaPlayer.getLastDamagingPlayer(cause);
+		
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
+			kills.put(player.getName(), 0);
+		}
+		
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
+			
+			class RunLater implements Runnable {
+				final Location l;
+				public RunLater(Location loc) {
+					l = loc;
+				}
+				@Override
+				public void run() {
+					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2f);
+				}
+				
+			}
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().clone()), 2L);
+		}
+		
+		if (p == null || kills.get(p.getName()) == null) {
+			return;
+		}
+		int killcount = kills.get(p.getName());
+
+		kills.put(p.getName(), ++killcount);
+		
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
+			return;
+		}
+		
+		String msg = (String) arena.getArenaConfig().getUnsafe("betterfight.messages.m"+killcount);
+		
+		if (msg == null || msg.equals("")) {
+			return;
+		}
+		
+		arena.broadcast(msg);
 	}
 	
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
+	public void parseStart() {
 		for (ArenaTeam team : arena.getTeams()) {
 			for (ArenaPlayer ap : team.getTeamMembers()) {
 				kills.put(ap.getName(), 0);

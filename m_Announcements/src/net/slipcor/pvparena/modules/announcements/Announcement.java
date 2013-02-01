@@ -1,30 +1,22 @@
 package net.slipcor.pvparena.modules.announcements;
 
+import java.util.Set;
+
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.managers.Arenas;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * announcement class
- * 
- * -
- * 
- * provides methods to announce texts publicly
- * 
- * @author slipcor
- * 
- * @version v0.8.7
- * 
- */
 public class Announcement {
-	private static Debug db = new Debug(7);
+	private static Debug debug = new Debug(7);
 
 	public static enum type {
-		JOIN, START, END, WINNER, LOSER, PRIZE, CUSTOM;
+		JOIN, ADVERT, START, END, WINNER, LOSER, PRIZE, CUSTOM;
 	}
 
 	/**
@@ -41,16 +33,18 @@ public class Announcement {
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
-		db.i("announce [" + a.name + "] type: " + t.name() + " : " + message);
-		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
+		debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
+				+ message);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (a.isPartOf(p)) {
+			if (a.hasPlayer(p)) {
 				continue;
 			}
-			send(a, p,
-					message.replace(ChatColor.WHITE.toString(), ChatColor
-							.valueOf(a.cfg.getString("announcements.color"))
+			send(a, p, message.replace(
+					ChatColor.WHITE.toString(),
+					ChatColor.valueOf(
+							a.getArenaConfig().getString(
+									CFG.MODULES_ANNOUNCEMENTS_COLOR))
 							.toString()));
 		}
 	}
@@ -67,18 +61,22 @@ public class Announcement {
 	 */
 	protected static void announce(Arena a, String sType, String message) {
 		type t = type.valueOf(sType);
+		debug.i("announce?");
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
-		db.i("announce [" + a.name + "] type: " + t.name() + " : " + message);
+		debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
+				+ message);
 		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
-		
-		message = message.replace(ChatColor.WHITE.toString(), ChatColor
-				.valueOf(a.cfg.getString("announcements.color"))
-				.toString());
-		
+
+		message = message.replace(
+				ChatColor.WHITE.toString(),
+				ChatColor.valueOf(
+						a.getArenaConfig().getString(
+								CFG.MODULES_ANNOUNCEMENTS_COLOR)).toString());
+
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (a.isPartOf(p)) {
+			if (a.hasPlayer(p)) {
 				continue;
 			}
 			send(a, p, message);
@@ -96,7 +94,8 @@ public class Announcement {
 	 *         false otherwise
 	 */
 	private static boolean sendCheck(Arena a, type t) {
-		return a.cfg.getBoolean("announcements." + t.name().toLowerCase());
+		CFG cfg = CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name());
+		return (Boolean) a.getArenaConfig().getBoolean(cfg);
 	}
 
 	/**
@@ -110,21 +109,24 @@ public class Announcement {
 	 *            the message to send
 	 */
 	private static void send(Arena a, Player p, String message) {
-		if (a.cfg.getInt("announcements.radius") > 0) {
-			if (a.regions.get("battlefield") == null
-					|| a.regions.get("battlefield").tooFarAway(
-							a.cfg.getInt("announcements.radius"),
-							p.getLocation())) {
-				return; // too far away: out (checks world!)
+		if (a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS) > 0) {
+			Set<ArenaRegionShape> bfs = a
+					.getRegionsByType(RegionType.BATTLE);
+			for (ArenaRegionShape ars : bfs) {
+				if (ars.tooFarAway(
+						a.getArenaConfig().getInt(
+								CFG.MODULES_ANNOUNCEMENTS_RADIUS),
+						p.getLocation())) {
+					return; // too far away: out (checks world!)
+				}
 			}
 		}
-		Arenas.tellPlayer(
-				p,
+		a.msg(p,
 				"§f[§a"
-						+ a.name
+						+ a.getName()
 						+ "§f] "
-						+ ChatColor.valueOf(a.cfg
-								.getString("announcements.color")) + message, a);
+						+ ChatColor.valueOf(a.getArenaConfig().getString(
+								CFG.MODULES_ANNOUNCEMENTS_COLOR)) + message);
 	}
 
 }

@@ -5,16 +5,19 @@ import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.command.PAAJoin;
+import net.slipcor.pvparena.classes.PACheck;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.runnables.StartRunnable;
 
 public class AutoVote extends ArenaModule {
@@ -27,90 +30,118 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.8.11.8";
+		return "v0.10.3.0";
+	}
+	
+	@Override
+	public boolean checkCommand(String cmd) {
+		return cmd.startsWith("vote") || cmd.equals("!av") || cmd.equals("autovote");
 	}
 
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
+	public PACheck checkJoin(CommandSender sender,
+			PACheck res, boolean b) {
+		if (res.hasError() || !b) {
+			return res;
+		}
+		
 		if (a != null && !arena.equals(a)) {
-			Arenas.tellPlayer(player,
-					Language.parse("arenarunning", arena.name));
-			return false;
+			res.setError(this, Language.parse(MSG.MODULE_AUTOVOTE_ARENARUNNING, arena.getName()));
+			return res;
 		}
-		return true;
+		
+		return res;
 	}
 
 	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("arenavote.seconds", "int");
-		types.put("arenavote.readyup", "int");
-		types.put("arenavote.everyone", "bool");
-	}
+	public void commitCommand(CommandSender sender, String[] args) {
 
-	@Override
-	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
+		if (args[0].startsWith("vote")) {
 
-		if (!args[0].startsWith("vote")) {
-			return;
-		}
-
-		votes.put(sender.getName(), arena.name);
-		Arenas.tellPlayer(sender, Language.parse("youvoted", arena.name));
-		
-		if (!arena.cfg.getBoolean("arenavote.everyone")) {
-			return;
-		}
-		
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (p == null) {
-				continue;
+			votes.put(sender.getName(), arena.getName());
+			Arena.pmsg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
+			
+			if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
+				return;
 			}
-			Arenas.tellPlayer(p, Language.parse("playervoted", arena.name, sender.getName()));
+			
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (p == null) {
+					continue;
+				}
+				Arena.pmsg(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
+			}
+			return;
+		} else {
+			if (!PVPArena.hasAdminPerms(sender)
+					&& !(PVPArena.hasCreatePerms(sender, arena))) {
+				arena.msg(
+						sender,
+						Language.parse(MSG.ERROR_NOPERM,
+								Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+				return;
+			}
+			
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
+				return;
+			}
+			
+			// !av everyone
+			// !av readyup X
+			// !av seconds X
+			
+			if (args.length < 3 || args[1].equals("everyone")) {
+				boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE);
+				arena.getArenaConfig().set(CFG.MODULES_ARENAVOTE_EVERYONE, !b);
+				arena.getArenaConfig().save();
+				arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_ARENAVOTE_EVERYONE.getNode(), String.valueOf(!b)));
+				return;
+			} else {
+				CFG c = null;
+				if (args[1].equals("readyup")) {
+					c = CFG.MODULES_ARENAVOTE_READYUP;
+				} else if (args[1].equals("seconds")) {
+					c = CFG.MODULES_ARENAVOTE_SECONDS;
+				}
+				if (c != null) {
+					int i = 0;
+					try {
+						i = Integer.parseInt(args[2]);
+					} catch (Exception e) {
+						arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
+						return;
+					}
+					
+					arena.getArenaConfig().set(c, i);
+					arena.getArenaConfig().save();
+					arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(i)));
+					return;
+				}
+			}
+			
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "everyone | readyup | seconds"));
+			return;
 		}
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("arenavote.seconds", Integer.valueOf(30));
-		config.addDefault("arenavote.readyup", Integer.valueOf(30));
-		config.addDefault("arenavote.everyone", Boolean.valueOf(false));
-		config.options().copyDefaults(true);
-	}
-
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.arenarunning", "Arena running: %1%");
-		config.addDefault("lang.autojoin", "Arena auto join started!");
-		config.addDefault(
-				"lang.votenow",
-				"Vote for your arena! %1% left!\nVote with /pa [arenaname] vote\nAvailable arenas: "
-						+ Arenas.getNames());
-		config.addDefault("lang.youvoted", "You voted for arena %1%!");
-		config.addDefault("lang.playervoted", "%2% voted for arena %1%!");
-	}
-
-	@Override
-	public boolean parseCommand(String cmd) {
-		return cmd.startsWith("vote");
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
+	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
-		player.sendMessage("§6ArenaVote:§f "
-				+ StringParser.colorVar(arena.cfg.getInt("arenavote.seconds"))
-				+ " | "
-				+ StringParser.colorVar(arena.cfg.getInt("arenavote.readyup")));
+		player.sendMessage("§6ArenaVote:§f seconds:"
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS))
+				+ " | readyup: "
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP))
+				+ " | everyone: "
+				+ StringParser.colorVar(arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)));
 	}
 
 	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		votes.clear();
 		a = null;
 
-		AutoVoteRunnable fr = new AutoVoteRunnable(
-				arena.cfg.getInt("arenavote.seconds"), 0);
-		fr.setId(Bukkit.getScheduler().scheduleSyncRepeatingTask(
-				PVPArena.instance, fr, 20L, 20L));
+		new AutoVoteRunnable(arena,
+				arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
 	}
 
 	public static void commit() {
@@ -131,23 +162,23 @@ public class AutoVote extends ArenaModule {
 
 		for (String name : counts.keySet()) {
 			if (counts.get(name) == max) {
-				a = Arenas.getArenaByName(name);
+				a = ArenaManager.getArenaByName(name);
 			}
 		}
 
 		if (a == null) {
-			a = Arenas.getFirst();
+			a = ArenaManager.getFirst();
 		}
 
 		if (a == null) {
 			return;
 		}
 
-		PAAJoin pj = new PAAJoin();
+		PAG_Join pj = new PAG_Join();
 
 		HashSet<String> toTeleport = new HashSet<String>();
 		
-		if (a.cfg.getBoolean("arenavote.everyone")) {
+		if (a.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				toTeleport.add(p.getName());
 			}
@@ -163,12 +194,10 @@ public class AutoVote extends ArenaModule {
 				continue;
 			}
 
-			pj.commit(a, p, null);
+			pj.commit(a, p, new String[0]);
 		}
 
-		StartRunnable fr = new StartRunnable(a,
-				a.cfg.getInt("arenavote.readyup"), 0);
-		fr.setId(Bukkit.getScheduler().scheduleSyncRepeatingTask(
-				PVPArena.instance, fr, 20L, 20L));
+		new StartRunnable(a,
+				a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
 	}
 }

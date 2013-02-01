@@ -1,31 +1,19 @@
 package net.slipcor.pvparena.modules.blockrestore;
 
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.managers.Arenas;
+import net.slipcor.pvparena.managers.ArenaManager;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-/**
- * arena block class
- * 
- * -
- * 
- * defines a block to recreate on match end
- * 
- * @author slipcor
- * 
- * @version v0.6.29
- * 
- */
 public class ArenaBlock {
-	private Debug db = new Debug(9);
+	private Debug debug = new Debug(9);
 
 	public String arena;
-	private final Location location;
+	private final PABlockLocation location;
 	public final Material material;
 	private final byte data;
 	private final String[] lines;
@@ -37,16 +25,16 @@ public class ArenaBlock {
 	 *            the block to copy
 	 */
 	public ArenaBlock(Block block) {
-		location = block.getLocation();
+		location = new PABlockLocation(block.getLocation());
 		material = block.getType();
 		data = block.getData();
 
-		db.i("creating arena block:");
-		db.i("loc: " + location.toString() + "; mat: " + material.toString()
+		debug.i("creating arena block:");
+		debug.i("loc: " + location.toString() + "; mat: " + material.toString()
 				+ "; data " + String.valueOf(data));
 
 		try {
-			arena = Arenas.getArenaByRegionLocation(location).name;
+			arena = ArenaManager.getArenaByRegionLocation(location).getName();
 		} catch (Exception e) {
 			arena = "";
 		}
@@ -66,9 +54,9 @@ public class ArenaBlock {
 	 *            the Material to override (the Material before placing)
 	 */
 	public ArenaBlock(Block block, Material type) {
-		location = block.getLocation();
+		location = new PABlockLocation(block.getLocation());
 		try {
-			arena = Arenas.getArenaByRegionLocation(location).name;
+			arena = ArenaManager.getArenaByRegionLocation(location).getName();
 		} catch (Exception e) {
 			arena = "";
 		}
@@ -76,8 +64,8 @@ public class ArenaBlock {
 		data = block.getData();
 		lines = null;
 
-		db.i("creating arena block:");
-		db.i("loc: " + location.toString() + "; mat: " + material.toString()
+		debug.i("creating arena block:");
+		debug.i("loc: " + location.toString() + "; mat: " + material.toString()
 				+ "; data " + String.valueOf(data));
 
 	}
@@ -86,7 +74,7 @@ public class ArenaBlock {
 	 * reset an arena block
 	 */
 	public void reset() {
-		Block b = location.getBlock();
+		Block b = location.toLocation().getBlock();
 		b.setType(material);
 		b.setData(data);
 		if (lines != null) {

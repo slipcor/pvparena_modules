@@ -4,12 +4,12 @@ import java.util.HashMap;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Statistics;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.managers.StatisticsManager;
 
-import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -18,15 +18,15 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ArenaBoard {
 
-	public static final Debug db = new Debug(10);
+	public static final Debug debug = new Debug(10);
 
-	private Location location;
-	protected static ArenaBoardManager abm;
-	public Arena arena;
+	private PABlockLocation location;
+	protected ArenaBoardManager abm;
+	public boolean global;
 
-	public Statistics.type sortBy = Statistics.type.KILLS;
+	public StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
-	private HashMap<Statistics.type, ArenaBoardColumn> columns = new HashMap<Statistics.type, ArenaBoardColumn>();
+	private HashMap<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
 
 	/**
 	 * create an arena board instance
@@ -36,11 +36,12 @@ public class ArenaBoard {
 	 * @param a
 	 *            the arena to save the board to
 	 */
-	public ArenaBoard(Location loc, Arena a) {
+	public ArenaBoard(ArenaBoardManager m, PABlockLocation loc, Arena a) {
+		abm = m;
 		location = loc;
-		arena = a;
+		global = a == null;
 
-		db.i("constructing arena board");
+		debug.i("constructing arena board");
 		construct();
 	}
 
@@ -48,31 +49,31 @@ public class ArenaBoard {
 	 * actually construct the arena board, read colums, save signs etc
 	 */
 	private void construct() {
-		Location l = location;
+		PABlockLocation l = location;
 		int border = 10;
 		try {
-			Sign s = (Sign) l.getBlock().getState();
+			Sign s = (Sign) l.toLocation().getBlock().getState();
 			BlockFace bf = getRightDirection(s);
-			db.i("parsing signs:");
+			debug.i("parsing signs:");
 			do {
-				Statistics.type t = null;
+				StatisticsManager.type t = null;
 				try {
-					t = Statistics.getTypeBySignLine(s.getLine(0));
+					t = StatisticsManager.getTypeBySignLine(s.getLine(0));
 				} catch (Exception e) {
 					// nothing
 				}
 
 				columns.put(t, new ArenaBoardColumn(this, l));
-				db.i("putting column type " + toString());
-				l = l.getBlock().getRelative(bf).getLocation();
-				s = (Sign) l.getBlock().getState();
+				debug.i("putting column type " + toString());
+				l = new PABlockLocation(l.toLocation().getBlock().getRelative(bf).getLocation());
+				s = (Sign) l.toLocation().getBlock().getState();
 			} while (border-- > 0);
 		} catch (Exception e) {
 			// no more signs, out!
 		}
 	}
 
-	public Location getLocation() {
+	public PABlockLocation getLocation() {
 		return location;
 	}
 
@@ -102,15 +103,15 @@ public class ArenaBoard {
 	 * save arena board statistics to each column
 	 */
 	public void update() {
-		db.i("ArenaBoard update()");
-		for (Statistics.type t : Statistics.type.values()) {
-			db.i("checking stat: " + t.name());
+		debug.i("ArenaBoard update()");
+		for (StatisticsManager.type t : StatisticsManager.type.values()) {
+			debug.i("checking stat: " + t.name());
 			if (!columns.containsKey(t)) {
 				continue;
 			}
-			db.i("found! reading!");
-			String[] s = Statistics.read(
-					Statistics.getStats(this.arena, sortBy), t, arena == null);
+			debug.i("found! reading!");
+			String[] s = StatisticsManager.read(
+					StatisticsManager.getStats(global?null:abm.getArena(), sortBy), t, global);
 			columns.get(t).write(s);
 		}
 	}
@@ -122,59 +123,55 @@ public class ArenaBoard {
 	 *            the InteractEvent
 	 * @return true if the player clicked a leaderboard sign, false otherwise
 	 */
-	public static boolean checkInteract(PlayerInteractEvent event) {
-
-		db.i("checking ArenaBoard interact");
-
+	public static boolean checkInteract(ArenaBoardManager abm, PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		debug.i("checking ArenaBoard interact", player);
 
 		if (event.getClickedBlock() == null) {
 			return false;
 		}
 
-		db.i("block is not null");
+		debug.i("block is not null", player);
 
 		if (!abm.boards.containsKey(event.getClickedBlock().getLocation())
-				&& ArenaBoardManager.globalBoard == null
-				|| !ArenaBoardManager.globalBoard.getLocation().equals(
+				&& abm.globalBoard == null
+				|| !abm.globalBoard.getLocation().equals(
 						event.getClickedBlock().getLocation())) {
 			return false;
 		}
 
-		db.i("arenaboard exists");
+		debug.i("arenaboard exists", player);
 
 		ArenaBoard ab = abm.boards.get(event.getClickedBlock().getLocation());
 
 		if (ab == null) {
-			ab = ArenaBoardManager.globalBoard;
+			ab = abm.globalBoard;
 		}
 
-		if (ab.arena == null) {
-			db.i("global!");
+		if (ab.global) {
+			debug.i("global!", player);
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.next(ab.sortBy);
-				Arenas.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()));
+				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
+				Arena.pmsg(player,
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.last(ab.sortBy);
-				Arenas.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()));
+				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
+				Arena.pmsg(player,
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			}
 		} else {
-			db.i("not global!");
+			debug.i("not global!", player);
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.next(ab.sortBy);
-				Arenas.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()),
-						ab.arena);
+				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
+				ab.abm.getArena().msg(player,
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			} else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-				ab.sortBy = Statistics.type.last(ab.sortBy);
-				Arenas.tellPlayer(player,
-						Language.parse("sortingby", ab.sortBy.toString()),
-						ab.arena);
+				ab.sortBy = StatisticsManager.type.last(ab.sortBy);
+				ab.abm.getArena().msg(player,
+						Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
 				return true;
 			}
 		}
@@ -184,12 +181,12 @@ public class ArenaBoard {
 
 	public void destroy() {
 		// TODO clear signs
-		if (arena == null) {
+		if (global) {
 			PVPArena.instance.getConfig().set("leaderboard", null);
 			PVPArena.instance.saveConfig();
 		} else {
-			arena.cfg.set("spawns.leaderboard", null);
-			arena.cfg.save();
+			abm.getArena().getArenaConfig().setManually("spawns.leaderboard", null);
+			abm.getArena().getArenaConfig().save();
 		}
 	}
 }

@@ -1,28 +1,13 @@
 package net.slipcor.pvparena.modules.aftermatch;
 
-import org.bukkit.Bukkit;
-
-import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.runnables.ArenaRunnable;
 
-/**
- * custom runnable class
- * 
- * -
- * 
- * implements an own runnable class in order to commit a powerup spawn in the
- * arena it is running in
- * 
- * @author slipcor
- * 
- * @version v0.7.0
- * 
- */
-
-public class AfterRunnable implements Runnable {
-	private final Arena a;
+public class AfterRunnable extends ArenaRunnable {
 	private final AfterMatch pum;
-	private Debug db = new Debug(41);
+	private Debug debug = new Debug(41);
 
 	/**
 	 * construct a powerup spawn runnable
@@ -30,24 +15,23 @@ public class AfterRunnable implements Runnable {
 	 * @param a
 	 *            the arena it's running in
 	 */
-	public AfterRunnable(Arena a, AfterMatch pm) {
-		this.a = a;
+	public AfterRunnable(AfterMatch pm, int i) {
+		super(MSG.MODULE_AFTERMATCH_STARTINGIN.getNode(), i, null, pm.getArena(), false);
 		pum = pm;
-		db.i("AfterRunnable constructor");
+		debug.i("AfterRunnable constructor");
 	}
 
-	/**
-	 * the run method, spawn a powerup
-	 */
 	@Override
-	public void run() {
-		db.i("AfterRunnable commiting");
-		if (a.fightInProgress) {
+	protected void commit() {
+		debug.i("AfterRunnable commiting");
+		if (!pum.getArena().isLocked()) {
 			
-			pum.afterMatch(a);
-		} else {
-			// deactivate the auto saving task
-			Bukkit.getServer().getScheduler().cancelTask(pum.runnables.get(a));
+			pum.afterMatch();
 		}
+	}
+
+	@Override
+	protected void warn() {
+		PVPArena.instance.getLogger().warning("AfterRunnable not scheduled yet!");
 	}
 }

@@ -1,28 +1,24 @@
 package net.slipcor.pvparena.modules.colorteams;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.getspout.spoutapi.SpoutManager;
+import org.kitteh.tag.TagAPI;
 
-import net.minecraft.server.EntityPlayer;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Teams;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class CTManager extends ArenaModule {
-	protected static String spoutHandler = null;
-	private Field name = null;
+	protected static boolean enabled = false;
 
 	public CTManager() {
 		super("ColorTeams");
@@ -30,177 +26,113 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.11.11";
+		return "v0.10.3.15";
 	}
-
+	
 	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("game.hideName", "boolean");
-		types.put("messages.colorNick", "boolean");
-		types.put("colors.requireSpout", "boolean");
-		types.put("colors.tagapi", "boolean");
+	public boolean checkCommand(String s) {
+		return s.equals("!ct") || s.equals("colorteams");
 	}
-
-	private void colorizePlayer(Arena a, Player player) {
-		db.i("colorizing player " + player.getName() + ";");
-
-		Arena arena = Arenas.getArenaByPlayer(player);
-		if (arena == null) {
-			db.i("> arena is null");
-			if (spoutHandler != null) {
-				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.cfg.getBoolean("colors.requireSpout")) {
-				disguise(player, player.getName());
-			}
-			return;
-		}
-
-		ArenaTeam team = Teams.getTeam(arena, ArenaPlayer.parsePlayer(player));
-		String n;
-		if (team == null) {
-			db.i("> team is null");
-			if (spoutHandler != null) {
-				SpoutManager.getPlayer(player).setTitle(player.getName());
-			} else if (!a.cfg.getBoolean("colors.requireSpout")) {
-				disguise(player, player.getName());
-			}
-			return;
-		} else {
-			n = team.getColorString() + player.getName();
-		}
-		n = n.replaceAll("(&([a-f0-9]))", "§$2");
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !ct [value]
 		
-		player.setDisplayName(n);
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
 
-		if (arena.cfg.getBoolean("game.hideName")) {
-			n = " ";
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+			return;
 		}
-		if (spoutHandler != null) {
-			SpoutManager.getPlayer(player).setTitle(n);
-		} else if (!a.cfg.getBoolean("colors.requireSpout")) {
-			disguise(player, n);
+		
+		CFG c = null;
+		
+		if (args[1].equals("hidename")) {
+			c = CFG.CHAT_COLORNICK;
 		}
-	}
-	
-	private void disguise(Player player, String name) {
-		/*
-		String listName = name;
-		if(listName.length() >= 16) {
-			listName = listName.substring(0, 16);
+		
+		if (c == null) {
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "hidename"));
+			return;
 		}
-		// does this actually help?
-		player.setDisplayName(name);
-		try {
-			player.setPlayerListName(listName);
-		} catch (Exception e) {
-			// don't print the error
-		}
-		// then the rest
-		CraftPlayer cp = (CraftPlayer) player;
-		EntityPlayer ep = cp.getHandle();
-		ep.name = name;
-		*/
+		
+		boolean b = arena.getArenaConfig().getBoolean(c);
+		arena.getArenaConfig().set(c, !b);
+		arena.getArenaConfig().save();
+		arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
+		
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("game.hideName", Boolean.valueOf(false));
-		config.addDefault("messages.colorNick", Boolean.valueOf(true));
-		config.addDefault("colors.requireSpout", Boolean.valueOf(false));
-		config.addDefault("colors.tagapi", Boolean.valueOf(true));
-		config.options().copyDefaults(true);
+	public void displayInfo(CommandSender player) {
+		player.sendMessage("");
+		player.sendMessage("§6ColorTeams:§f "
+				+ StringParser.colorVar("hidename", arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)));
 	}
 	
 	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("log.nospout",
-				"Spout not found, you are missing some features ;)");
-		config.addDefault("log.spout", "Hooking into Spout!");
-		config.addDefault("log.tagapi", "Hooking into TagAPI!");
-	}
-	
-	@Override
-	public void onEnable() {
-		if (Bukkit.getServer().getPluginManager().getPlugin("Spout") != null) {
-			spoutHandler = SpoutManager.getInstance().toString();
-		} else {
-			try {
-				// Grab the field
-				for(Field field : EntityPlayer.class.getFields()) {
-					if(field.getName().equalsIgnoreCase("name")) {
-						name = field;
-					}
-				}
-				name.setAccessible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	public void configParse(YamlConfiguration config) {
+		if (enabled) {
+			return;
 		}
-		Language.log_info((spoutHandler == null) ? "nospout" : "spout");
-
+		
 		if (Bukkit.getServer().getPluginManager().getPlugin("TagAPI") != null) {
 			Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
-			Language.log_info("tagapi");
+			Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_COLORTEAMS_TAGAPI));
 		}
+		enabled = true;
 	}
 
 	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6ColoredTeams:§f "
-				+ StringParser.colorVar("hideName", arena.cfg.getBoolean("game.hideName"))
-				+ " || "
-				+ StringParser.colorVar("colorNick", arena.cfg.getBoolean("messages.colorNick"))
-				+ " || "
-				+ StringParser.colorVar("requireSpout", arena.cfg.getBoolean("colors.requireSpout")));
-	}
-
-	@Override
-	public void tpPlayerToCoordName(Arena arena, Player player, String place) {
-		if (arena.cfg.getBoolean("messages.colorNick", true)) {
-			if (spoutHandler != null) {
-				colorizePlayer(arena, player);	
+	public void tpPlayerToCoordName(Player player, String place) {
+		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+			ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+			String n;
+			if (team == null) {
+				n = player.getName();
 			} else {
-				ArenaTeam team = Teams.getTeam(arena, ArenaPlayer.parsePlayer(player));
-				String n;
-				if (team == null) {
-					db.i("> team is null");
-					n = player.getName();
-				} else {
-					n = team.getColorString() + player.getName();
-				}
-				n = n.replaceAll("(&([a-f0-9]))", "§$2");
-				
-				player.setDisplayName(n);
-
-				if (team != null && arena.cfg.getBoolean("game.hideName")) {
-					n = " ";
-				}
-				
-				updateName(player, n);
+				n = team.getColorCodeString() + player.getName();
 			}
+			n = n.replaceAll("(&([a-f0-9]))", "§$2");
+
+			if (team != null && arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
+				n = " ";
+			}
+			
+			player.setDisplayName(n);
+			
+			updateName(player);
 		}
 	}
 	
 	@Override
-	public void unload(Player player) {
-		if (spoutHandler != null) {
-			SpoutManager.getPlayer(player).setTitle(player.getName());
+	public void unload(final Player player) {
+		player.setDisplayName(player.getName());
+		if (enabled) {
+			class TempRunner implements Runnable {
+
+				@Override
+				public void run() {
+					try {
+						TagAPI.refreshPlayer(player);
+					} catch (Exception e) {
+						
+					}
+				}
+			}
+			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunner()
+				, 20*3L);
 		}
 	}
 	
-	public void updateName(Player player, String team) {
-		
-		// Update the name
-		disguise(player, team);
-		Player[] players = Bukkit.getOnlinePlayers();
-		for(Player p : players) {
-			if(p != player) {
-				// Refresh the packet!
-				p.hidePlayer(player);
-				p.showPlayer(player);
-			}
-		}
-		//setName(player, ChatColor.stripColor(n));
+	public void updateName(Player player) {
+		if (enabled)
+			TagAPI.refreshPlayer(player);
 	}
 }

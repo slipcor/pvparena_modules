@@ -8,27 +8,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.modules.powerups.PowerupEffect.classes;
-
-/**
- * powerup class
- * 
- * -
- * 
- * contains basic powerup methods and variables
- * 
- * @author slipcor
- * 
- * @version v0.6.15
- * 
- */
 
 public class Powerup {
 	public String name; // PowerUp display name
 	public Material item; // item that triggers this Powerup
 	private PowerupEffect[] effects; // Effects the Powerup has
-	private Debug db = new Debug(16);
+	private Debug debug = new Debug(16);
 
 	/**
 	 * construct a powerup instance
@@ -42,14 +29,14 @@ public class Powerup {
 	public Powerup(String pName, HashMap<String, Object> puEffects) {
 		int count = 0;
 		this.name = pName;
-		db.i("creating powerup " + pName);
+		debug.i("creating powerup " + pName);
 		this.item = Material.valueOf((String) puEffects.get("item"));
-		db.i("item added: " + this.item.toString());
+		debug.i("item added: " + this.item.toString());
 		for (String eClass : puEffects.keySet()) {
-			PowerupEffect.classes pec = PowerupEffect.parseClass(eClass);
+			PowerupType pec = PowerupEffect.parseClass(eClass);
 			if (pec == null) {
 				if (!eClass.equals("item"))
-					db.w("unknown effect class: " + eClass);
+					PVPArena.instance.getLogger().warning("unknown effect class: " + eClass);
 				continue;
 			}
 			PowerupEffect pe = new PowerupEffect(eClass,
@@ -60,7 +47,7 @@ public class Powerup {
 			}
 			count++;
 		}
-		db.i("effects found: " + count);
+		debug.i("effects found: " + count);
 		if (count < 1)
 			return;
 
@@ -68,7 +55,7 @@ public class Powerup {
 
 		count = 0;
 		for (String eClass : puEffects.keySet()) {
-			PowerupEffect.classes pec = PowerupEffect.parseClass(eClass);
+			PowerupType pec = PowerupEffect.parseClass(eClass);
 			if (pec == null) {
 				continue;
 			}
@@ -113,7 +100,7 @@ public class Powerup {
 	 *            the class to check
 	 * @return true if an effect still is active, false otherwise
 	 */
-	public boolean isEffectActive(classes peClass) {
+	public boolean isEffectActive(PowerupType peClass) {
 		for (PowerupEffect pe : effects) {
 			if (pe.uses != 0 && pe.duration != 0)
 				if (pe.type.equals(peClass))
@@ -142,7 +129,7 @@ public class Powerup {
 	 *            the player to commit the effect on
 	 */
 	public void activate(Player player) {
-		db.i("activating! - " + name);
+		debug.i("activating! - " + name, player);
 		for (PowerupEffect pe : effects) {
 			if (pe.uses != 0 && pe.duration != 0)
 				pe.init(player);
@@ -161,10 +148,12 @@ public class Powerup {
 	 */
 	public void commit(Player attacker, Player defender,
 			EntityDamageByEntityEvent event) {
-
+		debug.i("committing effects:", attacker);
+		debug.i("committing effects:", defender);
 		for (PowerupEffect pe : effects) {
-			if (pe.uses != 0 && pe.duration != 0)
+			if (pe.uses != 0 && pe.duration != 0) {
 				pe.commit(attacker, defender, event);
+			}
 		}
 	}
 
@@ -177,7 +166,7 @@ public class Powerup {
 	public void commit(EntityRegainHealthEvent event) {
 		for (PowerupEffect pe : effects) {
 			if (pe.uses != 0 && pe.duration != 0)
-				if (pe.type.equals(classes.HEAL))
+				if (pe.type.equals(PowerupType.HEAL))
 					pe.commit(event);
 		}
 	}
@@ -191,7 +180,7 @@ public class Powerup {
 	public void commit(PlayerVelocityEvent event) {
 		for (PowerupEffect pe : effects) {
 			if (pe.uses != 0 && pe.duration != 0)
-				if (pe.type.equals(classes.HEAL))
+				if (pe.type.equals(PowerupType.HEAL))
 					pe.commit(event);
 		}
 	}
@@ -209,11 +198,8 @@ public class Powerup {
 	/**
 	 * disable all PowerupEffects
 	 */
+	@Deprecated
 	public void disable() {
-		for (PowerupEffect pe : effects) {
-			pe.uses = 0;
-			pe.duration = 0;
-			pe = null;
-		}
+		
 	}
 }

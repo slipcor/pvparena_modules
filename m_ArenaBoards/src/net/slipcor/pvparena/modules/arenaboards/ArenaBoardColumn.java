@@ -1,24 +1,16 @@
 package net.slipcor.pvparena.modules.arenaboards;
 
+import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
-/**
- * arena board column class
- * 
- * @author slipcor
- * 
- * @version v0.6.15
- * 
- */
-
 public class ArenaBoardColumn {
 	protected ArenaBoard board;
-	private Location location;
-	private Debug db = new Debug(11);
+	private PABlockLocation location;
+	private Debug debug = new Debug(11);
 
 	private ArenaBoardSign[] signs = new ArenaBoardSign[5];
 
@@ -27,14 +19,14 @@ public class ArenaBoardColumn {
 	 * 
 	 * @param ab
 	 *            the arena board to hook to
-	 * @param loc
+	 * @param l
 	 *            the location of the column header
 	 */
-	public ArenaBoardColumn(ArenaBoard ab, Location loc) {
+	public ArenaBoardColumn(ArenaBoard ab, PABlockLocation l) {
 		board = ab;
-		location = loc;
+		location = l;
 
-		db.i("fetching sign column");
+		debug.i("fetching sign column");
 		fetchSigns();
 	}
 
@@ -42,7 +34,7 @@ public class ArenaBoardColumn {
 	 * fetch sub signs and attach them to the sign array
 	 */
 	private void fetchSigns() {
-		Location l = location.getBlock().getRelative(BlockFace.DOWN)
+		Location l = location.toLocation().getBlock().getRelative(BlockFace.DOWN)
 				.getLocation();
 		int i = 0;
 		try {
@@ -69,7 +61,7 @@ public class ArenaBoardColumn {
 	 */
 	public void write(String[] s) {
 		int i = 0;
-		db.i("writing to column at location " + location.toString());
+		debug.i("writing to column at location " + location.toString());
 		for (ArenaBoardSign abs : signs) {
 			if (abs == null) {
 				return;

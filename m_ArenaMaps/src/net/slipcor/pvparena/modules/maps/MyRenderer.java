@@ -6,14 +6,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.managers.Spawns;
-import org.bukkit.Bukkit;
+import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PACheck;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -32,10 +33,12 @@ public class MyRenderer extends MapRenderer {
 	private boolean showPlayers;
 	private boolean showSpawns;
 	private boolean showLives;
+	private Maps maps;
 
-	public MyRenderer() {
+	public MyRenderer(Maps m) {
 		playerName = null;
 		arena = null;
+		maps = m;
 	}
 
 	static {
@@ -56,14 +59,17 @@ public class MyRenderer extends MapRenderer {
 		colors.put(ChatColor.WHITE, MapPalette.matchColor(255, 255, 255));
 		colors.put(ChatColor.YELLOW, MapPalette.matchColor(255, 255, 0));
 
-		new File("plugins/pvparena").mkdir();
-		File configFile = new File("plugins/pvparena/maps.yml");
+		PVPArena.instance.getDataFolder().mkdir();
+		
+		
+		
+		File configFile = new File(PVPArena.instance.getDataFolder(),"maps.yml");
 		if (!(configFile.exists())) {
 			try {
 				configFile.createNewFile();
 			} catch (Exception e) {
-				Bukkit.getLogger().severe(
-						"[PVP Arena] Error when creating map file.");
+				PVPArena.instance.getLogger().severe(
+						"Error when creating map file.");
 			}
 		}
 
@@ -81,7 +87,7 @@ public class MyRenderer extends MapRenderer {
 
 	private static void savePlayers() {
 		try {
-			playerMaps.save(new File("plugins/pvparena/maps.yml"));
+			playerMaps.save(new File(PVPArena.instance.getDataFolder(),"maps.yml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -94,10 +100,10 @@ public class MyRenderer extends MapRenderer {
 		if (playerName == null) { 
 			// map.removeRenderer(this);
 			// eventual first initialisation
-			if (Maps.hasCustomMap(player.getName()) && !done.contains(map.getId())) {
+			if (maps.hasCustomMap(player.getName()) && !done.contains(map.getId())) {
 				
 				playerName = player.getName();
-				arena = Arenas.getArenaByPlayer(player);
+				arena = ArenaPlayer.parsePlayer(playerName).getArena();
 				if ((playerMaps.get(player.getName()) == null)) {
 					playerMaps.set(player.getName(), map.getId());
 					savePlayers();
@@ -110,9 +116,9 @@ public class MyRenderer extends MapRenderer {
 
 				done.add(map.getId());
 
-				showSpawns = arena.cfg.getBoolean("maps.showSpawns", Boolean.valueOf(true));
-				showPlayers = arena.cfg.getBoolean("maps.showPlayers", Boolean.valueOf(true));
-				showLives = arena.cfg.getBoolean("maps.showLives", Boolean.valueOf(true));
+				showSpawns = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_SHOWSPAWNS);
+				showPlayers = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_SHOWPLAYERS);
+				showLives = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_SHOWLIVES);
 			}
 			return;
 		}
@@ -121,16 +127,16 @@ public class MyRenderer extends MapRenderer {
 			return;
 		}
 		
-		if (arena != null && arena.cfg.getBoolean("maps.playerPosition", false)) {
+		if (arena != null && arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAMAPS_ALIGNTOPLAYER)) {
 		
 			map.setCenterX(player.getLocation().getBlockX());
 			map.setCenterZ(player.getLocation().getBlockZ());
 		} else if (arena != null) {
-			Location loc = Spawns.getRegionCenter(arena);
-			map.setCenterX(loc.getBlockX());
-			map.setCenterZ(loc.getBlockZ());
+			PABlockLocation loc = SpawnManager.getRegionCenter(arena);
+			map.setCenterX(loc.getX());
+			map.setCenterZ(loc.getZ());
 		} else {
-			System.out.print("arena null");
+			PVPArena.instance.getLogger().severe("arena null");
 		}
 		int mapcenterx = map.getCenterX();
 		int mapcenterz = map.getCenterZ();
@@ -141,7 +147,7 @@ public class MyRenderer extends MapRenderer {
 			}
 		}
 
-		HashSet<MapItem> items = Maps.getItems(arena);
+		HashSet<MapItem> items = maps.getItems();
 		
 		if (showSpawns) {
 		
@@ -222,9 +228,7 @@ public class MyRenderer extends MapRenderer {
 				continue;
 			}
 			for (ArenaPlayer ap : team.getTeamMembers()) {
-				
-
-				lives.put(team.getName(), arena.type().getLives(ap.get()));
+				lives.put(team.getName(), PACheck.handleGetLives(ap.getArena(), ap));
 				break;
 			}
 		}

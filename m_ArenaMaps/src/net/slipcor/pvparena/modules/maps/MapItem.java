@@ -2,10 +2,10 @@ package net.slipcor.pvparena.modules.maps;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
 
 public class MapItem {
 	private final int x;
@@ -22,24 +22,32 @@ public class MapItem {
 		z = 0;
 	}
 	
-	public MapItem(Arena a, Location coord, ChatColor c) {
+	public MapItem(Arena a, PABlockLocation coord, ChatColor c) {
 		player = false;
 		name = null;
 		color = c;
-		x = coord.getBlockX();
-		z = coord.getBlockZ();
+		x = coord.getX();
+		z = coord.getZ();
 	}
 	
 	public int getX() {
 		if (player) {
-			return Bukkit.getPlayerExact(name).getLocation().getBlockX();
+			try {
+				return Bukkit.getPlayerExact(name).getLocation().getBlockX();
+			}	catch (NullPointerException e) {
+				
+			}
 		}
 		return x;
 	}
 	
 	public int getZ() {
 		if (player) {
-			return Bukkit.getPlayerExact(name).getLocation().getBlockZ();
+			try {
+				return Bukkit.getPlayerExact(name).getLocation().getBlockZ();
+			}	catch (NullPointerException e) {
+				
+			}
 		}
 		return z;
 	}

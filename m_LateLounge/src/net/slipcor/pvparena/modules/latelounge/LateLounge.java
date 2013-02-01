@@ -1,35 +1,33 @@
 package net.slipcor.pvparena.modules.latelounge;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import net.slipcor.pvparena.PVPArena;
+
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.command.PAAJoin;
-import net.slipcor.pvparena.command.PAA_Command;
+import net.slipcor.pvparena.classes.PACheck;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.commands.PAG_Join;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class LateLounge extends ArenaModule {
 	public LateLounge() {
 		super("LateLounge");
 	}
 	
+	int priority = 3; 
+	
 	@Override
 	public String version() {
-		return "v0.8.8.5";
+		return "v0.10.3.0";
 	}
 	
-	private static HashMap<Arena, HashSet<String>> players = new HashMap<Arena, HashSet<String>>();
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("latelounge.latelounge", "boolean");
-	}
+	private static HashSet<String> players = new HashSet<String>();
 	
 	/**
 	 * hook into a player trying to join the arena
@@ -41,25 +39,24 @@ public class LateLounge extends ArenaModule {
 	 * @return false if a player should not be granted permission
 	 */
 	@Override
-	public boolean checkJoin(Arena arena, Player player) {
-		if (arena.cfg.getInt("ready.min") < 1 || !arena.cfg.getBoolean("latelounge.latelounge")) {
-			return true;
-		}
-		HashSet<String> list = new HashSet<String>();
-		
-		if (players.get(arena) != null) {
-			list = players.get(arena);
+	public PACheck checkJoin(CommandSender sender,
+			PACheck res, boolean b) {
+		if (!b || res.hasError() || res.getPriority() > priority) {
+			return res;
 		}
 		
-		if (list.contains(player.getName())) {
-			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
-			return list.size() >= arena.cfg.getInt("ready.min");
+		Player player = (Player) sender;
+		
+		if (players.contains(player.getName())) {
+			if (players.size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
+				res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
+				return res;
+			}
 		}
 		
-		if (arena.cfg.getInt("ready.min") > list.size() + 1) {
+		if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > players.size() + 1) {
 			// not enough players
-			list.add(player.getName());
-			players.put(arena, list);
+			players.add(player.getName());
 			Player[] aPlayers = Bukkit.getOnlinePlayers();
 			
 			for (Player p : aPlayers) {
@@ -67,67 +64,67 @@ public class LateLounge extends ArenaModule {
 					continue;
 				}
 				try {
-					Arenas.tellPlayer(p, Language.parse("lateloungeannounce", arena.name, player.getName()));
+					Arena.pmsg(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, arena.getName(), player.getName()));
 				} catch (Exception e) {
 					//
 				}
 			}
-			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
-			return false;
-		} else if (arena.cfg.getInt("ready.min") == list.size() + 1) {
+			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
+			return res;
+		} else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == players.size() + 1) {
 			// not enough players
-			list.add(player.getName());
-			players.put(arena, list);
+			players.add(player.getName());
 			
 			HashSet<String> removals = new HashSet<String>();
 			
-			for (String s : list) {
+			for (String s : players) {
 				Player p = Bukkit.getPlayerExact(s);
-				if (p == null || !PVPArena.instance.getAmm().checkJoin(arena, player)) {
+				
+				boolean removeMe = false;
+				
+				if (p != null) {
+					for (ArenaModule mod : arena.getMods()) {
+						if (!mod.getName().equals(getName())) {
+							if (mod.checkJoin(p, new PACheck(), true).hasError()) {
+								removeMe = true;
+								break;
+							}
+						}
+					}
+				}
+				
+				if (p == null || removeMe) {
 					removals.add(s);
 					if (p != null) {
-						Arenas.tellPlayer(p, Language.parse("lateloungerejoin"));
+						res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_REJOIN));
 					}
 				}
 			}
 
 			if (removals.size() > 0) {
 				for (String s : removals) {
-					list.remove(s);
+					players.remove(s);
 				}
-				players.put(arena, list);
 			} else {
-				for (String s : list) {
+				// SUCCESS!
+				for (String s : players) {
+					if (s.equals(sender.getName())) {
+						continue;
+					}
 					Player p = Bukkit.getPlayerExact(s);
-					PAA_Command command = new PAAJoin();
-					command.commit(arena, p, null);
+					AbstractArenaCommand command = new PAG_Join();
+					command.commit(arena, p, new String[0]);
 				}
-				return true;
+				return res;
 			}
-			Arenas.tellPlayer(player, Language.parse("lateloungewait"));
-			return false;
+			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 		}
-		
-		return true;
-	}
-
-	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("latelounge.latelounge", Boolean.valueOf(false));
-
-		config.options().copyDefaults(true);
-	}
-
-	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.lateloungewait", "Arena will be starting soon, please wait!");
-		config.addDefault("lang.lateloungeannounce", "Arena %1% is starting! Player %2% wants to start. Join with /pa %1%");
-		config.addDefault("lang.lateloungerejoin", "Ready check has caught you not being able to join. Rejoin when you can!");
-		config.options().copyDefaults(true);
+		// enough, ignore and let something else handle the start!
+		return res;
 	}
 	
 	@Override
-	public void reset(Arena arena, boolean force) {
+	public void reset(boolean force) {
 		players.remove(arena);
 	}
 }

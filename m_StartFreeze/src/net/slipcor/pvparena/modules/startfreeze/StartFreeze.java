@@ -1,19 +1,26 @@
 package net.slipcor.pvparena.modules.startfreeze;
 
-import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
-public class StartFreeze extends ArenaModule {
-	protected static HashMap<Arena, StartFreezer> runnables = new HashMap<Arena, StartFreezer>();
-	protected static HashMap<Arena, Integer> ids = new HashMap<Arena, Integer>();
+public class StartFreeze extends ArenaModule implements Listener {
+	StartFreezer runnable = null;
+	private boolean setup = false;
+	
 
 	public StartFreeze() {
 		super("StartFreeze");
@@ -21,43 +28,79 @@ public class StartFreeze extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.7.20.0";
+		return "v0.10.3.15";
+	}
+	
+	@Override
+	public boolean checkCommand(String s) {
+		return s.equals("startfreeze") || s.equals("!sf");
+	}
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !sf 5
+		
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+			return;
+		}
+		
+		if (args[0].equals("!sf") || args[0].equals("startfreeze")) {
+			int i = 0;
+			try {
+				i = Integer.parseInt(args[1]);
+			} catch (Exception e) {
+				arena.msg(sender,
+						Language.parse(MSG.ERROR_NOT_NUMERIC, args[1]));
+				return;
+			}
+			
+			arena.getArenaConfig().set(CFG.MODULES_STARTFREEZE_TIMER, i);
+			arena.getArenaConfig().save();
+			arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_STARTFREEZE_TIMER.getNode(), String.valueOf(i)));
+		}
 	}
 
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("freeze.timer", Integer.valueOf(10));
+	public void reset(boolean force) {
+		if (runnable != null)
+			runnable.cancel();
+		runnable = null;
 	}
 
 	@Override
-	public void initLanguage(YamlConfiguration config) {
-		config.addDefault("lang.startfreeze",
-				"The game will start in %1% seconds!");
+	public void parseStart() {
+		runnable = new StartFreezer(null);
+		runnable.runTaskLater(PVPArena.instance, arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) * 20L);
+		arena.broadcast(Language.parse(MSG.MODULE_STARTFREEZE_ANNOUNCE,
+				String.valueOf(arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER))));
 	}
 
-	@Override
-	public void reset(Arena arena, boolean force) {
-		if (runnables.containsKey(arena))
-			Bukkit.getScheduler().cancelTask(ids.get(arena));
-		runnables.remove(arena);
-		ids.remove(arena);
-	}
 
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
-		StartFreezer sf = new StartFreezer(arena);
-		runnables.put(arena, sf);
-		ids.put(arena,
-				Bukkit.getScheduler().scheduleSyncDelayedTask(
-						PVPArena.instance, sf,
-						arena.cfg.getInt("freeze.timer") * 20L));
-		arena.tellEveryone(Language.parse("startfreeze",
-				String.valueOf(arena.cfg.getInt("freeze.timer"))));
+	public void configParse(YamlConfiguration config) {
+		if (!setup) {
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+			setup = true;
+		}
 	}
 
-	@Override
-	public void parseMove(Arena arena, PlayerMoveEvent event) {
-		if (runnables.containsKey(arena)) {
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		Player p = event.getPlayer();
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+		if (ap.getArena() == null || (!arena.equals(ap.getArena()))) {
+			return;
+		}
+		if (runnable != null) {
 			Location from = event.getFrom();
 			Location to = event.getTo();
 			if ((from.getBlockX() != to.getBlockX()) ||

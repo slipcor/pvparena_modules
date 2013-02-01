@@ -1,23 +1,28 @@
 package net.slipcor.pvparena.modules.blockrestore;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Arenas;
-import net.slipcor.pvparena.neworder.ArenaModule;
-import net.slipcor.pvparena.neworder.ArenaRegion;
+import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.material.Attachable;
@@ -30,22 +35,15 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.8.11.12";
+		return "v0.10.3.0";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
 	public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
 	
-	private static HashMap<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
+	private static HashMap<ArenaRegionShape, RestoreContainer> containers = new HashMap<ArenaRegionShape, RestoreContainer>();
 
-	private static Debug db = new Debug(24);
-
-	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("blockRestore.hard", "boolean");
-		types.put("blockRestore.offset", "int");
-		types.put("protection.pickup", "boolean");
-	}
+	private static Debug debug = new Debug(24);
 	
 	private void checkBlock(Block b, BlockFace bf) {
 		if (b.getType().equals(Material.LADDER) ||
@@ -60,32 +58,85 @@ public class Blocks extends ArenaModule {
 	}
 	
 	@Override
-	public void commitCommand(Arena arena, CommandSender sender, String[] args) {
+	public boolean checkCommand(String s) {
+		return (s.equals("blockrestore") || s.equals("!br"));
+	}
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !br hard
+		// !br restorechests
+		// !br clearinv
+		// !br offset X
 		
-		if (args[0].toLowerCase().startsWith("clearinv")) {
-			if (!PVPArena.hasAdminPerms(sender)
-					&& !(PVPArena.hasCreatePerms(sender, arena))) {
-				Arenas.tellPlayer(sender,
-						Language.parse("nopermto", Language.parse("admin")));
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			Arena.pmsg(sender,
+					Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+		
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
+			return;
+		}
+		
+		if (args[1].startsWith("clearinv")) {
+			
+			arena.getArenaConfig().setManually("inventories", null);
+			arena.getArenaConfig().save();
+			Arena.pmsg(sender, Language.parse(MSG.MODULE_BLOCKRESTORE_CLEARINVDONE));
+			return;
+		}
+
+		if (args[1].equals("hard") || args[1].equals("restorechests")) {
+			CFG c = null;
+			if (args[1].equals("hard")) {
+				c = CFG.MODULES_BLOCKRESTORE_HARD;
+			} else {
+				c = CFG.MODULES_BLOCKRESTORE_RESTORECHESTS;
+			}
+			boolean b = arena.getArenaConfig().getBoolean(c);
+			
+			arena.getArenaConfig().set(c, !b);
+			arena.getArenaConfig().save();
+			arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
+			
+			return;
+		}
+		
+		if (args[1].equals("offset")) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 3 })) {
 				return;
 			}
-			arena.cfg.set("inventories", null);
-			Arenas.tellPlayer(sender, "Inventories cleared. Expect lag on next arena start!");
+			
+			int i = 0;
+			try {
+				i = Integer.parseInt(args[2]);
+			} catch (Exception e) {
+				arena.msg(sender,
+						Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
+				return;
+			}
+			
+			arena.getArenaConfig().set(CFG.MODULES_BLOCKRESTORE_OFFSET, i);
+			arena.getArenaConfig().save();
+			arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BLOCKRESTORE_OFFSET.getNode(), String.valueOf(i)));
 		}
 	}
-	
+
 	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("blockRestore.hard", Boolean.valueOf(false));
-		config.addDefault("protection.pickup", Boolean.valueOf(false));
-		config.addDefault("blockRestore.offset", Integer.valueOf(0));
-		config.options().copyDefaults(true);
+	public void displayInfo(CommandSender player) {
+		player.sendMessage("");
+		player.sendMessage("§6BlockRestore:§f "
+				+ StringParser.colorVar("hard", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD))
+				+ " | " + StringParser.colorVar("chests", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTORECHESTS))
+				+ " | offset " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET));
 	}
 	
 	@Override
-	public void onEntityExplode(Arena arena, EntityExplodeEvent event) {
-		if (arena.fightInProgress &&
-				!arena.cfg.getBoolean("blockRestore.hard")) {
+	public void onEntityExplode(EntityExplodeEvent event) {
+		if (!arena.isLocked() &&
+				!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
 			for (Block b : event.blockList()) {
 				saveBlock(b);
 			}
@@ -94,14 +145,13 @@ public class Blocks extends ArenaModule {
 
 	
 	@Override
-	public void onBlockBreak(Arena arena, Block block) {
-		db.i("block break in blockRestore");
-		if (arena == null || arena.cfg.getBoolean("blockRestore.hard")) {
-			db.i(arena + " || blockRestore.hard: " + arena.cfg.getBoolean("blockRestore.hard"));
+	public void onBlockBreak(Block block) {
+		debug.i("block break in blockRestore");
+		if (arena == null || arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
+			debug.i(arena + " || blockRestore.hard: " + arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD));
 			return;
 		}
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")) {
+		if (!arena.isLocked()) {
 			
 			checkBlock(block.getRelative(BlockFace.NORTH), BlockFace.SOUTH);
 			checkBlock(block.getRelative(BlockFace.SOUTH), BlockFace.NORTH);
@@ -110,51 +160,35 @@ public class Blocks extends ArenaModule {
 			
 			saveBlock(block);
 		}
-		db.i("arena.fightInProgress " + arena.fightInProgress + " && restore " + arena.cfg.getBoolean("protection.restore"));
+		debug.i("!arena.isLocked() " + !arena.isLocked());
 	}
 	@Override
-	public void onBlockPiston(Arena arena, Block block) {
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")
-				&& !arena.cfg.getBoolean("blockRestore.hard")) {
+	public void onBlockPiston(Block block) {
+		if (!arena.isLocked()
+				&& !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
 			saveBlock(block);
 		}
 	}
 
 	@Override
-	public void onBlockPlace(Arena arena, Block block, Material mat) {
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")
-				&& !arena.cfg.getBoolean("blockRestore.hard")) {
+	public void onBlockPlace(Block block, Material mat) {
+		if (!arena.isLocked()
+				&& !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
 			saveBlock(block, mat);
 		}
 	}
 	
 	@Override
-	public void onPlayerPickupItem(Arena arena, PlayerPickupItemEvent event) {
-		if (arena.fightInProgress
-				&& arena.cfg.getBoolean("protection.restore")
-				&& !arena.cfg.getBoolean("protection.pickup")) {
+	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+		if (!arena.isLocked()) {
 			event.setCancelled(true);
 		}
 	}
 	
 	@Override
-	public boolean parseCommand(String s) {
-		return (s.toLowerCase().startsWith("clearinv"));
-	}
-
-	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6BlockRestore:§f "
-				+ StringParser.colorVar("hard", arena.cfg.getBoolean("blockRestore.hard")));
-	}
-	
-	@Override
-	public void reset(Arena arena, boolean force) {
-		resetBlocks(arena);
-		restoreChests(arena);
+	public void reset(boolean force) {
+		resetBlocks();
+		restoreChests();
 	}
 
 	/**
@@ -163,8 +197,8 @@ public class Blocks extends ArenaModule {
 	 * @param arena
 	 *            the arena to reset
 	 */
-	private void resetBlocks(Arena arena) {
-		db.i("resetting blocks");
+	private void resetBlocks() {
+		debug.i("resetting blocks");
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks));
 	}
 
@@ -175,20 +209,29 @@ public class Blocks extends ArenaModule {
 	 * @param arena
 	 *            the arena to restore
 	 */
-	public void restoreChests(Arena arena) {
-		ArenaRegion bfRegion = arena.regions.get("battlefield");
-
-		if (bfRegion == null) {
-			db.i("no battlefield region, skipping restoreChests");
+	public void restoreChests() {
+		debug.i("resetting chests");
+		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
+		
+		if (bfs.size() < 1) {
+			debug.i("no battlefield region, skipping restoreChests");
 			return;
 		}
-
-		if (!arena.cfg.getBoolean("general.restoreChests")) {
-			db.i("not restoring chests, skipping restoreChests");
+		
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTORECHESTS)) {
+			debug.i("not restoring chests, skipping restoreChests");
 			return;
 		}
-		if (containers.get(bfRegion) != null)
-			containers.get(bfRegion).restoreChests();
+		
+		for (ArenaRegionShape bfRegion : bfs) {
+			debug.i("resetting arena: " + bfRegion.getName());
+
+			if (containers.get(bfRegion) != null) {
+				debug.i("container not null!");
+				containers.get(bfRegion).restoreChests();
+			}
+		
+		}
 	}
 
 	/**
@@ -198,7 +241,7 @@ public class Blocks extends ArenaModule {
 	 *            the block to save
 	 */
 	private void saveBlock(Block block) {
-		db.i("save block at " + block.getLocation().toString());
+		debug.i("save block at " + block.getLocation().toString());
 		if (!blocks.containsKey(block.getLocation())) {
 			blocks.put(block.getLocation(), new ArenaBlock(block));
 		}
@@ -213,8 +256,8 @@ public class Blocks extends ArenaModule {
 	 *            the material to override
 	 */
 	private void saveBlock(Block block, Material type) {
-		db.i("save block at " + block.getLocation().toString());
-		db.i(" - type: " + type.toString());
+		debug.i("save block at " + block.getLocation().toString());
+		debug.i(" - type: " + type.toString());
 		if (!blocks.containsKey(block.getLocation())) {
 			blocks.put(block.getLocation(), new ArenaBlock(block, type));
 		}
@@ -226,56 +269,66 @@ public class Blocks extends ArenaModule {
 	 * @param arena
 	 *            the arena to save
 	 */
-	public void saveChests(Arena arena) {
-		ArenaRegion bfRegion = arena.regions.get("battlefield");
-
-		if (bfRegion == null) {
-			db.i("no battlefield region, skipping saveChests");
+	public void saveChests() {
+		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
+		
+		if (bfs.size() < 1) {
+			debug.i("no battlefield region, skipping saveChests");
 			return;
 		}
-
-		if (!arena.cfg.getBoolean("general.restoreChests")) {
-			db.i("not restoring chests, skipping saveChests");
+		
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTORECHESTS)) {
+			debug.i("not restoring chests, skipping saveChests");
 			return;
 		}
-
-		containers.get(bfRegion).saveChests();
+		
+		for (ArenaRegionShape bfRegion : bfs) {
+			containers.get(bfRegion).saveChests();
+		}
 	}
 	
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
-		ArenaRegion region = arena.regions.get("battlefield");
+	public void parseStart() {
+		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
 		
-		saveRegion(arena, region);
-		
-		for(ArenaRegion r : arena.regions.values()) {
-			if (r.name.startsWith("restore")) {
-				saveRegion(arena, r);
-			}
+		if (bfs.size() < 1) {
+			debug.i("no battlefield region, skipping restoreChests");
+			return;
 		}
 		
+		for (ArenaRegionShape region : bfs) {
+			saveRegion(region);
+		}
+		
+		for(ArenaRegionShape r : arena.getRegions()) {
+			if (r.getName().startsWith("restore")) {
+				saveRegion(r);
+			}
+		}
 	}
 
-	private void saveRegion(Arena arena, ArenaRegion region) {
+	private void saveRegion(ArenaRegionShape region) {
 		if (region == null) {
 			return;
 		}
 		
-		containers.put(region, new RestoreContainer(arena, region));
+		containers.put(region, new RestoreContainer(this, region));
 		
-		saveChests(arena);
+		saveChests();
 		
-		if (!arena.cfg.getBoolean("blockRestore.hard") && !region.name.startsWith("restore")) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD) && !region.getName().startsWith("restore")) {
 			return;
 		}
 
-		Location min = region.getAbsoluteMinimum();
-		Location max = region.getAbsoluteMaximum();
+		PABlockLocation min = region.getMinimumLocation();
+		PABlockLocation max = region.getMaximumLocation();
 		
-		for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-			for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-				for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-					saveBlock(min.getWorld().getBlockAt(x, y, z));
+		World world = Bukkit.getWorld(min.getWorldName());
+		
+		for (int x = min.getX(); x <= max.getX(); x++) {
+			for (int y = min.getY(); y <= max.getY(); y++) {
+				for (int z = min.getZ(); z <= max.getZ(); z++) {
+					saveBlock(world.getBlockAt(x, y, z));
 				}
 			}
 		}

@@ -1,145 +1,168 @@
 package net.slipcor.pvparena.modules.announcements;
 
-import java.util.HashMap;
-
-import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.managers.Teams;
-import net.slipcor.pvparena.neworder.ArenaModule;
+import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class AnnouncementManager extends ArenaModule {
-	
+
 	public AnnouncementManager() {
 		super("Announcements");
+		debug = new Debug(400);
 	}
-	
+
 	@Override
 	public String version() {
-		return "v0.8.11.6";
+		return "v0.10.3.0";
 	}
 
 	@Override
-	public void addSettings(HashMap<String, String> types) {
-		types.put("announcements.join", "boolean");
-		types.put("announcements.start", "boolean");
-		types.put("announcements.end", "boolean");
-		types.put("announcements.winner", "boolean");
-		types.put("announcements.loser", "boolean");
-		types.put("announcements.prize", "boolean");
-		types.put("announcements.custom", "boolean");
-		types.put("announcements.radius", "int");
-		types.put("announcements.color", "string");
+	public void announce(String message, String type) {
+		Announcement.announce(arena, Announcement.type.valueOf(type), message);
 	}
 
 	@Override
-	public void announceCustom(Arena arena, String message) {
-		Announcement.announce(arena, Announcement.type.CUSTOM, message);
+	public boolean checkCommand(String s) {
+		return s.equals("!aa") || s.startsWith("announce");
 	}
 
 	@Override
-	public void announceLoser(Arena arena, String message) {
-		Announcement.announce(arena, Announcement.type.LOSER, message);
-	}
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !aa [type]
 
-	@Override
-	public void announcePrize(Arena arena, String message) {
-		Announcement.announce(arena, Announcement.type.PRIZE, message);
-	}
-
-	@Override
-	public void announceWinner(Arena arena, String message) {
-		Announcement.announce(arena, Announcement.type.WINNER, message);
-	}
-	
-	@Override
-	public void choosePlayerTeam(Arena arena, Player player, String coloredTeam) {
-
-		Announcement.announce(
-				arena,
-				Announcement.type.JOIN,
-				Language.parse("playerjoined" + (arena.type().getName().equals("free") ? "free" : ""),
-						player.getName(),
-						coloredTeam));
-	}
-	
-	@Override
-	public void commitPlayerDeath(Arena arena, Player player,
-			EntityDamageEvent cause) {
-		Announcement.announce(arena, Announcement.type.LOSER, Language.parse("killedby",
-				player.getName(), arena.parseDeathCause(player, cause.getCause(), ArenaPlayer
-						.getLastDamagingPlayer(cause))));
-	}
-	
-	@Override
-	public void configParse(Arena arena, YamlConfiguration config, String type) {
-		config.addDefault("announcements.join", Boolean.valueOf(false));
-		config.addDefault("announcements.start", Boolean.valueOf(false));
-		config.addDefault("announcements.end", Boolean.valueOf(false));
-		config.addDefault("announcements.winner", Boolean.valueOf(false));
-		config.addDefault("announcements.loser", Boolean.valueOf(false));
-		config.addDefault("announcements.prize", Boolean.valueOf(false));
-		config.addDefault("announcements.custom", Boolean.valueOf(false));
-		config.addDefault("announcements.radius", Integer.valueOf(0));
-		config.addDefault("announcements.color", "AQUA");
-		
-		config.options().copyDefaults(true);
-	}
-	
-	@Override
-	public void parseJoin(Arena arena, Player player, String coloredTeam) {
-
-		if (Teams.countPlayersInTeams(arena) < 2) {
-			Announcement.announce(arena, Announcement.type.START,
-					Language.parse("joinarena", arena.name));
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
 		}
-		Announcement.announce(arena, Announcement.type.JOIN,
-				Language.parse("playerjoined", player.getName(), coloredTeam));
-	}
 
-	@Override
-	public void playerLeave(Arena arena, Player player, ArenaTeam team) {
-		if (team == null) {
-			Announcement.announce(arena, Announcement.type.LOSER,
-					Language.parse("playerleave", player.getName()));
-		} else {
-			Announcement.announce(arena, Announcement.type.LOSER,
-					Language.parse("playerleave", team.colorizePlayer(player)));
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args,
+				new Integer[] { 2 })) {
+			return;
+		}
+
+		if (args[0].equals("!aa") || args[0].startsWith("announce")) {
+
+			for (Announcement.type t : Announcement.type.values()) {
+				if (t.name().equalsIgnoreCase(args[1])) {
+					boolean b = arena.getArenaConfig().getBoolean(
+							CFG.getByNode("MODULES_ANNOUNCEMENTS_" + t.name()));
+					arena.getArenaConfig().set(
+							CFG.getByNode("MODULES_ANNOUNCEMENTS_" + t.name()),
+							!b);
+					arena.getArenaConfig().save();
+
+					arena.msg(
+							sender,
+							Language.parse(MSG.SET_DONE, t.name(),
+									String.valueOf(!b)));
+					return;
+				}
+			}
+
+			String list = StringParser.joinArray(Announcement.type.values(),
+					", ");
+			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], list));
+			return;
 		}
 	}
 
 	@Override
-	public void parseInfo(Arena arena, CommandSender player) {
+	public void parsePlayerDeath(Player player, EntityDamageEvent cause) {
+		Announcement.announce(arena, Announcement.type.LOSER, Language.parse(
+				MSG.FIGHT_KILLED_BY,
+				player.getName(),
+				arena.parseDeathCause(player, cause.getCause(),
+						ArenaPlayer.getLastDamagingPlayer(cause))));
+	}
+
+	@Override
+	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
 		player.sendMessage("§6Announcements:§f radius: "
-				+ StringParser.colorVar(arena.cfg.getInt("announcements.radius", 0))
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(
+						CFG.MODULES_ANNOUNCEMENTS_RADIUS, 0))
 				+ " || color: "
-				+ StringParser.colorVar(arena.cfg.getString("announcements.color"))
+				+ StringParser.colorVar(arena.getArenaConfig().getString(
+						CFG.MODULES_ANNOUNCEMENTS_COLOR))
 				+ " || "
-				+ StringParser.colorVar("join", arena.cfg.getBoolean("announcements.join")));
-		player.sendMessage(StringParser.colorVar("start", arena.cfg.getBoolean("announcements.start"))
+				+ StringParser.colorVar("join", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_JOIN)));
+		player.sendMessage(StringParser.colorVar("start", arena
+				.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_START))
 				+ " || "
-				+ StringParser.colorVar("end", arena.cfg.getBoolean("announcements.end"))
+				+ StringParser.colorVar("end", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_END))
 				+ " || "
-				+ StringParser.colorVar("winner", arena.cfg.getBoolean("announcements.winner"))
+				+ StringParser.colorVar("winner", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_WINNER))
 				+ " || "
-				+ StringParser.colorVar("loser", arena.cfg.getBoolean("announcements.loser"))
+				+ StringParser.colorVar("loser", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_LOSER))
 				+ " || "
-				+ StringParser.colorVar("prize", arena.cfg.getBoolean("announcements.prize"))
+				+ StringParser.colorVar("prize", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_PRIZE))
 				+ " || "
-				+ StringParser.colorVar("custom", arena.cfg.getBoolean("announcements.custom")));
+				+ StringParser.colorVar("custom", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_CUSTOM)));
 	}
 
 	@Override
-	public void teleportAllToSpawn(Arena arena) {
+	public void parseJoin(CommandSender sender, ArenaTeam team) {
+
+		debug.i("parseJoin ... ", sender);
+
+		if (TeamManager.countPlayersInTeams(arena) < 2) {
+			Announcement.announce(arena, Announcement.type.ADVERT, Language
+					.parse(MSG.ANNOUNCE_ARENA_STARTING, arena.getName()));
+		}
+
+		if (arena.isFreeForAll()) {
+			Announcement.announce(arena, Announcement.type.JOIN,
+					arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINED)
+							.replace("%1%", sender.getName()));
+		} else {
+			Announcement.announce(
+					arena,
+					Announcement.type.JOIN,
+					arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINEDTEAM)
+							.replace("%1%", sender.getName())
+							.replace("%2%", team.getColoredName()));
+		}
+	}
+
+	@Override
+	public void parsePlayerLeave(Player player, ArenaTeam team) {
+		if (team == null) {
+			Announcement.announce(arena, Announcement.type.LOSER,
+					Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName()));
+		} else {
+			Announcement.announce(
+					arena,
+					Announcement.type.LOSER,
+					Language.parse(MSG.FIGHT_PLAYER_LEFT,
+							team.colorizePlayer(player)));
+		}
+	}
+
+	@Override
+	public void parseStart() {
 		Announcement.announce(arena, Announcement.type.START,
-				Language.parse("begin"));
+				Language.parse(MSG.FIGHT_BEGINS));
 	}
 }
