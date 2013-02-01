@@ -18,7 +18,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -28,19 +28,19 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class BetterGears extends ArenaModule {
 	static HashMap<String, String> colorMap;
-	Debug db = new Debug(600);
+	Debug debug = new Debug(600);
 
 	HashMap<ArenaTeam, Short[]> colors = new HashMap<ArenaTeam, Short[]>();
 	HashMap<ArenaClass, Short> levels = new HashMap<ArenaClass, Short>();
 
 	public BetterGears() {
 		super("BetterGears");
-		db = new Debug(401);
+		debug = new Debug(401);
 	}
 
 	@Override
 	public String version() {
-		return "v0.10.1.7";
+		return "v0.10.3.0";
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class BetterGears extends ArenaModule {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2,
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2,
 				4, 6 })) {
 			return;
 		}
@@ -247,7 +247,7 @@ public class BetterGears extends ArenaModule {
 	}
 
 	private void setup() {
-		db.i("Setting up BetterGears");
+		debug.i("Setting up BetterGears");
 		colors = new HashMap<ArenaTeam, Short[]>();
 		levels = new HashMap<ArenaClass, Short>();
 
@@ -259,7 +259,7 @@ public class BetterGears extends ArenaModule {
 								.getUnsafe(
 										"modules.bettergears.levels."
 												+ c.getName())));
-				db.i(c.getName() + " : " + s);
+				debug.i(c.getName() + " : " + s);
 			} catch (Exception e) {
 			}
 			levels.put(c, s);
@@ -269,7 +269,7 @@ public class BetterGears extends ArenaModule {
 			Short[] s = parseRGBToShortArray(arena.getArenaConfig().getUnsafe(
 					"modules.bettergears.colors." + t.getName()));
 			colors.put(t, s);
-			db.i(t.getName() + " : " + StringParser.joinArray(s, ","));
+			debug.i(t.getName() + " : " + StringParser.joinArray(s, ","));
 		}
 	}
 
@@ -300,8 +300,8 @@ public class BetterGears extends ArenaModule {
 		result[1] = 255;
 		result[2] = 255;
 
-		db.i("parsing RGB:");
-		db.i(String.valueOf(o));
+		debug.i("parsing RGB:");
+		debug.i(String.valueOf(o));
 
 		if (!(o instanceof String)) {
 			return result;
@@ -350,7 +350,7 @@ public class BetterGears extends ArenaModule {
 		}
 
 		String s = colorMap.get(name);
-		db.i("team " + name + " : " + s);
+		debug.i("team " + name + " : " + s);
 		return s == null ? "255,255,255" : s;
 	}
 

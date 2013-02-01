@@ -22,7 +22,7 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.15";
 	}
 	
 	@Override
@@ -34,10 +34,22 @@ public class ChestFiller extends ArenaModule {
 				arena.getArenaConfig().setManually("modules.chestfiller.cfminitems", 0);
 				arena.getArenaConfig().save();
 			}
+			if (arena.getArenaConfig().getUnsafe("modules.chestfiller.clear") == null) {
+				arena.getArenaConfig().setManually("modules.chestfiller.clear", false);
+				arena.getArenaConfig().save();
+			}
+			
 		}
 		String items = null;
 		try {
 			items = (String) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems");
+		} catch (Exception e) {
+			return;
+		}
+		
+		boolean clear = false;
+		try {
+			clear = (Boolean) arena.getArenaConfig().getUnsafe("modules.chestfiller.clear");
 		} catch (Exception e) {
 			return;
 		}
@@ -61,21 +73,22 @@ public class ChestFiller extends ArenaModule {
 						if (w.getBlockAt(x, y, z).getType() == Material.CHEST) {
 							Chest c = (Chest) w.getBlockAt(x, y, z).getState();
 							
+							if (clear) {
+								c.getBlockInventory().clear();
+							}
+							
 							List<ItemStack> adding = new ArrayList<ItemStack>();
 							
 							Random r = (new Random());
 							
-							int minimum = r.nextInt(max+min+1)-min;
+							int count = r.nextInt(max-min)+min;
+							
 							
 							int i = 0;
 							
-							while (adding.size() < minimum && i < 100) {
-								// whatever we do, give up after 100. seriously
-								double d = r.nextDouble();
-								if (d < (1d / (minimum + 1d))) {
-									adding.add(stacks[i%stacks.length].clone());
-								}
-								i++;
+							while (i++ < count) {
+								int d = r.nextInt();
+								adding.add(stacks[d%stacks.length].clone());
 							}
 							
 							for (ItemStack it : adding) {

@@ -6,7 +6,7 @@ import net.slipcor.pvparena.core.Debug;
 
 public class PowerupRunnable implements Runnable {
 	private final PowerupManager pum;
-	private Debug db = new Debug(41);
+	private Debug debug = new Debug(41);
 
 	/**
 	 * construct a powerup spawn runnable
@@ -16,7 +16,7 @@ public class PowerupRunnable implements Runnable {
 	 */
 	public PowerupRunnable(PowerupManager pm) {
 		pum = pm;
-		db.i("PowerupRunnable constructor");
+		debug.i("PowerupRunnable constructor");
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class PowerupRunnable implements Runnable {
 	 */
 	@Override
 	public void run() {
-		db.i("PowerupRunnable commiting spawn");
+		debug.i("PowerupRunnable commiting spawn");
 		if (!pum.getArena().isLocked()) {
 			
 			pum.calcPowerupSpawn();

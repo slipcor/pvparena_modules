@@ -15,6 +15,8 @@ public class StartFreezer extends BukkitRunnable {
 	 */
 	@Override
 	public void run() {
-		module.runnable = null;
+		if (module != null){
+			module.runnable = null;
+		}
 	}
 }

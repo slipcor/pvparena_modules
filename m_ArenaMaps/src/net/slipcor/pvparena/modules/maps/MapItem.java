@@ -32,14 +32,22 @@ public class MapItem {
 	
 	public int getX() {
 		if (player) {
-			return Bukkit.getPlayerExact(name).getLocation().getBlockX();
+			try {
+				return Bukkit.getPlayerExact(name).getLocation().getBlockX();
+			}	catch (NullPointerException e) {
+				
+			}
 		}
 		return x;
 	}
 	
 	public int getZ() {
 		if (player) {
-			return Bukkit.getPlayerExact(name).getLocation().getBlockZ();
+			try {
+				return Bukkit.getPlayerExact(name).getLocation().getBlockZ();
+			}	catch (NullPointerException e) {
+				
+			}
 		}
 		return z;
 	}

@@ -14,7 +14,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
@@ -27,7 +27,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.0.8";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -58,7 +58,7 @@ public class TempPerms extends ArenaModule {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 1,2,3,4 })) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 1,2,3,4 })) {
 			return;
 		}
 		

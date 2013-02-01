@@ -1,6 +1,6 @@
 package net.slipcor.pvparena.modules.autovote;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,14 +15,14 @@ import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class AutoVoteRunnable extends ArenaRunnable {
-	private Debug db = new Debug(68);
+	private Debug debug = new Debug(68);
 	public AutoVoteRunnable(Arena a, int i) {
 		super(MSG.MODULE_AUTOVOTE_VOTENOW.getNode(), i, null, null, true);
-		db.i("AutoVoteRunnable constructor");
+		debug.i("AutoVoteRunnable constructor");
 	}
 
 	protected void commit() {
-		db.i("ArenaVoteRunnable commiting");
+		debug.i("ArenaVoteRunnable commiting");
 		AutoVote.commit();
 	}
 
@@ -33,7 +33,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
 	
 	@Override
 	public void spam() {
-		if ((super.message == null) || (messages.get(seconds) == null)) {
+		if ((super.message == null) || (MESSAGES.get(seconds) == null)) {
 			return;
 		}
 		MSG msg = MSG.getByNode(this.message);
@@ -41,7 +41,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
 			PVPArena.instance.getLogger().warning("MSG not found: " + this.message);
 			return;
 		}
-		String message = seconds > 5 ? Language.parse(msg, messages.get(seconds), ArenaManager.getNames()) : messages.get(seconds);
+		String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), ArenaManager.getNames()) : MESSAGES.get(seconds);
 		if (global) {
 			Player[] players = Bukkit.getOnlinePlayers();
 			
@@ -64,7 +64,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
 			return;
 		}
 		if (arena != null) {
-			HashSet<ArenaPlayer> players = arena.getFighters();
+			Set<ArenaPlayer> players = arena.getFighters();
 			for (ArenaPlayer ap : players) {
 				if (sPlayer != null) {
 					if (ap.getName().equals(sPlayer)) {

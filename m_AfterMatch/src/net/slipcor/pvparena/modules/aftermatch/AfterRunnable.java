@@ -7,7 +7,7 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class AfterRunnable extends ArenaRunnable {
 	private final AfterMatch pum;
-	private Debug db = new Debug(41);
+	private Debug debug = new Debug(41);
 
 	/**
 	 * construct a powerup spawn runnable
@@ -18,12 +18,12 @@ public class AfterRunnable extends ArenaRunnable {
 	public AfterRunnable(AfterMatch pm, int i) {
 		super(MSG.MODULE_AFTERMATCH_STARTINGIN.getNode(), i, null, pm.getArena(), false);
 		pum = pm;
-		db.i("AfterRunnable constructor");
+		debug.i("AfterRunnable constructor");
 	}
 
 	@Override
 	protected void commit() {
-		db.i("AfterRunnable commiting");
+		debug.i("AfterRunnable commiting");
 		if (!pum.getArena().isLocked()) {
 			
 			pum.afterMatch();

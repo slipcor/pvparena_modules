@@ -39,7 +39,7 @@ public class PAWE extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -64,7 +64,7 @@ public class PAWE extends ArenaModule {
 	}
 	
 	public void save(ArenaRegionShape ars, String regionName) {
-		CuboidSelection cs = new CuboidSelection(Bukkit.getWorld(ars.getWorldName()), ars.getLocs()[0].toLocation(), ars.getLocs()[1].toLocation());
+		CuboidSelection cs = new CuboidSelection(Bukkit.getWorld(ars.getWorldName()), ars.getMinimumLocation().toLocation(), ars.getMaximumLocation().toLocation());
 		Vector min = cs.getNativeMinimumPoint();
 		Vector max = cs.getNativeMaximumPoint();
 		

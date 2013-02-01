@@ -16,7 +16,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
@@ -32,7 +32,7 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.3.15";
 	}
 	
 	@Override
@@ -102,7 +102,7 @@ public class BetterClasses extends ArenaModule {
 			return;
 		}
 		
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{2,3,4,5})) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2,3,4,5})) {
 			return;
 		}
 		
@@ -268,6 +268,9 @@ public class BetterClasses extends ArenaModule {
 		if (!superMap.containsKey(arena)) {
 			init_map();
 		}
+		for (ArenaPlayer ap : arena.getFighters()) {
+			parseRespawn(ap.get(), null, null, null);
+		}
 	}
 	
 	private void init_map() {
@@ -311,7 +314,7 @@ public class BetterClasses extends ArenaModule {
 			init_map();
 		}
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-		db.i("respawning player " + StringParser.verify(ap), player);
+		debug.i("respawning player " + String.valueOf(ap), player);
 		HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
 		if (map == null) {
 			PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
@@ -322,11 +325,11 @@ public class BetterClasses extends ArenaModule {
 		
 		HashSet<PotionEffect> ape = map.get(c);
 		if (ape == null) {
-			db.i("no effects for team " + StringParser.verify(c), player);
+			debug.i("no effects for team " + String.valueOf(c), player);
 			return;
 		}
 		for (PotionEffect pe : ape) {
-			db.i("adding " + pe.getType(), player);
+			debug.i("adding " + pe.getType(), player);
 			player.addPotionEffect(pe);
 		}
 	}

@@ -34,7 +34,7 @@ public class RestoreContainer {
 		bfRegion = r;
 	}
 
-	private static Debug db = new Debug(55);
+	private static Debug debug = new Debug(55);
 
 	protected void restoreChests() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
@@ -58,7 +58,7 @@ public class RestoreContainer {
 						is.getEnchantments().get(ench));
 			}
 		}
-		db.i(StringParser.getStringFromItemStacks(result));
+		debug.i(StringParser.getStringFromItemStacks(result));
 
 		return result;
 	}
@@ -70,7 +70,7 @@ public class RestoreContainer {
 			List<String> tempList = blocks.getArena().getArenaConfig()
 					.getStringList("inventories", null);
 
-			db.i("reading inventories");
+			debug.i("reading inventories");
 
 			for (String s : tempList) {
 				Location loc = parseStringToLocation(s);
@@ -81,7 +81,7 @@ public class RestoreContainer {
 
 			return;
 		}
-		db.i("NO inventories");
+		debug.i("NO inventories");
 
 		chests.clear();
 		furnaces.clear();
@@ -93,15 +93,15 @@ public class RestoreContainer {
 		PABlockLocation min = bfRegion.getMinimumLocation();
 		PABlockLocation max = bfRegion.getMaximumLocation();
 
-		db.i("min: "+min.toString());
-		db.i("max: "+max.toString());
+		debug.i("min: "+min.toString());
+		debug.i("max: "+max.toString());
 
 		World world = Bukkit.getWorld(max.getWorldName());
 
 		List<String> result = new ArrayList<String>();
 
 		if (bfRegion.getShape().equals(RegionShape.CUBOID)) {
-			db.i("cube!");
+			debug.i("cube!");
 
 			for (x = min.getX(); x <= max.getX(); x++) {
 				for (y = min.getY(); y <= max.getY(); y++) {
@@ -110,13 +110,13 @@ public class RestoreContainer {
 						if (loc == null) {
 							continue;
 						}
-						db.i("loc not null: " + loc.toString());
+						debug.i("loc not null: " + loc.toString());
 						result.add(parseLocationToString(loc));
 					}
 				}
 			}
 		} else if (bfRegion.getShape().equals(RegionShape.SPHERIC)) {
-			db.i("sphere!");
+			debug.i("sphere!");
 			for (x = min.getX(); x <= max.getX(); x++) {
 				for (y = min.getY(); y <= max.getY(); y++) {
 					for (z = min.getZ(); z <= max.getZ(); z++) {
@@ -124,7 +124,7 @@ public class RestoreContainer {
 						if (loc == null) {
 							continue;
 						}
-						db.i("loc not null: " + loc.toString());
+						debug.i("loc not null: " + loc.toString());
 						result.add(parseLocationToString(loc));
 					}
 				}

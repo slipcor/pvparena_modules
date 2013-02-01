@@ -9,7 +9,7 @@ import org.bukkit.block.Sign;
 public class ArenaBoardSign {
 	protected ArenaBoardColumn column;
 	private BlockState state;
-	private Debug db = new Debug(12);
+	private Debug debug = new Debug(12);
 
 	/**
 	 * create an arena board sign instance
@@ -22,7 +22,7 @@ public class ArenaBoardSign {
 	public ArenaBoardSign(ArenaBoardColumn abc, Location loc) {
 		column = abc;
 		state = loc.getBlock().getState();
-		db.i("adding sign at location " + loc.toString());
+		debug.i("adding sign at location " + loc.toString());
 	}
 
 	/**

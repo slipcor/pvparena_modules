@@ -24,13 +24,13 @@ import net.slipcor.pvparena.managers.ArenaManager;
 public class RedStoneTriggers extends ArenaModule implements Listener {
 	public RedStoneTriggers() {
 		super("RedStoneTriggers");
-		db = new Debug(403);
+		debug = new Debug(403);
 	}
 	private boolean setup = false;
 	
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -43,12 +43,12 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 	
 	@EventHandler	
 	public void onRedStone(BlockRedstoneEvent event) {
-		db.i("redstone");
+		debug.i("redstone");
 		Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));
 		if (arena == null || !arena.equals(this.arena)) {
 			return;
 		}
-		db.i("redstone in arena " + arena.toString());
+		debug.i("redstone in arena " + arena.toString());
 		
 		Block block = event.getBlock();
 		

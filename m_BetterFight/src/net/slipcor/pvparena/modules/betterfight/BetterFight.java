@@ -5,7 +5,7 @@ import java.util.HashMap;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -35,7 +35,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -81,7 +81,7 @@ public class BetterFight extends ArenaModule {
 			}
 			if (args[1].equals("items")) {
 
-				if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 3 })) {
+				if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 3 })) {
 					return;
 				}
 				

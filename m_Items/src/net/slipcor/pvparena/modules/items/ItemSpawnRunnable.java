@@ -1,7 +1,7 @@
 package net.slipcor.pvparena.modules.items;
 
-import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +30,7 @@ public class ItemSpawnRunnable implements Runnable {
 	@Override
 	public void run() {
 		int i = -1;
-		HashSet<PALocation> spawns = SpawnManager.getSpawns(this.i.getArena(), "item");
+		Set<PALocation> spawns = SpawnManager.getSpawns(this.i.getArena(), "item");
 		for (PALocation loc : spawns) {
 			if (i != -1) {
 				i--;

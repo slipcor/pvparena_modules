@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ArenaBoard {
 
-	public static final Debug db = new Debug(10);
+	public static final Debug debug = new Debug(10);
 
 	private PABlockLocation location;
 	protected ArenaBoardManager abm;
@@ -41,7 +41,7 @@ public class ArenaBoard {
 		location = loc;
 		global = a == null;
 
-		db.i("constructing arena board");
+		debug.i("constructing arena board");
 		construct();
 	}
 
@@ -54,7 +54,7 @@ public class ArenaBoard {
 		try {
 			Sign s = (Sign) l.toLocation().getBlock().getState();
 			BlockFace bf = getRightDirection(s);
-			db.i("parsing signs:");
+			debug.i("parsing signs:");
 			do {
 				StatisticsManager.type t = null;
 				try {
@@ -64,7 +64,7 @@ public class ArenaBoard {
 				}
 
 				columns.put(t, new ArenaBoardColumn(this, l));
-				db.i("putting column type " + toString());
+				debug.i("putting column type " + toString());
 				l = new PABlockLocation(l.toLocation().getBlock().getRelative(bf).getLocation());
 				s = (Sign) l.toLocation().getBlock().getState();
 			} while (border-- > 0);
@@ -103,13 +103,13 @@ public class ArenaBoard {
 	 * save arena board statistics to each column
 	 */
 	public void update() {
-		db.i("ArenaBoard update()");
+		debug.i("ArenaBoard update()");
 		for (StatisticsManager.type t : StatisticsManager.type.values()) {
-			db.i("checking stat: " + t.name());
+			debug.i("checking stat: " + t.name());
 			if (!columns.containsKey(t)) {
 				continue;
 			}
-			db.i("found! reading!");
+			debug.i("found! reading!");
 			String[] s = StatisticsManager.read(
 					StatisticsManager.getStats(global?null:abm.getArena(), sortBy), t, global);
 			columns.get(t).write(s);
@@ -125,13 +125,13 @@ public class ArenaBoard {
 	 */
 	public static boolean checkInteract(ArenaBoardManager abm, PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		db.i("checking ArenaBoard interact", player);
+		debug.i("checking ArenaBoard interact", player);
 
 		if (event.getClickedBlock() == null) {
 			return false;
 		}
 
-		db.i("block is not null", player);
+		debug.i("block is not null", player);
 
 		if (!abm.boards.containsKey(event.getClickedBlock().getLocation())
 				&& abm.globalBoard == null
@@ -140,7 +140,7 @@ public class ArenaBoard {
 			return false;
 		}
 
-		db.i("arenaboard exists", player);
+		debug.i("arenaboard exists", player);
 
 		ArenaBoard ab = abm.boards.get(event.getClickedBlock().getLocation());
 
@@ -149,7 +149,7 @@ public class ArenaBoard {
 		}
 
 		if (ab.global) {
-			db.i("global!", player);
+			debug.i("global!", player);
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
 				Arena.pmsg(player,
@@ -162,7 +162,7 @@ public class ArenaBoard {
 				return true;
 			}
 		} else {
-			db.i("not global!", player);
+			debug.i("not global!", player);
 			if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 				ab.sortBy = StatisticsManager.type.next(ab.sortBy);
 				ab.abm.getArena().msg(player,

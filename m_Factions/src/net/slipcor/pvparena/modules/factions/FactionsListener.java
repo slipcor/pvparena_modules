@@ -14,7 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class FactionsListener implements Listener {
-	private Debug db = new Debug(66);
+	private Debug debug = new Debug(66);
 	private final FactionsSupport fs;
 	
 	public FactionsListener(FactionsSupport fs) {
@@ -31,15 +31,15 @@ public class FactionsListener implements Listener {
 		Entity p1 = event.getDamager();
 		Entity p2 = event.getEntity();
 
-		db.i("onEntityDamageByEntity: cause: " + event.getCause().name()
+		debug.i("onEntityDamageByEntity: cause: " + event.getCause().name()
 				+ " : " + event.getDamager().toString() + " => "
 				+ event.getEntity().toString());
 
 
 		if (p1 instanceof Projectile) {
-			db.i("parsing projectile");
+			debug.i("parsing projectile");
 			p1 = ((Projectile) p1).getShooter();
-			db.i("=> " + String.valueOf(p1));
+			debug.i("=> " + String.valueOf(p1));
 		}
 
 		if (event.getEntity() instanceof Wolf) {
@@ -71,14 +71,14 @@ public class FactionsListener implements Listener {
 			return;
 		}
 
-		db.i("onEntityDamageByEntity: fighting player");
+		debug.i("onEntityDamageByEntity: fighting player");
 
 		if ((p1 == null) || (!(p1 instanceof Player))) {
 			// attacker no player => out!
 			return;
 		}
 
-		db.i("both entities are players");
+		debug.i("both entities are players");
 
 		event.setCancelled(false);
 	}

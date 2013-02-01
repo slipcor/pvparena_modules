@@ -10,7 +10,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -26,7 +26,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.15";
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public class CTManager extends ArenaModule {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
 			return;
 		}
 		
@@ -100,12 +100,12 @@ public class CTManager extends ArenaModule {
 				n = team.getColorCodeString() + player.getName();
 			}
 			n = n.replaceAll("(&([a-f0-9]))", "§$2");
-			
-			player.setDisplayName(n);
 
-			if (team != null && arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+			if (team != null && arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
 				n = " ";
 			}
+			
+			player.setDisplayName(n);
 			
 			updateName(player);
 		}

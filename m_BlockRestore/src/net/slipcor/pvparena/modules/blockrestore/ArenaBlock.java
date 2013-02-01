@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
 public class ArenaBlock {
-	private Debug db = new Debug(9);
+	private Debug debug = new Debug(9);
 
 	public String arena;
 	private final PABlockLocation location;
@@ -29,8 +29,8 @@ public class ArenaBlock {
 		material = block.getType();
 		data = block.getData();
 
-		db.i("creating arena block:");
-		db.i("loc: " + location.toString() + "; mat: " + material.toString()
+		debug.i("creating arena block:");
+		debug.i("loc: " + location.toString() + "; mat: " + material.toString()
 				+ "; data " + String.valueOf(data));
 
 		try {
@@ -64,8 +64,8 @@ public class ArenaBlock {
 		data = block.getData();
 		lines = null;
 
-		db.i("creating arena block:");
-		db.i("loc: " + location.toString() + "; mat: " + material.toString()
+		debug.i("creating arena block:");
+		debug.i("loc: " + location.toString() + "; mat: " + material.toString()
 				+ "; data " + String.valueOf(data));
 
 	}

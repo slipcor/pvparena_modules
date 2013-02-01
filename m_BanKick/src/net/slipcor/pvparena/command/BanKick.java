@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PACheck;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -34,7 +34,7 @@ public class BanKick extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.3.0";
 	}
 
 	public List<String> bans = new ArrayList<String>();
@@ -86,12 +86,12 @@ public class BanKick extends ArenaModule {
 		}
 		
 		if (cmd.equals("kick")) {
-			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{2})) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
 				return;
 			}
 			tryKick(sender, args[1]);
 		} else if (cmd.equals("tempban")) {
-			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{3})) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{3})) {
 				return;
 			}
 			tryKick(sender, args[1]);
@@ -100,18 +100,18 @@ public class BanKick extends ArenaModule {
 			Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, run, 20 * time);
 			doBan(sender, args[1]);
 		} else if (cmd.equals("ban")) {
-			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{2})) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
 				return;
 			}
 			tryKick(sender, args[1]);
 			doBan(sender, args[1]);
 		} else if (cmd.equals("unban")) {
-			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{2})) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
 				return;
 			}
 			doUnBan(sender, args[1]);
 		} else if (cmd.equals("tempunban")) {
-			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[]{3})) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{3})) {
 				return;
 			}
 			long time = parseStringToSeconds(args[2]);

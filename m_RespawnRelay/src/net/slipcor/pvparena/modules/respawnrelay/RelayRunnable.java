@@ -18,7 +18,7 @@ public class RelayRunnable extends ArenaRunnable {
 	private Arena a;
 	private ArenaPlayer ap;
 	List<ItemStack> drops;
-	private Debug db = new Debug(77);
+	private Debug debug = new Debug(77);
 
 	public RelayRunnable(Arena arena, ArenaPlayer ap, List<ItemStack> drops) {
 		
@@ -31,7 +31,7 @@ public class RelayRunnable extends ArenaRunnable {
 
 	@Override
 	protected void commit() {
-		db.i("RelayRunnable commiting", ap.getName());
+		debug.i("RelayRunnable commiting", ap.getName());
 		new InventoryRefillRunnable(a, ap.get(), drops);
 		SpawnManager.respawn(a,  ap);
 		a.unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());

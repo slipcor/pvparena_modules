@@ -28,7 +28,7 @@ public class RealSpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.19";
+		return "v0.10.3.0";
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public class RealSpectate extends ArenaModule {
 
 	@Override
 	public void commitSpectate(Player player) {
-		db.i("committing REAL spectate", player);
+		debug.i("committing REAL spectate", player);
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+		ap.setLocation(new PALocation(ap.get().getLocation()));
 		Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, new PlayerStateCreateRunnable(ap, ap.get()), 2L);
 		//ArenaPlayer.prepareInventory(arena, ap.get());
-		ap.setLocation(new PALocation(ap.get().getLocation()));
 		ap.setArena(arena);
 		ap.setStatus(Status.WATCH);
-		db.i("switching:", player);
+		debug.i("switching:", player);
 		getListener().switchPlayer(player, null, true);
 	}
 	

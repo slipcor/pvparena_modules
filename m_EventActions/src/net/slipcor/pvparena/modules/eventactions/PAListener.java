@@ -39,7 +39,7 @@ public class PAListener implements Listener {
 		Arena a = event.getArena();
 		Player p = event.getPlayer();
 		
-		if (event.getSpectate()) {
+		if (event.isSpectator()) {
 			ea.catchEvent("spectate", p, a);
 		} else {
 			ea.catchEvent("join", p, a);

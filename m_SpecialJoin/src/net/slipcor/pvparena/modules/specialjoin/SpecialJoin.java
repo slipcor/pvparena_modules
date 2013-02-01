@@ -34,7 +34,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.32";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -93,17 +93,17 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	@EventHandler
 	public void onSpecialJoin(PlayerInteractEvent event) {
 		if (event.isCancelled()) {
-			db.i("PIA cancelled!", event.getPlayer());
+			debug.i("PIA cancelled!", event.getPlayer());
 			return;
 		}
-		db.i("PIA!", event.getPlayer());
+		debug.i("PIA!", event.getPlayer());
 		
 		if (event.getAction().equals(Action.PHYSICAL)) {
 			
-			db.i("Join via pressure plate!", event.getPlayer());
+			debug.i("Join via pressure plate!", event.getPlayer());
 			
 			if (event.getPlayer() == null) {
-				db.i("wth?", event.getPlayer());
+				debug.i("wth?", event.getPlayer());
 				return;
 			}
 			PABlockLocation loc = new PABlockLocation(event.getPlayer().getLocation());
@@ -118,7 +118,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 			}
 			
 			if (find == null) {
-				db.i("not contained!", event.getPlayer());
+				debug.i("not contained!", event.getPlayer());
 				return;
 			}
 			PAG_Join j = new PAG_Join();
@@ -127,12 +127,12 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		}
 		
 		if (!event.hasBlock()) {
-			db.i("not has block, out!", event.getPlayer());
+			debug.i("not has block, out!", event.getPlayer());
 			return;
 		}
 		
 		if (selections.containsKey(event.getPlayer().getName())) {
-			db.i("selection contains!", event.getPlayer());
+			debug.i("selection contains!", event.getPlayer());
 			
 			Material mat = event.getClickedBlock().getType();
 			String place = null;
@@ -169,7 +169,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		
 		
 		if (find == null) {
-			db.i("places does not contain!", event.getPlayer());
+			debug.i("places does not contain!", event.getPlayer());
 			return;
 		}
 

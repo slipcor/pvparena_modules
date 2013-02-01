@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PACheck;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -30,7 +30,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.2.13";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -82,7 +82,7 @@ public class AutoVote extends ArenaModule {
 				return;
 			}
 			
-			if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
+			if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
 				return;
 			}
 			

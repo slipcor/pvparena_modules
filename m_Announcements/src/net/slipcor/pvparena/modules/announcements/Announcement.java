@@ -1,6 +1,6 @@
 package net.slipcor.pvparena.modules.announcements;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -13,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Announcement {
-	private static Debug db = new Debug(7);
+	private static Debug debug = new Debug(7);
 
 	public static enum type {
 		JOIN, ADVERT, START, END, WINNER, LOSER, PRIZE, CUSTOM;
@@ -33,7 +33,7 @@ public class Announcement {
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
-		db.i("announce [" + a.getName() + "] type: " + t.name() + " : "
+		debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
 				+ message);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -61,11 +61,11 @@ public class Announcement {
 	 */
 	protected static void announce(Arena a, String sType, String message) {
 		type t = type.valueOf(sType);
-		db.i("announce?");
+		debug.i("announce?");
 		if (!sendCheck(a, t)) {
 			return; // do not send the announcement type
 		}
-		db.i("announce [" + a.getName() + "] type: " + t.name() + " : "
+		debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
 				+ message);
 		Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
 
@@ -110,7 +110,7 @@ public class Announcement {
 	 */
 	private static void send(Arena a, Player p, String message) {
 		if (a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS) > 0) {
-			HashSet<ArenaRegionShape> bfs = a
+			Set<ArenaRegionShape> bfs = a
 					.getRegionsByType(RegionType.BATTLE);
 			for (ArenaRegionShape ars : bfs) {
 				if (ars.tooFarAway(

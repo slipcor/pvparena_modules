@@ -12,7 +12,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -30,7 +30,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.0";
 	}
 
 	public void afterMatch() {
@@ -77,7 +77,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2,3 })) {
 			return;
 		}
 		
@@ -204,11 +204,11 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 			return;
 		}
 
-		db.i("using aftermatch : "
+		debug.i("using aftermatch : "
 				+ arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH) + " : "
 				+ i);
 		if (i > 0) {
-			db.i("aftermatch time trigger!");
+			debug.i("aftermatch time trigger!");
 			new AfterRunnable(this, i);
 		}
 	}

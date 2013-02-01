@@ -1,11 +1,14 @@
 package net.slipcor.pvparena.modules.maps;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -14,7 +17,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -34,7 +37,7 @@ public class Maps extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.15";
 	}
 	
 	@Override
@@ -59,7 +62,7 @@ public class Maps extends ArenaModule {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
 			return;
 		}
 		
@@ -129,7 +132,7 @@ public class Maps extends ArenaModule {
 		HashSet<MapItem> locations = new HashSet<MapItem>();
 		
 		for (ArenaTeam team : arena.getTeams()) {
-			HashSet<PALocation> locs = SpawnManager.getSpawns(arena, team.getName());
+			Set<PALocation> locs = SpawnManager.getSpawns(arena, team.getName());
 			for (PALocation loc : locs) {
 				locations.add(new MapItem(arena, new PABlockLocation(loc.toLocation()), team.getColor()));
 			}
@@ -153,12 +156,37 @@ public class Maps extends ArenaModule {
 	}
 	
 	@Override
-	public void parseStart() {
-		
-		if (mappings.isEmpty()) {
+	public void parseRespawn(final Player player, ArenaTeam team, DamageCause cause, Entity damager) {
+		if (player == null) {
+			return;
+		}
+		if (!arena.hasPlayer(player)) {
 			return;
 		}
 		
+		class RunLater implements Runnable {
+		
+			@Override
+			public void run() {
+				Short value = MyRenderer.getId(player.getName());
+				player.getInventory().addItem(new ItemStack(Material.MAP, 1, value));
+				mappings.add(player.getName());
+				if (value != Short.MIN_VALUE) {
+					MapView map = Bukkit.getMap(value);
+	
+					MapRenderer mr = new MyRenderer(Maps.this);
+					map.addRenderer(mr);
+				}
+			}
+		}
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
+	}
+	@Override
+	public void parseStart() {
+
+		if (mappings.isEmpty()) {
+			return;
+		}
 		for (String playerName : mappings) {
 			Player player = Bukkit.getPlayerExact(playerName);
 			if (player == null) {

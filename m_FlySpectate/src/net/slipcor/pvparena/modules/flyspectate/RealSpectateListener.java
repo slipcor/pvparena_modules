@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class RealSpectateListener implements Listener {
 	final FlySpectate rs;
 	HashSet<Player> spectators = new HashSet<Player>();
-	Debug db = new Debug(456);
+	Debug debug = new Debug(456);
 	public RealSpectateListener(FlySpectate realSpectate) {
 		rs = realSpectate;
 	}

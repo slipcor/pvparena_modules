@@ -10,7 +10,7 @@ import org.bukkit.block.Sign;
 public class ArenaBoardColumn {
 	protected ArenaBoard board;
 	private PABlockLocation location;
-	private Debug db = new Debug(11);
+	private Debug debug = new Debug(11);
 
 	private ArenaBoardSign[] signs = new ArenaBoardSign[5];
 
@@ -26,7 +26,7 @@ public class ArenaBoardColumn {
 		board = ab;
 		location = l;
 
-		db.i("fetching sign column");
+		debug.i("fetching sign column");
 		fetchSigns();
 	}
 
@@ -61,7 +61,7 @@ public class ArenaBoardColumn {
 	 */
 	public void write(String[] s) {
 		int i = 0;
-		db.i("writing to column at location " + location.toString());
+		debug.i("writing to column at location " + location.toString());
 		for (ArenaBoardSign abs : signs) {
 			if (abs == null) {
 				return;

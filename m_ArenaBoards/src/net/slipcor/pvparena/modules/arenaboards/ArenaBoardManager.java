@@ -35,15 +35,15 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.2.31";
+		return "v0.10.3.0";
 	}
 
 	@Override
 	public void configParse(YamlConfiguration config) {
 		if (config.get("spawns") != null) {
-			db.i("checking for leaderboard");
+			debug.i("checking for leaderboard");
 			if (config.get("spawns.leaderboard") != null) {
-				db.i("leaderboard exists");
+				debug.i("leaderboard exists");
 				PABlockLocation loc = Config.parseBlockLocation(config.getString("spawns.leaderboard"));
 
 				
@@ -128,7 +128,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 		event.setLine(0, headline);
 		if (a == null) {
-			db.i("creating global leaderboard", event.getPlayer());
+			debug.i("creating global leaderboard", event.getPlayer());
 			globalBoard = new ArenaBoard(this, new PABlockLocation(event.getBlock().getLocation()), null);
 			Location loc = event.getBlock().getLocation();
 			Integer x = Integer.valueOf(loc.getBlockX());

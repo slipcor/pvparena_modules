@@ -14,7 +14,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 public class BlockRestoreRunnable implements Runnable {
 	private HashMap<Location, ArenaBlock> removals;
 	private Arena arena;
-	private Debug db = new Debug(67);
+	private Debug debug = new Debug(67);
 
 	public BlockRestoreRunnable(Arena arena,
 			HashMap<Location, ArenaBlock> blocks) {
@@ -26,7 +26,7 @@ public class BlockRestoreRunnable implements Runnable {
 	public void run() {
 		PAA_Edit.activeEdits.put("server", arena);
 		for (Location l : removals.keySet()) {
-			db.i("location: " + l.toString());
+			debug.i("location: " + l.toString());
 			removals.get(l).reset();
 			removals.remove(l);
 			Blocks.blocks.remove(l);
@@ -47,12 +47,12 @@ public class BlockRestoreRunnable implements Runnable {
 	private HashMap<Location, ArenaBlock> getBlocks() {
 		HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
 
-		db.i("reading all arenablocks");
+		debug.i("reading all arenablocks");
 		for (Location l : Blocks.blocks.keySet()) {
 			if (Blocks.blocks.get(l).arena.equals(arena.getName())
 					|| Blocks.blocks.get(l).arena.equals("")) {
 				result.put(l, Blocks.blocks.get(l));
-				db.i(" - " + l.toString());
+				debug.i(" - " + l.toString());
 			}
 		}
 

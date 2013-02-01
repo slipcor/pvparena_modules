@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PACheck;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -23,7 +23,7 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.0.0";
+		return "v0.10.3.0";
 	}
 	
 	@Override
@@ -77,7 +77,7 @@ public class InventoryLoss extends ArenaModule {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args, new Integer[] { 2 })) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
 			return;
 		}
 		

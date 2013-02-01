@@ -40,7 +40,7 @@ public class PowerupEffect {
 	private double chance = 1.0;
 	private int diff = 0;
 	private List<String> items = new ArrayList<String>();
-	private static Debug db = new Debug(17);
+	private static Debug debug = new Debug(17);
 	private PotionEffect potEff = null;
 
 	/**
@@ -53,34 +53,34 @@ public class PowerupEffect {
 	 */
 	public PowerupEffect(String eClass, HashMap<String, Object> puEffectVals,
 			PotionEffect effect) {
-		db.i("adding effect " + eClass);
+		debug.i("adding effect " + eClass);
 		this.type = parseClass(eClass);
 		this.potEff = effect;
 
-		db.i("effect class is " + type.toString());
+		debug.i("effect class is " + type.toString());
 		for (Object evName : puEffectVals.keySet()) {
 			if (evName.equals("uses")) {
 				this.uses = (Integer) puEffectVals.get(evName);
-				db.i("uses :" + String.valueOf(uses));
+				debug.i("uses :" + String.valueOf(uses));
 			} else if (evName.equals("duration")) {
 				this.duration = (Integer) puEffectVals.get(evName);
-				db.i("duration: " + String.valueOf(duration));
+				debug.i("duration: " + String.valueOf(duration));
 			} else if (evName.equals("factor")) {
 				this.factor = (Double) puEffectVals.get(evName);
-				db.i("factor: " + String.valueOf(factor));
+				debug.i("factor: " + String.valueOf(factor));
 			} else if (evName.equals("chance")) {
 				this.chance = (Double) puEffectVals.get(evName);
-				db.i("chance: " + String.valueOf(chance));
+				debug.i("chance: " + String.valueOf(chance));
 			} else if (evName.equals("diff")) {
 				this.diff = (Integer) puEffectVals.get(evName);
-				db.i("diff: " + String.valueOf(diff));
+				debug.i("diff: " + String.valueOf(diff));
 			} else if (evName.equals("items")) {
 				this.items.add((String) puEffectVals.get(evName));
-				db.i("items: " + items.toString());
+				debug.i("items: " + items.toString());
 			} else if (evName.equals("type")) {
 				// mob type
 				this.mobtype = (String) puEffectVals.get(evName);
-				db.i("type: " + type.name());
+				debug.i("type: " + type.name());
 			} else {
 				PVPArena.instance.getLogger().warning("undefined effect class value: " + evName);
 			}
@@ -121,7 +121,7 @@ public class PowerupEffect {
 			active = true;
 		}
 
-		db.i("initiating - " + type.name(), player);
+		debug.i("initiating - " + type.name(), player);
 
 		if (duration == 0) {
 			active = false;
@@ -160,15 +160,19 @@ public class PowerupEffect {
 	 */
 	public void commit(Player attacker, Player defender,
 			EntityDamageByEntityEvent event) {
-		db.i("committing entitydamagebyentityevent: " + this.type.name(), attacker);
+		debug.i("committing entitydamagebyentityevent: " + this.type.name(), attacker);
 		if (this.type == PowerupType.DMG_RECEIVE) {
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, defender);
+			if (v <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
 		} else if (this.type == PowerupType.DMG_CAUSE) {
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, attacker);
+			if (v <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
 		} else if (this.type == PowerupType.DMG_REFLECT) {
@@ -176,7 +180,10 @@ public class PowerupEffect {
 				return;
 			}
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, attacker);
+			debug.i("random r = "+ v, defender);
+			if (v <= chance) {
 				EntityDamageByEntityEvent reflectEvent = new EntityDamageByEntityEvent(
 						defender, attacker, event.getCause(),
 						(int) Math.round(event.getDamage() * factor));
@@ -184,7 +191,9 @@ public class PowerupEffect {
 			} // else: chance fail :D
 		} else if (this.type == PowerupType.IGNITE) {
 			Random r = new Random();
-			if (r.nextFloat() <= chance) {
+			Float v = r.nextFloat();
+			debug.i("random r = "+ v, defender);
+			if (v <= chance) {
 				defender.setFireTicks(20);
 			} // else: chance fail :D
 		} else {
@@ -201,7 +210,7 @@ public class PowerupEffect {
 	 */
 	public boolean commit(Player player) {
 
-		db.i("committing " + this.type.name(), player);
+		debug.i("committing " + this.type.name(), player);
 		Random r = new Random();
 		if (r.nextFloat() <= chance) {
 			if (this.type == PowerupType.HEALTH) {
@@ -287,7 +296,7 @@ public class PowerupEffect {
 	 *            the triggering event
 	 */
 	public void commit(EntityRegainHealthEvent event) {
-		db.i("committing entityregainhealthevent " + this.type.name(), ((Player) event.getEntity()));
+		debug.i("committing entityregainhealthevent " + this.type.name(), ((Player) event.getEntity()));
 		if (this.type == PowerupType.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
@@ -307,7 +316,7 @@ public class PowerupEffect {
 	 *            the triggering event
 	 */
 	public void commit(PlayerVelocityEvent event) {
-		db.i("committing velocityevent " + this.type.name(), event.getPlayer());
+		debug.i("committing velocityevent " + this.type.name(), event.getPlayer());
 		if (this.type == PowerupType.HEAL) {
 			Random r = new Random();
 			if (r.nextFloat() <= chance) {
@@ -360,11 +369,11 @@ public class PowerupEffect {
 			if (pet == null) {
 				continue;
 			}
-			db.i("parsing PET " + pet.toString());
+			debug.i("parsing PET " + pet.toString());
 			if (pet.getName() == null) {
 				continue;
 			}
-			db.i("parsing PET " + pet.toString());
+			debug.i("parsing PET " + pet.toString());
 			if (pet.getName().equals(eClass)) {
 				return new PotionEffect(pet, duration, amplifyer);
 			}

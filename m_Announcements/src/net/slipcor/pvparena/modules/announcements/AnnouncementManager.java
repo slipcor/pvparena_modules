@@ -3,7 +3,7 @@ package net.slipcor.pvparena.modules.announcements;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -20,12 +20,12 @@ public class AnnouncementManager extends ArenaModule {
 
 	public AnnouncementManager() {
 		super("Announcements");
-		db = new Debug(400);
+		debug = new Debug(400);
 	}
 
 	@Override
 	public String version() {
-		return "v0.10.2.0";
+		return "v0.10.3.0";
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class AnnouncementManager extends ArenaModule {
 			return;
 		}
 
-		if (!PAA__Command.argCountValid(sender, arena, args,
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args,
 				new Integer[] { 2 })) {
 			return;
 		}
@@ -125,7 +125,7 @@ public class AnnouncementManager extends ArenaModule {
 	@Override
 	public void parseJoin(CommandSender sender, ArenaTeam team) {
 
-		db.i("parseJoin ... ", sender);
+		debug.i("parseJoin ... ", sender);
 
 		if (TeamManager.countPlayersInTeams(arena) < 2) {
 			Announcement.announce(arena, Announcement.type.ADVERT, Language

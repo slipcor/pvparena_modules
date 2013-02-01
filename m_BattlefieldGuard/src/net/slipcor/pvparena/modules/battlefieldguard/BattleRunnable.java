@@ -10,11 +10,10 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
-import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.ArenaManager;
 
 public class BattleRunnable implements Runnable {
-	private Debug db = new Debug(42);
+	private Debug debug = new Debug(42);
 
 	/**
 	 * construct a powerup spawn runnable
@@ -23,7 +22,7 @@ public class BattleRunnable implements Runnable {
 	 *            the arena it's running in
 	 */
 	public BattleRunnable() {
-		db.i("BattleRunnable constructor");
+		debug.i("BattleRunnable constructor");
 	}
 
 	/**
@@ -32,7 +31,7 @@ public class BattleRunnable implements Runnable {
 	@Override
 	public void run() {
 		if (!Debug.override)
-			db.i("BattleRunnable commiting");
+			debug.i("BattleRunnable commiting");
 		try {
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
@@ -44,8 +43,8 @@ public class BattleRunnable implements Runnable {
 				}
 
 				if (!Debug.override) {
-					db.i("arena pos: " + String.valueOf(name), p);
-					db.i("arena IN : " + StringParser.verify(ap.getArena()), p);
+					debug.i("arena pos: " + String.valueOf(name), p);
+					debug.i("arena IN : " + String.valueOf(ap.getArena()), p);
 				}
 				
 				if (name == null || name.equals("")) {

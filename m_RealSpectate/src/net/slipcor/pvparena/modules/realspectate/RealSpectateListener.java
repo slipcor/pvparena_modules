@@ -33,7 +33,7 @@ import org.bukkit.util.Vector;
 public class RealSpectateListener implements Listener {
 	final RealSpectate rs;
 	HashMap<Player, SpectateWrapper> spectated_players = new HashMap<Player, SpectateWrapper>();
-	Debug db = new Debug(456);
+	Debug debug = new Debug(456);
 	public RealSpectateListener(RealSpectate realSpectate) {
 		rs = realSpectate;
 	}
@@ -55,8 +55,8 @@ public class RealSpectateListener implements Listener {
 
 	SpectateWrapper createSpectateWrapper(Player s,
 			Player f) {
-		//db.i("createSwapper", s);
-		db.i("create wrapper: "+s.getName()+"+"+String.valueOf(f), s);
+		//debug.i("createSwapper", s);
+		debug.i("create wrapper: "+s.getName()+"+"+String.valueOf(f), s);
 		if (!spectated_players.containsKey(f)) {
 			spectated_players.put(f, new SpectateWrapper(s, f, this));
 		}
@@ -88,11 +88,11 @@ public class RealSpectateListener implements Listener {
 		if (subject != null) {
 			// subject is being spectated
 
-			db.i("player is spectating and being damaged", subject);
+			debug.i("player is spectating and being damaged", subject);
 			
 			if (event.getDamager() instanceof Projectile) {
 
-				db.i("relay damage", subject);
+				debug.i("relay damage", subject);
 				// Damage is a Projectile that should have hit the subject
 				// --> relay damage to subject
 			
@@ -444,16 +444,16 @@ public class RealSpectateListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onProjectileLaunch(ProjectileLaunchEvent event) {
-		db.i("ProjectileLaunch!");
+		debug.i("ProjectileLaunch!");
 		if (event.getEntity().getShooter().getType() != EntityType.PLAYER) {
-			db.i("no player!");
+			debug.i("no player!");
 			return;
 		}
 		
 		Player subject = getSpectatedSuspect((Player) event.getEntity().getShooter());
 		
 		if (subject != null) {
-			db.i("subject != null", subject);
+			debug.i("subject != null", subject);
 			// subject is being spectated
 			// player is spectating
 			// --> cancel and out
@@ -464,23 +464,23 @@ public class RealSpectateListener implements Listener {
 		subject = ((Player) event.getEntity().getShooter());
 		
 		if (!spectated_players.containsKey(subject)) {
-			db.i("not being spectated", subject);
+			debug.i("not being spectated", subject);
 			return;
 		}
 
-		db.i("subject is being spectated", subject);
+		debug.i("subject is being spectated", subject);
 		
 		Projectile projectile = event.getEntity();
 		Location location = subject.getLocation();
 		
-		db.i(String.valueOf(new PABlockLocation(location)), subject);
+		debug.i(String.valueOf(new PABlockLocation(location)), subject);
 		Vector direction = location.getDirection();
 		
 		location.add(direction.normalize().multiply(1));
 		//location.setY(subject.getEyeLocation().getY());
 		location.setY(location.getY()+1.4D);
 
-		db.i(String.valueOf(new PABlockLocation(location)), subject);
+		debug.i(String.valueOf(new PABlockLocation(location)), subject);
 		
 		projectile.teleport(location);
 		
@@ -492,28 +492,28 @@ public class RealSpectateListener implements Listener {
 		}
 		
 		if (rs.getArena().getFighters().size() < 1) {
-			db.i("< 1", spectator);
+			debug.i("< 1", spectator);
 			return;
 		}
 		
 		Player nextPlayer = null;
 		boolean next = false;
 		for (ArenaPlayer ap : rs.getArena().getFighters()) {
-			db.i("checking " + ap.getName(), spectator);
+			debug.i("checking " + ap.getName(), spectator);
 			Player p = ap.get();
 			
 			if (subject == null) {
-				db.i("subject == null", spectator);
+				debug.i("subject == null", spectator);
 				nextPlayer = p;
 				break;
 			}
 			
 			
 			if (!p.equals(subject) || next) {
-				db.i("||", spectator);
+				debug.i("||", spectator);
 				nextPlayer = p;
 				if (next) {
-					db.i("next", spectator);
+					debug.i("next", spectator);
 					break;
 				}
 				continue;
@@ -522,16 +522,16 @@ public class RealSpectateListener implements Listener {
 			// p == subject
 			
 			if (!forward) {
-				db.i("step back", spectator);
+				debug.i("step back", spectator);
 				if (nextPlayer == null) {
-					db.i("get last element", spectator);
+					debug.i("get last element", spectator);
 					for (ArenaPlayer ap2 : rs.getArena().getFighters()) {
-						db.i(ap2.getName(), spectator);
+						debug.i(ap2.getName(), spectator);
 						nextPlayer = ap2.get();
 					}
 				} // else: nextPlayer has content. yay!
 
-				db.i("==>" + nextPlayer.getName(), spectator);
+				debug.i("==>" + nextPlayer.getName(), spectator);
 				break;
 			}
 		}

@@ -8,7 +8,7 @@ public class BanRunnable implements Runnable {
 	private final String player;
 	private final boolean ban;
 	private final BanKick bk;
-	private Debug db = new Debug(68);
+	private Debug debug = new Debug(68);
 
 	/**
 	 * create a timed arena runnable
@@ -21,7 +21,7 @@ public class BanRunnable implements Runnable {
 		this.admin = admin;
 		this.player = p;
 		this.ban = b;
-		db.i("BanRunnable constructor", admin);
+		debug.i("BanRunnable constructor", admin);
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class BanRunnable implements Runnable {
 	 */
 	@Override
 	public void run() {
-		db.i("BanRunnable commiting", admin);
+		debug.i("BanRunnable commiting", admin);
 		if (ban) {
 			bk.doBan(admin, player);
 		} else {

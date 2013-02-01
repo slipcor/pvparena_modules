@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import net.slipcor.pvparena.core.Debug;
 
 public class Powerups {
-	private Debug db = new Debug(47);
+	private Debug debug = new Debug(47);
 
 	public HashMap<Player, Powerup> puActive = new HashMap<Player, Powerup>();
 	public List<Powerup> puTotal = new ArrayList<Powerup>();
@@ -17,10 +17,10 @@ public class Powerups {
 	@SuppressWarnings("unchecked")
 	public Powerups(HashMap<String, Object> powerUps) {
 
-		db.i("initialising powerupmanager");
+		debug.i("initialising powerupmanager");
 		Powerup p;
 		for (String pName : powerUps.keySet()) {
-			db.i("reading powerUps");
+			debug.i("reading powerUps");
 			p = new Powerup(pName,
 					(HashMap<String, Object>) powerUps.get(pName));
 			puTotal.add(p);

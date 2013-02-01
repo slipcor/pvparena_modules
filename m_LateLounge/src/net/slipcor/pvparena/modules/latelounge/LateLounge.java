@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PACheck;
-import net.slipcor.pvparena.commands.PAA__Command;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -24,7 +24,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.1.14";
+		return "v0.10.3.0";
 	}
 	
 	private static HashSet<String> players = new HashSet<String>();
@@ -112,7 +112,7 @@ public class LateLounge extends ArenaModule {
 						continue;
 					}
 					Player p = Bukkit.getPlayerExact(s);
-					PAA__Command command = new PAG_Join();
+					AbstractArenaCommand command = new PAG_Join();
 					command.commit(arena, p, new String[0]);
 				}
 				return res;
