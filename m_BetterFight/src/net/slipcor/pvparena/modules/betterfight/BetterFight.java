@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.betterfight;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -27,7 +28,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class BetterFight extends ArenaModule {
 	
-	HashMap<String, Integer> kills = new HashMap<String, Integer>();
+	Map<String, Integer> killMap = null;
 	
 	public BetterFight() {
 		super("BetterFight");
@@ -35,7 +36,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.0.25";
 	}
 	
 	@Override
@@ -128,6 +129,13 @@ public class BetterFight extends ArenaModule {
 		config.options().copyDefaults(true);
 	}
 	
+	private Map<String, Integer> getKills() {
+		if (killMap == null) {
+			killMap = new HashMap<String, Integer>();
+		}
+		return killMap;
+	}
+	
 	@Override
 	public void onEntityDamageByEntity(Player attacker,
 			Player defender, EntityDamageByEntityEvent event) {
@@ -198,7 +206,7 @@ public class BetterFight extends ArenaModule {
 		Player p = ArenaPlayer.getLastDamagingPlayer(cause);
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
-			kills.put(player.getName(), 0);
+			getKills().put(player.getName(), 0);
 		}
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
@@ -217,12 +225,12 @@ public class BetterFight extends ArenaModule {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().clone()), 2L);
 		}
 		
-		if (p == null || kills.get(p.getName()) == null) {
+		if (p == null || getKills().get(p.getName()) == null) {
 			return;
 		}
-		int killcount = kills.get(p.getName());
+		int killcount = getKills().get(p.getName());
 
-		kills.put(p.getName(), ++killcount);
+		getKills().put(p.getName(), ++killcount);
 		
 		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
 			return;
@@ -241,8 +249,13 @@ public class BetterFight extends ArenaModule {
 	public void parseStart() {
 		for (ArenaTeam team : arena.getTeams()) {
 			for (ArenaPlayer ap : team.getTeamMembers()) {
-				kills.put(ap.getName(), 0);
+				getKills().put(ap.getName(), 0);
 			}
 		}
+	}
+	
+	@Override
+	public void reset(boolean force) {
+		getKills().clear();
 	}
 }

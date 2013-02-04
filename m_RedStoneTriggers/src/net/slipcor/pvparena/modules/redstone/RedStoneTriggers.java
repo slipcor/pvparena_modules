@@ -43,7 +43,6 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 	
 	@EventHandler	
 	public void onRedStone(BlockRedstoneEvent event) {
-		debug.i("redstone");
 		Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));
 		if (arena == null || !arena.equals(this.arena)) {
 			return;

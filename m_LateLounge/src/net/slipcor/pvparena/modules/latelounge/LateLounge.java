@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.latelounge;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -24,10 +25,10 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.0.25";
 	}
 	
-	private static HashSet<String> players = new HashSet<String>();
+	private Set<String> playerSet = null;
 	
 	/**
 	 * hook into a player trying to join the arena
@@ -47,16 +48,16 @@ public class LateLounge extends ArenaModule {
 		
 		Player player = (Player) sender;
 		
-		if (players.contains(player.getName())) {
-			if (players.size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
+		if (getPlayerSet().contains(player.getName())) {
+			if (getPlayerSet().size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
 				res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 				return res;
 			}
 		}
 		
-		if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > players.size() + 1) {
+		if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > getPlayerSet().size() + 1) {
 			// not enough players
-			players.add(player.getName());
+			getPlayerSet().add(player.getName());
 			Player[] aPlayers = Bukkit.getOnlinePlayers();
 			
 			for (Player p : aPlayers) {
@@ -71,13 +72,13 @@ public class LateLounge extends ArenaModule {
 			}
 			res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
 			return res;
-		} else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == players.size() + 1) {
+		} else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == getPlayerSet().size() + 1) {
 			// not enough players
-			players.add(player.getName());
+			getPlayerSet().add(player.getName());
 			
 			HashSet<String> removals = new HashSet<String>();
 			
-			for (String s : players) {
+			for (String s : getPlayerSet()) {
 				Player p = Bukkit.getPlayerExact(s);
 				
 				boolean removeMe = false;
@@ -103,11 +104,11 @@ public class LateLounge extends ArenaModule {
 
 			if (removals.size() > 0) {
 				for (String s : removals) {
-					players.remove(s);
+					getPlayerSet().remove(s);
 				}
 			} else {
 				// SUCCESS!
-				for (String s : players) {
+				for (String s : getPlayerSet()) {
 					if (s.equals(sender.getName())) {
 						continue;
 					}
@@ -123,8 +124,15 @@ public class LateLounge extends ArenaModule {
 		return res;
 	}
 	
+	private Set<String> getPlayerSet() {
+		if (playerSet == null) {
+			playerSet = new HashSet<String>();
+		}
+		return playerSet;
+	}
+	
 	@Override
 	public void reset(boolean force) {
-		players.remove(arena);
+		getPlayerSet().clear();
 	}
 }

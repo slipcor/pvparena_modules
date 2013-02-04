@@ -42,7 +42,7 @@ public class Skins extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.0.11";
 	}
 
 	@Override
@@ -213,6 +213,10 @@ public class Skins extends ArenaModule {
 				return;
 			}
 			String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
+			
+			if (disguise == null || disguise.equals("none")) {
+				return;
+			}
 			
 			if (dcHandler) {
 				DisguiseType t = DisguiseType.fromString(disguise);

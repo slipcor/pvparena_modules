@@ -34,10 +34,10 @@ public class BanKick extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.0.25";
 	}
 
-	public List<String> bans = new ArrayList<String>();
+	public List<String> banList = null;
 	
 	@Override
 	public boolean checkCommand(String s) {
@@ -50,7 +50,7 @@ public class BanKick extends ArenaModule {
 		if (res.hasError()) {
 			return res;
 		}
-		if (bans.contains(sender.getName())) {
+		if (getBans().contains(sender.getName())) {
 			res.setError(this, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
 		}
 		return res;
@@ -132,29 +132,36 @@ public class BanKick extends ArenaModule {
 			hsBans.add(s);
 		}
 		
-		bans.clear();
+		getBans().clear();
 		for (String s : hsBans) {
-			bans.add(s);
+			getBans().add(s);
 		}
 	}
 	
+	private List<String> getBans() {
+		if (banList == null) {
+			banList = new ArrayList<String>();
+		}
+		return banList;
+	}
+	
 	protected void doBan(CommandSender admin, String player) {
-		bans.add(player);
+		getBans().add(player);
 		if (admin != null) {
 			arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_BANNED, player));
 		}
 		tryNotify(admin, player, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
-		arena.getArenaConfig().setManually("bans", bans);
+		arena.getArenaConfig().setManually("bans", getBans());
 		arena.getArenaConfig().save();
 	}
 
 	protected void doUnBan(CommandSender admin, String player) {
-		bans.remove(player);
+		getBans().remove(player);
 		if (admin != null) {
 			arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_UNBANNED, player));
 		}
 		tryNotify(admin, player, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
-		arena.getArenaConfig().setManually("bans", bans);
+		arena.getArenaConfig().setManually("bans", getBans());
 		arena.getArenaConfig().save();
 	}
 	

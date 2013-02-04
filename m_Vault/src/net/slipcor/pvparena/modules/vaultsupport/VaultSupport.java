@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.vaultsupport;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -26,9 +27,9 @@ import net.slipcor.pvparena.loadables.ArenaModuleManager;
 public class VaultSupport extends ArenaModule {
 
 	private static Economy economy = null;
-	private static HashMap<String, Double> paPlayersBetAmount = new HashMap<String, Double>();
-	private HashMap<String, Double> paPlayersJoinAmount = new HashMap<String, Double>();
-	private HashMap<String, Double> paPots = new HashMap<String, Double>();
+	private HashMap<String, Double> playerBetMap = null;
+	private HashMap<String, Double> playerJoinMap = null;
+	private double pot = 0;
 
 	public VaultSupport() {
 		super("Vault");
@@ -36,7 +37,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.0.25";
 	}
 
 	@Override
@@ -142,7 +143,7 @@ public class VaultSupport extends ArenaModule {
 
 			economy.withdrawPlayer(player.getName(), amount);
 			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
-			paPlayersBetAmount.put(player.getName() + ":" + args[1], amount);
+			getPlayerBetMap().put(player.getName() + ":" + args[1], amount);
 			return;
 		} else {
 
@@ -173,7 +174,7 @@ public class VaultSupport extends ArenaModule {
 
 			economy.withdrawPlayer(player.getName(), amount);
 			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
-			paPlayersJoinAmount.put(player.getName(), amount);
+			getPlayerJoinMap().put(player.getName(), amount);
 			commitCommand(player, null);
 		}
 	}
@@ -183,7 +184,7 @@ public class VaultSupport extends ArenaModule {
 
 		if (economy != null) {
 			debug.i("eConomy set, parse bets");
-			for (String nKey : paPlayersBetAmount.keySet()) {
+			for (String nKey : getPlayerBetMap().keySet()) {
 				debug.i("bet: " + nKey);
 				String[] nSplit = nKey.split(":");
 
@@ -201,7 +202,7 @@ public class VaultSupport extends ArenaModule {
 					}
 					teamFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
 
-					double amount = paPlayersBetAmount.get(nKey) * teamFactor;
+					double amount = getPlayerBetMap().get(nKey) * teamFactor;
 
 					if (!economy.hasAccount(nSplit[0])) {
 						debug.i("Account not found: " + nSplit[0]);
@@ -227,6 +228,28 @@ public class VaultSupport extends ArenaModule {
 		}
 	}
 	
+	/**
+	 * bettingPlayerName:betGoal => betAmount
+	 * @return
+	 */
+	private Map<String, Double> getPlayerBetMap() {
+		if (playerBetMap == null) {
+			playerBetMap = new HashMap<String, Double>();
+		}
+		return playerBetMap;
+	}
+	
+	/**
+	 * bettingPlayerName => joinBetAmount
+	 * @return
+	 */
+	private Map<String, Double> getPlayerJoinMap() {
+		if (playerJoinMap == null) {
+			playerJoinMap = new HashMap<String, Double>();
+		}
+		return playerJoinMap;
+	}
+	
 	@Override
 	public void giveRewards(Player player) {
 		debug.i("giving rewards to player " + player.getName(), player);
@@ -245,7 +268,7 @@ public class VaultSupport extends ArenaModule {
 		
 		if (economy != null) {
 			debug.i("checking on bet amounts!", player);
-			for (String nKey : paPlayersBetAmount.keySet()) {
+			for (String nKey : getPlayerBetMap().keySet()) {
 				String[] nSplit = nKey.split(":");
 
 				if (nSplit[1].equalsIgnoreCase(player.getName())) {
@@ -258,7 +281,7 @@ public class VaultSupport extends ArenaModule {
 
 					playerFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
 
-					double amount = paPlayersBetAmount.get(nKey) * playerFactor;
+					double amount = getPlayerBetMap().get(nKey) * playerFactor;
 
 					economy.depositPlayer(nSplit[0], amount);
 					try {
@@ -277,7 +300,7 @@ public class VaultSupport extends ArenaModule {
 			
 			if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_WINPOT)) {
 				debug.i("calculating win pot!", player);
-				double amount = paPots.get(arena.getName()) / winners;
+				double amount = winners > 0 ? pot / winners : 0;
 				
 				economy.depositPlayer(player.getName(), amount);
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
@@ -293,12 +316,12 @@ public class VaultSupport extends ArenaModule {
 
 			} 	
 
-			for (String nKey : paPlayersJoinAmount.keySet()) {
+			for (String nKey : getPlayerJoinMap().keySet()) {
 
 				if (nKey.equalsIgnoreCase(player.getName())) {
 					double playerFactor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINFACTOR);
 
-					double amount = paPlayersJoinAmount.get(nKey) * playerFactor;
+					double amount = getPlayerJoinMap().get(nKey) * playerFactor;
 
 					economy.depositPlayer(nKey, amount);
 					try {
@@ -378,11 +401,7 @@ public class VaultSupport extends ArenaModule {
 				economy.withdrawPlayer(sender.getName(), entryfee);
 				arena.msg(sender,
 						Language.parse(MSG.MODULE_VAULT_JOINPAY, economy.format(entryfee)));
-				if (paPots.containsKey(arena.getName())) {
-					paPots.put(arena.getName(), paPots.get(arena.getName()) + entryfee);
-				} else {
-					paPots.put(arena.getName(), (double) entryfee);
-				}
+				pot += entryfee;
 			}
 		}
 	}
@@ -403,17 +422,17 @@ public class VaultSupport extends ArenaModule {
 			double pot = 0;
 			double winpot = 0;
 			
-			for (String s : paPlayersBetAmount.keySet()) {
+			for (String s : getPlayerBetMap().keySet()) {
 				String[] nSplit = s.split(":");
 				
-				pot += paPlayersBetAmount.get(s);
+				pot += getPlayerBetMap().get(s);
 				
 				if (result.contains(nSplit)) {
-					winpot += paPlayersBetAmount.get(s);
+					winpot += getPlayerBetMap().get(s);
 				}
 			}
 			
-			for (String nKey : paPlayersBetAmount.keySet()) {
+			for (String nKey : getPlayerBetMap().keySet()) {
 				String[] nSplit = nKey.split(":");
 				ArenaTeam team = arena.getTeam(nSplit[1]);
 				if (team == null || team.getName().equals("free")) {
@@ -427,7 +446,7 @@ public class VaultSupport extends ArenaModule {
 					
 					if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
 						if (winpot > 0) {
-							amount = pot * paPlayersBetAmount.get(nKey) / winpot;
+							amount = pot * getPlayerBetMap().get(nKey) / winpot;
 						}
 					} else {
 						double teamFactor = arena.getArenaConfig()
@@ -437,7 +456,7 @@ public class VaultSupport extends ArenaModule {
 							teamFactor = 1;
 						}
 						teamFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
-						amount = paPlayersBetAmount.get(nKey) * teamFactor;
+						amount = getPlayerBetMap().get(nKey) * teamFactor;
 					}
 
 					if (!economy.hasAccount(nSplit[0])) {
@@ -458,8 +477,9 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public void reset(boolean force) {
-		paPlayersBetAmount.clear();
-		paPlayersJoinAmount.clear();
+		getPlayerBetMap().clear();
+		getPlayerJoinMap().clear();
+		pot = 0;
 	}
 	
 	@Override
@@ -486,9 +506,7 @@ public class VaultSupport extends ArenaModule {
 				return;
 			}
 			economy.depositPlayer(player.getName(), entryfee);
-			if (paPots.containsKey(arena.getName())) {
-				paPots.put(arena.getName(), paPots.get(arena.getName()) - entryfee);
-			}
+			pot -= entryfee;
 		}
 	}
 

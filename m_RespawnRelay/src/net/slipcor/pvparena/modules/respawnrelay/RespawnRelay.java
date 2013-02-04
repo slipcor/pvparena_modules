@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.respawnrelay;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class RespawnRelay extends ArenaModule {
-	static HashMap<String, BukkitRunnable> runners = new HashMap<String, BukkitRunnable>();
+	protected Map<String, BukkitRunnable> runnerMap;
 	
 	public RespawnRelay() {
 		super("RespawnRelay");
@@ -21,7 +22,14 @@ public class RespawnRelay extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.0.25";
+	}
+	
+	protected Map<String, BukkitRunnable> getRunnerMap() {
+		if (runnerMap == null) {
+			runnerMap = new HashMap<String, BukkitRunnable>();
+		}
+		return runnerMap;
 	}
 	
 	@Override
@@ -45,20 +53,20 @@ public class RespawnRelay extends ArenaModule {
 		arena.tpPlayerToCoordName(ap.get(), "relay");
 		arena.unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 		
-		if (runners.containsKey(ap.getName())) {
+		if (getRunnerMap().containsKey(ap.getName())) {
 			return true;
 		}
 		
-		runners.put(ap.getName(), new RelayRunnable(arena, ap, drops));
+		getRunnerMap().put(ap.getName(), new RelayRunnable(this, arena, ap, drops));
 		
 		return true;
 	}
 	
 	@Override
 	public void reset(boolean force) {
-		for (BukkitRunnable br : runners.values()) {
+		for (BukkitRunnable br : getRunnerMap().values()) {
 			br.cancel();
 		}
-		runners.clear();
+		getRunnerMap().clear();
 	}
 }

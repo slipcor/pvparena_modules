@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.bettergears;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Color;
@@ -27,11 +28,11 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class BetterGears extends ArenaModule {
-	static HashMap<String, String> colorMap;
+	static HashMap<String, String> defaultColors;
 	Debug debug = new Debug(600);
 
-	HashMap<ArenaTeam, Short[]> colors = new HashMap<ArenaTeam, Short[]>();
-	HashMap<ArenaClass, Short> levels = new HashMap<ArenaClass, Short>();
+	private Map<ArenaTeam, Short[]> colorMap = null;
+	private Map<ArenaClass, Short> levelMap = null;
 
 	public BetterGears() {
 		super("BetterGears");
@@ -80,7 +81,7 @@ public class BetterGears extends ArenaModule {
 					arena.msg(sender, Language.parse(
 							MSG.MODULE_BETTERGEARS_SHOWTEAM,
 							team.getColoredName(),
-							String.valueOf(levels.get(team))));
+							String.valueOf(getLevelMap().get(team))));
 					return;
 				}
 
@@ -98,7 +99,7 @@ public class BetterGears extends ArenaModule {
 							"modules.bettergears.colors." + team.getName(),
 							StringParser.joinArray(rgb, ","));
 					arena.getArenaConfig().save();
-					colors.put(team, rgb);
+					getColorMap().put(team, rgb);
 					arena.msg(sender, Language.parse(
 							MSG.MODULE_BETTERGEARS_TEAMDONE,
 							team.getColoredName(), args[3]));
@@ -124,7 +125,7 @@ public class BetterGears extends ArenaModule {
 			arena.msg(
 					sender,
 					Language.parse(MSG.MODULE_BETTERGEARS_SHOWCLASS,
-							c.getName(), String.valueOf(levels.get(c))));
+							c.getName(), String.valueOf(getLevelMap().get(c))));
 			return;
 		}
 
@@ -138,7 +139,7 @@ public class BetterGears extends ArenaModule {
 			arena.getArenaConfig().setManually(
 					"modules.bettergears.levels." + c.getName(), l);
 			arena.getArenaConfig().save();
-			levels.put(c, l);
+			getLevelMap().put(c, l);
 			arena.msg(
 					sender,
 					Language.parse(MSG.MODULE_BETTERGEARS_CLASSDONE,
@@ -160,7 +161,7 @@ public class BetterGears extends ArenaModule {
 				cfg.set("modules.bettergears.colors." + t.getName(),
 						parseTeamColorStringToRGB(t.getColor().name()));
 		}
-		if (colors.isEmpty()) {
+		if (getColorMap().isEmpty()) {
 			setup();
 		}
 	}
@@ -176,9 +177,9 @@ public class BetterGears extends ArenaModule {
 			g = (short) ((new Random()).nextInt(256));
 			b = (short) ((new Random()).nextInt(256));
 		} else {
-			r = colors.get(ap.getArenaTeam())[0];
-			g = colors.get(ap.getArenaTeam())[1];
-			b = colors.get(ap.getArenaTeam())[2];
+			r = getColorMap().get(ap.getArenaTeam())[0];
+			g = getColorMap().get(ap.getArenaTeam())[1];
+			b = getColorMap().get(ap.getArenaTeam())[2];
 		}
 		
 
@@ -196,12 +197,12 @@ public class BetterGears extends ArenaModule {
 			isArmor[i].setItemMeta(lam);
 		}
 
-		Short s = levels.get(ap.getArenaClass());
+		Short s = getLevelMap().get(ap.getArenaClass());
 		
 		if (s == null) {
 			String autoClass = getArena().getArenaConfig().getString(CFG.READY_AUTOCLASS);
 			ArenaClass ac = getArena().getClass(autoClass);
-			s = levels.get(ac);
+			s = getLevelMap().get(ac);
 		}
 		
 
@@ -219,24 +220,38 @@ public class BetterGears extends ArenaModule {
 		ap.get().getInventory().setLeggings(isArmor[2]);
 		ap.get().getInventory().setBoots(isArmor[3]);
 	}
+	
+	private Map<ArenaTeam, Short[]> getColorMap() {
+		if (colorMap == null) {
+			colorMap = new HashMap<ArenaTeam, Short[]>();
+		}
+		return colorMap;
+	}
+	
+	private Map<ArenaClass, Short> getLevelMap() {
+		if (levelMap == null) {
+			levelMap = new HashMap<ArenaClass, Short>();
+		}
+		return levelMap;
+	}
 
 	@Override
 	public void initiate(Player player) {
-		if (colors.isEmpty()) {
+		if (getColorMap().isEmpty()) {
 			setup();
 		}
 	}
 
 	@Override
 	public void reset(boolean force) {
-		colors.remove(arena);
-		levels.remove(arena);
+		getColorMap().remove(arena);
+		getLevelMap().remove(arena);
 	}
 
 	@Override
 	public void parseStart() {
 
-		if (colors.isEmpty()) {
+		if (getColorMap().isEmpty()) {
 			setup();
 		}
 		// debug();
@@ -248,8 +263,6 @@ public class BetterGears extends ArenaModule {
 
 	private void setup() {
 		debug.i("Setting up BetterGears");
-		colors = new HashMap<ArenaTeam, Short[]>();
-		levels = new HashMap<ArenaClass, Short>();
 
 		for (ArenaClass c : arena.getClasses()) {
 			Short s = 0;
@@ -262,13 +275,13 @@ public class BetterGears extends ArenaModule {
 				debug.i(c.getName() + " : " + s);
 			} catch (Exception e) {
 			}
-			levels.put(c, s);
+			getLevelMap().put(c, s);
 		}
 
 		for (ArenaTeam t : arena.getTeams()) {
 			Short[] s = parseRGBToShortArray(arena.getArenaConfig().getUnsafe(
 					"modules.bettergears.colors." + t.getName()));
-			colors.put(t, s);
+			getColorMap().put(t, s);
 			debug.i(t.getName() + " : " + StringParser.joinArray(s, ","));
 		}
 	}
@@ -325,31 +338,31 @@ public class BetterGears extends ArenaModule {
 	}
 
 	private String parseTeamColorStringToRGB(String name) {
-		if (colorMap == null) {
-			colorMap = new HashMap<String, String>();
+		if (defaultColors == null) {
+			defaultColors = new HashMap<String, String>();
 
-			colorMap.put("BLACK", "0,0,0");
-			colorMap.put("DARK_BLUE", "0,0,153");
-			colorMap.put("DARK_GREEN", "0,68,0");
-			colorMap.put("DARK_AQUA", "0,153,153");
-			colorMap.put("DARK_RED", "153,0,0");
+			defaultColors.put("BLACK", "0,0,0");
+			defaultColors.put("DARK_BLUE", "0,0,153");
+			defaultColors.put("DARK_GREEN", "0,68,0");
+			defaultColors.put("DARK_AQUA", "0,153,153");
+			defaultColors.put("DARK_RED", "153,0,0");
 
-			colorMap.put("DARK_PURPLE", "153,0,153");
-			colorMap.put("GOLD", "0,0,0");
-			colorMap.put("GRAY", "153,153,153");
-			colorMap.put("DARK_GRAY", "68,68,68");
-			colorMap.put("BLUE", "0,0,255");
-			colorMap.put("GREEN", "0,255,0");
+			defaultColors.put("DARK_PURPLE", "153,0,153");
+			defaultColors.put("GOLD", "0,0,0");
+			defaultColors.put("GRAY", "153,153,153");
+			defaultColors.put("DARK_GRAY", "68,68,68");
+			defaultColors.put("BLUE", "0,0,255");
+			defaultColors.put("GREEN", "0,255,0");
 
-			colorMap.put("AQUA", "0,255,255");
-			colorMap.put("RED", "255,0,0");
-			colorMap.put("LIGHT_PURPLE", "255,0,255");
-			colorMap.put("PINK", "255,0,255");
-			colorMap.put("YELLOW", "255,255,0");
-			colorMap.put("WHITE", "255,255,255");
+			defaultColors.put("AQUA", "0,255,255");
+			defaultColors.put("RED", "255,0,0");
+			defaultColors.put("LIGHT_PURPLE", "255,0,255");
+			defaultColors.put("PINK", "255,0,255");
+			defaultColors.put("YELLOW", "255,255,0");
+			defaultColors.put("WHITE", "255,255,255");
 		}
 
-		String s = colorMap.get(name);
+		String s = defaultColors.get(name);
 		debug.i("team " + name + " : " + s);
 		return s == null ? "255,255,255" : s;
 	}

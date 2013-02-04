@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.modules.duel;
 
-import java.util.HashSet;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -11,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class DuelManager extends ArenaModule {
-	HashSet<String> commands = new HashSet<String>();
 	public DuelManager() {
 		super("Duel");
 	}
