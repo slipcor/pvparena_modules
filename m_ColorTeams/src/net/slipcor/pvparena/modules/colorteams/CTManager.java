@@ -26,7 +26,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.1.44";
 	}
 	
 	@Override
@@ -100,10 +100,6 @@ public class CTManager extends ArenaModule {
 				n = team.getColorCodeString() + player.getName();
 			}
 			n = n.replaceAll("(&([a-f0-9]))", "§$2");
-
-			if (team != null && arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
-				n = " ";
-			}
 			
 			player.setDisplayName(n);
 			

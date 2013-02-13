@@ -30,14 +30,14 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.44";
 	}
 	
 	@Override
 	public void configParse(YamlConfiguration config) {
 		if (!setup) {
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
-			setup = false;
+			setup = true;
 		}
 	}
 	

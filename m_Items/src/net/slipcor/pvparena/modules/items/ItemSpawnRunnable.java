@@ -3,7 +3,6 @@ package net.slipcor.pvparena.modules.items;
 import java.util.Random;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.classes.PALocation;
@@ -38,7 +37,7 @@ public class ItemSpawnRunnable implements Runnable {
 				i = (new Random()).nextInt(spawns.size());
 			}
 			if (i <= 0) {
-				Bukkit.getWorld(this.i.getArena().getWorld()).dropItemNaturally(loc.toLocation(), items[(new Random()).nextInt(items.length)]);
+				loc.toLocation().getWorld().dropItemNaturally(loc.toLocation(), items[(new Random()).nextInt(items.length)]);
 				return;
 			}
 		}

@@ -30,6 +30,10 @@ public class CTListener implements Listener {
 			}
 			return;
 		}
+		if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
+			event.setTag(" ");
+			return;
+		}
 		
 		for (ArenaTeam at : ap.getArena().getTeams()) {
 			if (at.getTeamMembers().contains(ap)) {
