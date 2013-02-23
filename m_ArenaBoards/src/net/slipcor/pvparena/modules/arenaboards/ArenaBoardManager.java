@@ -27,7 +27,9 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 	protected HashMap<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
 	protected int BOARD_ID = -1;
 	protected int GLOBAL_ID = -1;
-	protected ArenaBoard globalBoard = null;
+	protected static ArenaBoard globalBoard = null;
+	
+	protected int THIS_ID = -1;
 
 	public ArenaBoardManager() {
 		super("ArenaBoards");
@@ -35,7 +37,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.45";
 	}
 
 	@Override
@@ -53,13 +55,16 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 		}
 		String leaderboard = PVPArena.instance.getConfig().getString(
 				"leaderboard");
-		if (leaderboard != null) {
+		if (leaderboard != null && GLOBAL_ID < 0 && globalBoard == null) {
 			PABlockLocation lbLoc = Config.parseBlockLocation(leaderboard);
 			globalBoard = new ArenaBoard(this, lbLoc, null);
 
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-					PVPArena.instance, new BoardRunnable(this), 100L, 100L);
+					PVPArena.instance, new BoardRunnable(null), 100L, 100L);
 		}
+		
+		THIS_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+				PVPArena.instance, new BoardRunnable(this), 100L, 100L);
 		
 		Bukkit.getServer().getPluginManager().registerEvents(this, PVPArena.instance);
 	}
@@ -107,11 +112,8 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 		Arena a = ArenaManager.getArenaByName(headline);
 
 		// trying to create an arena leaderboard
-		if (arena != a) {
-			return;
-		}
 
-		if (boards.containsKey(event.getBlock().getLocation())) {
+		if (arena == a && arena != null && boards.containsKey(event.getBlock().getLocation())) {
 			Arena.pmsg(event.getPlayer(), Language.parse(MSG.MODULE_ARENABOARDS_EXISTS));
 			return;
 		}
@@ -144,7 +146,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 			PVPArena.instance.saveConfig();
 
 			GLOBAL_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-					PVPArena.instance, new BoardRunnable(this), 100L, 100L);
+					PVPArena.instance, new BoardRunnable(null), 100L, 100L);
 		} else {
 			PABlockLocation loc = new PABlockLocation(event.getBlock().getLocation());
 			boards.put(loc, new ArenaBoard(this, loc, a));

@@ -23,13 +23,14 @@ public class BoardRunnable implements Runnable {
 	@Override
 	public void run() {
 		debug.i("BoardRunnable commiting");
-		if (abm.getArena() == null) {
-			if (abm.globalBoard != null) {
-				abm.globalBoard.update(); 
+		if (abm == null) {
+			if (ArenaBoardManager.globalBoard != null) {
+				ArenaBoardManager.globalBoard.update(); 
 			}
-		}
-		for (ArenaBoard ab : abm.boards.values()) {
-			ab.update();
+		} else {
+			for (ArenaBoard ab : abm.boards.values()) {
+				ab.update();
+			}
 		}
 	}
 }
