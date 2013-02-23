@@ -34,7 +34,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.54";
 	}
 	
 	@Override
@@ -45,7 +45,6 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	@Override
 	public void configParse(YamlConfiguration config) {
 		List<String> res;
-		System.out.print("configparse Specialjoin");
 		try {
 			res = config.getStringList("modules.specialjoin.places");
 			for (String s : res) {
@@ -182,7 +181,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		} else if (mat == Material.SIGN || mat == Material.SIGN_POST || mat == Material.WALL_SIGN) {
 			Sign s = (Sign) event.getClickedBlock().getState();
 			String[] arr = new String[1];
-			arr[0] = s.getLine(2); // third line
+			arr[0] = s.getLine(1); // second line
 			
 			
 			if (s.getLine(2) != null && s.getLine(2).length() > 0) {
