@@ -116,7 +116,10 @@ public class RealSpectateListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onProjectileLaunch(ProjectileLaunchEvent event) {
-		if (!event.getEntity().getShooter().getType().equals(EntityType.PLAYER)) {
+		if (event == null ||
+				event.getEntity() == null ||
+				event.getEntity().getShooter() == null ||
+				!event.getEntity().getShooter().getType().equals(EntityType.PLAYER)) {
 			return;
 		}
 		Player subject = (Player) event.getEntity().getShooter();
