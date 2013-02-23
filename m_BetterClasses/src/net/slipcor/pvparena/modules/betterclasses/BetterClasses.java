@@ -32,7 +32,7 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.1.55";
 	}
 	
 	@Override
@@ -248,6 +248,32 @@ public class BetterClasses extends ArenaModule {
 			cfg.addDefault("modules.betterclasses.permEffects." + c.getName(), "none");
 			cfg.addDefault("modules.betterclasses.maxPlayers." + c.getName(), 0);
 			cfg.addDefault("modules.betterclasses.neededEXPLevel." + c.getName(), 0);
+		}
+	}
+	
+	@Override
+	public void lateJoin(Player player) {
+		if (!superMap.containsKey(arena)) {
+			init_map();
+		}
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+		debug.i("respawning player " + String.valueOf(ap), player);
+		HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+		if (map == null) {
+			PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
+			return;
+		}
+		
+		ArenaClass c = ap.getArenaClass();
+		
+		HashSet<PotionEffect> ape = map.get(c);
+		if (ape == null) {
+			debug.i("no effects for team " + String.valueOf(c), player);
+			return;
+		}
+		for (PotionEffect pe : ape) {
+			debug.i("adding " + pe.getType(), player);
+			player.addPotionEffect(pe);
 		}
 	}
 	
