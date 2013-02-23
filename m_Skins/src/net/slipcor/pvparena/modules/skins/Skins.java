@@ -62,7 +62,7 @@ public class Skins extends ArenaModule {
 							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
 			return;
 		}
-
+		
 		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 3 })) {
 			return;
 		}

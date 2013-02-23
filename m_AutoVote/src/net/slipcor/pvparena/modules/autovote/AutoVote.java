@@ -30,7 +30,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -126,13 +126,12 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6ArenaVote:§f seconds:"
+		player.sendMessage("seconds:"
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS))
 				+ " | readyup: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP))
-				+ " | everyone: "
-				+ StringParser.colorVar(arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)));
+				+ " | "
+				+ StringParser.colorVar("everyone", arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)));
 	}
 
 	@Override

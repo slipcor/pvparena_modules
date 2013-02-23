@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.betterclasses;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,7 +33,7 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.55";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -252,6 +253,24 @@ public class BetterClasses extends ArenaModule {
 	}
 	
 	@Override
+	public void displayInfo(CommandSender sender) {
+		if (superMap == null || !superMap.containsKey(arena)) {
+			return;
+		}
+		
+		HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+		
+		for (ArenaClass aClass : map.keySet()) {
+			Set<String> set = new HashSet<String>();
+			for (PotionEffect pef : map.get(aClass)) {
+				set.add(pef.getType().getName() + "x" + pef.getAmplifier());
+			}
+			sender.sendMessage(aClass.getName() + ": " + StringParser.joinSet(
+					set, "; "));
+		}
+	}
+	
+	@Override
 	public void lateJoin(Player player) {
 		if (!superMap.containsKey(arena)) {
 			init_map();
@@ -274,28 +293,6 @@ public class BetterClasses extends ArenaModule {
 		for (PotionEffect pe : ape) {
 			debug.i("adding " + pe.getType(), player);
 			player.addPotionEffect(pe);
-		}
-	}
-	
-	private boolean notEnoughEXP(Player player, String className) {
-		int needed = 0;
-		
-		try {
-			needed = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.neededEXPLevel." + className);
-		} catch (Exception e) {
-			return false;
-		}
-		
-		return player.getLevel() < needed;
-	}
-	
-	@Override
-	public void parseStart() {
-		if (!superMap.containsKey(arena)) {
-			init_map();
-		}
-		for (ArenaPlayer ap : arena.getFighters()) {
-			parseRespawn(ap.get(), null, null, null);
 		}
 	}
 	
@@ -325,6 +322,18 @@ public class BetterClasses extends ArenaModule {
 				ap.get().addPotionEffect(pe);
 			}
 		}
+	}
+	
+	private boolean notEnoughEXP(Player player, String className) {
+		int needed = 0;
+		
+		try {
+			needed = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.neededEXPLevel." + className);
+		} catch (Exception e) {
+			return false;
+		}
+		
+		return player.getLevel() < needed;
 	}
 
 	private String parsePotionEffectsToString(HashSet<PotionEffect> ape) {
@@ -357,6 +366,16 @@ public class BetterClasses extends ArenaModule {
 		for (PotionEffect pe : ape) {
 			debug.i("adding " + pe.getType(), player);
 			player.addPotionEffect(pe);
+		}
+	}
+	
+	@Override
+	public void parseStart() {
+		if (!superMap.containsKey(arena)) {
+			init_map();
+		}
+		for (ArenaPlayer ap : arena.getFighters()) {
+			parseRespawn(ap.get(), null, null, null);
 		}
 	}
 

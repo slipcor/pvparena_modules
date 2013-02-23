@@ -28,7 +28,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -67,6 +67,11 @@ public class StartFreeze extends ArenaModule implements Listener {
 			arena.getArenaConfig().save();
 			arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_STARTFREEZE_TIMER.getNode(), String.valueOf(i)));
 		}
+	}
+	
+	@Override
+	public void displayInfo(CommandSender sender) {
+		sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER));
 	}
 
 	@Override

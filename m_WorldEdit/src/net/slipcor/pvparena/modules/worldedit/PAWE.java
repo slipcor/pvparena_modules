@@ -27,6 +27,7 @@ import net.slipcor.pvparena.commands.PAA_Region;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
@@ -39,93 +40,7 @@ public class PAWE extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.54";
-	}
-	
-	@Override
-	public void onThisLoad() {
-		Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldEdit");
-	    if ((pwep != null) && (pwep.isEnabled()) && ((pwep instanceof WorldEditPlugin))) {
-	    	worldEdit = (WorldEditPlugin)pwep;
-	    }
-	}
-
-	@Override
-	public void reset(boolean force) {
-		if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) {
-			for (ArenaRegionShape ars : arena.getRegionsByType(RegionType.BATTLE)) {
-				load(ars);
-			}
-		}
-	}
-	
-	public void save(ArenaRegionShape ars) {
-		save(ars, ars.getArena().getName() + "_" + ars.getRegionName());
-	}
-	
-	public void save(ArenaRegionShape ars, String regionName) {
-		CuboidSelection cs = new CuboidSelection(Bukkit.getWorld(ars.getWorldName()), ars.getMinimumLocation().toLocation(), ars.getMaximumLocation().toLocation());
-		Vector min = cs.getNativeMinimumPoint();
-		Vector max = cs.getNativeMaximumPoint();
-		
-		min = min.subtract(1, 1, 1);
-		max = max.add(1, 1, 1);
-		
-		PABlockLocation lmin = ars.getMinimumLocation();
-		PABlockLocation lmax = ars.getMaximumLocation();
-		int size = (lmax.getX() - lmin.getX()) * 
-				(lmax.getY() - lmin.getY()) *
-				(lmax.getZ() - lmin.getZ());
-		
-		CuboidClipboard cc = new CuboidClipboard(max.subtract(min), min);
-		
-		EditSession es = new EditSession(new BukkitWorld(Bukkit.getWorld(ars.getWorldName())), size);
-
-		cc.copy(es);
-		
-		try {
-			SchematicFormat.MCEDIT.save(cc, new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DataException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void load(ArenaRegionShape ars) {
-		load(ars, ars.getArena().getName() + "_" + ars.getRegionName());
-	}
-	
-	public void load(ArenaRegionShape ars, String regionName) {
-
-		try {
-			CuboidClipboard cc = SchematicFormat.MCEDIT.load(new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
-			PABlockLocation min = ars.getMinimumLocation();
-			PABlockLocation max = ars.getMaximumLocation();
-			int size = (max.getX() + 2 - min.getX()) * 
-					(max.getY() + 2 - min.getY()) *
-					(max.getZ() + 2 - min.getZ());
-			
-			EditSession es = new EditSession(new BukkitWorld(Bukkit.getWorld(ars.getWorldName())), size);
-			PABlockLocation loc = ars.getMinimumLocation();
-			cc.place(es, new Vector(loc.getX() - 1, loc.getY() - 1, loc.getZ() - 1), false);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DataException e) {
-			e.printStackTrace();
-		} catch (MaxChangedBlocksException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public void parseStart() {
-		if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE)) {
-			for (ArenaRegionShape ars : arena.getRegionsByType(RegionType.BATTLE)) {
-				save(ars);
-			}
-		}
+		return "v1.0.1.59";
 	}
 
 	@Override
@@ -198,16 +113,6 @@ public class PAWE extends ArenaModule {
 		}
 	}
 
-	private void helpCommands(Arena arena, CommandSender sender) {
-		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regsave [regionname] {filename}"));
-		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regload [regionname] {filename}"));
-		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regcreate [regionname]"));
-		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autoload"));
-		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autosave"));
-		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we create"));
-		return;
-	}
-
 	private void create(Player p, Arena arena, String regionName, String regionShape) {
 		Selection s = worldEdit.getSelection(p);
 		if (s == null) {
@@ -227,5 +132,107 @@ public class PAWE extends ArenaModule {
 
 	private void create(Player p, Arena arena, String regionName) {
 		create(p, arena, regionName, "CUBOID");
+	}
+	
+	@Override
+	public void displayInfo(CommandSender sender) {
+		sender.sendMessage(StringParser.colorVar("autoload", arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) +
+				" | " + StringParser.colorVar("autosave", arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE)));
+	}
+
+	private void helpCommands(Arena arena, CommandSender sender) {
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regsave [regionname] {filename}"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regload [regionname] {filename}"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regcreate [regionname]"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autoload"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autosave"));
+		arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we create"));
+		return;
+	}
+
+	public void load(ArenaRegionShape ars) {
+		load(ars, ars.getArena().getName() + "_" + ars.getRegionName());
+	}
+	
+	public void load(ArenaRegionShape ars, String regionName) {
+
+		try {
+			CuboidClipboard cc = SchematicFormat.MCEDIT.load(new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
+			PABlockLocation min = ars.getMinimumLocation();
+			PABlockLocation max = ars.getMaximumLocation();
+			int size = (max.getX() + 2 - min.getX()) * 
+					(max.getY() + 2 - min.getY()) *
+					(max.getZ() + 2 - min.getZ());
+			
+			EditSession es = new EditSession(new BukkitWorld(Bukkit.getWorld(ars.getWorldName())), size);
+			PABlockLocation loc = ars.getMinimumLocation();
+			cc.place(es, new Vector(loc.getX() - 1, loc.getY() - 1, loc.getZ() - 1), false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (DataException e) {
+			e.printStackTrace();
+		} catch (MaxChangedBlocksException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void onThisLoad() {
+		Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldEdit");
+	    if ((pwep != null) && (pwep.isEnabled()) && ((pwep instanceof WorldEditPlugin))) {
+	    	worldEdit = (WorldEditPlugin)pwep;
+	    }
+	}
+	
+	@Override
+	public void parseStart() {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE)) {
+			for (ArenaRegionShape ars : arena.getRegionsByType(RegionType.BATTLE)) {
+				save(ars);
+			}
+		}
+	}
+
+	@Override
+	public void reset(boolean force) {
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) {
+			for (ArenaRegionShape ars : arena.getRegionsByType(RegionType.BATTLE)) {
+				load(ars);
+			}
+		}
+	}
+	
+	public void save(ArenaRegionShape ars) {
+		save(ars, ars.getArena().getName() + "_" + ars.getRegionName());
+	}
+	
+	public void save(ArenaRegionShape ars, String regionName) {
+		CuboidSelection cs = new CuboidSelection(Bukkit.getWorld(ars.getWorldName()), ars.getMinimumLocation().toLocation(), ars.getMaximumLocation().toLocation());
+		Vector min = cs.getNativeMinimumPoint();
+		Vector max = cs.getNativeMaximumPoint();
+		
+		min = min.subtract(1, 1, 1);
+		max = max.add(1, 1, 1);
+		
+		PABlockLocation lmin = ars.getMinimumLocation();
+		PABlockLocation lmax = ars.getMaximumLocation();
+		int size = (lmax.getX() - lmin.getX()) * 
+				(lmax.getY() - lmin.getY()) *
+				(lmax.getZ() - lmin.getZ());
+		
+		CuboidClipboard cc = new CuboidClipboard(max.subtract(min), min);
+		
+		EditSession es = new EditSession(new BukkitWorld(Bukkit.getWorld(ars.getWorldName())), size);
+
+		cc.copy(es);
+		
+		try {
+			SchematicFormat.MCEDIT.save(cc, new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (DataException e) {
+			e.printStackTrace();
+		}
 	}
 }

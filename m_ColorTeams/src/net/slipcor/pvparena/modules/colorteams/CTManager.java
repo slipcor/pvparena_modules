@@ -26,7 +26,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.44";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -71,9 +71,9 @@ public class CTManager extends ArenaModule {
 
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6ColorTeams:§f "
-				+ StringParser.colorVar("hidename", arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)));
+		player.sendMessage(StringParser.colorVar("enabled",arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK))
+				+ " | "
+				+ StringParser.colorVar("hidename", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)));
 	}
 	
 	@Override

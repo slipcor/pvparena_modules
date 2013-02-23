@@ -21,6 +21,7 @@ import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.goals.GoalFlags;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaGoal;
@@ -37,7 +38,7 @@ public class Maps extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -92,6 +93,22 @@ public class Maps extends ArenaModule {
 			arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
 			return;
 		}
+	}
+	
+	@Override
+	public void displayInfo(CommandSender sender) {
+		sender.sendMessage(StringParser.colorVar("playerAlign",
+				arena.getArenaConfig().getBoolean(
+						CFG.MODULES_ARENAMAPS_ALIGNTOPLAYER)) + "||" +
+				StringParser.colorVar("showLives",
+						arena.getArenaConfig().getBoolean(
+								CFG.MODULES_ARENAMAPS_SHOWLIVES)) + "||" +
+				StringParser.colorVar("showPlayers",
+						arena.getArenaConfig().getBoolean(
+								CFG.MODULES_ARENAMAPS_SHOWPLAYERS)) + "||" +
+				StringParser.colorVar("showSpawns",
+						arena.getArenaConfig().getBoolean(
+								CFG.MODULES_ARENAMAPS_SHOWSPAWNS)));
 	}
 
 	public HashSet<MapItem> getItems() {

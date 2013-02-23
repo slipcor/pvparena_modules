@@ -23,7 +23,7 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -103,10 +103,8 @@ public class InventoryLoss extends ArenaModule {
 
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6FixInventoryLoss:§f "
-				+ StringParser.colorVar("inventory", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY))
+		player.sendMessage(StringParser.colorVar("gamemode", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE))
 				+ " || "
-				+ StringParser.colorVar("gamemode", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_GAMEMODE)));
+				+ StringParser.colorVar("inventory", arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY)));
 	}
 }

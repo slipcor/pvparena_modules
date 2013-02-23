@@ -35,7 +35,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.59";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -126,9 +126,7 @@ public class Blocks extends ArenaModule {
 
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6BlockRestore:§f "
-				+ StringParser.colorVar("hard", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD))
+		player.sendMessage(StringParser.colorVar("hard", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD))
 				+ " | " + StringParser.colorVar("chests", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTORECHESTS))
 				+ " | offset " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET));
 	}

@@ -36,7 +36,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.0.25";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -127,6 +127,23 @@ public class BetterFight extends ArenaModule {
 		}
 		
 		config.options().copyDefaults(true);
+	}
+	
+	@Override
+	public void displayInfo(CommandSender sender) {
+		
+		sender.sendMessage("one-hit items: " + arena.getArenaConfig().getString(
+				CFG.MODULES_BETTERFIGHT_ONEHITITEMS));
+		sender.sendMessage(StringParser.colorVar("explode",
+				arena.getArenaConfig().getBoolean(
+						CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) + " | " +
+				StringParser.colorVar("messages",
+						arena.getArenaConfig().getBoolean(
+								CFG.MODULES_BETTERFIGHT_MESSAGES)) + " | " +
+				StringParser.colorVar("reset on death",
+						arena.getArenaConfig().getBoolean(
+								CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)));
+		
 	}
 	
 	private Map<String, Integer> getKills() {

@@ -34,7 +34,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.54";
+		return "v1.0.1.59";
 	}
 	
 	@Override
@@ -81,9 +81,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public void onThisLoad() {
-		PVPArena.instance.getLogger().info("Loading SpecialJoin");
 		if (!setup) {
-			PVPArena.instance.getLogger().info("Setting up SpecialJoin");
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 			setup = true;
 		}

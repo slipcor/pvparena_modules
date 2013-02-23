@@ -12,6 +12,7 @@ import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
 public class ChestFiller extends ArenaModule {
@@ -22,14 +23,23 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.1.59";
+	}
+	
+	@Override
+	public void displayInfo(CommandSender sender) {
+		sender.sendMessage("items: " + (String) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems"));
+		sender.sendMessage("max: " + (Integer) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")
+				+ " | " +
+				"min: " + (Integer) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems"));
+		
 	}
 	
 	@Override
 	public void parseStart() {
 		if (!setup) {
 			if (arena.getArenaConfig().getUnsafe("modules.chestfiller") == null) {
-				arena.getArenaConfig().setManually("modules.chestfiller.cfitems", "1,2,3,4,5,6,7,8,9");
+				arena.getArenaConfig().setManually("", "1,2,3,4,5,6,7,8,9");
 				arena.getArenaConfig().setManually("modules.chestfiller.cfmaxitems", 5);
 				arena.getArenaConfig().setManually("modules.chestfiller.cfminitems", 0);
 				arena.getArenaConfig().save();

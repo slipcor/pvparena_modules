@@ -30,7 +30,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.59";
 	}
 
 	public void afterMatch() {
@@ -128,7 +128,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("§bAfterMatch:§f "
+		player.sendMessage("active: "
 				+ StringParser.colorVar(!arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH).equals("off"))
 				+ "("
 				+ StringParser.colorVar(arena.getArenaConfig()

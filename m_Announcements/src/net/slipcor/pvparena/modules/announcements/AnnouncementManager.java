@@ -25,7 +25,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.59";
 	}
 
 	@Override
@@ -94,23 +94,23 @@ public class AnnouncementManager extends ArenaModule {
 	@Override
 	public void displayInfo(CommandSender player) {
 		player.sendMessage("");
-		player.sendMessage("§6Announcements:§f radius: "
+		player.sendMessage("radius: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(
 						CFG.MODULES_ANNOUNCEMENTS_RADIUS, 0))
 				+ " || color: "
 				+ StringParser.colorVar(arena.getArenaConfig().getString(
-						CFG.MODULES_ANNOUNCEMENTS_COLOR))
+						CFG.MODULES_ANNOUNCEMENTS_COLOR)));
+		player.sendMessage(StringParser.colorVar("advert", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_ADVERT))
 				+ " || "
-				+ StringParser.colorVar("join", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_JOIN)));
-		player.sendMessage(StringParser.colorVar("start", arena
-				.getArenaConfig().getBoolean(CFG.MODULES_ANNOUNCEMENTS_START))
+				+ StringParser.colorVar("custom", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_CUSTOM))
 				+ " || "
 				+ StringParser.colorVar("end", arena.getArenaConfig()
 						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_END))
 				+ " || "
-				+ StringParser.colorVar("winner", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_WINNER))
+				+ StringParser.colorVar("join", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_JOIN))
 				+ " || "
 				+ StringParser.colorVar("loser", arena.getArenaConfig()
 						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_LOSER))
@@ -118,8 +118,11 @@ public class AnnouncementManager extends ArenaModule {
 				+ StringParser.colorVar("prize", arena.getArenaConfig()
 						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_PRIZE))
 				+ " || "
-				+ StringParser.colorVar("custom", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_CUSTOM)));
+				+ StringParser.colorVar("start", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_START))
+				+ " || "
+				+ StringParser.colorVar("winner", arena.getArenaConfig()
+						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_WINNER)));
 	}
 
 	@Override

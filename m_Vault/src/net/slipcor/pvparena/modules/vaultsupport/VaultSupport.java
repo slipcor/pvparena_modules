@@ -37,7 +37,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.0.25";
+		return "v1.0.1.59";
 	}
 
 	@Override
@@ -370,8 +370,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6Economy (Vault): §f entry: "
+		player.sendMessage("entryfee: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))
 				+ " || reward: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD))
@@ -386,11 +385,19 @@ public class VaultSupport extends ArenaModule {
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))
 				+ " || betWinFactor: "
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR)));
-		
+
 		player.sendMessage("betTeamWinFactor: "
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINTEAMFACTOR))
 				+ " || betPlayerWinFactor: "
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINPLAYERFACTOR)));
+
+		player.sendMessage(StringParser.colorVar(
+				"bet pot",arena.getArenaConfig().getBoolean(
+						CFG.MODULES_VAULT_BETPOT))
+				+ " || "
+				+ StringParser.colorVar(
+				"win pot",arena.getArenaConfig().getBoolean(
+						CFG.MODULES_VAULT_WINPOT)));
 	}
 
 	@Override

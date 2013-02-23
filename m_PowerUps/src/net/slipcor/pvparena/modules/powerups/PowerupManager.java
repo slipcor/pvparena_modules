@@ -57,7 +57,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.15";
+		return "v1.0.1.59";
 	}
 
 	/**
@@ -250,8 +250,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("§6Powerups:§f "
+		player.sendMessage("usage: "
 				+ StringParser.colorVar(usesPowerups != null)
 				+ "("
 				+ StringParser.colorVar(arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE))
