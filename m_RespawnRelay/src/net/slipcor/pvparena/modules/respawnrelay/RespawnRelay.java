@@ -8,8 +8,10 @@ import java.util.Set;
 
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -22,7 +24,17 @@ public class RespawnRelay extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.0.25";
+		return "v1.0.1.60";
+	}
+	
+	@Override
+	public String checkForMissingSpawns(Set<String> list) {
+		return list.contains("relay")?null:"relay not set";
+	}
+	
+	@Override
+	public void displayInfo(CommandSender sender) {
+		sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_RESPAWNRELAY_INTERVAL));
 	}
 	
 	protected Map<String, BukkitRunnable> getRunnerMap() {
@@ -38,8 +50,11 @@ public class RespawnRelay extends ArenaModule {
 	}
 	
 	@Override
-	public String checkForMissingSpawns(Set<String> list) {
-		return list.contains("relay")?null:"relay not set";
+	public void reset(boolean force) {
+		for (BukkitRunnable br : getRunnerMap().values()) {
+			br.cancel();
+		}
+		getRunnerMap().clear();
 	}
 	
 	@Override
@@ -60,13 +75,5 @@ public class RespawnRelay extends ArenaModule {
 		getRunnerMap().put(ap.getName(), new RelayRunnable(this, arena, ap, drops));
 		
 		return true;
-	}
-	
-	@Override
-	public void reset(boolean force) {
-		for (BukkitRunnable br : getRunnerMap().values()) {
-			br.cancel();
-		}
-		getRunnerMap().clear();
 	}
 }
