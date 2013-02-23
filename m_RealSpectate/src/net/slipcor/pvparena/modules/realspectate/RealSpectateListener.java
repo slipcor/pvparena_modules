@@ -445,8 +445,10 @@ public class RealSpectateListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onProjectileLaunch(ProjectileLaunchEvent event) {
 		debug.i("ProjectileLaunch!");
-		if (event.getEntity().getShooter().getType() != EntityType.PLAYER) {
-			debug.i("no player!");
+		if (event == null ||
+				event.getEntity() == null ||
+				event.getEntity().getShooter() == null ||
+				!event.getEntity().getShooter().getType().equals(EntityType.PLAYER)) {
 			return;
 		}
 		
