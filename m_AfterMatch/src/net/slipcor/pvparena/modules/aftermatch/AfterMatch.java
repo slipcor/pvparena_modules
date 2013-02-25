@@ -30,7 +30,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.61";
 	}
 
 	public void afterMatch() {
@@ -40,7 +40,9 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 					continue;
 				}
 				Player player = p.get();
-				arena.tpPlayerToCoordName(player, "after");
+				if (player != null) {
+					arena.tpPlayerToCoordName(player, "after");
+				}
 			}
 		}
 		arena.broadcast(Language.parse(MSG.MODULE_AFTERMATCH_STARTING));
