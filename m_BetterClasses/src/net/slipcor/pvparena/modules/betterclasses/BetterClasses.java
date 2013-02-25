@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -33,8 +35,12 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.61";
 	}
+	
+	private final static int DURATION = 2400; // 2147000
+	
+	private BukkitTask potionRunner = null;
 	
 	@Override
 	public boolean cannotSelectClass(Player player,
@@ -200,7 +206,7 @@ public class BetterClasses extends ArenaModule {
 				}
 			}
 			
-			ape.add(new PotionEffect(pet, 2147000, amp));
+			ape.add(new PotionEffect(pet, DURATION, amp));
 			arena.getArenaConfig().setManually("modules.betterclasses.permEffects." + c.getName(), parsePotionEffectsToString(ape));
 			arena.getArenaConfig().save();
 			arena.msg(sender, Language.parse(MSG.MODULE_BETTERCLASSES_ADD, c.getName(), pet.getName()));
@@ -263,7 +269,7 @@ public class BetterClasses extends ArenaModule {
 		for (ArenaClass aClass : map.keySet()) {
 			Set<String> set = new HashSet<String>();
 			for (PotionEffect pef : map.get(aClass)) {
-				set.add(pef.getType().getName() + "x" + pef.getAmplifier());
+				set.add(pef.getType().getName() + "x" + pef.getAmplifier()+1);
 			}
 			sender.sendMessage(aClass.getName() + ": " + StringParser.joinSet(
 					set, "; "));
@@ -344,6 +350,14 @@ public class BetterClasses extends ArenaModule {
 		return StringParser.joinSet(result, ",");
 	}
 	
+	@Override
+	public void reset(boolean force) {
+		if (potionRunner != null) {
+			potionRunner.cancel();
+			potionRunner = null;
+		}
+	}
+	
 	public void parseRespawn(Player player, ArenaTeam team, DamageCause cause, Entity damager) {
 		if (!superMap.containsKey(arena)) {
 			init_map();
@@ -356,11 +370,17 @@ public class BetterClasses extends ArenaModule {
 			return;
 		}
 		
+		if (player.getActivePotionEffects() != null && player.getActivePotionEffects().size() > 0) {
+			for (PotionEffect eff : player.getActivePotionEffects()) {
+				player.removePotionEffect(eff.getType());
+			}
+		}
+		
 		ArenaClass c = ap.getArenaClass();
 		
 		HashSet<PotionEffect> ape = map.get(c);
 		if (ape == null) {
-			debug.i("no effects for team " + String.valueOf(c), player);
+			debug.i("no effects for class " + String.valueOf(c), player);
 			return;
 		}
 		for (PotionEffect pe : ape) {
@@ -377,6 +397,18 @@ public class BetterClasses extends ArenaModule {
 		for (ArenaPlayer ap : arena.getFighters()) {
 			parseRespawn(ap.get(), null, null, null);
 		}
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+				for (ArenaPlayer ap : arena.getFighters()) {
+					parseRespawn(ap.get(), null, null, null);
+				}
+			}
+			
+		}
+		potionRunner = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new RunLater(), DURATION/2, DURATION/2);
+		
 	}
 
 	private HashSet<PotionEffect> parseStringToPotionEffects(String s) {
@@ -399,7 +431,7 @@ public class BetterClasses extends ArenaModule {
 				
 				int amp = values.length < 2 ? 1 : Integer.parseInt(values[1]);
 				
-				PotionEffect pe = new PotionEffect(type, 2147000, amp-1);
+				PotionEffect pe = new PotionEffect(type, DURATION, amp-1);
 				spe.add(pe);
 			}
 		} catch (Exception e) {
