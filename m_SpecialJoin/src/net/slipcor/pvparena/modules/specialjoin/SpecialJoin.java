@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -16,10 +18,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.commands.PAG_Spectate;
 import net.slipcor.pvparena.core.Config;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -34,7 +38,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.72";
 	}
 	
 	@Override
@@ -189,7 +193,26 @@ public class SpecialJoin extends ArenaModule implements Listener {
 				j.commit(places.get(find), event.getPlayer(), arr);
 			}
 			
-		}
+		}	}
+	
+	@Override
+	public void parseJoin(CommandSender sender, ArenaTeam team) {
+		updateSignDisplay();
+	}
+	
+	@Override
+	public void parsePlayerLeave(Player player, ArenaTeam team) {
+		updateSignDisplay();
+	}
+	
+	@Override
+	public void parseStart() {
+		updateSignDisplay();
+	}
+	
+	@Override
+	public void reset(boolean force) {
+		updateSignDisplay();
 	}
 
 	private static void update(Arena a) {
@@ -201,5 +224,42 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		}
 		a.getArenaConfig().setManually("modules.specialjoin.places", locs);
 		a.getArenaConfig().save();
+	}
+	
+	private static void updateSignDisplay() {
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+
+				for (PABlockLocation loc : places.keySet()) {
+					Arena arena = places.get(loc);
+					if (!arena.getArenaConfig().getBoolean(CFG.MODULES_SPECIALJOIN_SHOWPLAYERS)) {
+						continue;
+					}
+					
+					BlockState state = loc.toLocation().getBlock().getState();
+					
+					if (!(state instanceof Sign)) {
+						continue;
+					}
+					
+					Sign sign = (Sign) state;
+					
+					String line = (arena.isFightInProgress()?"§a":(arena.isLocked()?"§c":"§6")) + arena.getFighters().size();
+					
+					final int maxPlayers = arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
+					
+					if (maxPlayers > 0) {
+						line += " / " + maxPlayers;
+					}
+					
+					sign.setLine(3, line);
+					sign.update();
+				}
+			}
+			
+		}
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
 	}
 }
