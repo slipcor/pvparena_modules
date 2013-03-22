@@ -15,6 +15,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
@@ -125,6 +126,11 @@ public class BetterFight extends ArenaModule {
 			config.addDefault("betterfight.messages.m7", "Godlike!");
 			config.addDefault("betterfight.messages.m8", "Monster!");
 		}
+
+		config.addDefault("betterfight.sounds.arrow", "none");
+		config.addDefault("betterfight.sounds.egg", "none");
+		config.addDefault("betterfight.sounds.snow", "none");
+		config.addDefault("betterfight.sounds.fireball", "none");
 		
 		config.options().copyDefaults(true);
 	}
@@ -163,27 +169,63 @@ public class BetterFight extends ArenaModule {
 		
 		if (event.getDamager() instanceof Projectile) {
 			if (event.getDamager() instanceof Snowball) {
+				handle(event, "snow");
 				if (s.toLowerCase().contains("snow")) {
 					event.setDamage(1000);
 				}
 			}
 			if (event.getDamager() instanceof Arrow) {
+				handle(event, "arrow");
 				if (s.toLowerCase().contains("arrow")) {
 					event.setDamage(1000);
 				}
 			}
 			if (event.getDamager() instanceof Fireball) {
+				handle(event, "fireball");
 				if (s.toLowerCase().contains("fireball")) {
 					event.setDamage(1000);
 				}
 			}
 			if (event.getDamager() instanceof Egg) {
+				handle(event, "egg");
 				if (s.toLowerCase().contains("egg")) {
 					event.setDamage(1000);
 				}
 			}
 		}
 	}
+	
+	private void handle(EntityDamageByEntityEvent event, String string) {
+		if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
+			Player shooter = (Player) ((Projectile) event.getDamager()).getShooter();
+			
+			float volume = 1.0f;
+			float pitch = 1.0f;
+			
+			String node = "betterfight.sounds." + string;
+			
+			String value = (String) arena.getArenaConfig().getUnsafe(node);
+			
+			if (value.equals("none")) {
+				return;
+			}
+			
+			try {
+				
+				Sound sound = Sound.valueOf(value.toUpperCase());
+				
+				shooter.playSound(shooter.getLocation(), sound, volume, pitch);
+				if (event.getEntity() instanceof Player) {
+					Player damagee = (Player) event.getEntity();
+					
+					damagee.playSound(shooter.getLocation(), sound, volume, pitch);
+				}
+			} catch (Exception e) {
+				PVPArena.instance.getLogger().warning("Node " + node + " is not a valid sound in arena " + arena.getName());
+			}
+		}
+	}
+
 /*
 	@Override
 	public void parseRespawn(Player player, ArenaTeam team,
