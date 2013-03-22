@@ -10,6 +10,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.StatisticsManager;
 
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -54,7 +55,7 @@ public class ArenaBoard {
 		try {
 			Sign s = (Sign) l.toLocation().getBlock().getState();
 			BlockFace bf = getRightDirection(s);
-			debug.i("parsing signs:");
+			debug.i("parsing signs: ");
 			do {
 				StatisticsManager.type t = null;
 				try {
@@ -85,6 +86,8 @@ public class ArenaBoard {
 	 * @return the blockface of the direction of the next column
 	 */
 	private BlockFace getRightDirection(Sign s) {
+		
+		/*
 		byte data = s.getRawData();
 
 		if (data == 2)
@@ -94,8 +97,20 @@ public class ArenaBoard {
 		if (data == 4)
 			return BlockFace.WEST;
 		if (data == 5)
-			return BlockFace.EAST;
+			return BlockFace.EAST;*/
+		
+		Block block = s.getBlock();
+		org.bukkit.material.Sign sign = (org.bukkit.material.Sign) block.getState().getData();
 
+		if (sign.getFacing() == BlockFace.EAST)
+			return BlockFace.NORTH;
+		if (sign.getFacing() == BlockFace.WEST)
+			return BlockFace.SOUTH;
+		if (sign.getFacing() == BlockFace.NORTH)
+			return BlockFace.WEST;
+		if (sign.getFacing() == BlockFace.SOUTH)
+			return BlockFace.EAST;
+		
 		return null;
 	}
 
