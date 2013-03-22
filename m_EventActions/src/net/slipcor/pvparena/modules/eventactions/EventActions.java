@@ -31,7 +31,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.1.80";
 	}
 
 	
@@ -71,12 +71,15 @@ public class EventActions extends ArenaModule {
 			}
 			/*
 			items.add("cmd<=>deop %player%");
+			items.add("pcmd<=>me joins %arena%");
 			items.add("brc<=>Join %arena%!");
 			items.add("switch<=>switch1");
 			items.add("msg<=>Welcome to %arena%!");
 			 */
 			if (split[0].equalsIgnoreCase("cmd")) {
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), split[1]);
+			} else if (split[0].equalsIgnoreCase("pcmd")) {
+				p.performCommand(split[1]);
 			} else if (split[0].equalsIgnoreCase("brc")) {
 				Bukkit.broadcastMessage(split[1]);
 			} else if (split[0].equalsIgnoreCase("switch")) {
