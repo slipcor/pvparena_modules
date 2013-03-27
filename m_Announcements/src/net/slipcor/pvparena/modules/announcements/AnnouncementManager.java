@@ -25,7 +25,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.91";
 	}
 
 	@Override
@@ -61,9 +61,9 @@ public class AnnouncementManager extends ArenaModule {
 			for (Announcement.type t : Announcement.type.values()) {
 				if (t.name().equalsIgnoreCase(args[1])) {
 					boolean b = arena.getArenaConfig().getBoolean(
-							CFG.getByNode("MODULES_ANNOUNCEMENTS_" + t.name()));
+							CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()));
 					arena.getArenaConfig().set(
-							CFG.getByNode("MODULES_ANNOUNCEMENTS_" + t.name()),
+							CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()),
 							!b);
 					arena.getArenaConfig().save();
 
