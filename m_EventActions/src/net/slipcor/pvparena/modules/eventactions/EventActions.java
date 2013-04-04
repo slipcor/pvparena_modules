@@ -5,14 +5,9 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.Button;
-import org.bukkit.material.Lever;
-import org.bukkit.material.MaterialData;
-
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -31,7 +26,25 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.80";
+		return "v1.0.1.90";
+	}
+	
+	@Override
+	public boolean checkCommand(String s) {
+		return s.toLowerCase().equals("setpower");
+	}
+	
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		Arena a = PAA_Edit.activeEdits.get(sender.getName()+"_power");
+		
+		if (a == null) {
+			PAA_Edit.activeEdits.put(sender.getName()+"_power", arena);
+			arena.msg(sender, Language.parse(MSG.SPAWN_SET_START, "power"));
+		} else {
+			PAA_Edit.activeEdits.remove(sender.getName()+"_power");
+			arena.msg(sender, Language.parse(MSG.SPAWN_SET_DONE, "power"));
+		}
 	}
 
 	
@@ -73,6 +86,7 @@ public class EventActions extends ArenaModule {
 			items.add("cmd<=>deop %player%");
 			items.add("pcmd<=>me joins %arena%");
 			items.add("brc<=>Join %arena%!");
+			items.add("power<=>power1");
 			items.add("switch<=>switch1");
 			items.add("msg<=>Welcome to %arena%!");
 			 */
@@ -82,63 +96,14 @@ public class EventActions extends ArenaModule {
 				p.performCommand(split[1]);
 			} else if (split[0].equalsIgnoreCase("brc")) {
 				Bukkit.broadcastMessage(split[1]);
-			} else if (split[0].equalsIgnoreCase("switch")) {
+			} else if (split[0].equalsIgnoreCase("power")) {
 				PABlockLocation loc = new PABlockLocation(SpawnManager.getCoords(a, split[1]).toLocation());
 				
-				System.out.print(loc.toLocation().toVector().toBlockVector().toString());
-				/*
-				PlayerInteractEvent e = new PlayerInteractEvent(p, Action.RIGHT_CLICK_BLOCK, new ItemStack(Material.AIR,1), loc.getBlock(), BlockFace.SELF);
-				Bukkit.getPluginManager().callEvent(e);*/
-
-				MaterialData state = loc.toLocation().getBlock().getState().getData();
-				
-				if (state instanceof Lever) {
-					((Lever)state).setPowered(true);
-				} else if (state instanceof Button) {
-					((Button)state).setPowered(true);
-				}
-				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new EADelay(loc), 20L);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new EADelay(loc), 1L);
 				
 			} else if (split[0].equalsIgnoreCase("msg") && p != null) {
 				p.sendMessage(split[1]);
 			}
 		}
 	}
-	
-	@Override
-	public boolean onPlayerInteract(PlayerInteractEvent event) {
-		if (!event.hasBlock()) {
-			return false;
-		}
-		debug.i("interact eventactions", event.getPlayer());
-		Arena a = PAA_Edit.activeEdits.get(event.getPlayer().getName());
-		
-		if (a != null) {
-			debug.i("found edit arena", event.getPlayer());
-			Location loc = event.getClickedBlock().getLocation();
-			MaterialData state = loc.getBlock().getState().getData();
-			
-			if ((state instanceof Lever) || (state instanceof Button)) {
-				debug.i("found lever/button", event.getPlayer());
-				String s = "switch";
-				int i = 0;
-				for (String node : a.getArenaConfig().getKeys("spawns")) {
-					if (node.startsWith(s)) {
-						node = node.replace(s, "");
-						if (Integer.parseInt(node) >= i) {
-							i = Integer.parseInt(node)+1;
-						}
-					}
-				}
-				
-				SpawnManager.setBlock(a, new PABlockLocation(loc), s+i);
-				Arena.pmsg(event.getPlayer(), Language.parse(MSG.SPAWN_SET, s+i));
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
 }

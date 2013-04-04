@@ -178,9 +178,6 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 	public void reset(boolean force) {
 		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
-		if (pu.equals("off")) {
-			return;
-		}
 		if (runId != null) {
 			Bukkit.getScheduler().cancelTask(runId);
 			runId = null;

@@ -97,8 +97,8 @@ public class ChestFiller extends ArenaModule {
 							int i = 0;
 							
 							while (i++ < count) {
-								int d = r.nextInt();
-								adding.add(stacks[d%stacks.length].clone());
+								int d = r.nextInt(stacks.length);
+								adding.add(stacks[d].clone());
 							}
 							
 							for (ItemStack it : adding) {

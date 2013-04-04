@@ -24,18 +24,20 @@ public class AutoVote extends ArenaModule {
 	private static Arena a = null;
 	private static HashMap<String, String> votes = new HashMap<String, String>();
 
+	private static AutoVoteRunnable vote = null;
+	
 	public AutoVote() {
 		super("AutoVote");
 	}
 
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.93";
 	}
 	
 	@Override
 	public boolean checkCommand(String cmd) {
-		return cmd.startsWith("vote") || cmd.equals("!av") || cmd.equals("autovote");
+		return cmd.startsWith("vote") || cmd.equals("!av") || cmd.equals("autovote") || cmd.equals("votestop");
 	}
 
 	@Override
@@ -72,6 +74,10 @@ public class AutoVote extends ArenaModule {
 				Arena.pmsg(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
 			}
 			return;
+		} else if (args[0].equals("votestop")) {
+			if (vote != null) {
+				vote.cancel();
+			}
 		} else {
 			if (!PVPArena.hasAdminPerms(sender)
 					&& !(PVPArena.hasCreatePerms(sender, arena))) {
@@ -139,11 +145,12 @@ public class AutoVote extends ArenaModule {
 		votes.clear();
 		a = null;
 
-		new AutoVoteRunnable(arena,
+		vote = new AutoVoteRunnable(arena,
 				arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
 	}
 
 	public static void commit() {
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvparena ALL disable");
 		HashMap<String, Integer> counts = new HashMap<String, Integer>();
 		int max = 0;
 		for (String name : votes.values()) {
@@ -186,6 +193,7 @@ public class AutoVote extends ArenaModule {
 				toTeleport.add(s);
 			}
 		}
+		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvparena "+a.getName()+" enable");
 		
 		for (String pName : toTeleport) {
 			Player p = Bukkit.getPlayerExact(pName);
