@@ -7,15 +7,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.runnables.PlayerStateCreateRunnable;
 
 public class FlySpectate extends ArenaModule {
 	public FlySpectate() {
@@ -27,7 +29,7 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.0.0";
+		return "v1.0.1.104";
 	}
 
 	@Override
@@ -59,12 +61,36 @@ public class FlySpectate extends ArenaModule {
 		debug.i("committing REAL spectate", player);
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		ap.setLocation(new PALocation(ap.get().getLocation()));
-		Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, new PlayerStateCreateRunnable(ap, ap.get()), 2L);
-		
+
 		ap.setArena(arena);
 		ap.setStatus(Status.WATCH);
 		debug.i("switching:", player);
 		getListener().hidePlayerLater(player);
+		
+		if (ap.getState() == null) {
+			
+			final Arena arena = ap.getArena();
+
+			final PAJoinEvent event = new PAJoinEvent(arena, player, false);
+			Bukkit.getPluginManager().callEvent(event);
+
+			ap.createState(player);
+			ArenaPlayer.backupAndClearInventory(arena, player);
+			ap.dump();
+			
+			
+			if (ap.getArenaTeam() != null && ap.getArenaClass() == null) {
+				final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
+				if (autoClass != null && !autoClass.equals("none") && arena.getClass(autoClass) != null) {
+					arena.chooseClass(player, null, autoClass);
+				}
+				if (autoClass == null) {
+					arena.msg(player, Language.parse(MSG.ERROR_CLASS_NOT_FOUND, "autoClass"));
+					return;
+				}
+			}
+		}
+		
 		class RunLater implements Runnable {
 
 			@Override
