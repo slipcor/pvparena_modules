@@ -144,9 +144,11 @@ public class AutoVote extends ArenaModule {
 	public void reset(boolean force) {
 		votes.clear();
 		a = null;
-
-		vote = new AutoVoteRunnable(arena,
-				arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
+		
+		if (vote == null) {
+			vote = new AutoVoteRunnable(arena,
+					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
+		}
 	}
 
 	public static void commit() {
@@ -206,5 +208,14 @@ public class AutoVote extends ArenaModule {
 
 		new StartRunnable(a,
 				a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+				vote = null;
+			}
+			
+		}
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
 	}
 }
