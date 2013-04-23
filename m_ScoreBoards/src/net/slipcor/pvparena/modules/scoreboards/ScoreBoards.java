@@ -37,7 +37,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.104";
+		return "v1.0.1.105";
 	}
 
 	
@@ -54,6 +54,9 @@ public class ScoreBoards extends ArenaModule {
 	}
 
 	public void update(Player player) {
+		if (board == null || obj == null) {
+			return;
+		}
 		if (arena.isFreeForAll()) {
 			Score score = obj.getScore(player);
 			score.setScore(PACheck.handleGetLives(arena, ArenaPlayer.parsePlayer(player.getName())));
