@@ -24,6 +24,7 @@ import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -42,7 +43,7 @@ public class Skins extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.0.11";
+		return "v1.0.1.128";
 	}
 
 	@Override
@@ -135,7 +136,11 @@ public class Skins extends ArenaModule {
 	
 	@Override
 	public void onThisLoad() {
-		if (enabled) {
+		if (arena == null) {
+			return;
+		}
+		if (enabled || arena.getArenaConfig().getBoolean(CFG.MODULES_SKINS_VANILLA)) {
+			enabled = true;
 			return;
 		}
 		MSG m = MSG.MODULE_SKINS_NOMOD;
@@ -201,42 +206,47 @@ public class Skins extends ArenaModule {
 				}
 				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunnable(), 5L);
 			}
-		}
-		
-		if (disguised.contains(player.getName())) {
 			return;
 		}
 		
-		if (arena.hasPlayer(player)) {
-			ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
-			if (team == null) {
-				return;
-			}
-			String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
-			
-			if (disguise == null || disguise.equals("none")) {
-				return;
-			}
-			
-			if (dcHandler) {
-				DisguiseType t = DisguiseType.fromString(disguise);
-				Disguise d = new Disguise(dapi.newEntityID(), disguise, t == null ? DisguiseType.Player : t);
-				if (dapi.isDisguised(player)) {
-					dapi.undisguisePlayer(player);
-				}
-					
-				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DisguiseRunnable(player, d), 3L);
-				
-			} else if (mdHandler) {
-				if (!MobDisguiseAPI.disguisePlayer(player, disguise)) {
-					if (!MobDisguiseAPI.disguisePlayerAsPlayer(player, disguise)) {
-						PVPArena.instance.getLogger().warning("Unable to disguise " + player.getName() + " as " + disguise);
-					}
-				}
-			}
-			
-			disguised.add(player.getName());
+		if (disguised.contains(player.getName()) || !arena.hasPlayer(player)) {
+			return;
 		}
+		
+		ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+		if (team == null) {
+			return;
+		}
+		String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
+		
+		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+		
+		if (ap.getArenaClass() != null && (disguise == null || disguise.equals("none"))) {
+			disguise = (String) arena.getArenaConfig().getUnsafe("skins." + ap.getArenaClass().getName());
+		}
+		
+		if (disguise == null || disguise.equals("none")) {
+			return;
+		}
+		
+		if (dcHandler) {
+			DisguiseType t = DisguiseType.fromString(disguise);
+			Disguise d = new Disguise(dapi.newEntityID(), disguise, t == null ? DisguiseType.Player : t);
+			if (dapi.isDisguised(player)) {
+				dapi.undisguisePlayer(player);
+			}
+				
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DisguiseRunnable(player, d), 3L);
+			
+		} else if (mdHandler) {
+			if (!MobDisguiseAPI.disguisePlayer(player, disguise)) {
+				if (!MobDisguiseAPI.disguisePlayerAsPlayer(player, disguise)) {
+					PVPArena.instance.getLogger().warning("Unable to disguise " + player.getName() + " as " + disguise);
+				}
+			}
+		}
+		
+		disguised.add(player.getName());
 	}
 
 	@Override
