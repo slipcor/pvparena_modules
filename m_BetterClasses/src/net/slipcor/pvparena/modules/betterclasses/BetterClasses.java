@@ -35,7 +35,7 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.61";
+		return "v1.0.1.107";
 	}
 	
 	private final static int DURATION = 2400; // 2147000
@@ -370,7 +370,8 @@ public class BetterClasses extends ArenaModule {
 			return;
 		}
 		
-		if (player.getActivePotionEffects() != null && player.getActivePotionEffects().size() > 0) {
+		if ((team != null || cause != null || damager != null) &&
+				player.getActivePotionEffects() != null && player.getActivePotionEffects().size() > 0) {
 			for (PotionEffect eff : player.getActivePotionEffects()) {
 				player.removePotionEffect(eff.getType());
 			}
@@ -384,6 +385,9 @@ public class BetterClasses extends ArenaModule {
 			return;
 		}
 		for (PotionEffect pe : ape) {
+			if (team == null && cause == null && damager == null) {
+				player.removePotionEffect(pe.getType());
+			}
 			debug.i("adding " + pe.getType(), player);
 			player.addPotionEffect(pe);
 		}
