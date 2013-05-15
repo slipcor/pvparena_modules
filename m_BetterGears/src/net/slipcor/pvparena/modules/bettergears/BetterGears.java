@@ -41,7 +41,7 @@ public class BetterGears extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.109";
 	}
 
 	@Override
@@ -253,6 +253,11 @@ public class BetterGears extends ArenaModule {
 		if (getColorMap().isEmpty()) {
 			setup();
 		}
+	}
+	
+	@Override
+	public void lateJoin(Player player) {
+		equip(ArenaPlayer.parsePlayer(player.getName()));
 	}
 
 	@Override
