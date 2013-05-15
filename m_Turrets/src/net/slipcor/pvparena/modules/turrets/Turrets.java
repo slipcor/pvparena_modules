@@ -43,6 +43,9 @@ public class Turrets extends ArenaModule implements Listener {
 	
 	@Override
 	public void configParse(final YamlConfiguration config) {
+		if (arena == null) {
+			return;
+		}
 		if (!setup) {
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 			setup = true;
