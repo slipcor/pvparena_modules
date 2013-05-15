@@ -24,7 +24,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.material.Attachable;
 
 public class Blocks extends ArenaModule {
@@ -35,11 +34,11 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.1.120";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
-	public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
+	//public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
 	
 	private static HashMap<ArenaRegionShape, RestoreContainer> containers = new HashMap<ArenaRegionShape, RestoreContainer>();
 
@@ -88,10 +87,12 @@ public class Blocks extends ArenaModule {
 			return;
 		}
 
-		if (args[1].equals("hard") || args[1].equals("restorechests")) {
+		if (args[1].equals("hard") || args[1].equals("restorechests") || args[1].equals("restoreblocks")) {
 			CFG c = null;
 			if (args[1].equals("hard")) {
 				c = CFG.MODULES_BLOCKRESTORE_HARD;
+			} else if (args[1].contains("blocks")){
+				c = CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS;
 			} else {
 				c = CFG.MODULES_BLOCKRESTORE_RESTORECHESTS;
 			}
@@ -127,6 +128,7 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void displayInfo(CommandSender player) {
 		player.sendMessage(StringParser.colorVar("hard", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD))
+				+ " | " + StringParser.colorVar("blocks", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS))
 				+ " | " + StringParser.colorVar("chests", arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTORECHESTS))
 				+ " | offset " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET));
 	}
@@ -134,7 +136,8 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void onEntityExplode(EntityExplodeEvent event) {
 		if (!arena.isLocked() &&
-				!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
+				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)
+						&& arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS))) {
 			for (Block b : event.blockList()) {
 				saveBlock(b);
 			}
@@ -145,7 +148,8 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void onBlockBreak(Block block) {
 		debug.i("block break in blockRestore");
-		if (arena == null || arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
+		if (arena == null || arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)
+				|| !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS)) {
 			debug.i(arena + " || blockRestore.hard: " + arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD));
 			return;
 		}
@@ -163,7 +167,8 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void onBlockPiston(Block block) {
 		if (!arena.isLocked()
-				&& !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
+				&& !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)
+				&& arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS)) {
 			saveBlock(block);
 		}
 	}
@@ -171,15 +176,9 @@ public class Blocks extends ArenaModule {
 	@Override
 	public void onBlockPlace(Block block, Material mat) {
 		if (!arena.isLocked()
-				&& !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)) {
+				&& !arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD)
+				&& arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS)) {
 			saveBlock(block, mat);
-		}
-	}
-	
-	@Override
-	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if (!arena.isLocked()) {
-			event.setCancelled(true);
 		}
 	}
 	
@@ -196,8 +195,11 @@ public class Blocks extends ArenaModule {
 	 *            the arena to reset
 	 */
 	private void resetBlocks() {
-		debug.i("resetting blocks");
-		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks));
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS)) {
+			debug.i("resetting blocks");
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks));
+		}
+		
 	}
 
 
@@ -314,7 +316,9 @@ public class Blocks extends ArenaModule {
 		
 		saveChests();
 		
-		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD) && !region.getName().startsWith("restore")) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS) ||
+				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD) &&
+				!region.getName().startsWith("restore"))) {
 			return;
 		}
 
