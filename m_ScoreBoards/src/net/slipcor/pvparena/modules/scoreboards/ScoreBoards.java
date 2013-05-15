@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -28,6 +29,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	private Scoreboard board = null;
 	Objective obj = null;
+	private BukkitTask updateTask = null;
 	
 	Map<String, Scoreboard> playerBoards = new HashMap<String, Scoreboard>();
 	
@@ -37,7 +39,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.105";
+		return "v1.0.1.142";
 	}
 
 	
@@ -107,6 +109,11 @@ public class ScoreBoards extends ArenaModule {
 		obj = null;
 		board.clearSlot(DisplaySlot.SIDEBAR);
 		board = null;
+		
+		if (updateTask != null) {
+			updateTask.cancel();
+			updateTask = null;
+		}
 	}
 
 	public void remove(Player player) {
@@ -200,6 +207,21 @@ public class ScoreBoards extends ArenaModule {
 			
 		}
 		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 1L);
+		
+		class UpdateTask implements Runnable {
+			private final ScoreBoards mod;
+			UpdateTask(ScoreBoards mod) {
+				this.mod = mod;
+			}
+			
+			@Override
+			public void run() {
+				mod.update();
+			}
+			
+		}
+		
+		updateTask = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new UpdateTask(this), 50, 50);
 	}
 	
 	

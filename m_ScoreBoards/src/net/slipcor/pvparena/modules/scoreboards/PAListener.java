@@ -13,41 +13,49 @@ public class PAListener implements Listener {
 	
 	@EventHandler
 	public void onDeath(PADeathEvent event) {
-		module.update(event.getPlayer());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.update(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onEnd(PAEndEvent event) {
-		module.stop(event.getArena());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.stop(event.getArena());
 	}
 
 	@EventHandler
 	public void onExit(PAExitEvent event) {
-		module.remove(event.getPlayer());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.remove(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onJoin(PAJoinEvent event) {
-		module.add(event.getPlayer());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.add(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onKill(PAKillEvent event) {
-		module.update(event.getPlayer());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.update(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onLeave(PALeaveEvent event) {
-		module.remove(event.getPlayer());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.remove(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onLose(PALoseEvent event) {
-		module.remove(event.getPlayer());
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.remove(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onStart(PAStartEvent event) {
-		module.start();
+		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+			module.start();
 	}
 }
