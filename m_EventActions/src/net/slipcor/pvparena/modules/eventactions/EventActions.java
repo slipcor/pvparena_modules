@@ -10,12 +10,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.loadables.ArenaRegionShape;
 
 public class EventActions extends ArenaModule {
 	private boolean setup = false;
@@ -26,7 +29,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.90";
+		return "v1.0.2.136";
 	}
 	
 	@Override
@@ -72,13 +75,18 @@ public class EventActions extends ArenaModule {
 			
 			if (p != null) {
 				item = item.replace("%player%", p.getName());
+				ArenaPlayer aplayer = ArenaPlayer.parsePlayer(p.getName());
+				if (aplayer.getArenaTeam() != null) {
+					item = item.replace("%team%", aplayer.getArenaTeam().getName());
+					item = item.replace("%color%", aplayer.getArenaTeam().getColor().toString());
+				}
 			}
 			
 			item = item.replace("%arena%", a.getName());
 			item = ChatColor.translateAlternateColorCodes('&', item);
 			
 			String[] split = item.split("<=>");
-			if (split.length != 2) {
+			if (split.length < 2) {
 				PVPArena.instance.getLogger().warning("[PE] skipping: [" + a.getName() + "]:event." + string + "=>" + item);
 				continue;
 			}
@@ -89,13 +97,41 @@ public class EventActions extends ArenaModule {
 			items.add("power<=>power1");
 			items.add("switch<=>switch1");
 			items.add("msg<=>Welcome to %arena%!");
+			items.add("abrc<=>Welcome, %player%");
+			items.add("clear<=>battlefield");
+			
+			
+			items.add("brc<=>we had minimum players!<=>minplayers");
 			 */
+			
+			if (split.length == 3) {
+				if ("minplayers".equals(split[2])) {
+					if (arena.getPlayedPlayers().size() < arena.getArenaConfig().getInt(CFG.ITEMS_MINPLAYERS)) {
+						return;
+					}
+				}
+			}
+			
 			if (split[0].equalsIgnoreCase("cmd")) {
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), split[1]);
 			} else if (split[0].equalsIgnoreCase("pcmd")) {
+				if (p == null) {
+					PVPArena.instance.getLogger().warning("Trying to commit command for null player: " + string);
+				}
 				p.performCommand(split[1]);
 			} else if (split[0].equalsIgnoreCase("brc")) {
 				Bukkit.broadcastMessage(split[1]);
+			} else if (split[0].equalsIgnoreCase("abrc")) {
+				arena.broadcast(split[1]);
+			} else if (split[0].equalsIgnoreCase("clear")) {
+				ArenaRegionShape ars = arena.getRegion(split[1]);
+				if (ars == null && "all".equals(split[1])) {
+					for (ArenaRegionShape region : arena.getRegions()) {
+						region.removeEntities();
+					}
+				} else if (ars != null) {
+					ars.removeEntities();
+				}
 			} else if (split[0].equalsIgnoreCase("power")) {
 				PABlockLocation loc = new PABlockLocation(SpawnManager.getCoords(a, split[1]).toLocation());
 				
