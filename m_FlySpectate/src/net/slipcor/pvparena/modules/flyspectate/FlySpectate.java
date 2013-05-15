@@ -29,20 +29,20 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.104";
+		return "v1.0.1.144";
 	}
 
 	@Override
 	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean join) {
-		if (join)
+		if (join && (arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE) || !arena.isFightInProgress()))
 			return res;
 		
 		if (arena.getFighters().size() < 1) {
 			res.setError(this, Language.parse(MSG.ERROR_NOPLAYERFOUND));
 		}
 		
-		if (res.getPriority() < priority) {
+		if (res.getPriority() < priority || (join && res.hasError())) {
 			res.setPriority(this, priority);
 		}
 		return res;
@@ -54,6 +54,19 @@ public class FlySpectate extends ArenaModule {
 			Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
 		}
 		return listener;
+	}
+	
+	@Override
+	public void commitJoin(final Player player, final ArenaTeam team) {
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+				commitSpectate(player);
+			}
+			
+		}
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
 	}
 
 	@Override
@@ -97,7 +110,7 @@ public class FlySpectate extends ArenaModule {
 			public void run() {
 				arena.tpPlayerToCoordName(player, "spectator");
 				player.setGameMode(GameMode.CREATIVE);
-				
+				arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
 			}
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(), 5L);

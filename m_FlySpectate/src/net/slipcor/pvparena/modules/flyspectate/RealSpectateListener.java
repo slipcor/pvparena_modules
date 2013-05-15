@@ -6,8 +6,10 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Debug;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -38,7 +40,17 @@ public class RealSpectateListener implements Listener {
 			return;
 		}
 		
-		Player subject = (Player) event.getEntity();
+		Entity damager = event.getDamager();
+		
+		if (event.getDamager() instanceof Projectile) {
+			damager = ((Projectile) event.getDamager()).getShooter();
+		}
+		
+		if (!(damager instanceof Player)) {
+			return;
+		}
+		
+		Player subject = (Player) damager;
 		
 		if (!spectators.contains(subject)) {
 			return;
