@@ -32,7 +32,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.93";
+		return "v1.0.1.144";
 	}
 	
 	@Override
@@ -152,10 +152,19 @@ public class AutoVote extends ArenaModule {
 	}
 
 	public static void commit() {
+		HashMap<String, String> tempVotes = new HashMap<String, String>();
+		
+		for (String node : votes.keySet()) {
+			tempVotes.put(node, votes.get(node));
+		}
+		
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvparena ALL disable");
 		HashMap<String, Integer> counts = new HashMap<String, Integer>();
 		int max = 0;
-		for (String name : votes.values()) {
+		
+		String voted = null;
+		
+		for (String name : tempVotes.values()) {
 			int i = 0;
 			if (counts.containsKey(name)) {
 				i = counts.get(name);
@@ -165,16 +174,14 @@ public class AutoVote extends ArenaModule {
 
 			if (i > max) {
 				max = i;
+				voted = name;
 			}
 		}
 
-		for (String name : counts.keySet()) {
-			if (counts.get(name) == max) {
-				a = ArenaManager.getArenaByName(name);
-			}
-		}
+		a = ArenaManager.getArenaByName(voted);
 
 		if (a == null) {
+			PVPArena.instance.getLogger().warning("Vote resulted in NULL for result '"+voted+"'!");
 			a = ArenaManager.getFirst();
 		}
 
@@ -191,7 +198,7 @@ public class AutoVote extends ArenaModule {
 				toTeleport.add(p.getName());
 			}
 		} else {
-			for (String s : votes.keySet()) {
+			for (String s : tempVotes.keySet()) {
 				toTeleport.add(s);
 			}
 		}
