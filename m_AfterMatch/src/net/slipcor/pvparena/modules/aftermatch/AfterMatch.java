@@ -2,12 +2,10 @@ package net.slipcor.pvparena.modules.aftermatch;
 
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
@@ -18,9 +16,10 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class AfterMatch extends ArenaModule implements Cloneable {
-	protected Integer runId = null;
+	protected ArenaRunnable afterTask = null;
 	private boolean aftermatch = false;
 
 	public AfterMatch() {
@@ -30,7 +29,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
 	@Override
 	public String version() {
-		return "v1.0.1.61";
+		return "v1.0.1.112";
 	}
 
 	public void afterMatch() {
@@ -48,6 +47,12 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 		arena.broadcast(Language.parse(MSG.MODULE_AFTERMATCH_STARTING));
 		PVPArena.instance.getAgm().setPlayerLives(arena, 0);
 		aftermatch = true;
+		try {
+			afterTask.cancel();
+		} catch (Exception e) {
+			
+		}
+		afterTask = null;
 	}
 	
 	@Override
@@ -152,7 +157,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 		}
 		
 		String[] ss = pu.split(":");
-		if (pu.startsWith("time") || runId != null) {
+		if (pu.startsWith("time") || afterTask != null) {
 			return;
 		}
 
@@ -169,18 +174,16 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 			}
 		}
 
-		runId = null;
+		afterTask = null;
 
 		afterMatch();
 	}
 
 	@Override
 	public void reset(boolean force) {
-		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
-
-		if (runId != null) {
-			Bukkit.getScheduler().cancelTask(runId);
-			runId = null;
+		if (afterTask != null) {
+			afterTask.cancel();
+			afterTask = null;
 		}
 		aftermatch = false;
 	}
@@ -189,9 +192,9 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 	public void parseStart() {
 		String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
-		if (runId != null) {
-			Bukkit.getScheduler().cancelTask(runId);
-			runId = null;
+		if (afterTask != null) {
+			afterTask.cancel();
+			afterTask = null;
 		}
 
 		int i = 0;
@@ -208,7 +211,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 				+ i);
 		if (i > 0) {
 			debug.i("aftermatch time trigger!");
-			new AfterRunnable(this, i);
+			afterTask = new AfterRunnable(this, i);
 		}
 	}
 }
