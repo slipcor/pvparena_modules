@@ -29,6 +29,8 @@ public class ScoreBoards extends ArenaModule {
 	
 	private Scoreboard board = null;
 	Objective obj = null;
+	Objective oBM = null;
+	Objective oTB = null;
 	private BukkitTask updateTask = null;
 	
 	Map<String, Scoreboard> playerBoards = new HashMap<String, Scoreboard>();
@@ -70,7 +72,6 @@ public class ScoreBoards extends ArenaModule {
 			OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(ap.getArenaTeam().getName());
 			obj.getScore(op).setScore(PACheck.handleGetLives(arena, ap));
 		}
-		player.setScoreboard(sbm.getMainScoreboard());
 		player.setScoreboard(board);
 		
 		if (!block) {
@@ -156,6 +157,19 @@ public class ScoreBoards extends ArenaModule {
 
 					board = sbm.getNewScoreboard();
 					
+					oBM = sbm.getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME);
+					if (oBM != null) {
+						oBM = board.registerNewObjective(oBM.getCriteria(), oBM.getDisplayName());
+						oBM.setDisplaySlot(DisplaySlot.BELOW_NAME);
+						
+					}
+					
+					oTB = sbm.getMainScoreboard().getObjective(DisplaySlot.PLAYER_LIST);
+					if (oTB != null) {
+						oTB = board.registerNewObjective(oTB.getCriteria(), oTB.getDisplayName());
+						oTB.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+					}
+					
 					for (ArenaTeam team : arena.getTeams()) {
 						
 						try {
@@ -188,7 +202,10 @@ public class ScoreBoards extends ArenaModule {
 					
 					update(player);
 				} else {
-					board.getTeam(ArenaPlayer.parsePlayer(player.getName()).getArenaTeam().getName()).addPlayer(player);
+					ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+					if (aPlayer.getArenaTeam() != null) {
+						board.getTeam(aPlayer.getArenaTeam().getName()).addPlayer(player);
+					}
 					update(player);
 				}
 			}
@@ -198,6 +215,11 @@ public class ScoreBoards extends ArenaModule {
 	}
 
 	public void start() {
+		
+		for (ArenaPlayer player : arena.getEveryone()) {
+			add(player.get());
+		}
+		
 		class RunLater implements Runnable {
 
 			@Override

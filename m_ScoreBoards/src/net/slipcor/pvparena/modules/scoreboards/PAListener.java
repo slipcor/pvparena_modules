@@ -1,6 +1,8 @@
 package net.slipcor.pvparena.modules.scoreboards;
 
 import net.slipcor.pvparena.events.*;
+import net.slipcor.pvparena.loadables.ArenaGoal;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -31,6 +33,14 @@ public class PAListener implements Listener {
 
 	@EventHandler
 	public void onJoin(PAJoinEvent event) {
+		if (!module.getArena().isFightInProgress()) {
+			return;
+		} else if (event.isSpectator()) {
+			// spectator in progress
+			for (ArenaGoal goal : module.getArena().getGoals()) {
+				goal.initate(event.getPlayer());
+			}
+		}
 		if (module.getArena() != null && module.getArena().equals(event.getArena()))
 			module.add(event.getPlayer());
 	}
