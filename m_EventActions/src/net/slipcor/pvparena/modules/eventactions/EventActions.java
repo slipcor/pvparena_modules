@@ -29,7 +29,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.2.136";
+		return "v1.0.2.146";
 	}
 	
 	@Override
@@ -59,7 +59,7 @@ public class EventActions extends ArenaModule {
 		setup = true;
 	}
 
-	protected void catchEvent(String string, Player p, Arena a) {
+	protected void catchEvent(final String string, final Player p, Arena a) {
 		
 		if (a == null || !a.equals(arena)) {
 			return;
@@ -85,7 +85,7 @@ public class EventActions extends ArenaModule {
 			item = item.replace("%arena%", a.getName());
 			item = ChatColor.translateAlternateColorCodes('&', item);
 			
-			String[] split = item.split("<=>");
+			final String[] split = item.split("<=>");
 			if (split.length < 2) {
 				PVPArena.instance.getLogger().warning("[PE] skipping: [" + a.getName() + "]:event." + string + "=>" + item);
 				continue;
@@ -115,10 +115,19 @@ public class EventActions extends ArenaModule {
 			if (split[0].equalsIgnoreCase("cmd")) {
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), split[1]);
 			} else if (split[0].equalsIgnoreCase("pcmd")) {
-				if (p == null) {
-					PVPArena.instance.getLogger().warning("Trying to commit command for null player: " + string);
+				class RunLater implements Runnable {
+
+					@Override
+					public void run() {
+						if (p == null) {
+							PVPArena.instance.getLogger().warning("Trying to commit command for null player: " + string);
+						} else {
+							p.performCommand(split[1]);
+						}
+					}
+					
 				}
-				p.performCommand(split[1]);
+				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
 			} else if (split[0].equalsIgnoreCase("brc")) {
 				Bukkit.broadcastMessage(split[1]);
 			} else if (split[0].equalsIgnoreCase("abrc")) {
