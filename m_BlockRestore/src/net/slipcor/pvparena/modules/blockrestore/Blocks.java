@@ -6,6 +6,7 @@ import java.util.Set;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
@@ -25,6 +26,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.material.Attachable;
+import org.bukkit.plugin.IllegalPluginAccessException;
 
 public class Blocks extends ArenaModule {
 	
@@ -34,7 +36,7 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.120";
+		return "v1.0.2.148";
 	}
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
@@ -43,6 +45,8 @@ public class Blocks extends ArenaModule {
 	private static HashMap<ArenaRegionShape, RestoreContainer> containers = new HashMap<ArenaRegionShape, RestoreContainer>();
 
 	private static Debug debug = new Debug(24);
+	
+	protected boolean restoring = false;
 	
 	private void checkBlock(Block b, BlockFace bf) {
 		if (b.getType().equals(Material.LADDER) ||
@@ -59,6 +63,15 @@ public class Blocks extends ArenaModule {
 	@Override
 	public boolean checkCommand(String s) {
 		return (s.equals("blockrestore") || s.equals("!br"));
+	}
+	
+	@Override
+	public PACheck checkJoin(CommandSender sender,
+			PACheck res, boolean join) {
+		if (restoring) {
+			res.setError(this, "restoring");
+		}
+		return res;
 	}
 	
 	@Override
@@ -197,7 +210,11 @@ public class Blocks extends ArenaModule {
 	private void resetBlocks() {
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS)) {
 			debug.i("resetting blocks");
-			Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks));
+			try {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks, this));
+			} catch (IllegalPluginAccessException e) {
+				(new BlockRestoreRunnable(arena, blocks, this)).instantlyRestore();
+			}
 		}
 		
 	}

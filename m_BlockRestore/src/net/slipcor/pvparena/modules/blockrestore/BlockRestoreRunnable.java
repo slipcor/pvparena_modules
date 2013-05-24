@@ -7,7 +7,6 @@ import org.bukkit.Location;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
-import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
 
@@ -15,16 +14,18 @@ public class BlockRestoreRunnable implements Runnable {
 	private HashMap<Location, ArenaBlock> removals;
 	private Arena arena;
 	private Debug debug = new Debug(67);
+	private final Blocks module;
 
 	public BlockRestoreRunnable(Arena arena,
-			HashMap<Location, ArenaBlock> blocks) {
+			HashMap<Location, ArenaBlock> blocks, Blocks module) {
 		this.arena = arena;
 		removals = getBlocks();
+		this.module = module;
 	}
 
 	@Override
 	public void run() {
-		PAA_Edit.activeEdits.put("server", arena);
+		module.restoring = true;
 		for (Location l : removals.keySet()) {
 			debug.i("location: " + l.toString());
 			removals.get(l).reset();
@@ -34,7 +35,7 @@ public class BlockRestoreRunnable implements Runnable {
 					this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
 			return;
 		}
-		PAA_Edit.activeEdits.remove("server");
+		module.restoring = false;
 	}
 
 	/**
@@ -57,5 +58,15 @@ public class BlockRestoreRunnable implements Runnable {
 		}
 
 		return result;
+	}
+
+	public void instantlyRestore() {
+		for (Location l : removals.keySet()) {
+			debug.i("location: " + l.toString());
+			removals.get(l).reset();
+			removals.remove(l);
+			Blocks.blocks.remove(l);
+		}
+		removals.clear();
 	}
 }
