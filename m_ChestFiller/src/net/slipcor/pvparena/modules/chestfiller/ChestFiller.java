@@ -17,8 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.block.Dispenser;
-import org.bukkit.block.Furnace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
@@ -30,7 +28,7 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.2.146";
+		return "v1.0.2.152";
 	}
 	
 	@Override
@@ -72,8 +70,8 @@ public class ChestFiller extends ArenaModule {
 			return;
 		}
 		
-		int cmax = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")));
-		int cmin = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems")));
+		final int cmax = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")));
+		final int cmin = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems")));
 		
 		ItemStack[] stacks = StringParser.getItemStacksFromString(items);
 		
@@ -168,7 +166,7 @@ public class ChestFiller extends ArenaModule {
 		return new Location(world, x, y, z);
 	}
 	
-	private void fill(Location loc, boolean clear, int max, int min, ItemStack[] stacks) {
+	private void fill(Location loc, boolean clear, int min, int max, ItemStack[] stacks) {
 		Chest c = (Chest) loc.getBlock().getState();
 		
 		if (clear) {
