@@ -37,7 +37,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.3.164 - various fixes";
 	}
 	
 	@Override
@@ -262,7 +262,7 @@ public class BetterFight extends ArenaModule {
 	@Override
 	public void parsePlayerDeath(Player player,
 			EntityDamageEvent cause) {
-		Player p = ArenaPlayer.getLastDamagingPlayer(cause);
+		Player p = ArenaPlayer.getLastDamagingPlayer(cause, player);
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
 			getKills().put(player.getName(), 0);

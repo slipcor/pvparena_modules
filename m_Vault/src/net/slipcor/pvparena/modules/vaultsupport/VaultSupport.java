@@ -37,7 +37,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.0.3.164";
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class VaultSupport extends ArenaModule {
 			}
 
 			economy.withdrawPlayer(player.getName(), amount);
-			arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
+			arena.msg(player, Language.parse(MSG.MODULE_VAULT_JOINPAY, args[0]));
 			getPlayerJoinMap().put(player.getName(), amount);
 			commitCommand(player, null);
 		}
@@ -415,7 +415,7 @@ public class VaultSupport extends ArenaModule {
 	
 	public void parsePlayerDeath(Player p,
 			EntityDamageEvent cause) {
-		killreward(p,ArenaPlayer.getLastDamagingPlayer(cause));
+		killreward(p,ArenaPlayer.getLastDamagingPlayer(cause, p));
 	}
 
 	protected void pay(HashSet<String> result) {
