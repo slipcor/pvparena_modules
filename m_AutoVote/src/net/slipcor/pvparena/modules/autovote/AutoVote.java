@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -32,7 +34,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.144";
+		return "v1.0.3.164";
 	}
 	
 	@Override
@@ -67,10 +69,19 @@ public class AutoVote extends ArenaModule {
 				return;
 			}
 			
-			for (Player p : Bukkit.getOnlinePlayers()) {
+			online: for (Player p : Bukkit.getOnlinePlayers()) {
 				if (p == null) {
 					continue;
 				}
+				
+				for (Team team : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
+					for (OfflinePlayer player : team.getPlayers()) {
+						if (player.getName().equals(p.getName())) {
+							continue online;
+						}
+					}
+				}
+				
 				Arena.pmsg(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
 			}
 			return;
