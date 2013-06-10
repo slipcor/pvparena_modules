@@ -25,7 +25,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.2.146";
+		return "v1.0.3.164";
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class AnnouncementManager extends ArenaModule {
 				MSG.FIGHT_KILLED_BY,
 				player.getName(),
 				arena.parseDeathCause(player, cause.getCause(),
-						ArenaPlayer.getLastDamagingPlayer(cause))));
+						ArenaPlayer.getLastDamagingPlayer(cause, player))));
 	}
 
 	@Override
