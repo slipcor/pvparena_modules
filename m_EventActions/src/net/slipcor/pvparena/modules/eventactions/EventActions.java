@@ -11,11 +11,13 @@ import org.bukkit.entity.Player;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
@@ -29,7 +31,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.2.146";
+		return "v1.0.3.164";
 	}
 	
 	@Override
@@ -80,6 +82,19 @@ public class EventActions extends ArenaModule {
 					item = item.replace("%team%", aplayer.getArenaTeam().getName());
 					item = item.replace("%color%", aplayer.getArenaTeam().getColor().toString());
 				}
+			}
+			
+			if (item.contains("%players%")) {
+				String[] players = new String[arena.getFighters().size()];
+				int pos = 0;
+				
+				for (ArenaTeam team : arena.getTeams()) {
+					for (ArenaPlayer player : team.getTeamMembers()) {
+						players[pos++] = team.colorizePlayer(player.get());
+					}
+				}
+				item = item.replace("%players%", StringParser.joinArray(players, ChatColor.RESET + ", "));
+
 			}
 			
 			item = item.replace("%arena%", a.getName());
