@@ -4,19 +4,77 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.managers.SpawnManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class RespawnRelay extends ArenaModule {
+	public class RelayListener implements Listener {
+		@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+		public void onAsyncChat(AsyncPlayerChatEvent event) {
+			ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
+			
+			if (player.getArena() == null) {
+				return;
+			}
+			
+			RespawnRelay module = null;
+			
+			for (ArenaModule mod : player.getArena().getMods()) {
+				if (mod.getName().equals("RespawnRelay")) {
+					module = (RespawnRelay) mod;
+					break;
+				}
+			}
+			
+			if (module == null || !player.getArena().getArenaConfig().getBoolean(CFG.MODULES_RESPAWNRELAY_CHOOSESPAWN)) {
+				return;
+			}
+			
+			if (!module.runnerMap.containsKey(player.getName())) {
+				return;
+			}
+			
+			event.setCancelled(true);
+			
+			Map<String, PALocation> map = SpawnManager.getSpawnMap(player.getArena(), event.getMessage());
+			
+			if (map.size() < 1) {
+				return;
+			}
+			
+			int pos = (new Random()).nextInt(map.size());
+			
+			for (String s : map.keySet()) {
+				if (--pos < 0) {
+					overrideMap.put(player.getName(), s);
+					return;
+				}
+			}
+
+			overrideMap.put(player.getName(), event.getMessage());
+		}
+	}
+
 	protected Map<String, BukkitRunnable> runnerMap;
+	protected Map<String, String> overrideMap = new HashMap<String, String>();
+	private static Listener listener = null;
 	
 	public RespawnRelay() {
 		super("RespawnRelay");
@@ -24,11 +82,16 @@ public class RespawnRelay extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.60";
+		return "v1.0.6.192";
 	}
 	
 	@Override
 	public String checkForMissingSpawns(Set<String> list) {
+		if (listener == null) {
+			listener = new RelayListener();
+			Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
+		}
+		
 		return list.contains("relay")?null:"relay not set";
 	}
 	
