@@ -34,7 +34,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.3.164";
+		return "v1.0.6.200";
 	}
 	
 	@Override
@@ -54,6 +54,21 @@ public class AutoVote extends ArenaModule {
 			return res;
 		}
 		
+		if (arena.getArenaConfig().getBoolean(CFG.PERMS_JOINWITHSCOREBOARD)) {
+			return res;
+		}
+		
+		Player p = (Player) sender;
+
+		for (Team team : p.getScoreboard().getTeams()) {
+			for (OfflinePlayer player : team.getPlayers()) {
+				if (player.getName().equals(p.getName())) {
+					res.setError(this, Language.parse(MSG.ERROR_COMMAND_BLOCKED, "You already have a scoreboard!"));
+					return res;
+				}
+			}
+		}
+		
 		return res;
 	}
 
@@ -61,29 +76,24 @@ public class AutoVote extends ArenaModule {
 	public void commitCommand(CommandSender sender, String[] args) {
 
 		if (args[0].startsWith("vote")) {
+			
+			if (!arena.getArenaConfig().getBoolean(CFG.PERMS_JOINWITHSCOREBOARD)) {
+				Player p = (Player) sender;
+
+				for (Team team : p.getScoreboard().getTeams()) {
+					for (OfflinePlayer player : team.getPlayers()) {
+						if (player.getName().equals(p.getName())) {
+							return;
+						}
+					}
+				}
+			}
+			
+			
 
 			votes.put(sender.getName(), arena.getName());
 			Arena.pmsg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
 			
-			if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
-				return;
-			}
-			
-			online: for (Player p : Bukkit.getOnlinePlayers()) {
-				if (p == null) {
-					continue;
-				}
-				
-				for (Team team : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
-					for (OfflinePlayer player : team.getPlayers()) {
-						if (player.getName().equals(p.getName())) {
-							continue online;
-						}
-					}
-				}
-				
-				Arena.pmsg(p, Language.parse(MSG.MODULE_AUTOVOTE_PLAYERVOTED, arena.getName(), sender.getName()));
-			}
 			return;
 		} else if (args[0].equals("votestop")) {
 			if (vote != null) {
