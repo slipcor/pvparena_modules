@@ -4,15 +4,22 @@ package net.slipcor.pvparena.modules.vaultsupport;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
@@ -21,15 +28,19 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.events.PAPlayerClassChangeEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 
-public class VaultSupport extends ArenaModule {
+public class VaultSupport extends ArenaModule implements Listener {
 
 	private static Economy economy = null;
+	private static Permission permission = null;
 	private HashMap<String, Double> playerBetMap = null;
 	private HashMap<String, Double> playerJoinMap = null;
 	private double pot = 0;
+	
+	private static Set<Arena> listening = new HashSet<Arena>();
 
 	public VaultSupport() {
 		super("Vault");
@@ -37,7 +48,7 @@ public class VaultSupport extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.3.164";
+		return "v1.0.4.184";
 	}
 
 	@Override
@@ -131,13 +142,14 @@ public class VaultSupport extends ArenaModule {
 						Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy.format(amount)));
 				return;
 			}
+			
+			double maxBet = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET);
 
 			if (amount < arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MINIMUMBET)
-					|| (amount > arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))) {
+					|| (maxBet > 0.01 && amount > maxBet)) {
 				// wrong amount!
 				arena.msg(player, Language.parse(MSG.ERROR_INVALID_VALUE,
-						economy.format(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MINIMUMBET)),
-						economy.format(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))));
+						economy.format(amount)));
 				return;
 			}
 
@@ -225,7 +237,10 @@ public class VaultSupport extends ArenaModule {
 	public void onThisLoad() {
 		if (economy == null && Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
 			setupEconomy();
+			setupPermission();
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 		}
+		
 	}
 	
 	/**
@@ -528,7 +543,44 @@ public class VaultSupport extends ArenaModule {
 		return (economy != null);
 	}
 	
+	private boolean setupPermission() {
+		RegisteredServiceProvider<Permission> permProvider = Bukkit
+				.getServicesManager().getRegistration(
+						net.milkbowl.vault.permission.Permission.class);
+		if (permProvider != null) {
+			permission = permProvider.getProvider();
+		}
+		
+		return (permission != null);
+	}
+	
 	public void timedEnd(HashSet<String> result) {
 		pay(result);
+	}
+	
+	@EventHandler
+	public void onClassChange(PAPlayerClassChangeEvent event) {
+		if (event.getArena().equals(arena)) {
+			
+			String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
+			
+			if (event.getArenaClass() == null || 
+					!autoClass.equals("none") ||
+					!event.getArenaClass().getName().equals(autoClass)) {
+				return; // class will be removed OR no autoClass OR no>T< autoClass
+			}
+			
+			String group = null;
+			
+			try {
+				group = permission.getPrimaryGroup(event.getPlayer());
+			} catch (Exception e) {
+				
+			}
+			ArenaClass aClass = arena.getClass("autoClass_"+group);
+			if (aClass != null) {
+				event.setArenaClass(aClass);
+			}
+		}
 	}
 }
