@@ -28,7 +28,6 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.listeners.EntityListener;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.ArenaManager;
-import net.slipcor.pvparena.managers.StatisticsManager;
 
 public class PowerupEffect {
 	protected boolean active = false;
@@ -241,7 +240,6 @@ public class PowerupEffect {
 								arena.parseDeathCause(player,
 										DamageCause.MAGIC, player)));
 					}
-					ap.getStatistics(arena).incStat(StatisticsManager.type.LOSSES);
 					// needed so player does not get found when dead
 					arena.removePlayer(player, "lose", true, false);
 					ap.getArenaTeam().remove(ap);
