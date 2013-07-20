@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.autovote;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -34,7 +35,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.6.200";
+		return "v1.0.6.203";
 	}
 	
 	@Override
@@ -203,7 +204,15 @@ public class AutoVote extends ArenaModule {
 
 		if (a == null) {
 			PVPArena.instance.getLogger().warning("Vote resulted in NULL for result '"+voted+"'!");
-			a = ArenaManager.getFirst();
+			
+			int pos = ((new Random()).nextInt(ArenaManager.getArenas().size()));
+			
+			for (Arena arena : ArenaManager.getArenas()) {
+				if (--pos < 0) {
+					a = arena;
+					break;
+				}
+			}
 		}
 
 		if (a == null) {
