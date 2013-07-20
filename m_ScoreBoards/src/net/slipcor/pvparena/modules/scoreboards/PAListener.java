@@ -1,5 +1,7 @@
 package net.slipcor.pvparena.modules.scoreboards;
 
+import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.events.*;
 import net.slipcor.pvparena.loadables.ArenaGoal;
 
@@ -27,6 +29,12 @@ public class PAListener implements Listener {
 
 	@EventHandler
 	public void onExit(PAExitEvent event) {
+		if (module.getArena() == null) {
+			Debug lala = new Debug(111);
+			lala.i("PAExitEvent");
+		} else {
+			module.getArena().getDebugger().i("PAExitEvent");
+		}
 		if (module.getArena() != null && module.getArena().equals(event.getArena()))
 			module.remove(event.getPlayer());
 	}
@@ -53,6 +61,12 @@ public class PAListener implements Listener {
 
 	@EventHandler
 	public void onLeave(PALeaveEvent event) {
+		if (module.getArena() == null) {
+			Debug lala = new Debug(111);
+			lala.i("PALeaveEvent");
+		} else {
+			module.getArena().getDebugger().i("PALeaveEvent");
+		}
 		if (module.getArena() != null && module.getArena().equals(event.getArena()))
 			module.remove(event.getPlayer());
 	}

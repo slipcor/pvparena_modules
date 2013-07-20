@@ -41,7 +41,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.142";
+		return "v1.0.4.172";
 	}
 
 	
@@ -95,6 +95,12 @@ public class ScoreBoards extends ArenaModule {
 			update(player.get());
 		}
 		block = false;
+		
+	}
+	
+	@Override
+	public void resetPlayer(Player player, boolean force) {
+		remove(player);
 	}
 
 	public void stop(Arena arena) {
@@ -120,26 +126,28 @@ public class ScoreBoards extends ArenaModule {
 	public void remove(Player player) {
 		// after runnable: remove player's scoreboard, remove player from scoreboard
 		// and update all players' scoreboards
-		if (arena.isFreeForAll()) {
-			try {
-				board.resetScores(player);
-			} catch (Exception e) {
-				
-			}
-		} else {
-			try {
-				ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-				if (ap.getArenaTeam() == null || obj == null) {
-					return;
+		arena.getDebugger().i("ScoreBoards: remove: " + player.getName(), player);
+		
+		try {
+			boolean found = false;
+			for (Team team : board.getTeams()) {
+				if (team.hasPlayer(player)) {
+					team.removePlayer(player);
+					board.resetScores(player);
+					found = true;
 				}
-				OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(ap.getArenaTeam().getName());
-				obj.getScore(op).setScore(PACheck.handleGetLives(arena, ap));
-			} catch (Exception e) {
-				e.printStackTrace();
-
 			}
+			if (!found) {
+				board.resetScores(player);
+			}
+		} catch (Exception e) {
+			
 		}
-		player.setScoreboard(playerBoards.get(player.getName()));
+		if (playerBoards.containsKey(player.getName())) {
+			player.setScoreboard(playerBoards.get(player.getName()));
+		} else {
+			player.setScoreboard(sbm.getMainScoreboard());
+		}
 	}
 
 	public void add(final Player player) {
@@ -179,6 +187,10 @@ public class ScoreBoards extends ArenaModule {
 							OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(team.getName());
 							bukkitTeam.addPlayer(op);
 							bukkitTeam.setAllowFriendlyFire(arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL));
+							
+							bukkitTeam.setCanSeeFriendlyInvisibles(
+									!arena.isFreeForAll()
+									);
 						} catch (Exception e) {
 							
 						}
