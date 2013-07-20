@@ -18,6 +18,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -31,11 +33,11 @@ public class PlayerFinder extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.56";
+		return "v1.0.4.177";
 	}
 	
 	@Override
-	public void onThisLoad() {
+	public void parseStart() {
 		if (!setup) {
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 			setup = true;
@@ -51,12 +53,19 @@ public class PlayerFinder extends ArenaModule implements Listener {
 			return;
 		}
 		
+		if (!ArenaPlayer.parsePlayer(player.getName()).getArena().equals(arena)) {
+			debug.i("Wrong arena!", player);
+			return;
+		}
+		
 		if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.COMPASS) {
 			debug.i("No compass!", player);
 			return;
 		}
 
-		List<Entity> list = player.getNearbyEntities(100, 100, 100);
+		int maxRadius = arena.getArenaConfig().getInt(CFG.MODULES_PLAYERFINDER_MAXRADIUS, 100);
+		
+		List<Entity> list = player.getNearbyEntities(maxRadius, maxRadius, maxRadius);
 		Map<Double, Player> sortMap = new HashMap<Double, Player>();
 
 		debug.i("ok!", player);
@@ -66,8 +75,15 @@ public class PlayerFinder extends ArenaModule implements Listener {
 				if (e == player) {
 					continue;
 				}
-				debug.i(((Player) e).getName(), player);
-				sortMap.put(player.getLocation().distance(e.getLocation()), (Player) e);
+				
+				Player innerPlayer = (Player) e;
+				
+				if (ArenaPlayer.parsePlayer(innerPlayer.getName()).getStatus() != Status.FIGHT) {
+					continue;
+				}
+				
+				debug.i(innerPlayer.getName(), player);
+				sortMap.put(player.getLocation().distance(e.getLocation()), innerPlayer);
 				
 			}
 		}
