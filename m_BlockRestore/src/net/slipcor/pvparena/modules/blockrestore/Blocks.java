@@ -24,11 +24,19 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EntityType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.material.Attachable;
 import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.util.BlockIterator;
 
-public class Blocks extends ArenaModule {
+public class Blocks extends ArenaModule implements Listener {
 	
 	public Blocks() {
 		super("BlockRestore");
@@ -38,6 +46,8 @@ public class Blocks extends ArenaModule {
 	public String version() {
 		return "v1.0.2.148";
 	}
+	
+	private boolean listening = false;
 
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
 	//public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
@@ -306,6 +316,10 @@ public class Blocks extends ArenaModule {
 	
 	@Override
 	public void parseStart() {
+		if (!listening) {
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+			listening = true;
+		}
 		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
 		
 		if (bfs.size() < 1) {
@@ -348,6 +362,41 @@ public class Blocks extends ArenaModule {
 			for (int y = min.getY(); y <= max.getY(); y++) {
 				for (int z = min.getZ(); z <= max.getZ(); z++) {
 					saveBlock(world.getBlockAt(x, y, z));
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void blockRedstone(BlockRedstoneEvent event) {
+		if (event.getNewCurrent() > event.getOldCurrent()) {
+			for (ArenaRegionShape shape : arena.getRegionsByType(RegionType.BATTLE)) {
+				if (shape.contains(new PABlockLocation(event.getBlock().getLocation()))) {
+					if (event.getBlock().getType() == Material.TNT) {
+						 saveBlock(event.getBlock());
+						 System.out.print("got you!");
+					}
+				}
+			}
+		}
+	}
+		
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void projectileHit(ProjectileHitEvent event) {
+		for (ArenaRegionShape shape : arena.getRegionsByType(RegionType.BATTLE)) {
+			if (shape.contains(new PABlockLocation(event.getEntity().getLocation()))) {
+				if (event.getEntityType() == EntityType.ARROW) {
+					Arrow arrow = (Arrow) event.getEntity();
+					if (arrow.getFireTicks() > 0) {
+						 BlockIterator bi = new BlockIterator(arrow.getWorld(), arrow.getLocation().toVector(), arrow.getVelocity(), 0, 2);
+						 while(bi.hasNext()) {
+							 Block block = bi.next();
+							 if (block.getType() == Material.TNT) {
+								 saveBlock(block);
+								 System.out.print("got you!");
+							 }
+						 }
+					}
 				}
 			}
 		}
