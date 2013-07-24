@@ -3,11 +3,13 @@ package net.slipcor.pvparena.modules.autovote;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import net.slipcor.pvparena.PVPArena;
@@ -35,7 +37,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.7.210";
+		return "v1.0.7.218";
 	}
 	
 	@Override
@@ -219,9 +221,9 @@ public class AutoVote extends ArenaModule {
 			return;
 		}
 
-		PAG_Join pj = new PAG_Join();
+		final PAG_Join pj = new PAG_Join();
 
-		HashSet<String> toTeleport = new HashSet<String>();
+		final Set<String> toTeleport = new HashSet<String>();
 		
 		if (a.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
@@ -234,25 +236,65 @@ public class AutoVote extends ArenaModule {
 		}
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvparena "+a.getName()+" enable");
 		
-		for (String pName : toTeleport) {
-			Player p = Bukkit.getPlayerExact(pName);
-			if (p == null) {
-				continue;
+		class TeleportLater extends BukkitRunnable {
+
+			@Override
+			public void run() {
+				for (String pName : toTeleport) {
+					Player p = Bukkit.getPlayerExact(pName);
+					toTeleport.remove(pName);
+					if (p == null) {
+						return;
+					}
+
+					pj.commit(a, p, new String[0]);
+					return;
+				}
+
+				new StartRunnable(a,
+						a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
+				class RunLater implements Runnable {
+
+					@Override
+					public void run() {
+						vote = null;
+					}
+					
+				}
+				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
+				this.cancel();
 			}
-
-			pj.commit(a, p, new String[0]);
+			
 		}
-
-		new StartRunnable(a,
-				a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
+		new TeleportLater().runTaskTimer(PVPArena.instance, 1L, 1L);
+		
+	}
+	
+	@Override
+	public void onThisLoad() {
+		boolean active = false;
+		
+		for (Arena arena : ArenaManager.getArenas()) {
+			for (ArenaModule mod : arena.getMods()) {
+				if (mod.getName().equals(this.getName())) {
+					active = true;
+					break;
+				}
+			}
+		}
+		
+		if (!active) {
+			return;
+		}
+		
 		class RunLater implements Runnable {
 
 			@Override
 			public void run() {
-				vote = null;
+				reset(false);
 			}
 			
 		}
-		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 200L);
 	}
 }
