@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.0.4.184";
+		return "v1.0.7.235";
 	}
 
 	@Override
@@ -267,6 +267,13 @@ public class VaultSupport extends ArenaModule implements Listener {
 	
 	@Override
 	public void giveRewards(Player player) {
+		final int minPlayTime = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_MINPLAYTIME);
+		
+		if (minPlayTime > arena.getPlayedSeconds()) {
+			debug.i("no rewards, game too short!");
+			return;
+		}
+		
 		debug.i("giving rewards to player " + player.getName(), player);
 		debug.i("", player);
 
