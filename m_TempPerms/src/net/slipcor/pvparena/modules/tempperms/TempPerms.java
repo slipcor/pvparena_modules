@@ -146,7 +146,7 @@ public class TempPerms extends ArenaModule {
 	@Override
 	public void lateJoin(Player player) {
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-		setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaClass().getName()));
+		setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaTeam().getName()));
 	}
 	
 	public boolean onPlayerInteract(PlayerInteractEvent event) {
