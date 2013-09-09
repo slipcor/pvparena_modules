@@ -46,12 +46,12 @@ public class BattlefieldManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.8.257";
+		return "v1.0.8.258";
 	}
 
 	@Override
 	public boolean checkCommand(String s) {
-		return s.equals("!bm") || s.startsWith("battlefieldm");
+		return arena.getEveryone().size() < 1 && (s.equals("!bm") || s.startsWith("battlefieldm"));
 	}
 
 	@Override
