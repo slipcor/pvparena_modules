@@ -82,7 +82,7 @@ public class RespawnRelay extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.6.192";
+		return "v1.0.8.254";
 	}
 	
 	@Override
@@ -128,7 +128,7 @@ public class RespawnRelay extends ArenaModule {
 			drops = new ArrayList<ItemStack>();
 		}
 		
-		arena.tpPlayerToCoordName(ap.get(), "relay");
+		SpawnManager.respawn(arena, ap, "relay");
 		arena.unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 		
 		if (getRunnerMap().containsKey(ap.getName())) {
