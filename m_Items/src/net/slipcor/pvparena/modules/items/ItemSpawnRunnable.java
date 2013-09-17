@@ -6,6 +6,7 @@ import java.util.Set;
 import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.SpawnManager;
@@ -29,15 +30,16 @@ public class ItemSpawnRunnable implements Runnable {
 	@Override
 	public void run() {
 		int i = -1;
-		Set<PALocation> spawns = SpawnManager.getSpawns(this.i.getArena(), "item");
-		for (PALocation loc : spawns) {
+		Set<PASpawn> spawns = SpawnManager.getPASpawnsStartingWith(this.i.getArena(), "item");
+		for (PASpawn loc : spawns) {
 			if (i != -1) {
 				i--;
 			} else {
 				i = (new Random()).nextInt(spawns.size());
 			}
 			if (i <= 0) {
-				loc.toLocation().getWorld().dropItemNaturally(loc.toLocation(), items[(new Random()).nextInt(items.length)]);
+				loc.getLocation().toLocation().getWorld().dropItemNaturally(
+						loc.getLocation().toLocation(), items[(new Random()).nextInt(items.length)]);
 				return;
 			}
 		}
