@@ -24,7 +24,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.58";
+		return "v1.0.8.267";
 	}
 	
 	private List<String> playerList = null;
@@ -141,6 +141,11 @@ public class LateLounge extends ArenaModule {
 			playerList = new ArrayList<String>();
 		}
 		return playerList;
+	}
+	
+	@Override
+	public boolean hasSpawn(String name) {
+		return playerList.contains(name);
 	}
 	
 	@Override
