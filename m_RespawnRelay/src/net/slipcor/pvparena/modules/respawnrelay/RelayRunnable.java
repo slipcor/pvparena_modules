@@ -1,28 +1,19 @@
 package net.slipcor.pvparena.modules.respawnrelay;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
-import net.slipcor.pvparena.classes.PALocation;
-import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.runnables.ArenaRunnable;
 import net.slipcor.pvparena.runnables.InventoryRefillRunnable;
-import net.slipcor.pvparena.runnables.RespawnRunnable;
+
+import org.bukkit.inventory.ItemStack;
 
 public class RelayRunnable extends ArenaRunnable {
 	private Arena a;
@@ -44,7 +35,8 @@ public class RelayRunnable extends ArenaRunnable {
 	protected void commit() {
 		debug.i("RelayRunnable commiting", ap.getName());
 		new InventoryRefillRunnable(a, ap.get(), drops);
-		SpawnManager.respawn(a,  ap, mod.overrideMap.get(ap.getName()));
+		String spawn = mod.overrideMap.get(ap.getName());
+		SpawnManager.respawn(a,  ap, spawn);
 		a.unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 		ap.setStatus(Status.FIGHT);
 		mod.getRunnerMap().remove(ap.getName());
