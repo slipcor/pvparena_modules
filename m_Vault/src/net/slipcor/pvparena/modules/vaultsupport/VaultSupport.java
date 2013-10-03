@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.0.7.235";
+		return "v1.0.9.283";
 	}
 
 	@Override
@@ -112,6 +112,13 @@ public class VaultSupport extends ArenaModule implements Listener {
 			return;
 
 		if (args[0].equalsIgnoreCase("bet")) {
+			
+			int maxTime = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_BETTIME);
+			if (maxTime > 0 && maxTime > arena.getPlayedSeconds()) {
+				arena.msg(player, Language.parse(MSG.ERROR_INVALID_VALUE,
+						"2l8"));
+				return;
+			}
 
 			Player p = Bukkit.getPlayer(args[1]);
 			if (p != null) {
