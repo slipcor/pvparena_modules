@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegionShape;
 import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionShape;
@@ -28,7 +32,38 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.2.152";
+		return "v1.0.9.181";
+	}
+
+	@Override
+	public boolean checkCommand(String s) {
+		return s.equals("!cf") || s.startsWith("chestfiller");
+	}
+
+	@Override
+	public void commitCommand(CommandSender sender, String[] args) {
+		// !cf clear | clear inventory definitions
+		if (!PVPArena.hasAdminPerms(sender)
+				&& !(PVPArena.hasCreatePerms(sender, arena))) {
+			arena.msg(
+					sender,
+					Language.parse(MSG.ERROR_NOPERM,
+							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+			return;
+		}
+
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 1 })) {
+			return;
+		}
+		
+		if (!args[0].equals("clear")) {
+			return;
+		}
+		
+		arena.getArenaConfig().setManually("inventories", null);
+		arena.getArenaConfig().save();
+		
+		sender.sendMessage(Language.parse(MSG.MODULE_CHESTFILLER_CLEAR));
 	}
 	
 	@Override
