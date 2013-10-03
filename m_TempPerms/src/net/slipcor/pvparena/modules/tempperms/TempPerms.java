@@ -27,7 +27,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v0.10.3.0";
+		return "v1.0.9.279";
 	}
 	
 	@Override
@@ -144,7 +144,7 @@ public class TempPerms extends ArenaModule {
 	}
 	
 	@Override
-	public void lateJoin(Player player) {
+	public void parseJoin(CommandSender player, ArenaTeam team) {
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaTeam().getName()));
 	}
@@ -209,7 +209,7 @@ public class TempPerms extends ArenaModule {
 	public void resetPlayer(Player player, boolean force) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new ResetRunnable(this, player), 5L);
 	}
-	
+	/*
 	@Override
 	public void parseStart() {
 		HashMap<String, Boolean> mGlobal = getTempPerms(arena, "default");
@@ -220,5 +220,5 @@ public class TempPerms extends ArenaModule {
 				setPermissions(arena, ap, mGlobal, mTeam);
 			}
 		}
-	}
+	}*/
 }
