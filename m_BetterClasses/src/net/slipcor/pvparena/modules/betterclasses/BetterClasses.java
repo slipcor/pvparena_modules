@@ -38,7 +38,7 @@ public class BetterClasses extends ArenaModule {
 		return "v1.0.1.107";
 	}
 	
-	private final static int DURATION = 2400; // 2147000
+	private final static int DURATION = 2400; // 60000 => 2400
 	
 	private BukkitTask potionRunner = null;
 	
