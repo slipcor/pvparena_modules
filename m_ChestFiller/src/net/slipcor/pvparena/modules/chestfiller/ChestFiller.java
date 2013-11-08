@@ -11,9 +11,10 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
+import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
+import net.slipcor.pvparena.regions.CuboidRegion;
+import net.slipcor.pvparena.regions.SphericRegion;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.9.181";
+		return "v1.1.0.297";
 	}
 
 	@Override
@@ -139,9 +140,9 @@ public class ChestFiller extends ArenaModule {
 		int z;
 		List<String> result = new ArrayList<String>();
 		
-		for (ArenaRegionShape bfRegion : arena.getRegionsByType(RegionType.BATTLE)) {
-			PABlockLocation min = bfRegion.getMinimumLocation();
-			PABlockLocation max = bfRegion.getMaximumLocation();
+		for (ArenaRegion bfRegion : arena.getRegionsByType(RegionType.BATTLE)) {
+			PABlockLocation min = bfRegion.getShape().getMinimumLocation();
+			PABlockLocation max = bfRegion.getShape().getMaximumLocation();
 
 			debug.i("min: "+min.toString());
 			debug.i("max: "+max.toString());
@@ -149,7 +150,7 @@ public class ChestFiller extends ArenaModule {
 			World world = Bukkit.getWorld(max.getWorldName());
 
 
-			if (bfRegion.getShape().equals(RegionShape.CUBOID)) {
+			if (bfRegion.getShape() instanceof CuboidRegion) {
 				debug.i("cube!");
 
 				for (x = min.getX(); x <= max.getX(); x++) {
@@ -164,7 +165,7 @@ public class ChestFiller extends ArenaModule {
 						}
 					}
 				}
-			} else if (bfRegion.getShape().equals(RegionShape.SPHERIC)) {
+			} else if (bfRegion.getShape() instanceof SphericRegion) {
 				debug.i("sphere!");
 				for (x = min.getX(); x <= max.getX(); x++) {
 					for (y = min.getY(); y <= max.getY(); y++) {

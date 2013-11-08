@@ -9,7 +9,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegion;
 
 public class Walls extends ArenaModule {
 	WallsRunner runnable = null;
@@ -21,7 +21,7 @@ public class Walls extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.60";
+		return "v1.1.0.297";
 	}
 	
 	@Override
@@ -38,16 +38,16 @@ public class Walls extends ArenaModule {
 			mat = Material.SAND;
 		}
 		
-		for (ArenaRegionShape region : arena.getRegions()) {
+		for (ArenaRegion region : arena.getRegions()) {
 			if (region.getRegionName().toLowerCase().contains("wall")) {
 				final World world = region.getWorld();
-				final int x1 = region.getMinimumLocation().getX();
-				final int y1 = region.getMinimumLocation().getY();
-				final int z1 = region.getMinimumLocation().getZ();
+				final int x1 = region.getShape().getMinimumLocation().getX();
+				final int y1 = region.getShape().getMinimumLocation().getY();
+				final int z1 = region.getShape().getMinimumLocation().getZ();
 
-				final int x2 = region.getMaximumLocation().getX();
-				final int y2 = region.getMaximumLocation().getY();
-				final int z2 = region.getMaximumLocation().getZ();
+				final int x2 = region.getShape().getMaximumLocation().getX();
+				final int y2 = region.getShape().getMaximumLocation().getY();
+				final int z2 = region.getShape().getMaximumLocation().getZ();
 				
 				for (int a = x1; a<=x2; a++) {
 					for (int b = y1; b<=y2; b++) {
@@ -130,17 +130,17 @@ public class Walls extends ArenaModule {
 	}
 
 	public void removeWalls() {
-		for (ArenaRegionShape region : arena.getRegions()) {
+		for (ArenaRegion region : arena.getRegions()) {
 			
 			if (region.getRegionName().toLowerCase().contains("wall")) {
 				final World world = region.getWorld();
-				final int x1 = region.getMinimumLocation().getX();
-				final int y1 = region.getMinimumLocation().getY();
-				final int z1 = region.getMinimumLocation().getZ();
+				final int x1 = region.getShape().getMinimumLocation().getX();
+				final int y1 = region.getShape().getMinimumLocation().getY();
+				final int z1 = region.getShape().getMinimumLocation().getZ();
 
-				final int x2 = region.getMaximumLocation().getX();
-				final int y2 = region.getMaximumLocation().getY();
-				final int z2 = region.getMaximumLocation().getZ();
+				final int x2 = region.getShape().getMaximumLocation().getX();
+				final int y2 = region.getShape().getMaximumLocation().getY();
+				final int z2 = region.getShape().getMaximumLocation().getZ();
 
 				for (int a = x1; a<=x2; a++) {
 					for (int b = y1; b<=y2; b++) {

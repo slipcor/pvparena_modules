@@ -14,8 +14,8 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
+import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,7 +44,7 @@ public class Blocks extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.0.2.148";
+		return "v1.1.0.297";
 	}
 	
 	private boolean listening = false;
@@ -52,7 +52,7 @@ public class Blocks extends ArenaModule implements Listener {
 	public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
 	//public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
 	
-	private static HashMap<ArenaRegionShape, RestoreContainer> containers = new HashMap<ArenaRegionShape, RestoreContainer>();
+	private static HashMap<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
 
 	private static Debug debug = new Debug(24);
 	
@@ -238,7 +238,7 @@ public class Blocks extends ArenaModule implements Listener {
 	 */
 	public void restoreChests() {
 		debug.i("resetting chests");
-		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
+		Set<ArenaRegion> bfs = arena.getRegionsByType(RegionType.BATTLE);
 		
 		if (bfs.size() < 1) {
 			debug.i("no battlefield region, skipping restoreChests");
@@ -250,8 +250,8 @@ public class Blocks extends ArenaModule implements Listener {
 			return;
 		}
 		
-		for (ArenaRegionShape bfRegion : bfs) {
-			debug.i("resetting arena: " + bfRegion.getName());
+		for (ArenaRegion bfRegion : bfs) {
+			debug.i("resetting arena: " + bfRegion.getRegionName());
 
 			if (containers.get(bfRegion) != null) {
 				debug.i("container not null!");
@@ -297,7 +297,7 @@ public class Blocks extends ArenaModule implements Listener {
 	 *            the arena to save
 	 */
 	public void saveChests() {
-		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
+		Set<ArenaRegion> bfs = arena.getRegionsByType(RegionType.BATTLE);
 		
 		if (bfs.size() < 1) {
 			debug.i("no battlefield region, skipping saveChests");
@@ -309,7 +309,7 @@ public class Blocks extends ArenaModule implements Listener {
 			return;
 		}
 		
-		for (ArenaRegionShape bfRegion : bfs) {
+		for (ArenaRegion bfRegion : bfs) {
 			containers.get(bfRegion).saveChests();
 		}
 	}
@@ -320,25 +320,25 @@ public class Blocks extends ArenaModule implements Listener {
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 			listening = true;
 		}
-		Set<ArenaRegionShape> bfs = arena.getRegionsByType(RegionType.BATTLE);
+		Set<ArenaRegion> bfs = arena.getRegionsByType(RegionType.BATTLE);
 		
 		if (bfs.size() < 1) {
 			debug.i("no battlefield region, skipping restoreChests");
 			return;
 		}
 		
-		for (ArenaRegionShape region : bfs) {
+		for (ArenaRegion region : bfs) {
 			saveRegion(region);
 		}
 		
-		for(ArenaRegionShape r : arena.getRegions()) {
-			if (r.getName().startsWith("restore")) {
+		for(ArenaRegion r : arena.getRegions()) {
+			if (r.getRegionName().startsWith("restore")) {
 				saveRegion(r);
 			}
 		}
 	}
 
-	private void saveRegion(ArenaRegionShape region) {
+	private void saveRegion(ArenaRegion region) {
 		if (region == null) {
 			return;
 		}
@@ -349,12 +349,12 @@ public class Blocks extends ArenaModule implements Listener {
 		
 		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS) ||
 				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_HARD) &&
-				!region.getName().startsWith("restore"))) {
+				!region.getRegionName().startsWith("restore"))) {
 			return;
 		}
 
-		PABlockLocation min = region.getMinimumLocation();
-		PABlockLocation max = region.getMaximumLocation();
+		PABlockLocation min = region.getShape().getMinimumLocation();
+		PABlockLocation max = region.getShape().getMaximumLocation();
 		
 		World world = Bukkit.getWorld(min.getWorldName());
 		
@@ -370,8 +370,8 @@ public class Blocks extends ArenaModule implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void blockRedstone(BlockRedstoneEvent event) {
 		if (event.getNewCurrent() > event.getOldCurrent()) {
-			for (ArenaRegionShape shape : arena.getRegionsByType(RegionType.BATTLE)) {
-				if (shape.contains(new PABlockLocation(event.getBlock().getLocation()))) {
+			for (ArenaRegion shape : arena.getRegionsByType(RegionType.BATTLE)) {
+				if (shape.getShape().contains(new PABlockLocation(event.getBlock().getLocation()))) {
 					if (event.getBlock().getType() == Material.TNT) {
 						 saveBlock(event.getBlock());
 						 System.out.print("got you!");
@@ -383,8 +383,8 @@ public class Blocks extends ArenaModule implements Listener {
 		
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void projectileHit(ProjectileHitEvent event) {
-		for (ArenaRegionShape shape : arena.getRegionsByType(RegionType.BATTLE)) {
-			if (shape.contains(new PABlockLocation(event.getEntity().getLocation()))) {
+		for (ArenaRegion shape : arena.getRegionsByType(RegionType.BATTLE)) {
+			if (shape.getShape().contains(new PABlockLocation(event.getEntity().getLocation()))) {
 				if (event.getEntityType() == EntityType.ARROW) {
 					Arrow arrow = (Arrow) event.getEntity();
 					if (arrow.getFireTicks() > 0) {

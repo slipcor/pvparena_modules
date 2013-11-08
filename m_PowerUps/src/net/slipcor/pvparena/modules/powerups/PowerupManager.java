@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
@@ -35,8 +36,8 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
+import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
 
 public class PowerupManager extends ArenaModule implements Listener  {
 
@@ -57,7 +58,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v1.0.6.210";
+		return "v1.1.0.297";
 	}
 
 	/**
@@ -169,11 +170,11 @@ public class PowerupManager extends ArenaModule implements Listener  {
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
 			dropItemOnSpawn(item);
 		} else {
-			Set<ArenaRegionShape> ars = arena.getRegionsByType(RegionType.BATTLE);
-			for (ArenaRegionShape ar : ars) {
+			Set<ArenaRegion> ars = arena.getRegionsByType(RegionType.BATTLE);
+			for (ArenaRegion ar : ars) {
 				
-				PABlockLocation min = ar.getMinimumLocation();
-				PABlockLocation max = ar.getMaximumLocation();
+				PABlockLocation min = ar.getShape().getMinimumLocation();
+				PABlockLocation max = ar.getShape().getMaximumLocation();
 				
 				Random r = new Random();
 
@@ -265,10 +266,17 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	 */
 	protected void dropItemOnSpawn(Material item) {
 		debug.i("calculating item spawn location");
-		Location aim = SpawnManager.getCoords(arena, "powerup").add(0, 1, 0).toLocation();
-
-		debug.i("dropping item on spawn: " + aim.toString());
-		Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1));
+		Set<PABlock> blocks = SpawnManager.getPABlocksContaining(arena, "powerup");
+		int pos = (new Random()).nextInt(blocks.size());
+		for (PABlock block : blocks) {
+			if (--pos > 0) {
+				continue;
+			}
+			Location aim = block.getLocation().toLocation().add(0, 1, 0);
+			debug.i("dropping item on spawn: " + aim.toString());
+			Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1));
+			break;
+		}
 
 	}
 

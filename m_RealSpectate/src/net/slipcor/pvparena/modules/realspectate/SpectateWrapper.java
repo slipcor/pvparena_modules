@@ -2,14 +2,11 @@ package net.slipcor.pvparena.modules.realspectate;
 
 import java.util.HashSet;
 
-import net.minecraft.server.v1_4_6.EntityPlayer;
-import net.minecraft.server.v1_4_6.Packet16BlockItemSwitch;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.managers.InventoryManager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -32,6 +29,7 @@ public class SpectateWrapper {
 			class LaterRun implements Runnable {
 				@Override
 				public void run() {
+					double health = suspect.getHealth();
 					s.setHealth(suspect.getHealth()>0?suspect.getHealth():1);
 
 					InventoryManager.clearInventory(s);
@@ -116,12 +114,12 @@ public class SpectateWrapper {
 	}
 
 	public void selectItem(int newSlot) {
-		
+		/*
 		for (Player p : spectators) {
 			CraftPlayer cp = (CraftPlayer) p;
 			EntityPlayer player = (EntityPlayer) cp.getHandle();
 			player.playerConnection.sendPacket(new Packet16BlockItemSwitch(newSlot));
-		}
+		}*/
 	}
 
 	public void stopSpectating() {

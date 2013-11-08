@@ -25,7 +25,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.7.219";
+		return "v1.1.0.297";
 	}
 
 	@Override

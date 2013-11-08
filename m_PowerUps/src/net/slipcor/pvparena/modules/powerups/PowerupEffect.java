@@ -185,7 +185,7 @@ public class PowerupEffect {
 			if (v <= chance) {
 				EntityDamageByEntityEvent reflectEvent = new EntityDamageByEntityEvent(
 						defender, attacker, event.getCause(),
-						(int) Math.round(event.getDamage() * factor));
+						Math.round(event.getDamage() * factor));
 				(new EntityListener()).onEntityDamageByEntity(reflectEvent);
 			} // else: chance fail :D
 		} else if (this.type == PowerupType.IGNITE) {

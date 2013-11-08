@@ -18,18 +18,19 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.StringParser;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.regions.CuboidRegion;
+import net.slipcor.pvparena.regions.SphericRegion;
 
 public class RestoreContainer {
 	private Blocks blocks;
-	private ArenaRegionShape bfRegion;
+	private ArenaRegion bfRegion;
 
 	private HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
 	private HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
 	private HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
 
-	public RestoreContainer(Blocks b, ArenaRegionShape r) {
+	public RestoreContainer(Blocks b, ArenaRegion r) {
 		blocks = b;
 		bfRegion = r;
 	}
@@ -90,8 +91,8 @@ public class RestoreContainer {
 		int y;
 		int z;
 		
-		PABlockLocation min = bfRegion.getMinimumLocation();
-		PABlockLocation max = bfRegion.getMaximumLocation();
+		PABlockLocation min = bfRegion.getShape().getMinimumLocation();
+		PABlockLocation max = bfRegion.getShape().getMaximumLocation();
 
 		debug.i("min: "+min.toString());
 		debug.i("max: "+max.toString());
@@ -100,7 +101,7 @@ public class RestoreContainer {
 
 		List<String> result = new ArrayList<String>();
 
-		if (bfRegion.getShape().equals(RegionShape.CUBOID)) {
+		if (bfRegion.getShape() instanceof CuboidRegion) {
 			debug.i("cube!");
 
 			for (x = min.getX(); x <= max.getX(); x++) {
@@ -115,7 +116,7 @@ public class RestoreContainer {
 					}
 				}
 			}
-		} else if (bfRegion.getShape().equals(RegionShape.SPHERIC)) {
+		} else if (bfRegion.getShape() instanceof SphericRegion) {
 			debug.i("sphere!");
 			for (x = min.getX(); x <= max.getX(); x++) {
 				for (y = min.getY(); y <= max.getY(); y++) {

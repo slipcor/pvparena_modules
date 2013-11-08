@@ -6,8 +6,8 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
+import net.slipcor.pvparena.loadables.ArenaRegion;
+import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -111,10 +111,10 @@ public class Announcement {
 	 */
 	private static void send(Arena a, Player p, String message) {
 		if (a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS) > 0) {
-			Set<ArenaRegionShape> bfs = a
+			Set<ArenaRegion> bfs = a
 					.getRegionsByType(RegionType.BATTLE);
-			for (ArenaRegionShape ars : bfs) {
-				if (ars.tooFarAway(
+			for (ArenaRegion ars : bfs) {
+				if (ars.getShape().tooFarAway(
 						a.getArenaConfig().getInt(
 								CFG.MODULES_ANNOUNCEMENTS_RADIUS),
 						p.getLocation())) {

@@ -12,7 +12,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
-import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
@@ -20,7 +20,8 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
+import net.slipcor.pvparena.loadables.ArenaRegion;
+
 
 public class EventActions extends ArenaModule {
 	private boolean setup = false;
@@ -31,7 +32,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.3.164";
+		return "v1.1.0.297";
 	}
 	
 	@Override
@@ -148,18 +149,19 @@ public class EventActions extends ArenaModule {
 			} else if (split[0].equalsIgnoreCase("abrc")) {
 				arena.broadcast(split[1]);
 			} else if (split[0].equalsIgnoreCase("clear")) {
-				ArenaRegionShape ars = arena.getRegion(split[1]);
+				ArenaRegion ars = arena.getRegion(split[1]);
 				if (ars == null && "all".equals(split[1])) {
-					for (ArenaRegionShape region : arena.getRegions()) {
+					for (ArenaRegion region : arena.getRegions()) {
 						region.removeEntities();
 					}
 				} else if (ars != null) {
 					ars.removeEntities();
 				}
 			} else if (split[0].equalsIgnoreCase("power")) {
-				PABlockLocation loc = new PABlockLocation(SpawnManager.getCoords(a, split[1]).toLocation());
+				for (PABlock loc : SpawnManager.getPABlocksContaining(a, split[1]) ) {
 				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new EADelay(loc), 1L);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new EADelay(loc.getLocation()), 1L);
+				}
 				
 			} else if (split[0].equalsIgnoreCase("msg") && p != null) {
 				p.sendMessage(split[1]);
