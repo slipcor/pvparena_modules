@@ -4,8 +4,6 @@ package net.slipcor.pvparena.modules.vaultsupport;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -18,7 +16,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
@@ -28,6 +25,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.events.PAPlayerClassChangeEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaModuleManager;
@@ -39,8 +37,6 @@ public class VaultSupport extends ArenaModule implements Listener {
 	private HashMap<String, Double> playerBetMap = null;
 	private HashMap<String, Double> playerJoinMap = null;
 	private double pot = 0;
-	
-	private static Set<Arena> listening = new HashSet<Arena>();
 
 	public VaultSupport() {
 		super("Vault");
@@ -48,7 +44,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.0.9.283";
+		return "v1.1.0.307";
 	}
 
 	@Override
@@ -595,6 +591,68 @@ public class VaultSupport extends ArenaModule implements Listener {
 			if (aClass != null) {
 				event.setArenaClass(aClass);
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onGoalScore(PAGoalEvent event) {
+		
+		String lastTrigger = "";
+
+		if (event.getArena().equals(arena)) {
+			String[] contents = event.getContents();
+			/*
+			* content.length == 1
+			* * content[0] = "" => end!
+			* 
+			* content[X].contains(playerDeath) => "playerDeath:playerName"
+			* content[X].contains(playerKill) => "playerKill:playerKiller:playerKilled"
+			* content[X].contains(trigger) => "trigger:playerName" triggered a score
+			* content[X].equals(tank) => player is tank
+			* content[X].equals(infected) => player is infected
+			* content[X].equals(doesRespawn) => player will respawn
+			* content[X].contains(score) => "score:player:team:value"
+			*
+			*/
+			
+			for (String node : contents) {
+				if (node.contains("trigger")) {
+					lastTrigger = node.substring(8);
+					newReward(lastTrigger, "TRIGGER");
+				}
+				
+				if (node.contains("playerDeath")) {
+					newReward(node.substring(12), "DEATH");
+				}
+				
+				if (node.contains("playerKill")) {
+					String[] val = node.split(":");
+					newReward(val[1], "KILL");
+				}
+				
+				if (node.contains("score")) {
+					String[] val = node.split(":");
+					newReward(val[1], "SCORE", Integer.parseInt(val[3]));
+				}
+				
+				if (node.equals("")) {
+					newReward(lastTrigger, "WIN");
+				}
+			}
+			
+		}
+	}
+
+	private void newReward(String playerName, String rewardType) {
+		newReward(playerName, rewardType, 1);
+	}
+
+	private void newReward(String playerName, String rewardType, int amount) {
+		try {
+			economy.depositPlayer(playerName, arena.getArenaConfig().getDouble(
+					CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType), 0d));
+		} catch (Exception e) {
+			
 		}
 	}
 }

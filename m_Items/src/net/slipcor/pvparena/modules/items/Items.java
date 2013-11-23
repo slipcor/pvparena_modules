@@ -16,7 +16,7 @@ public class Items extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.8.265";
+		return "v1.1.0.298";
 	}
 	
 	@Override
@@ -39,10 +39,11 @@ public class Items extends ArenaModule {
 	@Override
 	public void parseStart() {
 		if (arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) > 0) {
+			Bukkit.getScheduler().cancelTask(id);
 			id = Bukkit.getScheduler()
 					.scheduleSyncRepeatingTask(
 							PVPArena.instance,
-							new ItemSpawnRunnable(this),
+							new ItemSpawnRunnable(arena, this),
 							arena.getArenaConfig().getInt(
 									CFG.MODULES_ITEMS_INTERVAL) * 20L,
 							arena.getArenaConfig().getInt(

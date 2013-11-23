@@ -32,7 +32,7 @@ public class MatchResultStats extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.8.265";
+		return "v1.1.0.298";
 	}
 	
 	@Override

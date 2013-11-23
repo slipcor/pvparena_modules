@@ -41,7 +41,7 @@ public class BetterGears extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.1.109";
+		return "v1.1.0.313";
 	}
 
 	@Override
@@ -228,10 +228,30 @@ public class BetterGears extends ArenaModule {
 		isArmor[0]
 				.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, s);
 
-		ap.get().getInventory().setHelmet(isArmor[0]);
-		ap.get().getInventory().setChestplate(isArmor[1]);
-		ap.get().getInventory().setLeggings(isArmor[2]);
-		ap.get().getInventory().setBoots(isArmor[3]);
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_HEAD) &&
+				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
+				ap.get().getInventory().getHelmet() != null &&
+				ap.get().getInventory().getHelmet().getType().name().contains("LEATHER"))) {
+			ap.get().getInventory().setHelmet(isArmor[0]);
+		}
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_CHEST) &&
+				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
+				ap.get().getInventory().getChestplate() != null &&
+				ap.get().getInventory().getChestplate().getType().name().contains("LEATHER"))) {
+			ap.get().getInventory().setChestplate(isArmor[1]);
+		}
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_LEG) &&
+				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
+				ap.get().getInventory().getLeggings() != null &&
+				ap.get().getInventory().getLeggings().getType().name().contains("LEATHER"))) {
+			ap.get().getInventory().setLeggings(isArmor[2]);
+		}
+		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_FOOT) &&
+				(!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
+				ap.get().getInventory().getBoots() != null &&
+				ap.get().getInventory().getBoots().getType().name().contains("LEATHER"))) {
+			ap.get().getInventory().setBoots(isArmor[3]);
+		}
 	}
 	
 	private Map<ArenaTeam, Short[]> getColorMap() {

@@ -12,6 +12,7 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -25,7 +26,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.0.302";
 	}
 
 	@Override
@@ -132,20 +133,28 @@ public class AnnouncementManager extends ArenaModule {
 
 		if (TeamManager.countPlayersInTeams(arena) < 2) {
 			Announcement.announce(arena, Announcement.type.ADVERT, Language
-					.parse(arena, CFG.MSG_STARTING, arena.getName()));
+					.parse(arena, CFG.MSG_STARTING, arena.getName()+
+							ChatColor.valueOf(arena.getArenaConfig().getString(
+							CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 		}
 
 		if (arena.isFreeForAll()) {
 			Announcement.announce(arena, Announcement.type.JOIN,
 					arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINED)
-							.replace("%1%", sender.getName()));
+							.replace("%1%", sender.getName()+
+									ChatColor.valueOf(arena.getArenaConfig().getString(
+											CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 		} else {
 			Announcement.announce(
 					arena,
 					Announcement.type.JOIN,
 					arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINEDTEAM)
-							.replace("%1%", sender.getName())
-							.replace("%2%", team.getColoredName()));
+							.replace("%1%", sender.getName()+
+									ChatColor.valueOf(arena.getArenaConfig().getString(
+											CFG.MODULES_ANNOUNCEMENTS_COLOR)))
+							.replace("%2%", team.getColoredName()+
+									ChatColor.valueOf(arena.getArenaConfig().getString(
+											CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 		}
 	}
 
@@ -153,13 +162,17 @@ public class AnnouncementManager extends ArenaModule {
 	public void parsePlayerLeave(Player player, ArenaTeam team) {
 		if (team == null) {
 			Announcement.announce(arena, Announcement.type.LOSER,
-					Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName()));
+					Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName()+
+							ChatColor.valueOf(arena.getArenaConfig().getString(
+							CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 		} else {
 			Announcement.announce(
 					arena,
 					Announcement.type.LOSER,
 					Language.parse(MSG.FIGHT_PLAYER_LEFT,
-							team.colorizePlayer(player)));
+							team.colorizePlayer(player)+
+							ChatColor.valueOf(arena.getArenaConfig().getString(
+							CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 		}
 	}
 

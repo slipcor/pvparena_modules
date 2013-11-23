@@ -49,6 +49,12 @@ public final class PVPData {
 				remove(player.getName(), !force);
 			}
 		}
+		
+		for (String playerName : arena.getPlayedPlayers()) {
+			if (startTimes.containsKey(playerName)) {
+				remove(playerName, force);
+			}
+		}
 		id = null;
 	}
 
@@ -61,6 +67,9 @@ public final class PVPData {
 	}
 
 	private void remove(String playerName, boolean winning) {
+		if (!startTimes.containsKey(playerName)) {
+			return;
+		}
 		final long playMillis = System.currentTimeMillis() - startTimes.get(playerName);
 		
 		if (id == null) {

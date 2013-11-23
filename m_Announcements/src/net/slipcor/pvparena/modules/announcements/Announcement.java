@@ -123,10 +123,7 @@ public class Announcement {
 			}
 		}
 		a.msg(p,
-				"§f[§a"
-						+ a.getName()
-						+ "§f] "
-						+ ChatColor.valueOf(a.getArenaConfig().getString(
+				ChatColor.valueOf(a.getArenaConfig().getString(
 								CFG.MODULES_ANNOUNCEMENTS_COLOR)) + message);
 	}
 
