@@ -11,7 +11,7 @@
     <name>PVP Arena Modules</name>
 
     <modules>
-        <module>m_Aftermatch</module>
+        <module>m_AfterMatch</module>
     </modules>
 	
     <build>
