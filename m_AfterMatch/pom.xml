@@ -7,7 +7,7 @@
         <version>1.1</version>
     </parent>
 	
-	<groupId>net.slipcor.pvparena.modules</groupId>
+	<groupId>net.slipcor.pa.modules</groupId>
 	<artifactId>aftermatch</artifactId>
 	<version>1.1</version>
 	<name>PVP Arena Modules - AfterMatch</name>
