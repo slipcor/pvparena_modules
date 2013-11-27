@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>net.slipcor.pvparena<</groupId>
+        <groupId>net.slipcor.pvparena</groupId>
         <artifactId>modules</artifactId>
         <version>1.1</version>
     </parent>
@@ -45,12 +45,12 @@
 	
     <build>
 		<defaultGoal>clean package install</defaultGoal>
-		<sourceDirectory>${basedir}/src</sourceDirectory>
+		<sourceDirectory>${basedir}/m_/AfterMatch/src</sourceDirectory>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
-				<directory>${basedir}/src</directory>
+				<directory>${basedir}/m_/AfterMatch/src</directory>
 				<includes>
 					<include>path.yml</include>
 				</includes>
@@ -76,12 +76,4 @@
             </plugins>
         </pluginManagement>
     </build>
-    <executions> 
- 		<execution> 
-        	<phase>install</phase> 
-      		<goals> 
-        		<goal>deploy</goal> 
-      		</goals> 
- 		</execution> 
-   </executions> 
 </project>
