@@ -1,10 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+    <parent>
+	    <groupId>net.slipcor.pvpa</groupId>
+	    <artifactId>modules</artifactId>
+	    <version>1.1</version>
+    </parent>
 	
-	<groupId>net.slipcor.pa.modules</groupId>
-	<artifactId>aftermatch</artifactId>
-	<version>1.1</version>
+	<artifactId>m_AfterMatch</artifactId>
+    <packaging>jar</packaging>
+    
 	<name>PVP Arena Modules - AfterMatch</name>
 
 	<repositories>
