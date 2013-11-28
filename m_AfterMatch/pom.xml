@@ -4,6 +4,7 @@
     <parent>
 	    <groupId>net.slipcor.pvpa</groupId>
 	    <artifactId>modules</artifactId>
+	    <version>1.1</version>
     </parent>
 	
 	<artifactId>m_aftermatch</artifactId>
@@ -45,6 +46,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
+		<finalName>m_aftermatch</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
