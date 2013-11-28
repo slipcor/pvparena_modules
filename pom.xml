@@ -38,6 +38,13 @@
         <module>m_RealSpectate</module>
         <module>m_RedStoneTriggers</module>
         <module>m_RespawnRelay</module>
+        <module>m_ScoreBoards</module>
+        <module>m_SpecialJoin</module>
+        <module>m_StartFreeze</module>
+        <module>m_TeamSizeRestrict</module>
+        <module>m_TempPerms</module>
+        <module>m_Turrets</module>
+        <module>m_Walls</module>
     </modules>
 	
     <build>
