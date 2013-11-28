@@ -26,7 +26,7 @@ public class TeamSizeRestrict extends ArenaModule {
 	@Override
 	public void parseJoin(final CommandSender sender, final ArenaTeam team) {
 		try {
-			int i = (int) arena.getArenaConfig().getUnsafe("modules.teamsize."+team.getName());
+			Integer i = Integer.parseInt(arena.getArenaConfig().getUnsafe("modules.teamsize."+team.getName()).toString());
 			if (team.getTeamMembers().size() > i) {
 				class RunLater implements Runnable {
 
