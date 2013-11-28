@@ -12,6 +12,7 @@
 
     <modules>
         <module>m_AfterMatch</module>
+        <module>m_Announcements</module>
     </modules>
 	
     <build>
