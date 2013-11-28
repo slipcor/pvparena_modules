@@ -13,6 +13,7 @@
     <modules>
         <module>m_AfterMatch</module>
         <module>m_Announcements</module>
+        <module>m_ArenaBoards</module>
     </modules>
 	
     <build>
