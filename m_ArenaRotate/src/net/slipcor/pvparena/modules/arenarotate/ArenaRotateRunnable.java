@@ -13,8 +13,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.loadables.ArenaRegionShape;
-import net.slipcor.pvparena.loadables.ArenaRegionShape.RegionType;
+import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.runnables.ArenaRunnable;
 
@@ -55,8 +54,8 @@ public class ArenaRotateRunnable extends ArenaRunnable {
 						Arena.pmsg(p, message);
 						continue playerssss;
 					}
-					for (ArenaRegionShape region : aaa.getRegionsByType(RegionType.JOIN)) {
-						if (region.contains(new PABlockLocation(p.getLocation()))) {
+					for (ArenaRegion region : aaa.getRegionsByType(RegionType.JOIN)) {
+						if (region.getShape().contains(new PABlockLocation(p.getLocation()))) {
 							Arena.pmsg(p, message);
 							continue playerssss;
 						}
