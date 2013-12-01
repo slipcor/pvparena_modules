@@ -17,10 +17,6 @@
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
 		</repository>
-		<repository>
-			<id>disguisecraft-repo</id>
-			<url>http://build.yu8.me:8080/plugin/repository/everything/</url>
-		</repository>
 	</repositories>
 
 	<dependencies>
@@ -38,21 +34,6 @@
             <type>jar</type>
             <scope>system</scope>
             <systemPath>${project.basedir}/../../../PVP Arena/lastStable/archive/target/pvparena-1.1.jar</systemPath>
-        </dependency>
-		<dependency>
-			<groupId>pgDev</groupId>
-			<artifactId>DisguiseCraft</artifactId>
-			<version>5.1</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-        <dependency>
-            <groupId>me.desmin88</groupId>
-            <artifactId>mobdisguise</artifactId>
-            <version>1.81</version>
-            <type>jar</type>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/MobDisguise.jar</systemPath>
         </dependency>
 	</dependencies>
 
