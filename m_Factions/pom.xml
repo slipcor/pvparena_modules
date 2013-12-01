@@ -46,7 +46,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<finalName>m_factions</finalName>
+		<finalName>pa_m_factions</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>

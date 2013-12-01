@@ -62,7 +62,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<finalName>m_colorteams</finalName>
+		<finalName>pa_m_colorteams</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>

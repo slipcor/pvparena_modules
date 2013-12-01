@@ -46,7 +46,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<finalName>m_tempperms</finalName>
+		<finalName>pa_m_tempperms</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>

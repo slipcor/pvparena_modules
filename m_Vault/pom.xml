@@ -56,7 +56,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<finalName>m_vault</finalName>
+		<finalName>pa_m_vault</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>

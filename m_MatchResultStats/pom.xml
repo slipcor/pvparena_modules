@@ -46,7 +46,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<finalName>m_matchresultstats</finalName>
+		<finalName>pa_m_matchresultstats</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>

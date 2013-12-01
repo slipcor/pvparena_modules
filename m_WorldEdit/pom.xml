@@ -57,7 +57,7 @@
     <build>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<finalName>m_WorldEdit</finalName>
+		<finalName>pa_m_WorldEdit</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
