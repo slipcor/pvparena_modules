@@ -599,7 +599,10 @@ public class VaultSupport extends ArenaModule implements Listener {
 		
 		String lastTrigger = "";
 
+		debug.i("catching GoalEvent in Vault!");
+		
 		if (event.getArena().equals(arena)) {
+			debug.i("it's us!");
 			String[] contents = event.getContents();
 			/*
 			* content.length == 1
@@ -644,13 +647,26 @@ public class VaultSupport extends ArenaModule implements Listener {
 	}
 
 	private void newReward(String playerName, String rewardType) {
+		debug.i("new Reward: " + playerName + " -> " + rewardType);
 		newReward(playerName, rewardType, 1);
 	}
 
 	private void newReward(String playerName, String rewardType, int amount) {
+		debug.i("new Reward: " + amount + "x "+ playerName + " -> " + rewardType);
 		try {
-			economy.depositPlayer(playerName, arena.getArenaConfig().getDouble(
-					CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType), 0d));
+			
+			double value = arena.getArenaConfig().getDouble(
+					CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType), 0d);
+			
+			double maybevalue = arena.getArenaConfig().getDouble(
+					CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType), -1d);
+
+			PVPArena.instance.getLogger().info("Giving "+economy.format(value)+" to "+playerName);
+			if (maybevalue < 0) {
+				PVPArena.instance.getLogger().warning("config value is not set: " + CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType).getNode());
+			}
+			
+			economy.depositPlayer(playerName, value);
 		} catch (Exception e) {
 			
 		}
