@@ -28,7 +28,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.329";
+		return "v1.1.0.331";
 	}
 	
 	@Override
@@ -134,10 +134,7 @@ public class CTManager extends ArenaModule {
 	public void updateName(Player player, ArenaTeam team) {
 		if (tagAPIenabled) {
 			try {
-				String backup = player.getDisplayName();
-				player.setDisplayName(team.colorizePlayer(player));
 				TagAPI.refreshPlayer(player);
-				player.setDisplayName(backup);
 			} catch (Exception e) {
 				
 			}

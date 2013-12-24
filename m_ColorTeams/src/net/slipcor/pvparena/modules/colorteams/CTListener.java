@@ -24,7 +24,7 @@ public class CTListener implements Listener {
 		
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName() );
 		
-		if (ap == null || ap.getArena() == null || !ap.getArena().getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+		if (ap == null || ap.getArena() == null) {
 			if (removals.contains(ap.getName())) {
 				event.setTag(ap.getName());
 			}
