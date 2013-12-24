@@ -40,7 +40,7 @@ public class PAWE extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.0.331";
 	}
 
 	@Override
@@ -174,6 +174,11 @@ public class PAWE extends ArenaModule {
 		} catch (MaxChangedBlocksException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public boolean needsBattleRegion() {
+		return true;
 	}
 	
 	@Override

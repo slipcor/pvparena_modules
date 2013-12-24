@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.0.331";
 	}
 
 	@Override
@@ -74,6 +74,11 @@ public class ChestFiller extends ArenaModule {
 				+ " | " +
 				"min: " + (Integer) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems"));
 		
+	}
+	
+	@Override
+	public boolean needsBattleRegion() {
+		return true;
 	}
 	
 	@Override

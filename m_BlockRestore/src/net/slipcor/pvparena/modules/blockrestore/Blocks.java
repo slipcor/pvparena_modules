@@ -44,7 +44,7 @@ public class Blocks extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.0.331";
 	}
 	
 	private boolean listening = false;
@@ -156,6 +156,11 @@ public class Blocks extends ArenaModule implements Listener {
 				+ " | offset " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET));
 	}
 	
+	@Override
+	public boolean needsBattleRegion() {
+		return true;
+	}
+
 	@Override
 	public void onEntityExplode(EntityExplodeEvent event) {
 		if (!arena.isLocked() &&

@@ -1,26 +1,10 @@
 package net.slipcor.pvparena.modules.bfman;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.ArenaClass;
-import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
@@ -29,7 +13,6 @@ import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -46,7 +29,7 @@ public class BattlefieldManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.0.8.258";
+		return "v1.1.0.331";
 	}
 
 	@Override
@@ -224,6 +207,11 @@ public class BattlefieldManager extends ArenaModule {
 		}
 		
 		return buff.toString();
+	}
+	
+	@Override
+	public boolean needsBattleRegion() {
+		return true;
 	}
 /*
 	@Override
@@ -441,7 +429,7 @@ public class BattlefieldManager extends ArenaModule {
 	private void printHelp(CommandSender sender) {
 		arena.msg(sender, "/pa [arenaname] !bg [teamname]  | show team color");
 		arena.msg(sender,
-				"/pa [arenaname] !bg [teamname] color §c<R> §a<G> §9<B>§r | set color");
+				"/pa [arenaname] !bg [teamname] color ï¿½c<R> ï¿½a<G> ï¿½9<B>ï¿½r | set color");
 		arena.msg(sender,
 				"/pa [arenaname] !bg [classname] | show protection level");
 		arena.msg(sender,

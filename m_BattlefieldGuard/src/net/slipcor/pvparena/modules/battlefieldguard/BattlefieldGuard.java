@@ -18,7 +18,7 @@ public class BattlefieldGuard extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.1.0.331";
 	}
 
 	@Override
@@ -37,5 +37,10 @@ public class BattlefieldGuard extends ArenaModule {
 	@Override
 	public boolean hasSpawn(String s) {
 		return s.equalsIgnoreCase("exit");
+	}
+	
+	@Override
+	public boolean needsBattleRegion() {
+		return true;
 	}
 }
