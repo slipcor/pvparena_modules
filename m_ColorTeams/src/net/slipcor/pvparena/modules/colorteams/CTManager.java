@@ -105,13 +105,15 @@ public class CTManager extends ArenaModule {
 			
 			player.setDisplayName(n);
 			
-			updateName(player);
 		}
+		updateName(player);
 	}
 	
 	@Override
 	public void unload(final Player player) {
-		player.setDisplayName(player.getName());
+		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+			player.setDisplayName(player.getName());
+		}
 		if (enabled) {
 			class TempRunner implements Runnable {
 
