@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -246,7 +247,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 					
 					Sign sign = (Sign) state;
 					
-					String line = (arena.isFightInProgress()?"§a":(arena.isLocked()?"§c":"§6")) + arena.getFighters().size();
+					String line = (arena.isFightInProgress()?ChatColor.GREEN.toString():(arena.isLocked()?ChatColor.RED.toString():ChatColor.GOLD.toString())) + arena.getFighters().size();
 					
 					final int maxPlayers = arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
 					

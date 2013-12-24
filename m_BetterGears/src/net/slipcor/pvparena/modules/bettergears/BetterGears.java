@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -41,7 +42,7 @@ public class BetterGears extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.0.313";
+		return "v1.1.0.329";
 	}
 
 	@Override
@@ -383,7 +384,7 @@ public class BetterGears extends ArenaModule {
 	private void printHelp(CommandSender sender) {
 		arena.msg(sender, "/pa [arenaname] !bg [teamname]  | show team color");
 		arena.msg(sender,
-				"/pa [arenaname] !bg [teamname] color §c<R> §a<G> §9<B>§r | set color");
+				"/pa [arenaname] !bg [teamname] color "+ChatColor.RED+"<R> "+ChatColor.GREEN+"<G> "+ChatColor.BLUE+"<B>"+ChatColor.RESET+" | set color");
 		arena.msg(sender,
 				"/pa [arenaname] !bg [classname] | show protection level");
 		arena.msg(sender,

@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.colorteams;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.327";
+		return "v1.1.0.329";
 	}
 	
 	@Override
@@ -100,7 +101,7 @@ public class CTManager extends ArenaModule {
 			} else {
 				n = team.getColorCodeString() + player.getName();
 			}
-			n = n.replaceAll("(&([a-f0-9]))", "�$2");
+			n = n.replaceAll("(&([a-f0-9]))", ChatColor.COLOR_CHAR+"$2");
 			
 			player.setDisplayName(n);
 			

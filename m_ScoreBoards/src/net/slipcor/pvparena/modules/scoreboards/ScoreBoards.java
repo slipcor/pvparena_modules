@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.4.172";
+		return "v1.1.0.329";
 	}
 
 	
@@ -209,7 +210,7 @@ public class ScoreBoards extends ArenaModule {
 					
 					obj = board.registerNewObjective("lives", "dummy"); //deathCount
 					
-					obj.setDisplayName("§aPVP Arena§f - §e" + arena.getName());
+					obj.setDisplayName(ChatColor.GREEN+"PVP Arena"+ChatColor.RESET+" - " + ChatColor.YELLOW + arena.getName());
 					obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 					
 					update(player);
