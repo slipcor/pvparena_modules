@@ -20,7 +20,7 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class CTManager extends ArenaModule {
-	protected static boolean enabled = false;
+	protected static boolean tagAPIenabled = false;
 
 	public CTManager() {
 		super("ColorTeams");
@@ -80,33 +80,33 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public void configParse(YamlConfiguration config) {
-		if (enabled) {
+		if (tagAPIenabled) {
 			return;
 		}
 		
 		if (Bukkit.getServer().getPluginManager().getPlugin("TagAPI") != null) {
 			Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
 			Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_COLORTEAMS_TAGAPI));
+			tagAPIenabled = true;
 		}
-		enabled = true;
 	}
 
 	@Override
 	public void tpPlayerToCoordName(Player player, String place) {
+		ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
-			ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 			String n;
 			if (team == null) {
 				n = player.getName();
 			} else {
 				n = team.getColorCodeString() + player.getName();
 			}
-			n = n.replaceAll("(&([a-f0-9]))", ChatColor.COLOR_CHAR+"$2");
+			n = ChatColor.translateAlternateColorCodes('&', n);
 			
 			player.setDisplayName(n);
 			
 		}
-		updateName(player);
+		updateName(player, team);
 	}
 	
 	@Override
@@ -114,16 +114,12 @@ public class CTManager extends ArenaModule {
 		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
 			player.setDisplayName(player.getName());
 		}
-		if (enabled) {
+		if (tagAPIenabled) {
 			class TempRunner implements Runnable {
 
 				@Override
 				public void run() {
-					try {
-						TagAPI.refreshPlayer(player);
-					} catch (Exception e) {
-						
-					}
+					updateName(player, null);
 				}
 			}
 			try {
@@ -135,8 +131,16 @@ public class CTManager extends ArenaModule {
 		}
 	}
 	
-	public void updateName(Player player) {
-		if (enabled)
-			TagAPI.refreshPlayer(player);
+	public void updateName(Player player, ArenaTeam team) {
+		if (tagAPIenabled) {
+			try {
+				String backup = player.getDisplayName();
+				player.setDisplayName(team.colorizePlayer(player));
+				TagAPI.refreshPlayer(player);
+				player.setDisplayName(backup);
+			} catch (Exception e) {
+				
+			}
+		}
 	}
 }
