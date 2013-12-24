@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.IllegalPluginAccessException;
 import org.kitteh.tag.TagAPI;
 
 import net.slipcor.pvparena.PVPArena;
@@ -26,7 +27,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.1.0.327";
 	}
 	
 	@Override
@@ -99,7 +100,7 @@ public class CTManager extends ArenaModule {
 			} else {
 				n = team.getColorCodeString() + player.getName();
 			}
-			n = n.replaceAll("(&([a-f0-9]))", "§$2");
+			n = n.replaceAll("(&([a-f0-9]))", "ï¿½$2");
 			
 			player.setDisplayName(n);
 			
@@ -122,8 +123,12 @@ public class CTManager extends ArenaModule {
 					}
 				}
 			}
-			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunner()
+			try {
+				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunner()
 				, 20*3L);
+			} catch (IllegalPluginAccessException e) {
+				
+			}
 		}
 	}
 	
