@@ -39,7 +39,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.331";
+		return "v1.1.0.332";
 	}
 	
 	@Override
@@ -153,7 +153,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 			selections.remove(event.getPlayer().getName());
 			a.msg(event.getPlayer(),
 					Language.parse(MSG.MODULE_SPECIALJOIN_DONE, place));
-
+			event.setCancelled(true);
 			update(a);
 			return;
 		}
@@ -174,6 +174,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
 			debug.i("places does not contain!", event.getPlayer());
 			return;
 		}
+		
+		event.setCancelled(true);
 
 		PAG_Join j = new PAG_Join();
 		
@@ -194,7 +196,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
 				j.commit(places.get(find), event.getPlayer(), arr);
 			}
 			
-		}	}
+		}
+	}
 	
 	@Override
 	public void parseJoin(CommandSender sender, ArenaTeam team) {
