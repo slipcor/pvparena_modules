@@ -41,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.334";
+		return "v1.1.0.335";
 	}
 	
 	@Override
@@ -103,7 +103,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		debug.i("PIA!", event.getPlayer());
 
 		
-		if (PAA_Edit.activeEdits.containsValue(arena) || PAA_Setup.activeSetups.containsValue(arena)) {
+		if (PAA_Edit.activeEdits.containsKey(event.getPlayer().getName()) || 
+				PAA_Setup.activeSetups.containsKey(event.getPlayer().getName())) {
 			debug.i("edit mode. OUT!", event.getPlayer());
 			return;
 		}
