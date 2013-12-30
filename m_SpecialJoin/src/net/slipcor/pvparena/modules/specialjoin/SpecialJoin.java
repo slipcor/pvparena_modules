@@ -21,6 +21,8 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.commands.PAA_Edit;
+import net.slipcor.pvparena.commands.PAA_Setup;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.commands.PAG_Spectate;
 import net.slipcor.pvparena.core.Config;
@@ -39,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.332";
+		return "v1.1.0.333";
 	}
 	
 	@Override
@@ -172,6 +174,10 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		
 		if (find == null) {
 			debug.i("places does not contain!", event.getPlayer());
+			return;
+		}
+		
+		if (PAA_Edit.activeEdits.containsValue(arena) || PAA_Setup.activeSetups.containsValue(arena)) {
 			return;
 		}
 		
