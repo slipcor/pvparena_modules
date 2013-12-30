@@ -41,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.333";
+		return "v1.1.0.334";
 	}
 	
 	@Override
@@ -101,7 +101,12 @@ public class SpecialJoin extends ArenaModule implements Listener {
 			return;
 		}
 		debug.i("PIA!", event.getPlayer());
+
 		
+		if (PAA_Edit.activeEdits.containsValue(arena) || PAA_Setup.activeSetups.containsValue(arena)) {
+			debug.i("edit mode. OUT!", event.getPlayer());
+			return;
+		}
 		if (event.getAction().equals(Action.PHYSICAL)) {
 			
 			debug.i("Join via pressure plate!", event.getPlayer());
@@ -174,10 +179,6 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		
 		if (find == null) {
 			debug.i("places does not contain!", event.getPlayer());
-			return;
-		}
-		
-		if (PAA_Edit.activeEdits.containsValue(arena) || PAA_Setup.activeSetups.containsValue(arena)) {
 			return;
 		}
 		
