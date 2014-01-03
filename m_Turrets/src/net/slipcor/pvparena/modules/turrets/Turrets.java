@@ -1,7 +1,10 @@
 package net.slipcor.pvparena.modules.turrets;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,6 +18,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -33,7 +37,7 @@ public class Turrets extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.44";
+		return "v1.1.0.333";
 	}
 	
 	@Override
@@ -53,11 +57,22 @@ public class Turrets extends ArenaModule implements Listener {
 		shootingPlayers = new HashMap<String, Long>();
 		turretMap = new HashMap<PABlockLocation, Turret>();
 		
-		final Map<String, PALocation> spawns = SpawnManager.getSpawnMap(arena, "turrets");
+		Set<PASpawn> spawns = new HashSet<PASpawn>();
+		for (PASpawn spawn : arena.getSpawns()) {
+			if (spawn.getName().contains("turret")) {
+				spawns.add(spawn);
+			}
+		}
+		
+		if (spawns.size() < 1) {
+			PVPArena.instance.getLogger().warning("No valid turret spawns found!");
+			return;
+		}
+		
 		final double degrees = arena.getArenaConfig().getDouble(CFG.MODULES_TURRETS_MAXDEGREES);
-		for (String name : spawns.keySet()) {
-			final PALocation loc = spawns.get(name);
-			turretMap.put(new PABlockLocation(loc.toLocation()), new Turret(name, loc, degrees));
+		for (PASpawn location : spawns) {
+			final PALocation loc = location.getLocation();
+			turretMap.put(new PABlockLocation(loc.toLocation()), new Turret(location.getName(), loc, degrees));
 		}
 		
 		minInterval = arena.getArenaConfig().getInt(CFG.MODULES_TURRETS_MININTERVAL);
