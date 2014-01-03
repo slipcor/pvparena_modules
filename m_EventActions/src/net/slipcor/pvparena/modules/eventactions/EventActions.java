@@ -32,7 +32,7 @@ public class EventActions extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.0.333";
 	}
 	
 	@Override
@@ -159,7 +159,9 @@ public class EventActions extends ArenaModule {
 				}
 			} else if (split[0].equalsIgnoreCase("power")) {
 				for (PABlock loc : SpawnManager.getPABlocksContaining(a, split[1]) ) {
-				
+					if (loc.getName().contains("powerup")) {
+						continue;
+					}
 					Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new EADelay(loc.getLocation()), 1L);
 				}
 				
