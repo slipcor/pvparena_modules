@@ -109,7 +109,7 @@ public class PAListener implements Listener {
 			String s = "power";
 			int i = 0;
 			for (String node : a.getArenaConfig().getKeys("spawns")) {
-				if (node.startsWith(s)) {
+				if (node.startsWith(s) && !node.contains("powerup")) {
 					node = node.replace(s, "");
 					if (Integer.parseInt(node) >= i) {
 						i = Integer.parseInt(node)+1;
