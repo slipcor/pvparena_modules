@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.331";
+		return "v1.1.0.333";
 	}
 
 	@Override
@@ -208,7 +208,13 @@ public class ChestFiller extends ArenaModule {
 	}
 	
 	private void fill(Location loc, boolean clear, int min, int max, ItemStack[] stacks) {
-		Chest c = (Chest) loc.getBlock().getState();
+		Chest c;
+		
+		try {
+			c = (Chest) loc.getBlock().getState();
+		} catch (ClassCastException cce) {
+			return;
+		}
 		
 		if (clear) {
 			c.getBlockInventory().clear();
