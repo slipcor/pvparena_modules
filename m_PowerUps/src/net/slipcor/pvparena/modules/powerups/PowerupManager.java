@@ -28,6 +28,8 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlock;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
@@ -58,7 +60,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.0.333";
 	}
 
 	/**
@@ -266,13 +268,17 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	 */
 	protected void dropItemOnSpawn(Material item) {
 		debug.i("calculating item spawn location");
-		Set<PABlock> blocks = SpawnManager.getPABlocksContaining(arena, "powerup");
-		int pos = (new Random()).nextInt(blocks.size());
-		for (PABlock block : blocks) {
+		Set<PALocation> locs = SpawnManager.getSpawnsContaining(arena, "powerup");
+		if (locs.size() < 1) {
+			PVPArena.instance.getLogger().warning("No valid powerup spawns found!");
+			return;
+		}
+		int pos = (new Random()).nextInt(locs.size());
+		for (PALocation loc : locs) {
 			if (--pos > 0) {
 				continue;
 			}
-			Location aim = block.getLocation().toLocation().add(0, 1, 0);
+			Location aim = loc.toLocation().add(0, 1, 0);
 			debug.i("dropping item on spawn: " + aim.toString());
 			Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1));
 			break;
