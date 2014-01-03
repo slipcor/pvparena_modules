@@ -29,7 +29,7 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.144";
+		return "v1.1.0.333";
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class FlySpectate extends ArenaModule {
 
 	@Override
 	public void commitSpectate(final Player player) {
-		debug.i("committing REAL spectate", player);
+		debug.i("committing FLY spectate", player);
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		ap.setLocation(new PALocation(ap.get().getLocation()));
 
@@ -79,6 +79,9 @@ public class FlySpectate extends ArenaModule {
 		ap.setStatus(Status.WATCH);
 		debug.i("switching:", player);
 		getListener().hidePlayerLater(player);
+		
+		player.setAllowFlight(true);
+		player.setFlying(true);
 		
 		if (ap.getState() == null) {
 			
@@ -133,6 +136,7 @@ public class FlySpectate extends ArenaModule {
 			p.showPlayer(player);
 		}
 		
-		getListener().removeSpectator(player);
+		player.setAllowFlight(false);
+		player.setFlying(false);
 	}
 }
