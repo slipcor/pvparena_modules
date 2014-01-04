@@ -30,14 +30,14 @@ public class Turrets extends ArenaModule implements Listener {
 		debug = new Debug(413);
 	}
 	private boolean setup = false;
-	private Map<String, Long> shootingPlayers;
-	private Map<PABlockLocation, Turret> turretMap;
+	private final Map<String, Long> shootingPlayers = new HashMap<String, Long>();
+	private final Map<PABlockLocation, Turret> turretMap = new HashMap<PABlockLocation, Turret>();
 	
 	private int minInterval = 0;
 	
 	@Override
 	public String version() {
-		return "v1.1.0.333";
+		return "v1.1.0.334";
 	}
 	
 	@Override
@@ -54,26 +54,34 @@ public class Turrets extends ArenaModule implements Listener {
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 			setup = true;
 		}
-		shootingPlayers = new HashMap<String, Long>();
-		turretMap = new HashMap<PABlockLocation, Turret>();
 		
-		Set<PASpawn> spawns = new HashSet<PASpawn>();
-		for (PASpawn spawn : arena.getSpawns()) {
-			if (spawn.getName().contains("turret")) {
-				spawns.add(spawn);
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+
+				
+				final Set<PASpawn> spawns = new HashSet<PASpawn>();
+				for (PASpawn spawn : arena.getSpawns()) {
+					if (spawn.getName().contains("turret")) {
+						spawns.add(spawn);
+					}
+				}
+				
+				if (spawns.size() < 1) {
+					PVPArena.instance.getLogger().warning("No valid turret spawns found!");
+					return;
+				}
+				
+				final double degrees = arena.getArenaConfig().getDouble(CFG.MODULES_TURRETS_MAXDEGREES);
+				for (PASpawn location : spawns) {
+					final PALocation loc = location.getLocation();
+					turretMap.put(new PABlockLocation(loc.toLocation()), new Turret(location.getName(), loc, degrees));
+				}
 			}
+			
 		}
-		
-		if (spawns.size() < 1) {
-			PVPArena.instance.getLogger().warning("No valid turret spawns found!");
-			return;
-		}
-		
-		final double degrees = arena.getArenaConfig().getDouble(CFG.MODULES_TURRETS_MAXDEGREES);
-		for (PASpawn location : spawns) {
-			final PALocation loc = location.getLocation();
-			turretMap.put(new PABlockLocation(loc.toLocation()), new Turret(location.getName(), loc, degrees));
-		}
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
 		
 		minInterval = arena.getArenaConfig().getInt(CFG.MODULES_TURRETS_MININTERVAL);
 	}
