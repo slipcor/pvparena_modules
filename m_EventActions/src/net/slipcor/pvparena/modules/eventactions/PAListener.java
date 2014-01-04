@@ -1,8 +1,10 @@
 package net.slipcor.pvparena.modules.eventactions;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.PAA_Edit;
+import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.*;
@@ -110,6 +112,15 @@ public class PAListener implements Listener {
 			int i = 0;
 			for (String node : a.getArenaConfig().getKeys("spawns")) {
 				if (node.startsWith(s) && !node.contains("powerup")) {
+					
+					PABlockLocation locc = Config.parseBlockLocation(
+							(String) a.getArenaConfig().getUnsafe("spawns."+node)
+							);
+					if (loc.equals(locc.toLocation())) {
+						PVPArena.instance.getLogger().warning("Block already exists!");
+						return true;
+					}
+					
 					node = node.replace(s, "");
 					if (Integer.parseInt(node) >= i) {
 						i = Integer.parseInt(node)+1;
