@@ -438,6 +438,9 @@ public class PowerupManager extends ArenaModule implements Listener  {
 		if (SPAWN_ID > -1)
 			Bukkit.getScheduler().cancelTask(SPAWN_ID);
 		SPAWN_ID = -1;
+		if (usesPowerups != null) {
+			usesPowerups.puActive.clear();
+		}
 	}
 
 	@Override
