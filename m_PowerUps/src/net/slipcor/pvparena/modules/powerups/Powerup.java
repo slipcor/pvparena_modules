@@ -145,14 +145,15 @@ public class Powerup {
 	 *            the defending player to access
 	 * @param event
 	 *            the triggering event
+	 * @param attacker 
 	 */
 	public void commit(Player attacker, Player defender,
-			EntityDamageByEntityEvent event) {
+			EntityDamageByEntityEvent event, boolean isAttacker) {
 		debug.i("committing effects:", attacker);
 		debug.i("committing effects:", defender);
 		for (PowerupEffect pe : effects) {
 			if (pe.uses != 0 && pe.duration != 0) {
-				pe.commit(attacker, defender, event);
+				pe.commit(attacker, defender, event, isAttacker);
 			}
 		}
 	}

@@ -60,7 +60,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.333";
+		return "v1.1.0.334";
 	}
 
 	/**
@@ -300,11 +300,11 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			Powerup p = usesPowerups.puActive.get(attacker);
 			if ((p != null) && (p.canBeTriggered())) {
 				
-				p.commit(attacker, defender, event);
+				p.commit(attacker, defender, event, true);
 			}
 			p = usesPowerups.puActive.get(defender);
 			if ((p != null) && (p.canBeTriggered())) {
-				p.commit(attacker, defender, event);
+				p.commit(attacker, defender, event, false);
 			}
 		}
 

@@ -156,25 +156,26 @@ public class PowerupEffect {
 	 *            the defending player to access
 	 * @param event
 	 *            the triggering event
+	 * @param isAttacker 
 	 */
 	public void commit(Player attacker, Player defender,
-			EntityDamageByEntityEvent event) {
+			EntityDamageByEntityEvent event, boolean isAttacker) {
 		debug.i("committing entitydamagebyentityevent: " + this.type.name(), attacker);
-		if (this.type == PowerupType.DMG_RECEIVE) {
+		if (!isAttacker && this.type == PowerupType.DMG_RECEIVE) {
 			Random r = new Random();
 			Float v = r.nextFloat();
 			debug.i("random r = "+ v, defender);
 			if (v <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
-		} else if (this.type == PowerupType.DMG_CAUSE) {
+		} else if (isAttacker && this.type == PowerupType.DMG_CAUSE) {
 			Random r = new Random();
 			Float v = r.nextFloat();
 			debug.i("random r = "+ v, attacker);
 			if (v <= chance) {
 				event.setDamage((int) Math.round(event.getDamage() * factor));
 			} // else: chance fail :D
-		} else if (this.type == PowerupType.DMG_REFLECT) {
+		} else if (!isAttacker && this.type == PowerupType.DMG_REFLECT) {
 			if (attacker == null) {
 				return;
 			}
@@ -188,7 +189,7 @@ public class PowerupEffect {
 						Math.round(event.getDamage() * factor));
 				(new EntityListener()).onEntityDamageByEntity(reflectEvent);
 			} // else: chance fail :D
-		} else if (this.type == PowerupType.IGNITE) {
+		} else if (!isAttacker && this.type == PowerupType.IGNITE) {
 			Random r = new Random();
 			Float v = r.nextFloat();
 			debug.i("random r = "+ v, defender);
@@ -196,7 +197,7 @@ public class PowerupEffect {
 				defender.setFireTicks(20);
 			} // else: chance fail :D
 		} else {
-			PVPArena.instance.getLogger().warning("unexpected fight powerup effect: " + this.type.name());
+			debug.i("unexpected fight powerup effect: " + this.type.name());
 		}
 	}
 
@@ -214,7 +215,12 @@ public class PowerupEffect {
 		if (r.nextFloat() <= chance) {
 			if (this.type == PowerupType.HEALTH) {
 				if (diff > 0) {
-					player.setHealth(player.getHealth() + diff);
+					double value = player.getHealth() + diff;
+					
+					if (player.getMaxHealth() > value) {
+						value = player.getMaxHealth();
+					}
+					player.setHealth(value);
 				} else {
 					player.setHealth((int) Math.round(player.getHealth()
 							* factor));
@@ -241,7 +247,7 @@ public class PowerupEffect {
 										DamageCause.MAGIC, player)));
 					}
 					// needed so player does not get found when dead
-					arena.removePlayer(player, "lose", true, false);
+					arena.removePlayer(player, arena.getArenaConfig().getString(CFG.TP_LOSE), true, false);
 					ap.getArenaTeam().remove(ap);
 
 					ArenaManager.checkAndCommit(arena, false);
@@ -249,10 +255,11 @@ public class PowerupEffect {
 
 				return true;
 			} else if (this.type == PowerupType.PORTAL) {
-				// player.set
+				potEff = new PotionEffect(PotionEffectType.CONFUSION, 118800, 2);
 				return true;
 			} else if (this.type == PowerupType.REPAIR) {
 				for (String i : items) {
+					i = i.toUpperCase();
 					ItemStack is = null;
 					if (i.contains("HELM")) {
 						is = player.getInventory().getHelmet();
@@ -280,10 +287,11 @@ public class PowerupEffect {
 				return true;
 			} else if (this.type == PowerupType.SPRINT) {
 				player.setSprinting(true);
+				potEff = new PotionEffect(PotionEffectType.SPEED, 118800, 2);
 				return true;
 			}
 		}
-		PVPArena.instance.getLogger().warning("unexpected " + this.type.name());
+		debug.i("unexpected " + this.type.name());
 		return false;
 	}
 
@@ -303,7 +311,7 @@ public class PowerupEffect {
 				((Player) event.getEntity()).setFoodLevel(20);
 			} // else: chance fail :D
 		} else {
-			PVPArena.instance.getLogger().warning("unexpected fight heal effect: " + this.type.name());
+			debug.i("unexpected fight heal effect: " + this.type.name());
 		}
 	}
 
@@ -321,7 +329,7 @@ public class PowerupEffect {
 				event.setVelocity(event.getVelocity().multiply(factor));
 			} // else: chance fail :D
 		} else {
-			PVPArena.instance.getLogger().warning("unexpected jump effect: " + this.type.name());
+			debug.i("unexpected jump effect: " + this.type.name());
 		}
 	}
 
