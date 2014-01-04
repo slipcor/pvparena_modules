@@ -29,7 +29,7 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.333";
+		return "v1.1.0.334";
 	}
 
 	@Override
@@ -74,14 +74,13 @@ public class FlySpectate extends ArenaModule {
 		debug.i("committing FLY spectate", player);
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		ap.setLocation(new PALocation(ap.get().getLocation()));
-
+		
+		ap.debugPrint();
+		
 		ap.setArena(arena);
 		ap.setStatus(Status.WATCH);
 		debug.i("switching:", player);
 		getListener().hidePlayerLater(player);
-		
-		player.setAllowFlight(true);
-		player.setFlying(true);
 		
 		if (ap.getState() == null) {
 			
@@ -106,17 +105,21 @@ public class FlySpectate extends ArenaModule {
 				}
 			}
 		}
+
 		
+		long delay = arena.getArenaConfig().getBoolean(CFG.PERMS_FLY)?6L:5L;
 		class RunLater implements Runnable {
 
 			@Override
 			public void run() {
 				arena.tpPlayerToCoordName(player, "spectator");
 				player.setGameMode(GameMode.CREATIVE);
+				player.setAllowFlight(true);
+				player.setFlying(true);
 				arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
 			}
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(), 5L);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(), delay);
 	}
 	
 	@Override
