@@ -27,7 +27,7 @@ public class TempPerms extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.9.279";
+		return "v1.1.0.333";
 	}
 	
 	@Override
@@ -161,7 +161,13 @@ public class TempPerms extends ArenaModule {
 	 */
 	private void setPermissions(Arena arena, ArenaPlayer ap, HashMap<String, Boolean> mGlobal, HashMap<String, Boolean> mTeam) {
 		
-		HashMap<String, Boolean> mClass = getTempPerms(arena, ap.getArenaClass().getName());
+		HashMap<String, Boolean> mClass;
+		
+		if (ap.getArenaClass() == null) {
+			mClass = new HashMap<String, Boolean>();
+		} else {
+			mClass = getTempPerms(arena, ap.getArenaClass().getName());
+		}
 		
 		HashMap<String, Boolean> total = new HashMap<String, Boolean>();
 		for (String s : mGlobal.keySet()) {
