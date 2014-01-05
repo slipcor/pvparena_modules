@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.333";
+		return "v1.1.0.334";
 	}
 
 	@Override
@@ -53,11 +53,11 @@ public class ChestFiller extends ArenaModule {
 			return;
 		}
 
-		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 1 })) {
+		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
 			return;
 		}
 		
-		if (!args[0].equals("clear")) {
+		if (!args[1].equals("clear")) {
 			return;
 		}
 		
