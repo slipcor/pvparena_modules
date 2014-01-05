@@ -81,7 +81,7 @@ public class PowerupEffect {
 				this.mobtype = (String) puEffectVals.get(evName);
 				debug.i("type: " + type.name());
 			} else {
-				PVPArena.instance.getLogger().warning("undefined effect class value: " + evName);
+				debug.i("undefined effect class value: " + evName);
 			}
 		}
 	}
@@ -255,7 +255,7 @@ public class PowerupEffect {
 
 				return true;
 			} else if (this.type == PowerupType.PORTAL) {
-				potEff = new PotionEffect(PotionEffectType.CONFUSION, 118800, 2);
+				potEff = new PotionEffect(PotionEffectType.CONFUSION, duration*20, 2);
 				return true;
 			} else if (this.type == PowerupType.REPAIR) {
 				for (String i : items) {
@@ -287,7 +287,7 @@ public class PowerupEffect {
 				return true;
 			} else if (this.type == PowerupType.SPRINT) {
 				player.setSprinting(true);
-				potEff = new PotionEffect(PotionEffectType.SPEED, 118800, 2);
+				potEff = new PotionEffect(PotionEffectType.SPEED, duration*20, 2);
 				return true;
 			}
 		}
