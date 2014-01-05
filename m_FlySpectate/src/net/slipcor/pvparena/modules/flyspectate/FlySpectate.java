@@ -13,6 +13,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.classes.PALocation;
+import net.slipcor.pvparena.commands.PAG_Leave;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -29,7 +30,7 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.334";
+		return "v1.1.0.335";
 	}
 
 	@Override
@@ -72,7 +73,19 @@ public class FlySpectate extends ArenaModule {
 	@Override
 	public void commitSpectate(final Player player) {
 		debug.i("committing FLY spectate", player);
+		
+		final PAJoinEvent event = new PAJoinEvent(arena, player, true);
+		Bukkit.getPluginManager().callEvent(event);
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+		if (event.isCancelled() || arena.equals(ap.getArena())) {
+			if (arena.equals(ap.getArena())) {
+				arena.msg(player, Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, arena.getName()));
+			} else {
+				debug.i("joining spectate cancelled by eventhandler");
+			}
+			return;
+		}
+		
 		ap.setLocation(new PALocation(ap.get().getLocation()));
 		
 		ap.debugPrint();
@@ -85,9 +98,6 @@ public class FlySpectate extends ArenaModule {
 		if (ap.getState() == null) {
 			
 			final Arena arena = ap.getArena();
-
-			final PAJoinEvent event = new PAJoinEvent(arena, player, false);
-			Bukkit.getPluginManager().callEvent(event);
 
 			ap.createState(player);
 			ArenaPlayer.backupAndClearInventory(arena, player);
@@ -104,6 +114,9 @@ public class FlySpectate extends ArenaModule {
 					return;
 				}
 			}
+		} else {
+			new PAG_Leave().commit(arena, player, new String[0]);
+			return;
 		}
 
 		
