@@ -203,4 +203,13 @@ public class Powerup {
 	public void disable() {
 		
 	}
+
+	public void deactivate(Player player) {
+		if (effects == null) {
+			return;
+		}
+		for (PowerupEffect eff : effects) {
+			eff.removeEffect(player);
+		}
+	}
 }

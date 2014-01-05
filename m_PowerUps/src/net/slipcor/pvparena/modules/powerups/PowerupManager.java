@@ -7,12 +7,14 @@ import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -60,7 +63,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.334";
+		return "v1.1.0.335";
 	}
 
 	/**
@@ -185,7 +188,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 				
 				World w = Bukkit.getWorld(min.getWorldName());
 				
-				w.dropItem(w.getHighestBlockAt(min.getX() + x, min.getZ() + z).getRelative(BlockFace.UP).getLocation(), new ItemStack(item,1));
+				mark(w.dropItem(w.getHighestBlockAt(min.getX() + x, min.getZ() + z).getRelative(BlockFace.UP).getLocation(), new ItemStack(item,1)));
 				
 				break;
 			}
@@ -280,7 +283,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 			}
 			Location aim = loc.toLocation().add(0, 1, 0);
 			debug.i("dropping item on spawn: " + aim.toString());
-			Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1));
+			mark(Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1)));
 			break;
 		}
 
@@ -289,6 +292,22 @@ public class PowerupManager extends ArenaModule implements Listener  {
 	@Override
 	public boolean hasSpawn(String s) {
 		return s.toLowerCase().startsWith("powerup");
+	}
+	
+	private final String POWERUPSTRING = ChatColor.RED+"Power\nUp";
+	
+	private void mark(Item drop) {
+		ItemMeta meta = drop.getItemStack().getItemMeta();
+		
+		meta.setDisplayName(POWERUPSTRING);
+		drop.getItemStack().setItemMeta(meta);
+	}
+	
+	private boolean isPowerup(final ItemStack item) {
+		if (!item.hasItemMeta()) {
+			return false;
+		}
+		return item.getItemMeta().getDisplayName().equals(POWERUPSTRING);
 	}
 
 	@Override
@@ -334,7 +353,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 		if (!arena.equals(ap.getArena())) {
 			return;
 		}
-		if (usesPowerups != null) {
+		if (usesPowerups != null && isPowerup(event.getItem().getItemStack())) {
 			debug.i("onPlayerPickupItem: fighting player", player);
 			debug.i("item: " + event.getItem().getItemStack().getType(), player);
 			Iterator<Powerup> pi = usesPowerups.puTotal.iterator();
@@ -345,6 +364,7 @@ public class PowerupManager extends ArenaModule implements Listener  {
 					debug.i("yes!", player);
 					Powerup newP = new Powerup(p);
 					if (usesPowerups.puActive.containsKey(player)) {
+						usesPowerups.puActive.get(player).deactivate(player);
 						usesPowerups.puActive.remove(player);
 					}
 					usesPowerups.puActive.put(player, newP);
