@@ -28,7 +28,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.0.1.59";
+		return "v1.1.0.337";
 	}
 	
 	@Override
@@ -83,7 +83,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
 	@Override
 	public void parseStart() {
-		runnable = new StartFreezer(null);
+		runnable = new StartFreezer(this);
 		runnable.runTaskLater(PVPArena.instance, arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) * 20L);
 		arena.broadcast(Language.parse(MSG.MODULE_STARTFREEZE_ANNOUNCE,
 				String.valueOf(arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER))));
