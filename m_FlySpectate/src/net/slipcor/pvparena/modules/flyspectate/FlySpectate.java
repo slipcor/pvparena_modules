@@ -152,6 +152,8 @@ public class FlySpectate extends ArenaModule {
 			p.showPlayer(player);
 		}
 		
+		listener.removeSpectator(player);
+		
 		player.setAllowFlight(false);
 		player.setFlying(false);
 	}
