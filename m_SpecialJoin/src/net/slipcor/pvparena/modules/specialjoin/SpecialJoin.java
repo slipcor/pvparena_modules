@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.plugin.IllegalPluginAccessException;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -41,7 +42,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.335";
+		return "v1.1.0.344";
 	}
 	
 	@Override
@@ -272,6 +273,10 @@ public class SpecialJoin extends ArenaModule implements Listener {
 			}
 			
 		}
-		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
+		try {
+			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
+		} catch (IllegalPluginAccessException e) {
+			
+		}
 	}
 }
