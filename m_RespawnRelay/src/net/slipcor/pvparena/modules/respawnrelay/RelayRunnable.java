@@ -23,7 +23,7 @@ public class RelayRunnable extends ArenaRunnable {
 
 	public RelayRunnable(RespawnRelay relay, Arena arena, ArenaPlayer ap, List<ItemStack> drops) {
 		
-		super(MSG.TIMER_STARTING_IN.getNode(), arena.getArenaConfig().getInt(CFG.MODULES_RESPAWNRELAY_INTERVAL), ap.get(), arena, false);
+		super(MSG.TIMER_STARTING_IN.getNode(), arena.getArenaConfig().getInt(CFG.MODULES_RESPAWNRELAY_INTERVAL), ap.get(), null, false);
 		mod = relay;
 		this.ap = ap;
 		this.drops = drops;
