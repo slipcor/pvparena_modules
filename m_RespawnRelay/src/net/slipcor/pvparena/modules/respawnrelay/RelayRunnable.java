@@ -32,10 +32,10 @@ public class RelayRunnable extends ArenaRunnable {
 	@Override
 	protected void commit() {
 		debug.i("RelayRunnable commiting", ap.getName());
-		new InventoryRefillRunnable(arena, ap.get(), drops);
+		new InventoryRefillRunnable(ap.getArena(), ap.get(), drops);
 		String spawn = mod.overrideMap.get(ap.getName());
-		SpawnManager.respawn(arena,  ap, spawn);
-		arena.unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
+		SpawnManager.respawn(ap.getArena(),  ap, spawn);
+		ap.getArena().unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 		ap.setStatus(Status.FIGHT);
 		mod.getRunnerMap().remove(ap.getName());
 		mod.overrideMap.remove(ap.getName());
