@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 	private HashMap<String, Double> playerBetMap = null;
 	private HashMap<String, Double> playerJoinMap = null;
 	private double pot = 0;
+	private Map<String, Double> list = null;
 
 	public VaultSupport() {
 		super("Vault");
@@ -44,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.0.307";
+		return "v1.1.0.352";
 	}
 
 	@Override
@@ -243,7 +245,29 @@ public class VaultSupport extends ArenaModule implements Listener {
 			setupPermission();
 			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 		}
-		
+	}
+	
+	private Map<String, Double> getPermList() {
+		if (list == null) {
+			list = new HashMap<String, Double>();
+			
+			if (null == arena.getArenaConfig().getUnsafe("modules.vault.permfactors")) {
+				
+				list.put("pa.vault.supervip", 3d);
+				list.put("pa.vault.vip", 2d);
+				for (String node : list.keySet()) {
+					arena.getArenaConfig().setManually("modules.vault.permfactors."+node, list.get(node));
+					arena.getArenaConfig().save();
+				}
+			} else {
+				ConfigurationSection cs = arena.getArenaConfig().getYamlConfiguration().
+						getConfigurationSection("modules.vault.permfactors");
+				for (String node : cs.getKeys(false)) {
+					list.put(node, cs.getDouble(node));
+				}
+			}
+		}
+		return list;
 	}
 	
 	/**
@@ -495,6 +519,23 @@ public class VaultSupport extends ArenaModule implements Listener {
 						debug.i("Account not found: " + nSplit[0]);
 						continue;
 					}
+					
+					Player player = Bukkit.getPlayer(nSplit[0]);
+					
+					if (player == null) {
+						debug.i("Player is null!");
+					} else {
+						double factor = 1d;
+						for (String node : getPermList().keySet()) {
+							if (player.hasPermission(node)) {
+								factor = Math.max(factor, getPermList().get(node));
+							}
+						}
+						
+						debug.i("Player factor: "+factor);
+						amount *= factor;
+					}
+					
 					economy.depositPlayer(nSplit[0], amount);
 					try {
 						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
