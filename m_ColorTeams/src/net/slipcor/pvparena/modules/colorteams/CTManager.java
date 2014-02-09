@@ -28,7 +28,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.331";
+		return "v1.1.0.352";
 	}
 	
 	@Override
