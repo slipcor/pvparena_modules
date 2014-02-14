@@ -230,7 +230,7 @@ public class PowerupEffect {
 				ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 				int lives = PACheck.handleGetLives(ap.getArena(), ap);
 				if (lives + diff > 0) {
-					PVPArena.instance.getAgm().setPlayerLives(ap.getArena(), ap, lives + diff);
+					ap.get().damage(1000d);
 				} else {
 					ArenaTeam team = ap.getArenaTeam();
 					Arena arena = ap.getArena();
