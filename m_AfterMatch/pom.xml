@@ -44,7 +44,6 @@
 	</ciManagement>
 	
     <build>
-        <directory>${basedir}/../../</directory>
 		<defaultGoal>clean package install</defaultGoal>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<finalName>pa_m_aftermatch</finalName>
@@ -74,6 +73,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.3.2</version>
+                    <configuration>
+                        <outputDirectory>${basedir}/../../</outputDirectory>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
