@@ -26,7 +26,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.0.302";
+		return "v1.1.0.358";
 	}
 
 	@Override
@@ -132,10 +132,17 @@ public class AnnouncementManager extends ArenaModule {
 		debug.i("parseJoin ... ", sender);
 
 		if (TeamManager.countPlayersInTeams(arena) < 2) {
-			Announcement.announce(arena, Announcement.type.ADVERT, Language
-					.parse(arena, CFG.MSG_STARTING, arena.getName()+
-							ChatColor.valueOf(arena.getArenaConfig().getString(
-							CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+			if (PVPArena.instance.getConfig().getBoolean("only_shortcuts")) {
+				Announcement.announce(arena, Announcement.type.ADVERT, Language
+						.parse(arena, CFG.MSG_STARTING, arena.getName()+
+								ChatColor.valueOf(arena.getArenaConfig().getString(
+								CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+			} else {
+				Announcement.announce(arena, Announcement.type.ADVERT, Language
+						.parse(arena, CFG.MSG_STARTING, arena.getName()+
+								ChatColor.valueOf(arena.getArenaConfig().getString(
+								CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+			}
 		}
 
 		if (arena.isFreeForAll()) {

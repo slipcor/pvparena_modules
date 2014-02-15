@@ -14,6 +14,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
 
 public class LateLounge extends ArenaModule {
 	public LateLounge() {
@@ -24,7 +25,7 @@ public class LateLounge extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.8.267";
+		return "v1.1.0.358";
 	}
 	
 	private List<String> playerList = null;
@@ -75,7 +76,7 @@ public class LateLounge extends ArenaModule {
 					continue;
 				}
 				try {
-					arena.msg(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, arena.getName(), player.getName()));
+					arena.msg(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, ArenaManager.getIndirectArenaName(arena), player.getName()));
 					
 				} catch (Exception e) {
 					//
