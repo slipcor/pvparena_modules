@@ -9,6 +9,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.TeamManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
@@ -26,7 +27,7 @@ public class AnnouncementManager extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.0.358";
+		return "v1.1.0.367";
 	}
 
 	@Override
@@ -132,14 +133,16 @@ public class AnnouncementManager extends ArenaModule {
 		debug.i("parseJoin ... ", sender);
 
 		if (TeamManager.countPlayersInTeams(arena) < 2) {
+			String arenaname = 
+					PVPArena.hasOverridePerms(sender)?arena.getName():ArenaManager.getIndirectArenaName(arena);
 			if (PVPArena.instance.getConfig().getBoolean("only_shortcuts")) {
 				Announcement.announce(arena, Announcement.type.ADVERT, Language
-						.parse(arena, CFG.MSG_STARTING, arena.getName()+
+						.parse(arena, CFG.MSG_STARTING, arenaname+
 								ChatColor.valueOf(arena.getArenaConfig().getString(
 								CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 			} else {
 				Announcement.announce(arena, Announcement.type.ADVERT, Language
-						.parse(arena, CFG.MSG_STARTING, arena.getName()+
+						.parse(arena, CFG.MSG_STARTING, arenaname+
 								ChatColor.valueOf(arena.getArenaConfig().getString(
 								CFG.MODULES_ANNOUNCEMENTS_COLOR))));
 			}
