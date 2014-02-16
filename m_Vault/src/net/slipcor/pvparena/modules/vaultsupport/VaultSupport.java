@@ -473,76 +473,79 @@ public class VaultSupport extends ArenaModule implements Listener {
 		}
 		debug.i("Paying winners: " + StringParser.joinSet(result, ", "));
 		
-		if (economy != null) {
+		if (economy == null) {
+			return;
+		}
 			
-			double pot = 0;
-			double winpot = 0;
+		double pot = 0;
+		double winpot = 0;
+		
+		for (String s : getPlayerBetMap().keySet()) {
+			String[] nSplit = s.split(":");
 			
-			for (String s : getPlayerBetMap().keySet()) {
-				String[] nSplit = s.split(":");
-				
-				pot += getPlayerBetMap().get(s);
-				
-				if (result.contains(nSplit)) {
-					winpot += getPlayerBetMap().get(s);
+			pot += getPlayerBetMap().get(s);
+			
+			if (result.contains(nSplit)) {
+				winpot += getPlayerBetMap().get(s);
+			}
+		}
+		
+		for (String nKey : getPlayerBetMap().keySet()) {
+			String[] nSplit = nKey.split(":");
+			ArenaTeam team = arena.getTeam(nSplit[1]);
+			if (team == null || team.getName().equals("free")) {
+				if (Bukkit.getPlayerExact(nSplit[1]) == null) {
+					continue;
 				}
 			}
-			
-			for (String nKey : getPlayerBetMap().keySet()) {
-				String[] nSplit = nKey.split(":");
-				ArenaTeam team = arena.getTeam(nSplit[1]);
-				if (team == null || team.getName().equals("free")) {
-					if (Bukkit.getPlayerExact(nSplit[1]) == null) {
-						continue;
+
+			if (result.contains(nSplit[1])) {
+				double amount = 0;
+				
+				if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
+					if (winpot > 0) {
+						amount = pot * getPlayerBetMap().get(nKey) / winpot;
 					}
+				} else {
+					double teamFactor = arena.getArenaConfig()
+							.getDouble(CFG.MODULES_VAULT_BETWINTEAMFACTOR)
+							* arena.getTeamNames().size();
+					if (teamFactor <= 0) {
+						teamFactor = 1;
+					}
+					teamFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
+					amount = getPlayerBetMap().get(nKey) * teamFactor;
 				}
 
-				if (result.contains(nSplit[1])) {
-					double amount = 0;
-					
-					if (arena.getArenaConfig().getBoolean(CFG.MODULES_VAULT_BETPOT)) {
-						if (winpot > 0) {
-							amount = pot * getPlayerBetMap().get(nKey) / winpot;
+				if (!economy.hasAccount(nSplit[0])) {
+					debug.i("Account not found: " + nSplit[0]);
+					continue;
+				}
+				
+				Player player = Bukkit.getPlayer(nSplit[0]);
+				
+				if (player == null) {
+					System.out.print("player null: " + nSplit[0]);
+					debug.i("Player is null!");
+				} else {
+					double factor = 1d;
+					for (String node : getPermList().keySet()) {
+						System.out.print("checking " + node);
+						if (player.hasPermission(node)) {
+							factor = Math.max(factor, getPermList().get(node));
 						}
-					} else {
-						double teamFactor = arena.getArenaConfig()
-								.getDouble(CFG.MODULES_VAULT_BETWINTEAMFACTOR)
-								* arena.getTeamNames().size();
-						if (teamFactor <= 0) {
-							teamFactor = 1;
-						}
-						teamFactor *= arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR);
-						amount = getPlayerBetMap().get(nKey) * teamFactor;
-					}
-
-					if (!economy.hasAccount(nSplit[0])) {
-						debug.i("Account not found: " + nSplit[0]);
-						continue;
 					}
 					
-					Player player = Bukkit.getPlayer(nSplit[0]);
-					
-					if (player == null) {
-						debug.i("Player is null!");
-					} else {
-						double factor = 1d;
-						for (String node : getPermList().keySet()) {
-							if (player.hasPermission(node)) {
-								factor = Math.max(factor, getPermList().get(node));
-							}
-						}
-						
-						debug.i("Player factor: "+factor);
-						amount *= factor;
-					}
-					
-					economy.depositPlayer(nSplit[0], amount);
-					try {
-						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
-								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-					} catch (Exception e) {
-						// nothing
-					}
+					debug.i("Player factor: "+factor);
+					amount *= factor;
+				}
+				
+				economy.depositPlayer(nSplit[0], amount);
+				try {
+					arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+							.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+				} catch (Exception e) {
+					// nothing
 				}
 			}
 		}
