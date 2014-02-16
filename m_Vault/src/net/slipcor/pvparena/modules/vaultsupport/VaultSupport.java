@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.0.352";
+		return "v1.1.0.363";
 	}
 
 	@Override
@@ -351,6 +351,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 				debug.i("calculating win pot!", player);
 				double amount = winners > 0 ? pot / winners : 0;
 				
+
+				
+				if (player != null) {
+					double factor = 1d;
+					for (String node : getPermList().keySet()) {
+						if (player.hasPermission(node)) {
+							factor = Math.max(factor, getPermList().get(node));
+						}
+					}
+					
+					amount *= factor;
+				}
+				
 				economy.depositPlayer(player.getName(), amount);
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
 						economy.format(amount)));
@@ -358,6 +371,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 				double amount = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0);
 				debug.i("calculating win reward: " + amount, player);
+				
+
+				
+				if (player != null) {
+					double factor = 1d;
+					for (String node : getPermList().keySet()) {
+						if (player.hasPermission(node)) {
+							factor = Math.max(factor, getPermList().get(node));
+						}
+					}
+					
+					amount *= factor;
+				}
 				
 				economy.depositPlayer(player.getName(), amount);
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
@@ -372,6 +398,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 					double amount = getPlayerJoinMap().get(nKey) * playerFactor;
 
+
+					
+					if (player != null) {
+						double factor = 1d;
+						for (String node : getPermList().keySet()) {
+							if (player.hasPermission(node)) {
+								factor = Math.max(factor, getPermList().get(node));
+							}
+						}
+						
+						amount *= factor;
+					}
+					
 					economy.depositPlayer(nKey, amount);
 					try {
 						
@@ -530,13 +569,11 @@ public class VaultSupport extends ArenaModule implements Listener {
 				} else {
 					double factor = 1d;
 					for (String node : getPermList().keySet()) {
-						System.out.print("checking " + node);
 						if (player.hasPermission(node)) {
 							factor = Math.max(factor, getPermList().get(node));
 						}
 					}
 					
-					debug.i("Player factor: "+factor);
 					amount *= factor;
 				}
 				
