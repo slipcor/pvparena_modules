@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.0.363";
+		return "v1.1.0.367";
 	}
 
 	@Override
@@ -700,6 +700,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 			*/
 			
 			for (String node : contents) {
+				node = node.toLowerCase();
 				if (node.contains("trigger")) {
 					lastTrigger = node.substring(8);
 					newReward(lastTrigger, "TRIGGER");
