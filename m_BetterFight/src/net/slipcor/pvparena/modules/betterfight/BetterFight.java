@@ -38,7 +38,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.3.164 - various fixes";
+		return "v1.1.0.370";
 	}
 	
 	@Override
@@ -226,39 +226,6 @@ public class BetterFight extends ArenaModule {
 			}
 		}
 	}
-
-/*
-	@Override
-	public void parseRespawn(Player player, ArenaTeam team,
-			DamageCause cause, Entity damager) {
-		
-		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
-			return;
-		}
-		
-		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
-			kills.put(player.getName(), 0);
-		}
-		
-		if (! (damager instanceof Player)) {
-			return;
-		}
-		Player p = (Player) damager;
-		if (p == null || kills.get(p.getName()) == null) {
-			return;
-		}
-		int killcount = kills.get(p.getName());
-
-		kills.put(player.getName(), ++killcount);
-		
-		String msg = (String) arena.getArenaConfig().getUnsafe("betterfight.messages.m"+killcount);
-		
-		if (msg == null || msg.equals("")) {
-			return;
-		}
-		
-		arena.broadcast(msg);
-	}*/
 	
 	@Override
 	public void parsePlayerDeath(Player player,
@@ -278,7 +245,7 @@ public class BetterFight extends ArenaModule {
 				}
 				@Override
 				public void run() {
-					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2f);
+					l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2f, false, false);
 				}
 				
 			}
