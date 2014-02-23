@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.0.367";
+		return "v1.1.0.388";
 	}
 
 	@Override
@@ -678,8 +678,11 @@ public class VaultSupport extends ArenaModule implements Listener {
 	public void onGoalScore(PAGoalEvent event) {
 		
 		String lastTrigger = "";
-
-		arena.getDebugger().i("catching GoalEvent in Vault!");
+		if (arena == null) {
+			debug.i("catching GoalEvent in Vault!");
+		} else {
+			arena.getDebugger().i("catching GoalEvent in Vault!");
+		}
 		
 		if (event.getArena().equals(arena)) {
 			arena.getDebugger().i("it's us!");
