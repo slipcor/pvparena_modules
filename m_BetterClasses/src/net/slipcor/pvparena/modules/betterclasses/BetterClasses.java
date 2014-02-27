@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.betterclasses;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
+import net.slipcor.pvparena.arena.PlayerState;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -35,7 +37,7 @@ public class BetterClasses extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.107";
+		return "v1.1.0.391";
 	}
 	
 	private final static int DURATION = 2400; // 60000 => 2400
@@ -332,14 +334,20 @@ public class BetterClasses extends ArenaModule {
 	
 	private boolean notEnoughEXP(Player player, String className) {
 		int needed = 0;
+		int available = 0;
 		
 		try {
 			needed = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.neededEXPLevel." + className);
+			PlayerState state = ArenaPlayer.parsePlayer(player.getName()).getState();
+			
+			Field value = state.getClass().getDeclaredField("explevel");
+			value.setAccessible(true);
+			available = value.getInt(state);
 		} catch (Exception e) {
 			return false;
 		}
 		
-		return player.getLevel() < needed;
+		return available < needed;
 	}
 
 	private String parsePotionEffectsToString(HashSet<PotionEffect> ape) {
