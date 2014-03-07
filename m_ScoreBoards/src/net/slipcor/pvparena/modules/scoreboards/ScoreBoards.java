@@ -42,7 +42,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.329";
+		return "v1.1.0.395";
 	}
 
 	

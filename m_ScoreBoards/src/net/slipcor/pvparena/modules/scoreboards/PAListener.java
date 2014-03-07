@@ -46,7 +46,7 @@ public class PAListener implements Listener {
 		} else if (event.isSpectator()) {
 			// spectator in progress
 			for (ArenaGoal goal : module.getArena().getGoals()) {
-				goal.initate(event.getPlayer());
+//				goal.initate(event.getPlayer()); 
 			}
 		}
 		if (module.getArena() != null && module.getArena().equals(event.getArena()))
