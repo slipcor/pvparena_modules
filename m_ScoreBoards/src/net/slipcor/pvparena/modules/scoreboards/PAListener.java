@@ -43,14 +43,10 @@ public class PAListener implements Listener {
 	public void onJoin(PAJoinEvent event) {
 		if (!module.getArena().isFightInProgress()) {
 			return;
-		} else if (event.isSpectator()) {
-			// spectator in progress
-			for (ArenaGoal goal : module.getArena().getGoals()) {
-//				goal.initate(event.getPlayer()); 
-			}
 		}
-		if (module.getArena() != null && module.getArena().equals(event.getArena()))
+		if (module.getArena() != null && module.getArena().equals(event.getArena())) {
 			module.add(event.getPlayer());
+		}
 	}
 
 	@EventHandler
