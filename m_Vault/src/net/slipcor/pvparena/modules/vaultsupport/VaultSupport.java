@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.0.388";
+		return "v1.1.0.395";
 	}
 
 	@Override
@@ -752,7 +752,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 			
 			economy.depositPlayer(playerName, value);
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 	}
 }
