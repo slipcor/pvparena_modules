@@ -13,10 +13,12 @@ import net.slipcor.pvparena.managers.SpawnManager;
 import net.slipcor.pvparena.runnables.ArenaRunnable;
 import net.slipcor.pvparena.runnables.InventoryRefillRunnable;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class RelayRunnable extends ArenaRunnable {
 	private ArenaPlayer ap;
+	private Player maybePlayer;
 	List<ItemStack> drops;
 	private Debug debug = new Debug(77);
 	private RespawnRelay mod;
@@ -27,15 +29,27 @@ public class RelayRunnable extends ArenaRunnable {
 		mod = relay;
 		this.ap = ap;
 		this.drops = drops;
+		this.maybePlayer = ap.get();
 	}
 
 	@Override
 	protected void commit() {
 		debug.i("RelayRunnable commiting", ap.getName());
-		new InventoryRefillRunnable(ap.getArena(), ap.get(), drops);
+		
+		Player maybePlayer = this.maybePlayer;
+		
+		if (ap.get() == null) {
+			if (maybePlayer == null) {
+				PVPArena.instance.getLogger().warning("player null: "+ap.getName());
+			}
+		} else {
+			maybePlayer = ap.get();
+		}
+		
+		new InventoryRefillRunnable(ap.getArena(), maybePlayer, drops);
 		String spawn = mod.overrideMap.get(ap.getName());
 		SpawnManager.respawn(ap.getArena(),  ap, spawn);
-		ap.getArena().unKillPlayer(ap.get(), ap.get().getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
+		ap.getArena().unKillPlayer(ap.get(), maybePlayer.getLastDamageCause()==null?null:ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 		ap.setStatus(Status.FIGHT);
 		mod.getRunnerMap().remove(ap.getName());
 		mod.overrideMap.remove(ap.getName());
