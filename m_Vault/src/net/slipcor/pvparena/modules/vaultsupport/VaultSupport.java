@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,7 +47,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.0.395";
+		return "v1.1.1.401";
 	}
 
 	@Override
@@ -239,12 +240,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 	}
 	
 	@Override
-	public void onThisLoad() {
-		if (economy == null && Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
-			setupEconomy();
-			setupPermission();
-			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
-		}
+	public void configParse(YamlConfiguration config) {
+		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 	}
 	
 	private Map<String, Double> getPermList() {
@@ -485,6 +482,16 @@ public class VaultSupport extends ArenaModule implements Listener {
 				+ StringParser.colorVar(
 				"win pot",arena.getArenaConfig().getBoolean(
 						CFG.MODULES_VAULT_WINPOT)));
+	}
+	
+	@Override
+	public void onThisLoad() {
+		if (economy == null && Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
+			setupEconomy();
+			setupPermission();
+
+			Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+		}
 	}
 
 	@Override
