@@ -20,14 +20,16 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class AutoVoteRunnable extends ArenaRunnable {
 	private Debug debug = new Debug(68);
-	public AutoVoteRunnable(Arena a, int i) {
+	private final String definition;
+	public AutoVoteRunnable(Arena a, int i, String definition) {
 		super(MSG.MODULE_AUTOVOTE_VOTENOW.getNode(), i, null, null, true);
+		this.definition = definition;
 		debug.i("AutoVoteRunnable constructor");
 	}
 
 	protected void commit() {
 		debug.i("ArenaVoteRunnable commiting");
-		AutoVote.commit();
+		AutoVote.commit(definition);
 	}
 
 	@Override

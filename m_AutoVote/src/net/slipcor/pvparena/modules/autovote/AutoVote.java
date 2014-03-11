@@ -37,7 +37,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.0.297";
+		return "v1.1.1.410";
 	}
 	
 	@Override
@@ -170,19 +170,26 @@ public class AutoVote extends ArenaModule {
 		a = null;
 		
 		if (vote == null) {
-			vote = new AutoVoteRunnable(arena,
-					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
+			
+			for (String def : ArenaManager.getShortcutValues().keySet()) {
+				if (ArenaManager.getShortcutValues().get(def).equals(arena)) {
+					
+					vote = new AutoVoteRunnable(arena,
+					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), def);
+					break;
+				}
+			}
+			arena.getDebugger().i("AutoVote not setup via shortcuts, ignoring");
 		}
 	}
 
-	public static void commit() {
+	public static void commit(String definition) {
 		HashMap<String, String> tempVotes = new HashMap<String, String>();
 		
 		for (String node : votes.keySet()) {
 			tempVotes.put(node, votes.get(node));
 		}
 		
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvparena ALL disable");
 		HashMap<String, Integer> counts = new HashMap<String, Integer>();
 		int max = 0;
 		
@@ -203,8 +210,8 @@ public class AutoVote extends ArenaModule {
 		}
 
 		a = ArenaManager.getArenaByName(voted);
-
-		if (a == null) {
+		
+		if (a == null || !ArenaManager.getShortcutDefinitions().get(definition).contains(a.getName())) {
 			PVPArena.instance.getLogger().warning("Vote resulted in NULL for result '"+voted+"'!");
 			
 			int pos = ((new Random()).nextInt(ArenaManager.getArenas().size()));
@@ -215,11 +222,10 @@ public class AutoVote extends ArenaModule {
 					break;
 				}
 			}
-		}
-
-		if (a == null) {
 			return;
 		}
+		
+		ArenaManager.getShortcutValues().put(definition, a);
 
 		final PAG_Join pj = new PAG_Join();
 
@@ -234,7 +240,6 @@ public class AutoVote extends ArenaModule {
 				toTeleport.add(s);
 			}
 		}
-		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvparena "+a.getName()+" enable");
 		
 		class TeleportLater extends BukkitRunnable {
 
