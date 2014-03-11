@@ -37,7 +37,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.1.410";
+		return "v1.1.1.411";
 	}
 	
 	@Override
@@ -214,14 +214,11 @@ public class AutoVote extends ArenaModule {
 		if (a == null || !ArenaManager.getShortcutDefinitions().get(definition).contains(a.getName())) {
 			PVPArena.instance.getLogger().warning("Vote resulted in NULL for result '"+voted+"'!");
 			
-			int pos = ((new Random()).nextInt(ArenaManager.getArenas().size()));
-			
-			for (Arena arena : ArenaManager.getArenas()) {
-				if (--pos < 0) {
-					a = arena;
-					break;
-				}
-			}
+			ArenaManager.advance(definition);
+			a = ArenaManager.getShortcutValues().get(definition);
+		}
+		
+		if (a == null) {
 			return;
 		}
 		
