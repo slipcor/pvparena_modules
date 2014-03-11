@@ -37,7 +37,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.1.411";
+		return "v1.1.1.412";
 	}
 	
 	@Override
@@ -279,6 +279,9 @@ public class AutoVote extends ArenaModule {
 		for (Arena arena : ArenaManager.getArenas()) {
 			for (ArenaModule mod : arena.getMods()) {
 				if (mod.getName().equals(this.getName())) {
+					if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_AUTOSTART)) {
+						continue;
+					}
 					active = true;
 					break;
 				}

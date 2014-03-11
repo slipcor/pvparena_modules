@@ -20,7 +20,7 @@ public class EADelay implements Runnable {
 		final byte data = block.getData();
 		final MaterialData meta = block.getState().getData();
 		
-		block.setTypeIdAndData(Material.REDSTONE_TORCH_ON.getId(), (byte) 5, true);
+		block.setType(Material.REDSTONE_BLOCK);
 		
 		class OffRunner implements Runnable {
 
