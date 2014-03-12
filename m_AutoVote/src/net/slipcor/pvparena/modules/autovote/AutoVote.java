@@ -2,6 +2,9 @@ package net.slipcor.pvparena.modules.autovote;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -26,10 +29,9 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.runnables.StartRunnable;
 
 public class AutoVote extends ArenaModule {
-	private static Arena a = null;
-	private static HashMap<String, String> votes = new HashMap<String, String>();
+	private static Map<String, String> votes = new HashMap<String, String>();
 
-	private static AutoVoteRunnable vote = null;
+	protected AutoVoteRunnable vote = null;
 	
 	public AutoVote() {
 		super("AutoVote");
@@ -37,7 +39,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.1.412";
+		return "v1.1.1.413";
 	}
 	
 	@Override
@@ -49,11 +51,6 @@ public class AutoVote extends ArenaModule {
 	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean b) {
 		if (res.hasError() || !b) {
-			return res;
-		}
-		
-		if (a != null && !arena.equals(a)) {
-			res.setError(this, Language.parse(MSG.MODULE_AUTOVOTE_ARENARUNNING, arena.getName()));
 			return res;
 		}
 		
@@ -91,8 +88,6 @@ public class AutoVote extends ArenaModule {
 					}
 				}
 			}
-			
-			
 
 			votes.put(sender.getName(), arena.getName());
 			Arena.pmsg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
@@ -166,8 +161,14 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public void reset(boolean force) {
-		votes.clear();
-		a = null;
+		
+		String definition = getDefinitionFromArena(arena);
+		
+		if (definition == null) {
+			removeFromVotes(arena.getName());
+		} else {
+			removeValuesFromVotes(definition);
+		}
 		
 		if (vote == null) {
 			
@@ -175,12 +176,62 @@ public class AutoVote extends ArenaModule {
 				if (ArenaManager.getShortcutValues().get(def).equals(arena)) {
 					
 					vote = new AutoVoteRunnable(arena,
-					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), def);
+					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, def);
 					break;
 				}
 			}
 			arena.getDebugger().i("AutoVote not setup via shortcuts, ignoring");
 		}
+	}
+
+	private void removeValuesFromVotes(String definition) {
+		boolean done = false;
+		while (done == false) {
+			done = true;
+			for (String player : votes.keySet()) {
+				if (votes.get(player).equalsIgnoreCase(definition)) {
+					votes.remove(player);
+					done = false;
+					break;
+				}
+			}
+		}
+	}
+
+	private void removeFromVotes(String name) {
+		List<String> names = ArenaManager.getShortcutDefinitions().get(name);
+		
+		if (names != null) {
+			for (String arena : names) {
+				boolean done = false;
+				while (done == false) {
+					done = true;
+					for (String player : votes.keySet()) {
+						if (votes.get(player).equalsIgnoreCase(arena)) {
+							votes.remove(player);
+							done = false;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	static String getDefinitionFromArena(Arena arena) {
+		for (String name : ArenaManager.getShortcutValues().keySet()) {
+			if (arena.equals(ArenaManager.getShortcutValues().get(name))) {
+				return name;
+			}
+		}
+		
+		for (Entry<String, List<String>> name : ArenaManager.getShortcutDefinitions().entrySet()) {
+			if (name.getValue().contains(arena.getName())) {
+				return name.getKey();
+			}
+		}
+		
+		return null;
 	}
 
 	public static void commit(String definition) {
@@ -209,7 +260,7 @@ public class AutoVote extends ArenaModule {
 			}
 		}
 
-		a = ArenaManager.getArenaByName(voted);
+		Arena a = ArenaManager.getArenaByName(voted);
 		
 		if (a == null || !ArenaManager.getShortcutDefinitions().get(definition).contains(a.getName())) {
 			PVPArena.instance.getLogger().warning("Vote resulted in NULL for result '"+voted+"'!");
@@ -239,7 +290,10 @@ public class AutoVote extends ArenaModule {
 		}
 		
 		class TeleportLater extends BukkitRunnable {
-
+			Arena a;
+			TeleportLater(final Arena a) {
+				this.a = a;
+			}
 			@Override
 			public void run() {
 				for (String pName : toTeleport) {
@@ -255,20 +309,12 @@ public class AutoVote extends ArenaModule {
 
 				new StartRunnable(a,
 						a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
-				class RunLater implements Runnable {
-
-					@Override
-					public void run() {
-						vote = null;
-					}
-					
-				}
-				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
+				
 				this.cancel();
 			}
 			
 		}
-		new TeleportLater().runTaskTimer(PVPArena.instance, 1L, 1L);
+		new TeleportLater(a).runTaskTimer(PVPArena.instance, 1L, 1L);
 		
 	}
 	
