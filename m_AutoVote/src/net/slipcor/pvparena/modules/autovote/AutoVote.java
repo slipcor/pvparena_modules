@@ -44,7 +44,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.2.417";
+		return "v1.1.2.418";
 	}
 	
 	@Override
@@ -297,7 +297,7 @@ public class AutoVote extends ArenaModule {
 		}
 		
 		ArenaManager.getShortcutValues().put(definition, a);
-
+		/*
 		final PAG_Join pj = new PAG_Join();
 
 		final Set<String> toTeleport = new HashSet<String>();
@@ -312,7 +312,7 @@ public class AutoVote extends ArenaModule {
 				debug.i("joining " + player.getName());
 				toTeleport.add(player.getName());
 			}
-		}
+		}*
 		
 		class TeleportLater extends BukkitRunnable {
 			Arena a;
@@ -340,7 +340,7 @@ public class AutoVote extends ArenaModule {
 			
 		}
 		new TeleportLater(a).runTaskTimer(PVPArena.instance, 1L, 1L);
-		
+		*/
 	}
 	
 	@Override
