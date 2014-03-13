@@ -42,6 +42,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
 			@Override
 			public void run() {
 				module.vote = null;
+				module.players.clear();
 			}
 			
 		}

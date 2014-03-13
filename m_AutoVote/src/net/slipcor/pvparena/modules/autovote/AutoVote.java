@@ -20,6 +20,7 @@ import sun.security.ssl.Debug;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.PAG_Join;
@@ -35,6 +36,7 @@ public class AutoVote extends ArenaModule {
 	private static Map<String, String> votes = new HashMap<String, String>();
 
 	protected AutoVoteRunnable vote = null;
+	Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
 	
 	public AutoVote() {
 		super("AutoVote");
@@ -42,7 +44,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.2.416";
+		return "v1.1.2.417";
 	}
 	
 	@Override
@@ -180,7 +182,7 @@ public class AutoVote extends ArenaModule {
 					
 					vote = new AutoVoteRunnable(arena,
 					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, def, 
-					arena.getEveryone());
+					players);
 					break;
 				}
 			}
@@ -370,5 +372,15 @@ public class AutoVote extends ArenaModule {
 			
 		}
 		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 200L);
+	}
+	
+	@Override
+	public void parseJoin(CommandSender sender, ArenaTeam team) {
+		players.add(ArenaPlayer.parsePlayer(sender.getName()));
+	}
+	
+	@Override
+	public void resetPlayer(Player player, boolean force) {
+		players.remove(player.getName());
 	}
 }
