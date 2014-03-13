@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.autovote;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -24,16 +25,18 @@ public class AutoVoteRunnable extends ArenaRunnable {
 	private Debug debug = new Debug(68);
 	private final String definition;
 	private final AutoVote module;
-	public AutoVoteRunnable(Arena a, int i, AutoVote mod, String definition) {
+	private final Set<ArenaPlayer> players;
+	public AutoVoteRunnable(Arena a, int i, AutoVote mod, String definition, Set<ArenaPlayer> players) {
 		super(MSG.MODULE_AUTOVOTE_VOTENOW.getNode(), i, null, a, false);
 		this.definition = definition;
 		debug.i("AutoVoteRunnable constructor");
 		module = mod;
+		this.players = players;
 	}
 
 	protected void commit() {
 		debug.i("ArenaVoteRunnable commiting");
-		AutoVote.commit(definition);
+		AutoVote.commit(definition, players);
 		class RunLater implements Runnable {
 
 			@Override
@@ -75,51 +78,16 @@ public class AutoVoteRunnable extends ArenaRunnable {
 		
 		String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), arenastring) : MESSAGES.get(seconds);
 		if (global) {
-			Player[] players = Bukkit.getOnlinePlayers();
 			
-			playerssss: for (Player p : players) {
-				for (Arena aaa : ArenaManager.getArenas()) {
-					if (!aaa.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ONLYSPAMTOJOIN)) {
-						Arena.pmsg(p, message);
-						continue playerssss;
-					}
-					for (ArenaRegion region : aaa.getRegionsByType(RegionType.JOIN)) {
-						if (region.getShape().contains(new PABlockLocation(p.getLocation()))) {
-							Arena.pmsg(p, message);
-							continue playerssss;
-						}
-					}
-				}
+			for (ArenaPlayer p : players) {
+				Arena.pmsg(p.get(), message);
 			}
 			
 			return;
 		}
-		if (arena != null) {
-			Set<ArenaPlayer> players = arena.getEveryone();
-			playerssss: for (ArenaPlayer ap : players) {
-				if (sPlayer != null) {
-					if (ap.getName().equals(sPlayer)) {
-						continue;
-					}
-				}
-				if (ap.get() != null) {
-					if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ONLYSPAMTOJOIN)) {
-						arena.msg(ap.get(), message);
-						continue playerssss;
-					}
-					for (ArenaRegion region : arena.getRegionsByType(RegionType.JOIN)) {
-						if (region.getShape().contains(new PABlockLocation(ap.get().getLocation()))) {
-							arena.msg(ap.get(), message);
-							continue playerssss;
-						}
-					}
-				}
-			}
-			return;
+		for (ArenaPlayer ap : players) {
+			Arena.pmsg(ap.get(), message);
 		}
-		if (Bukkit.getPlayer(sPlayer) != null) {
-			Arena.pmsg(Bukkit.getPlayer(sPlayer), message);
-			return;
-		}
+		return;
 	}
 }

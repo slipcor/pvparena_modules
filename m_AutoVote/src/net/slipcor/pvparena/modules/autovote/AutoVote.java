@@ -17,6 +17,7 @@ import org.bukkit.scoreboard.Team;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.PAG_Join;
@@ -39,7 +40,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.1.413";
+		return "v1.1.2.415";
 	}
 	
 	@Override
@@ -176,7 +177,8 @@ public class AutoVote extends ArenaModule {
 				if (ArenaManager.getShortcutValues().get(def).equals(arena)) {
 					
 					vote = new AutoVoteRunnable(arena,
-					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, def);
+					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, def, 
+					arena.getEveryone());
 					break;
 				}
 			}
@@ -234,7 +236,7 @@ public class AutoVote extends ArenaModule {
 		return null;
 	}
 
-	public static void commit(String definition) {
+	public static void commit(String definition, Set<ArenaPlayer> players) {
 		HashMap<String, String> tempVotes = new HashMap<String, String>();
 		
 		for (String node : votes.keySet()) {
@@ -284,8 +286,8 @@ public class AutoVote extends ArenaModule {
 				toTeleport.add(p.getName());
 			}
 		} else {
-			for (String s : tempVotes.keySet()) {
-				toTeleport.add(s);
+			for (ArenaPlayer player : players) {
+				toTeleport.add(player.getName());
 			}
 		}
 		
