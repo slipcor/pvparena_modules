@@ -15,6 +15,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
+import sun.security.ssl.Debug;
+
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -40,7 +42,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.2.415";
+		return "v1.1.2.416";
 	}
 	
 	@Override
@@ -239,7 +241,21 @@ public class AutoVote extends ArenaModule {
 	public static void commit(String definition, Set<ArenaPlayer> players) {
 		HashMap<String, String> tempVotes = new HashMap<String, String>();
 		
+		debug.i("committing definition " + definition + " for " + players.size());
+		
+		List<String> arenas = ArenaManager.getShortcutDefinitions().get(definition);
+		
+		if (arenas == null || arenas.size() < 1) {
+			debug.i("this definition has no arenas!");
+			return;
+		}
+		
 		for (String node : votes.keySet()) {
+			debug.i(node + " voted " + votes.get(node));
+			if (!arenas.contains(votes.get(node))) {
+				debug.i("not our business!");
+				continue;
+			}
 			tempVotes.put(node, votes.get(node));
 		}
 		
@@ -261,6 +277,7 @@ public class AutoVote extends ArenaModule {
 				voted = name;
 			}
 		}
+		debug.i("max voted: " + String.valueOf(voted));
 
 		Arena a = ArenaManager.getArenaByName(voted);
 		
@@ -268,10 +285,12 @@ public class AutoVote extends ArenaModule {
 			PVPArena.instance.getLogger().warning("Vote resulted in NULL for result '"+voted+"'!");
 			
 			ArenaManager.advance(definition);
+			debug.i("getting next definition value");
 			a = ArenaManager.getShortcutValues().get(definition);
 		}
 		
 		if (a == null) {
+			debug.i("this didn't work oO - still null!");
 			return;
 		}
 		
@@ -282,11 +301,13 @@ public class AutoVote extends ArenaModule {
 		final Set<String> toTeleport = new HashSet<String>();
 		
 		if (a.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
+			debug.i("joining everyone!");
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				toTeleport.add(p.getName());
 			}
 		} else {
 			for (ArenaPlayer player : players) {
+				debug.i("joining " + player.getName());
 				toTeleport.add(player.getName());
 			}
 		}
