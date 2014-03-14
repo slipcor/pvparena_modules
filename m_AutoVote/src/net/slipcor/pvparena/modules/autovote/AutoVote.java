@@ -340,7 +340,7 @@ public class AutoVote extends ArenaModule {
 	}
 	
 	@Override
-	public void resetPlayer(Player player, boolean force) {
+	public void parsePlayerLeave(Player player, ArenaTeam team) {
 		players.remove(player.getName());
 	}
 
