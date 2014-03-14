@@ -12,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
@@ -28,11 +30,12 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.runnables.StartRunnable;
 
-public class AutoVote extends ArenaModule {
+public class AutoVote extends ArenaModule implements Listener {
 	private static Map<String, String> votes = new HashMap<String, String>();
 
 	protected AutoVoteRunnable vote = null;
@@ -44,7 +47,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.2.419";
+		return "v1.1.2.420";
 	}
 	
 	@Override
@@ -310,11 +313,12 @@ public class AutoVote extends ArenaModule {
 		for (Arena arena : ArenaManager.getArenas()) {
 			for (ArenaModule mod : arena.getMods()) {
 				if (mod.getName().equals(this.getName())) {
+					Bukkit.getPluginManager().registerEvents((AutoVote) mod, PVPArena.instance);
 					if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_AUTOSTART)) {
 						continue;
 					}
+					Bukkit.getPluginManager().registerEvents((AutoVote) mod, PVPArena.instance);
 					active = true;
-					break;
 				}
 			}
 		}
@@ -346,5 +350,12 @@ public class AutoVote extends ArenaModule {
 
 	public boolean hasVoted(String name) {
 		return votes.containsKey(name);
+	}
+	
+	@EventHandler(ignoreCancelled=true)
+	public void onTryJoin(PAJoinEvent event) {
+		if (event.getArena().equals(arena)) {
+			event.setCancelled(vote != null);
+		}
 	}
 }
