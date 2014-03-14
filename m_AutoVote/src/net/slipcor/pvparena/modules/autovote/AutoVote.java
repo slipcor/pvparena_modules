@@ -354,6 +354,7 @@ public class AutoVote extends ArenaModule implements Listener {
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onTryJoin(PAJoinEvent event) {
+		arena.getDebugger().i("tryJoin " + event.getPlayer().getName());
 		if (vote != null) {
 			arena.getDebugger().i("vote is not null! denying " + event.getPlayer().getName());
 			event.setCancelled(true);
