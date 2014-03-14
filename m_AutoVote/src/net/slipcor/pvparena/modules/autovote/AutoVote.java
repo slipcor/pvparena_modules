@@ -345,6 +345,6 @@ public class AutoVote extends ArenaModule {
 	}
 
 	public boolean hasVoted(String name) {
-		return !votes.containsKey(name);
+		return votes.containsKey(name);
 	}
 }
