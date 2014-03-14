@@ -44,7 +44,7 @@ public class AutoVote extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.1.2.418";
+		return "v1.1.2.419";
 	}
 	
 	@Override
@@ -56,6 +56,11 @@ public class AutoVote extends ArenaModule {
 	public PACheck checkJoin(CommandSender sender,
 			PACheck res, boolean b) {
 		if (res.hasError() || !b) {
+			return res;
+		}
+		
+		if (vote != null) {
+			res.setError(this, "voting");
 			return res;
 		}
 		
@@ -181,8 +186,7 @@ public class AutoVote extends ArenaModule {
 				if (ArenaManager.getShortcutValues().get(def).equals(arena)) {
 					
 					vote = new AutoVoteRunnable(arena,
-					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, def, 
-					players);
+					arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, def);
 					break;
 				}
 			}
@@ -297,50 +301,6 @@ public class AutoVote extends ArenaModule {
 		}
 		
 		ArenaManager.getShortcutValues().put(definition, a);
-		/*
-		final PAG_Join pj = new PAG_Join();
-
-		final Set<String> toTeleport = new HashSet<String>();
-		
-		if (a.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE)) {
-			debug.i("joining everyone!");
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				toTeleport.add(p.getName());
-			}
-		} else {
-			for (ArenaPlayer player : players) {
-				debug.i("joining " + player.getName());
-				toTeleport.add(player.getName());
-			}
-		}*
-		
-		class TeleportLater extends BukkitRunnable {
-			Arena a;
-			TeleportLater(final Arena a) {
-				this.a = a;
-			}
-			@Override
-			public void run() {
-				for (String pName : toTeleport) {
-					Player p = Bukkit.getPlayerExact(pName);
-					toTeleport.remove(pName);
-					if (p == null) {
-						return;
-					}
-
-					pj.commit(a, p, new String[0]);
-					return;
-				}
-
-				new StartRunnable(a,
-						a.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_READYUP));
-				
-				this.cancel();
-			}
-			
-		}
-		new TeleportLater(a).runTaskTimer(PVPArena.instance, 1L, 1L);
-		*/
 	}
 	
 	@Override
@@ -382,5 +342,9 @@ public class AutoVote extends ArenaModule {
 	@Override
 	public void resetPlayer(Player player, boolean force) {
 		players.remove(player.getName());
+	}
+
+	public boolean hasVoted(String name) {
+		return !votes.containsKey(name);
 	}
 }

@@ -25,18 +25,16 @@ public class AutoVoteRunnable extends ArenaRunnable {
 	private Debug debug = new Debug(68);
 	private final String definition;
 	private final AutoVote module;
-	private final Set<ArenaPlayer> players;
-	public AutoVoteRunnable(Arena a, int i, AutoVote mod, String definition, Set<ArenaPlayer> players) {
+	public AutoVoteRunnable(Arena a, int i, AutoVote mod, String definition) {
 		super(MSG.MODULE_AUTOVOTE_VOTENOW.getNode(), i, null, a, false);
 		this.definition = definition;
 		debug.i("AutoVoteRunnable constructor");
 		module = mod;
-		this.players = players;
 	}
 
 	protected void commit() {
 		debug.i("ArenaVoteRunnable commiting");
-		AutoVote.commit(definition, players);
+		AutoVote.commit(definition, module.players);
 		class RunLater implements Runnable {
 
 			@Override
@@ -78,16 +76,11 @@ public class AutoVoteRunnable extends ArenaRunnable {
 		}
 		
 		String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), arenastring) : MESSAGES.get(seconds);
-		if (global) {
-			
-			for (ArenaPlayer p : players) {
-				Arena.pmsg(p.get(), message);
+
+		for (ArenaPlayer ap : module.players) {
+			if (!module.hasVoted(ap.getName())) {
+				module.getArena().msg(ap.get(), message);
 			}
-			
-			return;
-		}
-		for (ArenaPlayer ap : players) {
-			Arena.pmsg(ap.get(), message);
 		}
 		return;
 	}
