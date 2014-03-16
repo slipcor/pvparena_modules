@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -14,10 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
-
-import sun.security.ssl.Debug;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -25,7 +21,6 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
-import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -33,7 +28,6 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import net.slipcor.pvparena.runnables.StartRunnable;
 
 public class AutoVote extends ArenaModule implements Listener {
 	private static Map<String, String> votes = new HashMap<String, String>();
@@ -47,7 +41,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.420";
+		return "v1.1.2.421";
 	}
 	
 	@Override
@@ -103,7 +97,7 @@ public class AutoVote extends ArenaModule implements Listener {
 			}
 
 			votes.put(sender.getName(), arena.getName());
-			Arena.pmsg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
+			arena.msg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
 			
 			return;
 		} else if (args[0].equals("votestop")) {
@@ -345,7 +339,7 @@ public class AutoVote extends ArenaModule implements Listener {
 	
 	@Override
 	public void parsePlayerLeave(Player player, ArenaTeam team) {
-		players.remove(player.getName());
+		//players.remove(player.getName());
 	}
 
 	public boolean hasVoted(String name) {
