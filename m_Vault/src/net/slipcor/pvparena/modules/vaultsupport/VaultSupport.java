@@ -754,7 +754,6 @@ public class VaultSupport extends ArenaModule implements Listener {
 			double maybevalue = arena.getArenaConfig().getDouble(
 					CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType), -1d);
 
-			PVPArena.instance.getLogger().info("Giving "+economy.format(value)+" to "+playerName);
 			if (maybevalue < 0) {
 				PVPArena.instance.getLogger().warning("config value is not set: " + CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType).getNode());
 			}
