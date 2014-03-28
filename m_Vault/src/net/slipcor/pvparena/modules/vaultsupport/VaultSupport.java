@@ -47,7 +47,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.415";
+		return "v1.1.2.420";
 	}
 
 	@Override
@@ -298,6 +298,13 @@ public class VaultSupport extends ArenaModule implements Listener {
 			return;
 		}
 		
+		final int minPlayers = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_MINPLAYERS);
+		
+		if (minPlayers > arena.getPlayedPlayers().size()) {
+			arena.getDebugger().i("no rewards, not enough players!");
+			return;
+		}
+		
 		arena.getDebugger().i("giving rewards to player " + player.getName(), player);
 
 		int winners = 0;
@@ -371,7 +378,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 				
 				if (player != null) {
-					double factor = 1d;
+					double factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR);
 					for (String node : getPermList().keySet()) {
 						if (player.hasPermission(node)) {
 							factor = Math.max(factor, getPermList().get(node));
@@ -458,6 +465,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_ENTRYFEE))
 				+ " || reward: "
 				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD))
+				+ " || rewardPlayerFactor: "
+				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR))
 				+ " || killreward: "
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_KILLREWARD))
 				+ " || winFactor: "
@@ -467,6 +476,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MINIMUMBET))
 				+ " || maxbet: "
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_MAXIMUMBET))
+				+ " || minplayers: "
+				+ StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_VAULT_MINPLAYERS))
 				+ " || betWinFactor: "
 				+ StringParser.colorVar(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_BETWINFACTOR)));
 
