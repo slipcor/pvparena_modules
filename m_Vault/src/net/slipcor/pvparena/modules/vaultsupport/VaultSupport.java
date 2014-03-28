@@ -1,6 +1,7 @@
 
 package net.slipcor.pvparena.modules.vaultsupport;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.421";
+		return "v1.1.2.422";
 	}
 
 	@Override
@@ -300,10 +301,28 @@ public class VaultSupport extends ArenaModule implements Listener {
 		
 		final int minPlayers = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_MINPLAYERS);
 		
-		if (minPlayers > arena.getPlayedPlayers().size()) {
-			arena.getDebugger().i("no rewards, not enough players!");
-			return;
+		Field field;
+		try {
+			field = arena.getClass().getDeclaredField("startCount");
+			if (minPlayers > field.getInt(arena)) {
+				arena.getDebugger().i("no rewards, not enough players!");
+				return;
+			}
+		} catch (NoSuchFieldException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		
 		
 		arena.getDebugger().i("giving rewards to player " + player.getName(), player);
 
