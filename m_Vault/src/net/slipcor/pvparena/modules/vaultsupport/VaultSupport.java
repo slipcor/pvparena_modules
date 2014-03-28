@@ -47,7 +47,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.420";
+		return "v1.1.2.421";
 	}
 
 	@Override
@@ -248,7 +248,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 		if (list == null) {
 			list = new HashMap<String, Double>();
 			
-			if (null == arena.getArenaConfig().getUnsafe("modules.vault.permfactors")) {
+			if (!arena.getArenaConfig().getYamlConfiguration().contains("modules.vault.permfactors")) {
 				
 				list.put("pa.vault.supervip", 3d);
 				list.put("pa.vault.vip", 2d);
