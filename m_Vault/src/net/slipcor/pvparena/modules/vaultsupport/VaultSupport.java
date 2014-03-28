@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.422";
+		return "v1.1.2.423";
 	}
 
 	@Override
@@ -304,6 +304,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 		Field field;
 		try {
 			field = arena.getClass().getDeclaredField("startCount");
+			field.setAccessible(true);
 			if (minPlayers > field.getInt(arena)) {
 				arena.getDebugger().i("no rewards, not enough players!");
 				return;
