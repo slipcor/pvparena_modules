@@ -448,7 +448,7 @@ public class RealSpectateListener implements Listener {
 		if (event == null ||
 				event.getEntity() == null ||
 				event.getEntity().getShooter() == null ||
-				!event.getEntity().getShooter().getType().equals(EntityType.PLAYER)) {
+				!(event.getEntity().getShooter() instanceof Player)) {
 			return;
 		}
 		

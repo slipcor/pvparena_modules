@@ -5,6 +5,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.core.Debug;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Wolf;
@@ -36,9 +37,9 @@ public class FactionsListener implements Listener {
 				+ event.getEntity().toString());
 
 
-		if (p1 instanceof Projectile) {
+		if (p1 instanceof Projectile && ((Projectile) p1).getShooter() instanceof LivingEntity) {
 			debug.i("parsing projectile");
-			p1 = ((Projectile) p1).getShooter();
+			p1 = (Entity) ((Projectile) p1).getShooter();
 			debug.i("=> " + String.valueOf(p1));
 		}
 

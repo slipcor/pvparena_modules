@@ -16,7 +16,7 @@ public class FactionsSupport extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.44";
+		return "v1.2.2.421";
 	}
 	
 	@Override

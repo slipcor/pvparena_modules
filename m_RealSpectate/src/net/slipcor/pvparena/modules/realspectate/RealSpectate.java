@@ -30,7 +30,7 @@ public class RealSpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.0.1.104";
+		return "v1.2.2.421";
 	}
 
 	@Override

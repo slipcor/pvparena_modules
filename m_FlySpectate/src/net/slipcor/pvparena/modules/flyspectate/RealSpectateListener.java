@@ -8,6 +8,7 @@ import net.slipcor.pvparena.core.Debug;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -43,7 +44,12 @@ public class RealSpectateListener implements Listener {
 		Entity damager = event.getDamager();
 		
 		if (event.getDamager() instanceof Projectile) {
-			damager = ((Projectile) event.getDamager()).getShooter();
+			Projectile projectile = (Projectile) event.getDamager();
+			
+			if (projectile.getShooter() instanceof LivingEntity) {
+			
+				damager = (LivingEntity) projectile.getShooter();
+			}
 		}
 		
 		if (!(damager instanceof Player)) {
@@ -131,7 +137,7 @@ public class RealSpectateListener implements Listener {
 		if (event == null ||
 				event.getEntity() == null ||
 				event.getEntity().getShooter() == null ||
-				!event.getEntity().getShooter().getType().equals(EntityType.PLAYER)) {
+				!(event.getEntity().getShooter() instanceof Player)) {
 			return;
 		}
 		Player subject = (Player) event.getEntity().getShooter();

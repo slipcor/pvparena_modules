@@ -30,7 +30,7 @@ public class FlySpectate extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.335";
+		return "v1.2.2.421";
 	}
 
 	@Override
