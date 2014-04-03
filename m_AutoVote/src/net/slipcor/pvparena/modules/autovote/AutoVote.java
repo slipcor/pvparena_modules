@@ -30,7 +30,7 @@ import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class AutoVote extends ArenaModule implements Listener {
-	private static Map<String, String> votes = new HashMap<String, String>();
+	static Map<String, String> votes = new HashMap<String, String>();
 
 	protected AutoVoteRunnable vote = null;
 	Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
@@ -41,7 +41,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.421";
+		return "v1.2.2.422";
 	}
 	
 	@Override
@@ -334,6 +334,7 @@ public class AutoVote extends ArenaModule implements Listener {
 	
 	@Override
 	public void parseJoin(CommandSender sender, ArenaTeam team) {
+		arena.getDebugger().i("adding autovote player: " + sender.getName());
 		players.add(ArenaPlayer.parsePlayer(sender.getName()));
 	}
 	
