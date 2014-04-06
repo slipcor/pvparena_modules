@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.423";
+		return "v1.1.2.424";
 	}
 
 	@Override
@@ -402,6 +402,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 					for (String node : getPermList().keySet()) {
 						if (player.hasPermission(node)) {
 							factor = Math.max(factor, getPermList().get(node));
+							arena.getDebugger().i("has perm '"+node+"'; factor set to " + factor, player);
 						}
 					}
 					
