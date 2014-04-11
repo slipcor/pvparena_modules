@@ -41,7 +41,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.2.422";
+		return "v1.2.2.423";
 	}
 	
 	@Override

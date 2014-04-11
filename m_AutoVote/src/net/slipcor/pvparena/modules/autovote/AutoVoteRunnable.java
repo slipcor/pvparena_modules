@@ -36,8 +36,8 @@ public class AutoVoteRunnable extends ArenaRunnable {
 				arena.getDebugger().i("clearing 'AutoVote.players'");
 				for (String player : AutoVote.votes.keySet()) {
 					arena.getDebugger().i("removing vote of: " + player);
-					AutoVote.votes.remove(player);
 				}
+				AutoVote.votes.clear();
 				module.players.clear();
 			}
 			
