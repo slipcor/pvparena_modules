@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.427";
+		return "v1.1.2.428";
 	}
 
 	@Override
@@ -781,7 +781,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 					newReward(val[1], "SCORE", Integer.parseInt(val[3]));
 				}
 				
-				if (node.equals("")) {
+				if (node.equals("") && !lastTrigger.equals("")) {
 					newReward(lastTrigger, "WIN");
 				}
 			}
