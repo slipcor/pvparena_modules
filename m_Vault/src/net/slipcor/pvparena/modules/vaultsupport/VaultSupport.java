@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.428";
+		return "v1.1.2.429";
 	}
 
 	@Override
@@ -790,11 +790,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 	}
 
 	private void newReward(String playerName, String rewardType) {
+		if (playerName == null || playerName.length() < 1) {
+			PVPArena.instance.getLogger().warning("winner is empty string in " + arena.getName());
+			return;
+		}
 		arena.getDebugger().i("new Reward: " + playerName + " -> " + rewardType);
 		newReward(playerName, rewardType, 1);
 	}
 
 	private void newReward(String playerName, String rewardType, int amount) {
+		if (playerName == null || playerName.length() < 1) {
+			PVPArena.instance.getLogger().warning("winner is empty string in " + arena.getName());
+			return;
+		}
 		arena.getDebugger().i("new Reward: " + amount + "x "+ playerName + " -> " + rewardType);
 		try {
 			
