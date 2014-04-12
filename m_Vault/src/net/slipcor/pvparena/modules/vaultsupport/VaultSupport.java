@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.426";
+		return "v1.1.2.427";
 	}
 
 	@Override
@@ -227,6 +227,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 						arena.getDebugger().i("Account not found: " + nSplit[0]);
 						return true;
 					}
+					arena.getDebugger().i("1 depositing " + amount + " to " + nSplit[0]);
 					economy.depositPlayer(nSplit[0], amount);
 					try {
 						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
@@ -355,6 +356,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 					double amount = getPlayerBetMap().get(nKey) * playerFactor;
 
+					arena.getDebugger().i("2 depositing " + amount + " to " + nSplit[0]);
 					economy.depositPlayer(nSplit[0], amount);
 					try {
 						
@@ -386,7 +388,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 					
 					amount *= factor;
 				}
-				
+
+				arena.getDebugger().i("3 depositing " + amount + " to " + player.getName());
 				economy.depositPlayer(player.getName(), amount);
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
 						economy.format(amount)));
@@ -418,7 +421,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 					
 					amount *= factor;
 				}
-				
+
+				arena.getDebugger().i("4 depositing " + amount + " to " + player.getName());
 				economy.depositPlayer(player.getName(), amount);
 				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
 						economy.format(amount)));
@@ -444,7 +448,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 						
 						amount *= factor;
 					}
-					
+
+					arena.getDebugger().i("5 depositing " + amount + " to " + player.getName());
 					economy.depositPlayer(nKey, amount);
 					try {
 						
@@ -481,6 +486,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 			arena.getDebugger().i("Account not found: " + player.getName(), player);
 			return;
 		}
+		arena.getDebugger().i("6 depositing " + amount + " to " + player.getName());
 		economy.depositPlayer(player.getName(), amount);
 		try {
 			arena.msg(Bukkit.getPlayer(player.getName()), Language
@@ -624,7 +630,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 					
 					amount *= factor;
 				}
-				
+
+				arena.getDebugger().i("7 depositing " + amount + " to " + nSplit[0]);
 				economy.depositPlayer(nSplit[0], amount);
 				try {
 					arena.msg(Bukkit.getPlayer(nSplit[0]), Language
@@ -666,6 +673,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 				arena.getDebugger().i("Account not found: " + player.getName(), player);
 				return;
 			}
+			arena.getDebugger().i("8 depositing " + entryfee + " to " + player.getName());
 			economy.depositPlayer(player.getName(), entryfee);
 			pot -= entryfee;
 		}
@@ -799,7 +807,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 			if (maybevalue < 0) {
 				PVPArena.instance.getLogger().warning("config value is not set: " + CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType).getNode());
 			}
-			
+
+			arena.getDebugger().i("9 depositing " + value + " to " + playerName);
 			economy.depositPlayer(playerName, value);
 		} catch (Exception e) {
 			e.printStackTrace();
