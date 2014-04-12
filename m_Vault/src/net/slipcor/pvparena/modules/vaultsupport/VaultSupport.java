@@ -48,7 +48,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.425";
+		return "v1.1.2.426";
 	}
 
 	@Override
@@ -401,12 +401,12 @@ public class VaultSupport extends ArenaModule implements Listener {
 					double factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR);
 					
 					try {
-						factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
-						* field.getInt(arena);
+						factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
+						, field.getInt(arena));
 					} catch (Exception e) {
 						PVPArena.instance.getLogger().warning("Failed to get playedPlayers, using winners!");
-						factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
-								* winners;
+						factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
+								, winners);
 					}
 					
 					for (String node : getPermList().keySet()) {
