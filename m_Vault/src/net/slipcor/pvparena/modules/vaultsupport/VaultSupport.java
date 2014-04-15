@@ -49,7 +49,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.2.429";
+		return "v1.2.2.430";
 	}
 
 	@Override
@@ -506,6 +506,17 @@ public class VaultSupport extends ArenaModule implements Listener {
 			arena.getDebugger().i("Account not found: " + player.getName(), player);
 			return;
 		}
+		
+		if (player != null) {
+			double factor = 1d;
+			for (String node : getPermList().keySet()) {
+				if (player.hasPermission(node)) {
+					factor = Math.max(factor, getPermList().get(node));
+				}
+			}
+			
+			amount *= factor;
+		}
 		arena.getDebugger().i("6 depositing " + amount + " to " + player.getName());
 
 		if (amount > 0) {
@@ -841,9 +852,20 @@ public class VaultSupport extends ArenaModule implements Listener {
 			if (maybevalue < 0) {
 				PVPArena.instance.getLogger().warning("config value is not set: " + CFG.valueOf("MODULES_VAULT_REWARD_"+rewardType).getNode());
 			}
+			Player player = Bukkit.getPlayer(playerName);
+			if (player != null) {
+				double factor = 1d;
+				for (String node : getPermList().keySet()) {
+					if (player.hasPermission(node)) {
+						factor = Math.max(factor, getPermList().get(node));
+					}
+				}
+				
+				value *= factor;
+			}
 
 			arena.getDebugger().i("9 depositing " + value + " to " + playerName);
-			if (amount > 0) {
+			if (value > 0) {
 				economy.depositPlayer(playerName, value);
 				try {
 					
@@ -851,7 +873,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 							arena,
 							Language.parse(MSG.NOTICE_PLAYERAWARDED,
 									economy.format(value)), "PRIZE");
-					arena.msg(Bukkit.getPlayer(playerName), Language
+					arena.msg(player, Language
 							.parse(MSG.MODULE_VAULT_YOUWON, economy.format(value)));
 				} catch (Exception e) {
 					// nothing
