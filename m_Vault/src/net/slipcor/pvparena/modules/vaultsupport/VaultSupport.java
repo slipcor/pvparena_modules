@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -50,7 +49,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.2.428";
+		return "v1.2.2.429";
 	}
 
 	@Override
@@ -230,12 +229,14 @@ public class VaultSupport extends ArenaModule implements Listener {
 						return true;
 					}
 					arena.getDebugger().i("1 depositing " + amount + " to " + nSplit[0]);
-					economy.depositPlayer(nSplit[0], amount);
-					try {
-						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
-								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-					} catch (Exception e) {
-						// nothing
+					if (amount > 0) {
+						economy.depositPlayer(nSplit[0], amount);
+						try {
+							arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+									.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+						} catch (Exception e) {
+							// nothing
+						}
 					}
 				}
 			}
@@ -369,17 +370,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 					double amount = getPlayerBetMap().get(nKey) * playerFactor;
 
 					arena.getDebugger().i("2 depositing " + amount + " to " + nSplit[0]);
-					economy.depositPlayer(nSplit[0], amount);
-					try {
-						
-						ArenaModuleManager.announce(
-								arena,
-								Language.parse(MSG.NOTICE_PLAYERAWARDED,
-										economy.format(amount)), "PRIZE");
-						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
-								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-					} catch (Exception e) {
-						// nothing
+					if (amount > 0) {
+						economy.depositPlayer(nSplit[0], amount);
+						try {
+							
+							ArenaModuleManager.announce(
+									arena,
+									Language.parse(MSG.NOTICE_PLAYERAWARDED,
+											economy.format(amount)), "PRIZE");
+							arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+									.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+						} catch (Exception e) {
+							// nothing
+						}
 					}
 				}
 			}
@@ -400,11 +403,13 @@ public class VaultSupport extends ArenaModule implements Listener {
 					
 					amount *= factor;
 				}
-
+				
 				arena.getDebugger().i("3 depositing " + amount + " to " + player.getName());
-				economy.depositPlayer(player.getName(), amount);
-				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
-						economy.format(amount)));
+				if (amount > 0) {
+					economy.depositPlayer(player.getName(), amount);
+					arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
+							economy.format(amount)));
+				}
 			} else if (arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0) > 0) {
 
 				double amount = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_WINREWARD, 0);
@@ -435,10 +440,11 @@ public class VaultSupport extends ArenaModule implements Listener {
 				}
 
 				arena.getDebugger().i("4 depositing " + amount + " to " + player.getName());
-				economy.depositPlayer(player.getName(), amount);
-				arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
-						economy.format(amount)));
-
+				if (amount > 0) {
+					economy.depositPlayer(player.getName(), amount);
+					arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
+							economy.format(amount)));
+				}
 			} 	
 
 			for (String nKey : getPlayerJoinMap().keySet()) {
@@ -462,17 +468,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 					}
 
 					arena.getDebugger().i("5 depositing " + amount + " to " + player.getName());
-					economy.depositPlayer(nKey, amount);
-					try {
-						
-						ArenaModuleManager.announce(
-								arena,
-								Language.parse(MSG.NOTICE_PLAYERAWARDED,
-										economy.format(amount)), "PRIZE");
-						arena.msg(Bukkit.getPlayer(nKey), Language
-								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-					} catch (Exception e) {
-						// nothing
+					if (amount > 0) {
+						economy.depositPlayer(nKey, amount);
+						try {
+							
+							ArenaModuleManager.announce(
+									arena,
+									Language.parse(MSG.NOTICE_PLAYERAWARDED,
+											economy.format(amount)), "PRIZE");
+							arena.msg(Bukkit.getPlayer(nKey), Language
+									.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+						} catch (Exception e) {
+							// nothing
+						}
 					}
 				}
 			}
@@ -499,12 +507,15 @@ public class VaultSupport extends ArenaModule implements Listener {
 			return;
 		}
 		arena.getDebugger().i("6 depositing " + amount + " to " + player.getName());
-		economy.depositPlayer(player.getName(), amount);
-		try {
-			arena.msg(Bukkit.getPlayer(player.getName()), Language
-					.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-		} catch (Exception e) {
-			// nothing
+
+		if (amount > 0) {
+			economy.depositPlayer(player.getName(), amount);
+			try {
+				arena.msg(Bukkit.getPlayer(player.getName()), Language
+						.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+			} catch (Exception e) {
+				// nothing
+			}
 		}
 	}
 
@@ -644,12 +655,14 @@ public class VaultSupport extends ArenaModule implements Listener {
 				}
 
 				arena.getDebugger().i("7 depositing " + amount + " to " + nSplit[0]);
-				economy.depositPlayer(nSplit[0], amount);
-				try {
-					arena.msg(Bukkit.getPlayer(nSplit[0]), Language
-							.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-				} catch (Exception e) {
-					// nothing
+				if (amount > 0) {
+					economy.depositPlayer(nSplit[0], amount);
+					try {
+						arena.msg(Bukkit.getPlayer(nSplit[0]), Language
+								.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+					} catch (Exception e) {
+						// nothing
+					}
 				}
 			}
 		}
@@ -688,6 +701,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 			arena.getDebugger().i("8 depositing " + entryfee + " to " + player.getName());
 			economy.depositPlayer(player.getName(), entryfee);
 			pot -= entryfee;
+			
 		}
 	}
 
@@ -829,17 +843,19 @@ public class VaultSupport extends ArenaModule implements Listener {
 			}
 
 			arena.getDebugger().i("9 depositing " + value + " to " + playerName);
-			economy.depositPlayer(playerName, value);
-			try {
-				
-				ArenaModuleManager.announce(
-						arena,
-						Language.parse(MSG.NOTICE_PLAYERAWARDED,
-								economy.format(value)), "PRIZE");
-				arena.msg(Bukkit.getPlayer(playerName), Language
-						.parse(MSG.MODULE_VAULT_YOUWON, economy.format(value)));
-			} catch (Exception e) {
-				// nothing
+			if (amount > 0) {
+				economy.depositPlayer(playerName, value);
+				try {
+					
+					ArenaModuleManager.announce(
+							arena,
+							Language.parse(MSG.NOTICE_PLAYERAWARDED,
+									economy.format(value)), "PRIZE");
+					arena.msg(Bukkit.getPlayer(playerName), Language
+							.parse(MSG.MODULE_VAULT_YOUWON, economy.format(value)));
+				} catch (Exception e) {
+					// nothing
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
