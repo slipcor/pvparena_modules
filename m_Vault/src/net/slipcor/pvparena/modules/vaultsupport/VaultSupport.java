@@ -50,7 +50,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.2.425";
+		return "v1.2.2.426";
 	}
 
 	@Override
@@ -830,6 +830,17 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 			arena.getDebugger().i("9 depositing " + value + " to " + playerName);
 			economy.depositPlayer(playerName, value);
+			try {
+				
+				ArenaModuleManager.announce(
+						arena,
+						Language.parse(MSG.NOTICE_PLAYERAWARDED,
+								economy.format(amount)), "PRIZE");
+				arena.msg(Bukkit.getPlayer(playerName), Language
+						.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+			} catch (Exception e) {
+				// nothing
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
