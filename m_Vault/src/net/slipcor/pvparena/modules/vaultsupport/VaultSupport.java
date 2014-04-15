@@ -2,8 +2,10 @@
 package net.slipcor.pvparena.modules.vaultsupport;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -48,7 +50,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.1.2.429";
+		return "v1.2.2.425";
 	}
 
 	@Override
@@ -254,15 +256,25 @@ public class VaultSupport extends ArenaModule implements Listener {
 				
 				list.put("pa.vault.supervip", 3d);
 				list.put("pa.vault.vip", 2d);
+				
+				List<String> stringList = new ArrayList<String>();
+				
 				for (String node : list.keySet()) {
-					arena.getArenaConfig().setManually("modules.vault.permfactors."+node, list.get(node));
-					arena.getArenaConfig().save();
+					stringList.add(node + ":" + list.get(node));
 				}
+				arena.getArenaConfig().setManually("modules.vault.permfactors", list);
+				arena.getArenaConfig().save();
 			} else {
-				ConfigurationSection cs = arena.getArenaConfig().getYamlConfiguration().
-						getConfigurationSection("modules.vault.permfactors");
-				for (String node : cs.getKeys(false)) {
-					list.put(node, cs.getDouble(node));
+				List<String> cs = arena.getArenaConfig().getYamlConfiguration().
+						getStringList("modules.vault.permfactors");
+				for (String node : cs) {
+					String[] split = node.split(":");
+					try {
+						list.put(split[0], Double.parseDouble(split[1]));
+					} catch (Exception e) {
+						PVPArena.instance.getLogger().warning(
+								"string '"+node+"' could not be read in node 'modules.vault.permfactors' in arena "+arena.getName());
+					}
 				}
 			}
 		}
