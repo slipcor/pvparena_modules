@@ -50,7 +50,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.2.426";
+		return "v1.2.2.428";
 	}
 
 	@Override
@@ -262,7 +262,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 				for (String node : list.keySet()) {
 					stringList.add(node + ":" + list.get(node));
 				}
-				arena.getArenaConfig().setManually("modules.vault.permfactors", list);
+				arena.getArenaConfig().setManually("modules.vault.permfactors", stringList);
 				arena.getArenaConfig().save();
 			} else {
 				List<String> cs = arena.getArenaConfig().getYamlConfiguration().
@@ -835,9 +835,9 @@ public class VaultSupport extends ArenaModule implements Listener {
 				ArenaModuleManager.announce(
 						arena,
 						Language.parse(MSG.NOTICE_PLAYERAWARDED,
-								economy.format(amount)), "PRIZE");
+								economy.format(value)), "PRIZE");
 				arena.msg(Bukkit.getPlayer(playerName), Language
-						.parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+						.parse(MSG.MODULE_VAULT_YOUWON, economy.format(value)));
 			} catch (Exception e) {
 				// nothing
 			}
