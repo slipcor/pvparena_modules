@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -45,18 +46,45 @@ public class MoveChecker implements Listener {
 		if (arena.isFightInProgress()) {
 			ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
 			if (player.getStatus() == Status.FIGHT) {
-				Block block = player.get().getLocation().getBlock().getRelative(BlockFace.DOWN);
-				Material mat = block.getType();
 				
-				for (ItemStack stack : materials) {
-					if (mat.equals(stack.getType())) {
-						access(block, false);
-					}
-				}
+				
+				
+				checkBlock(event.getPlayer().getLocation().subtract(0, 1, 0));
 			}
 		}
 	}
 	
+	private void checkBlock(Location location) {
+		
+		double x = location.getX() % 1;
+		double z = location.getZ() % 1;
+		
+		if (x < 0.333) {
+			checkBlock(location.add(-1, 0, 0).getBlock());
+		} else if (x > 0.667) {
+			checkBlock(location.add(1, 0, 0).getBlock());
+		}
+		
+		if (z < 0.333) {
+			checkBlock(location.add(0, 0, -1).getBlock());
+		} else if (z > 0.667) {
+			checkBlock(location.add(0, 0, 1).getBlock());
+		}
+	
+		checkBlock(location.getBlock());
+	}
+
+	private void checkBlock(Block block) {
+		Material mat = block.getType();
+		
+		for (ItemStack stack : materials) {
+			if (mat.equals(stack.getType())) {
+				access(block, false);
+				return;
+			}
+		}
+	}
+
 	private synchronized void access(Block block, boolean remove) {
 		if (map.containsKey(block)) {
 			return;
