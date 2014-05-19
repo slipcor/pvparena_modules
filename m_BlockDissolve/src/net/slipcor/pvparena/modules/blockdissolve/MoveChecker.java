@@ -56,8 +56,8 @@ public class MoveChecker implements Listener {
 	
 	private void checkBlock(Location location) {
 		
-		double x = location.getX() % 1;
-		double z = location.getZ() % 1;
+		double x = ((location.getX()*10) % 10)/10;
+		double z = ((location.getZ()*10) % 10)/10;
 		
 		if (x < 0.333) {
 			checkBlock(location.add(-1, 0, 0).getBlock());
