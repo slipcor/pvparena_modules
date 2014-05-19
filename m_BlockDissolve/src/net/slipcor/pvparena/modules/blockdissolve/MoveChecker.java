@@ -24,6 +24,7 @@ public class MoveChecker implements Listener {
 	private final ItemStack[] materials;
 	private final Arena arena;
 	private Map<Block, Runnable> map = new HashMap<Block, Runnable>();
+	final int delay;
 
 	/**
 	 * construct a powerup spawn runnable
@@ -31,11 +32,12 @@ public class MoveChecker implements Listener {
 	 * @param a
 	 *            the arena it's running in
 	 */
-	public MoveChecker(Arena arena, String definition) {
+	public MoveChecker(Arena arena, String definition, int delay) {
 		materials = StringParser.getItemStacksFromString(definition);
 		debug.i("BattleRunnable constructor");
 		this.arena = arena;
 		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+		this.delay = delay;
 	}
 
 	@EventHandler(ignoreCancelled=true)
@@ -69,7 +71,7 @@ public class MoveChecker implements Listener {
 		final Block block;
 		RunLater(Block b) {
 			block = b;
-			Bukkit.getScheduler().runTask(PVPArena.instance, this);
+			Bukkit.getScheduler().runTaskLater(PVPArena.instance, this, delay);
 		}
 		@Override
 		public void run() {

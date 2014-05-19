@@ -26,7 +26,8 @@ public class BlockDissolve extends ArenaModule {
 		if (setup) {
 			return;
 		}
-		new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS));
+		new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS), 
+				arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
 		setup = true;
 	}
 	
