@@ -32,7 +32,7 @@ public class BlockDissolve extends ArenaModule {
 	
 	@Override
 	public void displayInfo(CommandSender sender) {
-		sender.sendMessage("ticks",arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
-		sender.sendMessage("materials",arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS));
+		sender.sendMessage("ticks: "+ arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
+		sender.sendMessage("materials: "+ arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS));
 	}
 }
