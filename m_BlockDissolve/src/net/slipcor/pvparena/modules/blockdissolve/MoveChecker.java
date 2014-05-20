@@ -17,6 +17,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.StringParser;
 
@@ -26,6 +27,7 @@ public class MoveChecker implements Listener {
 	private final Arena arena;
 	private Map<Block, Runnable> map = new HashMap<Block, Runnable>();
 	final int delay;
+	final int startSeconds;
 
 	/**
 	 * construct a powerup spawn runnable
@@ -39,11 +41,12 @@ public class MoveChecker implements Listener {
 		this.arena = arena;
 		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 		this.delay = delay;
+		this.startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
 	}
 
 	@EventHandler(ignoreCancelled=true)
 	public void onMove(PlayerMoveEvent event) {
-		if (arena.isFightInProgress()) {
+		if (arena.isFightInProgress() && arena.getPlayedSeconds() > startSeconds) {
 			ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
 			if (player.getStatus() == Status.FIGHT) {
 				
