@@ -86,6 +86,11 @@ public class MoveChecker implements Listener {
 	}
 
 	private synchronized void access(Block block, boolean remove) {
+		if (block == null && remove) {
+			map.clear();
+			return;
+		}
+		
 		if (map.containsKey(block)) {
 			return;
 		}
@@ -103,9 +108,12 @@ public class MoveChecker implements Listener {
 		}
 		@Override
 		public void run() {
-			block.setType(Material.AIR);
 			access(block, true);
+			block.setType(Material.AIR);
 		}
 		
+	}
+	public void clear() {
+		access(null, true);
 	}
 }

@@ -11,6 +11,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class BlockDissolve extends ArenaModule {
 	private boolean setup = false;
+	private MoveChecker checker;
 
 	public BlockDissolve() {
 		super("BlockDissolve");
@@ -18,7 +19,7 @@ public class BlockDissolve extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.436";
+		return "v1.2.3.437";
 	}
 
 	@Override
@@ -26,8 +27,10 @@ public class BlockDissolve extends ArenaModule {
 		if (setup) {
 			return;
 		}
-		new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS), 
+		if (checker == null) {
+			checker = new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS), 
 				arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
+		}
 		setup = true;
 	}
 	
@@ -35,5 +38,9 @@ public class BlockDissolve extends ArenaModule {
 	public void displayInfo(CommandSender sender) {
 		sender.sendMessage("ticks: "+ arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
 		sender.sendMessage("materials: "+ arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS));
+	}
+	
+	public void reset(boolean force) {
+		checker.clear();
 	}
 }
