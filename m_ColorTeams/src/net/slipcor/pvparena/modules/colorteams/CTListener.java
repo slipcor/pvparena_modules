@@ -5,6 +5,7 @@ import java.util.HashSet;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.loadables.ArenaModule;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +31,20 @@ public class CTListener implements Listener {
 			}
 			return;
 		}
+		
+		boolean found = false;
+		
+		for (ArenaModule mod : ap.getArena().getMods()) {
+			if (mod.getName().equals("ColorTeams")) {
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			return;
+		}
+		
 		if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
 			event.setTag(" ");
 			return;
