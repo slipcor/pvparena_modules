@@ -32,6 +32,10 @@ public class CTListener implements Listener {
 			return;
 		}
 		
+		if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
+			return;
+		}
+		
 		boolean found = false;
 		
 		for (ArenaModule mod : ap.getArena().getMods()) {

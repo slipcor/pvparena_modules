@@ -1,11 +1,16 @@
 package net.slipcor.pvparena.modules.colorteams;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.kitteh.tag.TagAPI;
 
 import net.slipcor.pvparena.PVPArena;
@@ -21,6 +26,8 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class CTManager extends ArenaModule {
 	protected static boolean tagAPIenabled = false;
+	private Scoreboard board = null;
+	private Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
 
 	public CTManager() {
 		super("ColorTeams");
@@ -75,6 +82,8 @@ public class CTManager extends ArenaModule {
 	public void displayInfo(CommandSender player) {
 		player.sendMessage(StringParser.colorVar("enabled",arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK))
 				+ " | "
+				+ StringParser.colorVar("scoreboard", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD))
+				+ " | "
 				+ StringParser.colorVar("hidename", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)));
 	}
 	
@@ -94,7 +103,8 @@ public class CTManager extends ArenaModule {
 	@Override
 	public void tpPlayerToCoordName(Player player, String place) {
 		ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
-		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK) &&
+				!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
 			String n;
 			if (team == null) {
 				n = player.getName();
@@ -111,7 +121,8 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public void unload(final Player player) {
-		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK) &&
+				!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
 			player.setDisplayName(player.getName());
 		}
 		if (tagAPIenabled) {
@@ -132,12 +143,68 @@ public class CTManager extends ArenaModule {
 	}
 	
 	public void updateName(Player player, ArenaTeam team) {
-		if (tagAPIenabled) {
+		if (tagAPIenabled &&
+				!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
 			try {
 				TagAPI.refreshPlayer(player);
 			} catch (Exception e) {
 				
 			}
+		}
+	}
+	
+	public void parseJoin(CommandSender sender, ArenaTeam team) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
+			return;
+		}
+		Scoreboard board = getScoreboard();
+		((Player) sender).setScoreboard(board);
+		for (Team sTeam : board.getTeams()) {
+			if (sTeam.getName().equals(team.getName())) {
+				sTeam.addPlayer((Player) sender);
+				return;
+			}
+		}
+		Team sTeam = board.registerNewTeam(team.getName());
+		sTeam.setPrefix(team.getColor().toString());
+		sTeam.addPlayer((Player) sender);
+	}
+	
+	public void parsePlayerLeave(Player player, ArenaTeam team) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
+			return;
+		}
+		getScoreboard().getTeam(team.getName()).removePlayer(player);
+		player.setScoreboard(backup.get(player.getName()));
+	}
+	
+	private Scoreboard getScoreboard() {
+		if (board == null) {
+			board = Bukkit.getScoreboardManager().getNewScoreboard();
+			for (ArenaTeam team : arena.getTeams()) {
+				Team sTeam = board.registerNewTeam(team.getName());
+				sTeam.setPrefix(team.getColor().toString());
+				for (ArenaPlayer aPlayer : team.getTeamMembers()) {
+					sTeam.addPlayer(aPlayer.get());
+				}
+			}
+		}
+		return board;
+	}
+	
+	public void reset(boolean force) {
+		if (force) {
+			backup.clear();
+		} else {
+			class RunLater implements Runnable {
+
+				@Override
+				public void run() {
+					backup.clear();
+				}
+				
+			}
+			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
 		}
 	}
 }
