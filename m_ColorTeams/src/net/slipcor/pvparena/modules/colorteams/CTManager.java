@@ -35,7 +35,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.441";
+		return "v1.2.3.442";
 	}
 	
 	@Override
@@ -103,8 +103,7 @@ public class CTManager extends ArenaModule {
 	@Override
 	public void tpPlayerToCoordName(Player player, String place) {
 		ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
-		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK) &&
-				!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
+		if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
 			String n;
 			if (team == null) {
 				n = player.getName();
