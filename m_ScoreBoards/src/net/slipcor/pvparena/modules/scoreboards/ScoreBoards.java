@@ -42,7 +42,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.396";
+		return "v1.2.3.400";
 	}
 
 	
@@ -51,11 +51,7 @@ public class ScoreBoards extends ArenaModule {
 		if (sbm == null) {
 			sbm = Bukkit.getScoreboardManager();
 		}
-		if (setup) {
-			return;
-		}
 		Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
-		setup = true;
 	}
 
 	public void update(Player player) {
