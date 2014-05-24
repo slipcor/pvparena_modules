@@ -35,7 +35,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.442";
+		return "v1.2.3.444";
 	}
 	
 	@Override
@@ -174,7 +174,11 @@ public class CTManager extends ArenaModule {
 			return;
 		}
 		getScoreboard().getTeam(team.getName()).removePlayer(player);
-		player.setScoreboard(backup.get(player.getName()));
+		if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
+			player.setScoreboard(backup.get(player.getName()));
+		} else {
+			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+		}
 	}
 	
 	private Scoreboard getScoreboard() {
