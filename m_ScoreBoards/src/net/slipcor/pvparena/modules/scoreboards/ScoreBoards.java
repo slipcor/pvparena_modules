@@ -25,7 +25,6 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
 public class ScoreBoards extends ArenaModule {
-	private boolean setup = false;
 	private static ScoreboardManager sbm = null;
 	
 	private Scoreboard board = null;
@@ -42,7 +41,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.400";
+		return "v1.2.3.446";
 	}
 
 	
@@ -217,6 +216,25 @@ public class ScoreBoards extends ArenaModule {
 					}
 					update(player);
 				}
+			}
+			
+		}
+		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 1L);
+	}
+
+	public void change(final Player player, final ArenaTeam from, final ArenaTeam to) {
+
+		class RunLater implements Runnable {
+
+			@Override
+			public void run() {
+				
+				ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+				if (aPlayer.getArenaTeam() != null) {
+					board.getTeam(from.getName()).removePlayer(player);
+					board.getTeam(to.getName()).addPlayer(player);
+				}
+				update(player);
 			}
 			
 		}
