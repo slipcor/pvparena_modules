@@ -41,7 +41,7 @@ public class ScoreBoards extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.446";
+		return "v1.2.3.447";
 	}
 
 	
@@ -232,7 +232,16 @@ public class ScoreBoards extends ArenaModule {
 				ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
 				if (aPlayer.getArenaTeam() != null) {
 					board.getTeam(from.getName()).removePlayer(player);
-					board.getTeam(to.getName()).addPlayer(player);
+					
+					for (Team sTeam : board.getTeams()) {
+						if (sTeam.getName().equals(to.getName())) {
+							sTeam.addPlayer(player);
+							return;
+						}
+					}
+					Team sTeam = board.registerNewTeam(to.getName());
+					sTeam.setPrefix(to.getColor().toString());
+					sTeam.addPlayer(player);
 				}
 				update(player);
 			}

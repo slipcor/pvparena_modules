@@ -8,7 +8,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.kitteh.tag.TagAPI;
@@ -22,9 +25,10 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.events.PATeamChangeEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 
-public class CTManager extends ArenaModule {
+public class CTManager extends ArenaModule implements Listener {
 	protected static boolean tagAPIenabled = false;
 	private Scoreboard board = null;
 	private Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
@@ -35,7 +39,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.444";
+		return "v1.2.3.447";
 	}
 	
 	@Override
@@ -89,6 +93,7 @@ public class CTManager extends ArenaModule {
 	
 	@Override
 	public void configParse(YamlConfiguration config) {
+		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 		if (tagAPIenabled) {
 			return;
 		}
@@ -169,11 +174,29 @@ public class CTManager extends ArenaModule {
 		sTeam.addPlayer((Player) sender);
 	}
 	
+	@Override
 	public void parsePlayerLeave(Player player, ArenaTeam team) {
 		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
 			return;
 		}
 		getScoreboard().getTeam(team.getName()).removePlayer(player);
+		if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
+			player.setScoreboard(backup.get(player.getName()));
+		} else {
+			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+		}
+	}
+	
+	@Override
+	public void resetPlayer(Player player, boolean force) {
+		if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
+			return;
+		}
+		ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+		
+		if (team != null) {
+			getScoreboard().getTeam(team.getName()).removePlayer(player);
+		}
 		if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
 			player.setScoreboard(backup.get(player.getName()));
 		} else {
@@ -209,5 +232,25 @@ public class CTManager extends ArenaModule {
 			}
 			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
 		}
+	}
+	
+	@EventHandler
+	public void onChange(PATeamChangeEvent event) {
+		if (event.getArena() != arena) {
+			return;
+		}
+		
+		board.getTeam(event.getFrom().getName()).removePlayer(event.getPlayer());
+		
+		
+		for (Team sTeam : board.getTeams()) {
+			if (sTeam.getName().equals(event.getTo().getName())) {
+				sTeam.addPlayer(event.getPlayer());
+				return;
+			}
+		}
+		Team sTeam = board.registerNewTeam(event.getTo().getName());
+		sTeam.setPrefix(event.getTo().getColor().toString());
+		sTeam.addPlayer(event.getPlayer());
 	}
 }
