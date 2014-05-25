@@ -29,6 +29,7 @@ public class MoveChecker implements Listener {
 	final int delay;
 	final int startSeconds;
 	boolean active = false;
+	CountdownRunner runner = null;
 
 	/**
 	 * construct a powerup spawn runnable
@@ -43,20 +44,23 @@ public class MoveChecker implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 		this.delay = delay;
 		this.startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
-		
-		new CountdownRunner(arena, this, startSeconds);
 	}
 
 	@EventHandler(ignoreCancelled=true)
 	public void onMove(PlayerMoveEvent event) {
 		
 		if (active && arena.isFightInProgress()) {
+			
+			if (runner == null) {
+				runner = new CountdownRunner(arena, this, startSeconds);
+			}
+			
 			ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
 			if (arena != player.getArena()) {
 				return;
 			} 	
-			if (player.getStatus() == Status.FIGHT) {
-				
+			
+			if (arena.getPlayedSeconds() > startSeconds && player.getStatus() == Status.FIGHT) {
 				
 				
 				checkBlock(event.getPlayer().getLocation().subtract(0, 1, 0));
@@ -126,5 +130,6 @@ public class MoveChecker implements Listener {
 	public void clear() {
 		access(null, true);
 		active = false;
+		runner = null;
 	}
 }
