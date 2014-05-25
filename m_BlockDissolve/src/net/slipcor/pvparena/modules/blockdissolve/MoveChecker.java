@@ -64,7 +64,7 @@ public class MoveChecker implements Listener {
 		}
 	}
 	
-	private void checkBlock(Location location) {
+	void checkBlock(Location location) {
 		
 		double x = ((location.getX()*10) % 10)/10;
 		double z = ((location.getZ()*10) % 10)/10;
@@ -125,5 +125,6 @@ public class MoveChecker implements Listener {
 	}
 	public void clear() {
 		access(null, true);
+		active = false;
 	}
 }
