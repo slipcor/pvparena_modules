@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
@@ -38,7 +39,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.1.0.370";
+		return "v1.2.3.450";
 	}
 	
 	@Override
@@ -117,21 +118,32 @@ public class BetterFight extends ArenaModule {
 	@Override
 	public void configParse(YamlConfiguration config) {
 
+		if (config.get("betterfight") != null) {
+			ConfigurationSection cs = config.getConfigurationSection("betterfight");
+			ConfigurationSection newCS = config.getConfigurationSection("modules.betterfight");
+			
+			for (String node : cs.getKeys(true)) {
+				newCS.set(node, cs.get(node));
+			}
+			
+			config.set("betterfight", null);
+		}
+		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_MESSAGES)) {
-			config.addDefault("betterfight.messages.m1", "First Kill!");
-			config.addDefault("betterfight.messages.m2", "Double Kill!");
-			config.addDefault("betterfight.messages.m3", "Triple Kill!");
-			config.addDefault("betterfight.messages.m4", "Quadra Kill!");
-			config.addDefault("betterfight.messages.m5", "Super Kill!");
-			config.addDefault("betterfight.messages.m6", "Ultra Kill!");
-			config.addDefault("betterfight.messages.m7", "Godlike!");
-			config.addDefault("betterfight.messages.m8", "Monster!");
+			config.addDefault("modules.betterfight.messages.m1", "First Kill!");
+			config.addDefault("modules.betterfight.messages.m2", "Double Kill!");
+			config.addDefault("modules.betterfight.messages.m3", "Triple Kill!");
+			config.addDefault("modules.betterfight.messages.m4", "Quadra Kill!");
+			config.addDefault("modules.betterfight.messages.m5", "Super Kill!");
+			config.addDefault("modules.betterfight.messages.m6", "Ultra Kill!");
+			config.addDefault("modules.betterfight.messages.m7", "Godlike!");
+			config.addDefault("modules.betterfight.messages.m8", "Monster!");
 		}
 
-		config.addDefault("betterfight.sounds.arrow", "none");
-		config.addDefault("betterfight.sounds.egg", "none");
-		config.addDefault("betterfight.sounds.snow", "none");
-		config.addDefault("betterfight.sounds.fireball", "none");
+		config.addDefault("modules.betterfight.sounds.arrow", "none");
+		config.addDefault("modules.betterfight.sounds.egg", "none");
+		config.addDefault("modules.betterfight.sounds.snow", "none");
+		config.addDefault("modules.betterfight.sounds.fireball", "none");
 		
 		config.options().copyDefaults(true);
 	}
