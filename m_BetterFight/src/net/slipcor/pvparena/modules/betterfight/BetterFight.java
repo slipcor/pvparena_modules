@@ -39,7 +39,7 @@ public class BetterFight extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.450";
+		return "v1.2.3.451";
 	}
 	
 	@Override
@@ -103,10 +103,10 @@ public class BetterFight extends ArenaModule {
 					return;
 				}
 				String value = StringParser.joinArray(StringParser.shiftArrayBy(args, 2), " ");
-				arena.getArenaConfig().setManually("betterfight.messages.m" + i,
+				arena.getArenaConfig().setManually("modules.betterfight.messages.m" + i,
 						value);
 				arena.getArenaConfig().save();
-				arena.msg(sender, Language.parse(MSG.SET_DONE, "betterfight.messages.m" + i, value));
+				arena.msg(sender, Language.parse(MSG.SET_DONE, "modules.betterfight.messages.m" + i, value));
 				return;
 			}
 			
@@ -215,7 +215,7 @@ public class BetterFight extends ArenaModule {
 			float volume = 1.0f;
 			float pitch = 1.0f;
 			
-			String node = "betterfight.sounds." + string;
+			String node = "modules.betterfight.sounds." + string;
 			
 			String value = (String) arena.getArenaConfig().getUnsafe(node);
 			
@@ -275,7 +275,7 @@ public class BetterFight extends ArenaModule {
 			return;
 		}
 		
-		String msg = (String) arena.getArenaConfig().getUnsafe("betterfight.messages.m"+killcount);
+		String msg = (String) arena.getArenaConfig().getUnsafe("modules.betterfight.messages.m"+killcount);
 
 		PAGoalEvent scoreEvent = new PAGoalEvent(arena, null, new String[]{"BetterFight",
 				"score:"+p.getName()+":"+ArenaPlayer.parsePlayer(p.getName()).getArenaTeam().getName()+
