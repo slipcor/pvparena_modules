@@ -155,7 +155,7 @@ public class Squads extends ArenaModule {
 			return false;
 		}
 		
-		if (arena.isFightInProgress() && !((boolean) arena.getArenaConfig().getUnsafe(
+		if (arena.isFightInProgress() && !((Boolean) arena.getArenaConfig().getUnsafe(
 				"modules.squads.ingameSquadSwitch"))) {
 			return false;
 		}
