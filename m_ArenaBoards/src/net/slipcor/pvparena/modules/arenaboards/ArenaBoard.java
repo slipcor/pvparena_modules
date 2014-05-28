@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.arenaboards;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -10,6 +11,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.managers.StatisticsManager;
 
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -27,7 +29,7 @@ public class ArenaBoard {
 
 	public StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
-	private HashMap<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
+	private Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
 
 	/**
 	 * create an arena board instance
@@ -60,6 +62,7 @@ public class ArenaBoard {
 				StatisticsManager.type t = null;
 				try {
 					t = StatisticsManager.getTypeBySignLine(s.getLine(0));
+					s.setLine(0, ChatColor.AQUA + t.getNiceName());
 				} catch (Exception e) {
 					// nothing
 				}
@@ -86,18 +89,6 @@ public class ArenaBoard {
 	 * @return the blockface of the direction of the next column
 	 */
 	private BlockFace getRightDirection(Sign s) {
-		
-		/*
-		byte data = s.getRawData();
-
-		if (data == 2)
-			return BlockFace.NORTH;
-		if (data == 3)
-			return BlockFace.SOUTH;
-		if (data == 4)
-			return BlockFace.WEST;
-		if (data == 5)
-			return BlockFace.EAST;*/
 		
 		Block block = s.getBlock();
 		org.bukkit.material.Sign sign = (org.bukkit.material.Sign) block.getState().getData();
