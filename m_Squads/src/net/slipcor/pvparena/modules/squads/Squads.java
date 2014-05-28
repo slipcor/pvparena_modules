@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.squads;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.core.Debug;
@@ -40,7 +42,7 @@ public class Squads extends ArenaModule {
 
 	@Override
 	public String version() {
-		return "v1.2.3.453";
+		return "v1.2.3.454";
 	}
 	
 	@Override
@@ -158,6 +160,14 @@ public class Squads extends ArenaModule {
 			return false;
 		}
 		
+		if (ap.getStatus().equals(Status.DEAD)
+				|| ap.getStatus().equals(Status.LOST)
+				|| ap.getStatus().equals(Status.NULL)
+				|| ap.getStatus().equals(Status.WARM)
+				|| ap.getStatus().equals(Status.WATCH)) {
+			return false;
+		}
+		
 		if (!event.hasBlock() || !(event.getClickedBlock().getState() instanceof Sign)) {
 			return false;
 		}
@@ -250,20 +260,23 @@ public class Squads extends ArenaModule {
 		ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 		for (ArenaSquad squad : squads) {
 			if (squad.contains(ap) && squad.getCount() > 1) {
+				int pos = new Random().nextInt(squad.getCount()-1);
 				for (final ArenaPlayer tap : squad.getPlayers()) {
-					class RunLater implements Runnable {
-
-						@Override
-						public void run() {
-							player.teleport(tap.get());
+					if (--pos <= 0) {
+						class RunLater implements Runnable {
+	
+							@Override
+							public void run() {
+								player.teleport(tap.get());
+							}
+							
 						}
-						
-					}
-					try {
-						Bukkit.getScheduler().runTaskLater(PVPArena.instance,
-								new RunLater(), 10L);
-					} catch (Exception e) {
-						
+						try {
+							Bukkit.getScheduler().runTaskLater(PVPArena.instance,
+									new RunLater(), 10L);
+						} catch (Exception e) {
+							
+						}
 					}
 				}
 			}
