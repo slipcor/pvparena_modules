@@ -52,5 +52,6 @@
         <module>m_Vault</module>
         <module>m_Walls</module>
         <module>m_WorldEdit</module>
+        <module>m_WorldGuard</module>
     </modules>
 </project>
