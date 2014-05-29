@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -26,7 +27,7 @@ public class PAWG extends ArenaModule {
 	
 	@Override
 	public String version() {
-		return "v1.2.3.458";
+		return "v1.2.3.459";
 	}
 
 	@Override
@@ -66,6 +67,7 @@ ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExac
 			arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));
 			return;
 		}
+		BlockVector v = region.getMinimumPoint();
 		
 		Location loc1 = new Location(p.getWorld(),
 				region.getMinimumPoint().getBlockX(),
