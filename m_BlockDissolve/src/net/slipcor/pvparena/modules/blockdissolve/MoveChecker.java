@@ -64,18 +64,20 @@ public class MoveChecker implements Listener {
 	
 	private void checkBlock(Location location) {
 		
+		arena.getDebugger().i("checkBlock[loc]: " + location.getX() +"/"+ location.getY() +"/"+ location.getZ());
+		
 		double x = ((location.getX()*10) % 10)/10;
 		double z = ((location.getZ()*10) % 10)/10;
 		
-		if (z < 0.5) {
+		if (x < 0.333) {
 			checkBlock(location.add(-1, 0, 0).getBlock());
-		} else if (z > 0.5) {
+		} else if (x > 0.666) {
 			checkBlock(location.add(1, 0, 0).getBlock());
 		}
 		
-		if (x < 0.5) {
+		if (z < 0.333) {
 			checkBlock(location.add(0, 0, -1).getBlock());
-		} else if (x > 0.5) {
+		} else if (z > 0.666) {
 			checkBlock(location.add(0, 0, 1).getBlock());
 		}
 	
@@ -83,6 +85,8 @@ public class MoveChecker implements Listener {
 	}
 
 	private void checkBlock(Block block) {
+		arena.getDebugger().i("checkBlock[block]: " + block.getX() +"/"+ block.getY() +"/"+ block.getZ());
+		
 		Material mat = block.getType();
 		
 		for (ItemStack stack : materials) {
