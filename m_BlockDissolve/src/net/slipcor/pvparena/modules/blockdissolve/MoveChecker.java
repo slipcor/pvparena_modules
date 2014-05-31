@@ -67,15 +67,15 @@ public class MoveChecker implements Listener {
 		double x = ((location.getX()*10) % 10)/10;
 		double z = ((location.getZ()*10) % 10)/10;
 		
-		if (x < 0.333) {
+		if (x < 0.5) {
 			checkBlock(location.add(-1, 0, 0).getBlock());
-		} else if (x > 0.666) {
+		} else if (x > 0.5) {
 			checkBlock(location.add(1, 0, 0).getBlock());
 		}
 		
-		if (z < 0.333) {
+		if (z < 0.5) {
 			checkBlock(location.add(0, 0, -1).getBlock());
-		} else if (z > 0.666) {
+		} else if (z > 0.5) {
 			checkBlock(location.add(0, 0, 1).getBlock());
 		}
 	
