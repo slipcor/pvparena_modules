@@ -57,7 +57,7 @@ public class MoveChecker implements Listener {
 			if (arena.getPlayedSeconds() > startSeconds && player.getStatus() == Status.FIGHT) {
 				
 				
-				checkBlock(event.getPlayer().getLocation().subtract(0, 1, 0));
+				checkBlock(event.getPlayer().getLocation().clone().subtract(0, 1, 0));
 			}
 		}
 	}
@@ -70,15 +70,15 @@ public class MoveChecker implements Listener {
 		double z = ((location.getZ()*10) % 10)/10;
 		
 		if (x < 0.333) {
-			checkBlock(location.add(-1, 0, 0).getBlock());
+			checkBlock(location.clone().add(-1, 0, 0).getBlock());
 		} else if (x > 0.666) {
-			checkBlock(location.add(1, 0, 0).getBlock());
+			checkBlock(location.clone().add(1, 0, 0).getBlock());
 		}
 		
 		if (z < 0.333) {
-			checkBlock(location.add(0, 0, -1).getBlock());
+			checkBlock(location.clone().add(0, 0, -1).getBlock());
 		} else if (z > 0.666) {
-			checkBlock(location.add(0, 0, 1).getBlock());
+			checkBlock(location.clone().add(0, 0, 1).getBlock());
 		}
 	
 		checkBlock(location.getBlock());
