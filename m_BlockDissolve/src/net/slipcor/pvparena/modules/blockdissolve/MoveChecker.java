@@ -43,8 +43,6 @@ public class MoveChecker implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
 		this.delay = delay;
 		this.startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
-		
-		new CountdownRunner(arena, this, startSeconds);
 	}
 
 	@EventHandler(ignoreCancelled=true)
@@ -125,5 +123,10 @@ public class MoveChecker implements Listener {
 	}
 	public void clear() {
 		access(null, true);
+		active = false;
+	}
+
+	public void start() {
+		new CountdownRunner(arena, this, startSeconds);
 	}
 }
