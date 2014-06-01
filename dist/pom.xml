@@ -26,6 +26,8 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <finalName>files</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
                             </descriptors>
