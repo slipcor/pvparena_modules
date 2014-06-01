@@ -306,5 +306,5 @@
                 <include>*.jar</include>
             </includes>
         </fileSet>
-    <fileSet>
+    </fileSets>
 </assembly>
