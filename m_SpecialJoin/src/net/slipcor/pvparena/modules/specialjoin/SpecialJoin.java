@@ -272,7 +272,6 @@ public class SpecialJoin extends ArenaModule implements Listener {
 					sign.update();
 				}
 			}
-			
 		}
 		try {
 			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
