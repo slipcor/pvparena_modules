@@ -1,14 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>PVP Arena Modules</name>
     <groupId>net.slipcor.pvpa</groupId>
     <artifactId>modules</artifactId>
-    <packaging>pom</packaging>
     <version>1.2</version>
-    <name>PVP Arena Modules</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <modules>
         <module>m_AfterMatch</module>
@@ -53,6 +58,6 @@
         <module>m_Walls</module>
         <module>m_WorldEdit</module>
         <module>m_WorldGuard</module>
-        <module>module-package</module>
+        <module>dist</module>
     </modules>
 </project>
