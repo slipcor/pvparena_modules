@@ -276,7 +276,6 @@ public class SpecialJoin extends ArenaModule implements Listener {
 		try {
 			Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
 		} catch (IllegalPluginAccessException e) {
-			
 		}
 	}
 }
