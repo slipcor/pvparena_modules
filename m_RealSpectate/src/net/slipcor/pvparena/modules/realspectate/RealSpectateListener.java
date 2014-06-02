@@ -2,10 +2,14 @@ package net.slipcor.pvparena.modules.realspectate;
 
 import java.util.HashMap;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PABlockLocation;
+import net.slipcor.pvparena.commands.PAG_Spectate;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.events.PADeathEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -486,6 +490,28 @@ public class RealSpectateListener implements Listener {
 		
 		projectile.teleport(location);
 		
+	}
+
+	@EventHandler
+	public void onPADeath(final PADeathEvent event) {
+		if (!event.isRespawning()) {
+			try {
+				class RunLater implements Runnable {
+
+					@Override
+					public void run() {
+						if (event.getArena().isFightInProgress()) {
+							PAG_Spectate spec = new PAG_Spectate();
+							spec.commit(event.getArena(), event.getPlayer(), new String[0]);
+						}
+					}
+					
+				}
+				Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
+			} catch (Exception e) {
+				
+			}
+		}
 	}
 	
 	void switchPlayer(Player spectator, Player subject, boolean forward) {
