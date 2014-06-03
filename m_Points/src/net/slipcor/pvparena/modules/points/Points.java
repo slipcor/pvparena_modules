@@ -36,7 +36,7 @@ public class Points extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.3.474";
+		return "v1.2.3.475";
 	}
 	
 	@Override
@@ -131,7 +131,7 @@ public class Points extends ArenaModule implements Listener {
 				return points.get(player.getName()) < d;
 			}
 		}
-		return true;
+		return d > 0d;
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
