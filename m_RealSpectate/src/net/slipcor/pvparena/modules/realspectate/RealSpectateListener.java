@@ -494,6 +494,9 @@ public class RealSpectateListener implements Listener {
 
 	@EventHandler
 	public void onPADeath(final PADeathEvent event) {
+		if (!event.getArena().equals(rs.getArena())) {
+			return;
+		}
 		if (!event.isRespawning()) {
 			try {
 				class RunLater implements Runnable {
@@ -529,6 +532,11 @@ public class RealSpectateListener implements Listener {
 		for (ArenaPlayer ap : rs.getArena().getFighters()) {
 			debug.i("checking " + ap.getName(), spectator);
 			Player p = ap.get();
+			
+			if (ap.getName().equals(spectator.getName())) {
+				debug.i("we are still in -.-", spectator);
+				continue;
+			}
 			
 			if (subject == null) {
 				debug.i("subject == null", spectator);
