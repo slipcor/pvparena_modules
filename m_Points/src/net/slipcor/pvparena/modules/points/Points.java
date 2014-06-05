@@ -36,7 +36,7 @@ public class Points extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.3.475";
+		return "v1.2.3.476";
 	}
 	
 	@Override
@@ -45,11 +45,6 @@ public class Points extends ArenaModule implements Listener {
 		for (ArenaClass aClass : arena.getClasses()) {
 			config.addDefault("modules.points.classes."+aClass.getName(), 0d);
 		}
-		if (config.get("modules.points.players") == null) {
-			return;
-		}
-		
-		ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
 		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
 			if (globalconfig == null) {
@@ -68,12 +63,22 @@ public class Points extends ArenaModule implements Listener {
 				} else {
 					globalconfig = YamlConfiguration.loadConfiguration(gcf);
 				}
-				
+
+                if (config.get("modules.points.players") == null) {
+                    return;
+                }
+
+                ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
 				for(String playerName : globalconfig.getKeys(false)) {
 					globalpoints.put(playerName, cs.getDouble(playerName));
 				}
 			}
 		} else {
+            if (config.get("modules.points.players") == null) {
+                return;
+            }
+
+            ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
 			for (String playerName : cs.getKeys(false)) {
 				points.put(playerName, cs.getDouble(playerName));
 			}
