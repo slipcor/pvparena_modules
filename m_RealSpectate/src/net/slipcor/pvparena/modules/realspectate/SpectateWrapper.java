@@ -161,15 +161,9 @@ public class SpectateWrapper {
 	}
 
 	public void updateLocation() {
-		class LaterRun implements Runnable {
-			@Override
-			public void run() {
-				for (Player p : spectators) {
-					p.teleport(suspect.getLocation());
-				}
-			}
-		}
-		Bukkit.getScheduler().runTaskLater(PVPArena.instance, new LaterRun(), 5L);
+        for (Player p : spectators) {
+            p.teleport(suspect.getLocation());
+        }
 	}
 
 	public void stopHard() {

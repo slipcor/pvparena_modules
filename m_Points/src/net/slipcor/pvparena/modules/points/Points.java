@@ -46,7 +46,6 @@ public class Points extends ArenaModule implements Listener {
 			config.addDefault("modules.points.classes."+aClass.getName(), 0d);
 		}
 		
-		
 		if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
 			if (globalconfig == null) {
 				gcf = new File(PVPArena.instance.getDataFolder(), "points.yml");
@@ -64,21 +63,22 @@ public class Points extends ArenaModule implements Listener {
 				} else {
 					globalconfig = YamlConfiguration.loadConfiguration(gcf);
 				}
-				if (config.get("modules.points.players") == null) {
-					return;
-				}
-				
-				ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
+
+                if (config.get("modules.points.players") == null) {
+                    return;
+                }
+
+                ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
 				for(String playerName : globalconfig.getKeys(false)) {
 					globalpoints.put(playerName, cs.getDouble(playerName));
 				}
 			}
 		} else {
-			if (config.get("modules.points.players") == null) {
-				return;
-			}
-			
-			ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
+            if (config.get("modules.points.players") == null) {
+                return;
+            }
+
+            ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
 			for (String playerName : cs.getKeys(false)) {
 				points.put(playerName, cs.getDouble(playerName));
 			}
