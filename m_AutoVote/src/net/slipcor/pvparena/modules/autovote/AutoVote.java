@@ -41,7 +41,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
 	@Override
 	public String version() {
-		return "v1.2.2.423";
+		return "v1.2.4.485";
 	}
 	
 	@Override
@@ -187,7 +187,12 @@ public class AutoVote extends ArenaModule implements Listener {
 					break;
 				}
 			}
-			arena.getDebugger().i("AutoVote not setup via shortcuts, ignoring");
+            if (vote == null) {
+
+                arena.getDebugger().i("AutoVote not setup via shortcuts, ignoring");
+                vote = new AutoVoteRunnable(arena,
+                        arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS), this, null);
+            }
 		}
 	}
 

@@ -21,6 +21,10 @@
       		<id>kitteh-repo</id>
       		<url>http://repo.kitteh.org/content/groups/public</url>
     	</repository>
+		<repository>
+			<id>slipcor-repo</id>
+			<url>http://mc-praxis.com:8080/plugin/repository/everything/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -36,8 +40,6 @@
             <artifactId>pvparena</artifactId>
             <version>1.2</version>
             <type>jar</type>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../../../PVP Arena/lastStable/archive/target/pvparena-1.2.jar</systemPath>
         </dependency>
 	    <dependency>
 		  	<groupId>org.kitteh</groupId>
