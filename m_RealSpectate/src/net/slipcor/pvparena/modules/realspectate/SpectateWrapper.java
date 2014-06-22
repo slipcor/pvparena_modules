@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
+import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.managers.InventoryManager;
 
 import org.bukkit.Bukkit;
@@ -22,7 +23,13 @@ public class SpectateWrapper {
 		this.listener = listener;
 	}
 
-	public void update(final Player s) {
+    public void debug(Debug debugger) {
+        for (Player spec : spectators) {
+            debugger.i(spec.getName());
+        }
+    }
+
+    public void update(final Player s) {
 		if (!spectators.contains(s)) {
 			spectators.add(s);
 

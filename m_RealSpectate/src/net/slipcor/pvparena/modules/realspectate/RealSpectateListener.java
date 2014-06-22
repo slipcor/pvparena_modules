@@ -72,7 +72,10 @@ public class RealSpectateListener implements Listener {
 	}
 	
 	private Player getSpectatedSuspect(Player p) {
+        rs.getArena().getDebugger().i("getSpecated: " + p.getName());
 		for (SpectateWrapper sw : spectated_players.values()) {
+            rs.getArena().getDebugger().i("found wrapper: " + sw.getSuspect().getName());
+            sw.debug(rs.getArena().getDebugger());
 			if (sw.hasSpectator(p)) {
 				return sw.getSuspect();
 			}
@@ -86,8 +89,16 @@ public class RealSpectateListener implements Listener {
 		if (event.getEntityType() != EntityType.PLAYER) {
 			return;
 		}
-		
-		Player subject = getSpectatedSuspect((Player) event.getEntity());
+
+        Player player = (Player) event.getEntity();
+        ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+
+        if (rs.getArena() == null || !rs.getArena().equals(aPlayer.getArena())) {
+            return;
+        }
+        rs.getArena().getDebugger().i("RealSpectateListener oEEDBE");
+
+		Player subject = getSpectatedSuspect(player);
 		
 		if (subject != null) {
 			// subject is being spectated
