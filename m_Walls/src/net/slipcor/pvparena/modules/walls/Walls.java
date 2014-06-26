@@ -1,155 +1,177 @@
 package net.slipcor.pvparena.modules.walls;
 
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
-import net.slipcor.pvparena.core.Language;
+import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Config.CFG;
+import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegion;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Walls extends ArenaModule {
-	WallsRunner runnable = null;
-	
+    WallsRunner runnable = null;
 
-	public Walls() {
-		super("Walls");
-	}
 
-	@Override
-	public String version() {
-		return "v1.1.0.297";
-	}
-	
-	@Override
-	public boolean checkCommand(String s) {
-		return s.equals("walls") || s.equals("wallmaterial") || s.equals("!ww") || s.equals("!wm");
-	}
+    public Walls() {
+        super("Walls");
+    }
 
-	private void createWalls() {
-		Material mat = null;
-		try {
-			Material newMat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-			mat = Material.getMaterial(newMat.name());
-		} catch (Exception e) {
-			mat = Material.SAND;
-		}
-		
-		for (ArenaRegion region : arena.getRegions()) {
-			if (region.getRegionName().toLowerCase().contains("wall")) {
-				final World world = region.getWorld();
-				final int x1 = region.getShape().getMinimumLocation().getX();
-				final int y1 = region.getShape().getMinimumLocation().getY();
-				final int z1 = region.getShape().getMinimumLocation().getZ();
+    @Override
+    public String version() {
+        return "v1.3.0.495";
+    }
 
-				final int x2 = region.getShape().getMaximumLocation().getX();
-				final int y2 = region.getShape().getMaximumLocation().getY();
-				final int z2 = region.getShape().getMaximumLocation().getZ();
-				
-				for (int a = x1; a<=x2; a++) {
-					for (int b = y1; b<=y2; b++) {
-						for (int c = z1; c<=z2; c++) {
-							world.getBlockAt(a, b, c).setType(mat);
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void commitCommand(CommandSender sender, String[] args) {
-		// !sf 5
-		
-		if (!PVPArena.hasAdminPerms(sender)
-				&& !(PVPArena.hasCreatePerms(sender, arena))) {
-			arena.msg(
-					sender,
-					Language.parse(MSG.ERROR_NOPERM,
-							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
-			return;
-		}
+    @Override
+    public boolean checkCommand(String s) {
+        return s.equals("walls") || s.equals("wallmaterial") || s.equals("!ww") || s.equals("!wm");
+    }
 
-		if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[] { 2 })) {
-			return;
-		}
-		
-		if (args[0].equals("!ww") || args[0].equals("walls")) {
-			// setting walls seconds
-			int i = 0;
-			try {
-				i = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				arena.msg(sender,
-						Language.parse(MSG.ERROR_NOT_NUMERIC, args[1]));
-				return;
-			}
-			
-			arena.getArenaConfig().set(CFG.MODULES_WALLS_SECONDS, i);
-			arena.getArenaConfig().save();
-			arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WALLS_SECONDS.getNode(), String.valueOf(i)));
-		} else {
-			// setting walls material
-			Material mat = null;
-			try {
-				mat = Material.getMaterial(args[0].toUpperCase());
-				debug.i("wall material: " + mat.name());
-			} catch (Exception e) {
-				arena.msg(sender, Language.parse(MSG.ERROR_MAT_NOT_FOUND, args[0]));
-				return;
-			}
-			
-			arena.getArenaConfig().set(CFG.MODULES_WALLS_MATERIAL, mat.name());
-			arena.getArenaConfig().save();
-			arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WALLS_MATERIAL.getNode(), mat.name()));
-		}
-	}
-	
-	@Override
-	public void displayInfo(CommandSender sender) {
-		sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_WALLS_SECONDS) +
-				"material: " + arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-	}
+    @Override
+    public List<String> getMain() {
+        return Arrays.asList("walls", "wallmaterial");
+    }
 
-	@Override
-	public void parseStart() {
-		runnable = new WallsRunner(this, arena, arena.getArenaConfig().getInt(CFG.MODULES_WALLS_SECONDS));
-		createWalls();
-	}
+    @Override
+    public List<String> getShort() {
+        return Arrays.asList("!ww", "!wm");
+    }
 
-	@Override
-	public void reset(boolean force) {
-		if (runnable != null) {
-			runnable.cancel();
-		}
-		runnable = null;
-		createWalls();
-	}
+    @Override
+    public CommandTree<String> getSubs(final Arena arena) {
+        CommandTree<String> result = new CommandTree<String>(null);
+        result.define(new String[]{"{Material}"});
+        return result;
+    }
 
-	public void removeWalls() {
-		for (ArenaRegion region : arena.getRegions()) {
-			
-			if (region.getRegionName().toLowerCase().contains("wall")) {
-				final World world = region.getWorld();
-				final int x1 = region.getShape().getMinimumLocation().getX();
-				final int y1 = region.getShape().getMinimumLocation().getY();
-				final int z1 = region.getShape().getMinimumLocation().getZ();
+    private void createWalls() {
+        Material mat;
+        try {
+            Material newMat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
+            mat = Material.getMaterial(newMat.name());
+        } catch (Exception e) {
+            mat = Material.SAND;
+        }
 
-				final int x2 = region.getShape().getMaximumLocation().getX();
-				final int y2 = region.getShape().getMaximumLocation().getY();
-				final int z2 = region.getShape().getMaximumLocation().getZ();
+        for (ArenaRegion region : arena.getRegions()) {
+            if (region.getRegionName().toLowerCase().contains("wall")) {
+                final World world = region.getWorld();
+                final int x1 = region.getShape().getMinimumLocation().getX();
+                final int y1 = region.getShape().getMinimumLocation().getY();
+                final int z1 = region.getShape().getMinimumLocation().getZ();
 
-				for (int a = x1; a<=x2; a++) {
-					for (int b = y1; b<=y2; b++) {
-						for (int c = z1; c<=z2; c++) {
-							world.getBlockAt(a, b, c).setType(Material.AIR);
-						}
-					}
-				}
-			}
-		}
-	}
+                final int x2 = region.getShape().getMaximumLocation().getX();
+                final int y2 = region.getShape().getMaximumLocation().getY();
+                final int z2 = region.getShape().getMaximumLocation().getZ();
+
+                for (int a = x1; a <= x2; a++) {
+                    for (int b = y1; b <= y2; b++) {
+                        for (int c = z1; c <= z2; c++) {
+                            world.getBlockAt(a, b, c).setType(mat);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void commitCommand(CommandSender sender, String[] args) {
+        // !sf 5
+
+        if (!PVPArena.hasAdminPerms(sender)
+                && !(PVPArena.hasCreatePerms(sender, arena))) {
+            arena.msg(
+                    sender,
+                    Language.parse(MSG.ERROR_NOPERM,
+                            Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+            return;
+        }
+
+        if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
+            return;
+        }
+
+        if (args[0].equals("!ww") || args[0].equals("walls")) {
+            // setting walls seconds
+            int i;
+            try {
+                i = Integer.parseInt(args[1]);
+            } catch (Exception e) {
+                arena.msg(sender,
+                        Language.parse(MSG.ERROR_NOT_NUMERIC, args[1]));
+                return;
+            }
+
+            arena.getArenaConfig().set(CFG.MODULES_WALLS_SECONDS, i);
+            arena.getArenaConfig().save();
+            arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WALLS_SECONDS.getNode(), String.valueOf(i)));
+        } else {
+            // setting walls material
+            Material mat;
+            try {
+                mat = Material.getMaterial(args[0].toUpperCase());
+                debug.i("wall material: " + mat.name());
+            } catch (Exception e) {
+                arena.msg(sender, Language.parse(MSG.ERROR_MAT_NOT_FOUND, args[0]));
+                return;
+            }
+
+            arena.getArenaConfig().set(CFG.MODULES_WALLS_MATERIAL, mat.name());
+            arena.getArenaConfig().save();
+            arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WALLS_MATERIAL.getNode(), mat.name()));
+        }
+    }
+
+    @Override
+    public void displayInfo(CommandSender sender) {
+        sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_WALLS_SECONDS) +
+                "material: " + arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
+    }
+
+    @Override
+    public void parseStart() {
+        runnable = new WallsRunner(this, arena, arena.getArenaConfig().getInt(CFG.MODULES_WALLS_SECONDS));
+        createWalls();
+    }
+
+    @Override
+    public void reset(boolean force) {
+        if (runnable != null) {
+            runnable.cancel();
+        }
+        runnable = null;
+        createWalls();
+    }
+
+    public void removeWalls() {
+        for (ArenaRegion region : arena.getRegions()) {
+
+            if (region.getRegionName().toLowerCase().contains("wall")) {
+                final World world = region.getWorld();
+                final int x1 = region.getShape().getMinimumLocation().getX();
+                final int y1 = region.getShape().getMinimumLocation().getY();
+                final int z1 = region.getShape().getMinimumLocation().getZ();
+
+                final int x2 = region.getShape().getMaximumLocation().getX();
+                final int y2 = region.getShape().getMaximumLocation().getY();
+                final int z2 = region.getShape().getMaximumLocation().getZ();
+
+                for (int a = x1; a <= x2; a++) {
+                    for (int b = y1; b <= y2; b++) {
+                        for (int c = z1; c <= z2; c++) {
+                            world.getBlockAt(a, b, c).setType(Material.AIR);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

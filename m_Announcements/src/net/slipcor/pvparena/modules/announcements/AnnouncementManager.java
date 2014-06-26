@@ -1,194 +1,216 @@
 package net.slipcor.pvparena.modules.announcements;
 
 import net.slipcor.pvparena.PVPArena;
+import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.commands.CommandTree;
+import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
-import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.TeamManager;
-import net.slipcor.pvparena.loadables.ArenaModule;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class AnnouncementManager extends ArenaModule {
 
-	public AnnouncementManager() {
-		super("Announcements");
-		debug = new Debug(400);
-	}
+    public AnnouncementManager() {
+        super("Announcements");
+        debug = new Debug(400);
+    }
 
-	@Override
-	public String version() {
-		return "v1.1.0.367";
-	}
+    @Override
+    public String version() {
+        return "v1.3.0.495";
+    }
 
-	@Override
-	public void announce(String message, String type) {
-		Announcement.announce(arena, Announcement.type.valueOf(type), message);
-	}
+    @Override
+    public void announce(String message, String type) {
+        Announcement.announce(arena, Announcement.type.valueOf(type), message);
+    }
 
-	@Override
-	public boolean checkCommand(String s) {
-		return s.equals("!aa") || s.startsWith("announce");
-	}
+    @Override
+    public boolean checkCommand(String s) {
+        return s.equals("!aa") || s.startsWith("announce");
+    }
 
-	@Override
-	public void commitCommand(CommandSender sender, String[] args) {
-		// !aa [type]
+    @Override
+    public List<String> getMain() {
+        return Arrays.asList("announce");
+    }
 
-		if (!PVPArena.hasAdminPerms(sender)
-				&& !(PVPArena.hasCreatePerms(sender, arena))) {
-			arena.msg(
-					sender,
-					Language.parse(MSG.ERROR_NOPERM,
-							Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
-			return;
-		}
+    @Override
+    public List<String> getShort() {
+        return Arrays.asList("!aa");
+    }
 
-		if (!AbstractArenaCommand.argCountValid(sender, arena, args,
-				new Integer[] { 2 })) {
-			return;
-		}
+    @Override
+    public CommandTree<String> getSubs(final Arena arena) {
+        CommandTree<String> result = new CommandTree<String>(null);
+        for (Announcement.type t : Announcement.type.values()) {
+            result.define(new String[]{t.name()});
+        }
+        return result;
+    }
 
-		if (args[0].equals("!aa") || args[0].startsWith("announce")) {
+    @Override
+    public void commitCommand(CommandSender sender, String[] args) {
+        // !aa [type]
 
-			for (Announcement.type t : Announcement.type.values()) {
-				if (t.name().equalsIgnoreCase(args[1])) {
-					boolean b = arena.getArenaConfig().getBoolean(
-							CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()));
-					arena.getArenaConfig().set(
-							CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()),
-							!b);
-					arena.getArenaConfig().save();
+        if (!PVPArena.hasAdminPerms(sender)
+                && !(PVPArena.hasCreatePerms(sender, arena))) {
+            arena.msg(
+                    sender,
+                    Language.parse(MSG.ERROR_NOPERM,
+                            Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+            return;
+        }
 
-					arena.msg(
-							sender,
-							Language.parse(MSG.SET_DONE, t.name(),
-									String.valueOf(!b)));
-					return;
-				}
-			}
+        if (!AbstractArenaCommand.argCountValid(sender, arena, args,
+                new Integer[]{2})) {
+            return;
+        }
 
-			String list = StringParser.joinArray(Announcement.type.values(),
-					", ");
-			arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], list));
-			return;
-		}
-	}
+        if (args[0].equals("!aa") || args[0].startsWith("announce")) {
 
-	@Override
-	public void parsePlayerDeath(Player player, EntityDamageEvent cause) {
-		Announcement.announce(arena, Announcement.type.LOSER, Language.parse(
-				MSG.FIGHT_KILLED_BY,
-				player.getName(),
-				arena.parseDeathCause(player, cause.getCause(),
-						ArenaPlayer.getLastDamagingPlayer(cause, player))));
-	}
+            for (Announcement.type t : Announcement.type.values()) {
+                if (t.name().equalsIgnoreCase(args[1])) {
+                    boolean b = arena.getArenaConfig().getBoolean(
+                            CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()));
+                    arena.getArenaConfig().set(
+                            CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()),
+                            !b);
+                    arena.getArenaConfig().save();
 
-	@Override
-	public void displayInfo(CommandSender player) {
-		player.sendMessage("");
-		player.sendMessage("radius: "
-				+ StringParser.colorVar(arena.getArenaConfig().getInt(
-						CFG.MODULES_ANNOUNCEMENTS_RADIUS, 0))
-				+ " || color: "
-				+ StringParser.colorVar(arena.getArenaConfig().getString(
-						CFG.MODULES_ANNOUNCEMENTS_COLOR)));
-		player.sendMessage(StringParser.colorVar("advert", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_ADVERT))
-				+ " || "
-				+ StringParser.colorVar("custom", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_CUSTOM))
-				+ " || "
-				+ StringParser.colorVar("end", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_END))
-				+ " || "
-				+ StringParser.colorVar("join", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_JOIN))
-				+ " || "
-				+ StringParser.colorVar("loser", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_LOSER))
-				+ " || "
-				+ StringParser.colorVar("prize", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_PRIZE))
-				+ " || "
-				+ StringParser.colorVar("start", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_START))
-				+ " || "
-				+ StringParser.colorVar("winner", arena.getArenaConfig()
-						.getBoolean(CFG.MODULES_ANNOUNCEMENTS_WINNER)));
-	}
+                    arena.msg(
+                            sender,
+                            Language.parse(MSG.SET_DONE, t.name(),
+                                    String.valueOf(!b)));
+                    return;
+                }
+            }
 
-	@Override
-	public void parseJoin(CommandSender sender, ArenaTeam team) {
+            String list = StringParser.joinArray(Announcement.type.values(),
+                    ", ");
+            arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], list));
+        }
+    }
 
-		debug.i("parseJoin ... ", sender);
+    @Override
+    public void parsePlayerDeath(Player player, EntityDamageEvent cause) {
+        Announcement.announce(arena, Announcement.type.LOSER, Language.parse(
+                MSG.FIGHT_KILLED_BY,
+                player.getName(),
+                arena.parseDeathCause(player, cause.getCause(),
+                        ArenaPlayer.getLastDamagingPlayer(cause, player))));
+    }
 
-		if (TeamManager.countPlayersInTeams(arena) < 2) {
-			String arenaname = 
-					PVPArena.hasOverridePerms(sender)?arena.getName():ArenaManager.getIndirectArenaName(arena);
-			if (PVPArena.instance.getConfig().getBoolean("only_shortcuts")) {
-				Announcement.announce(arena, Announcement.type.ADVERT, Language
-						.parse(arena, CFG.MSG_STARTING, arenaname+
-								ChatColor.valueOf(arena.getArenaConfig().getString(
-								CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-			} else {
-				Announcement.announce(arena, Announcement.type.ADVERT, Language
-						.parse(arena, CFG.MSG_STARTING, arenaname+
-								ChatColor.valueOf(arena.getArenaConfig().getString(
-								CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-			}
-		}
+    @Override
+    public void displayInfo(CommandSender player) {
+        player.sendMessage("");
+        player.sendMessage("radius: "
+                + StringParser.colorVar(arena.getArenaConfig().getInt(
+                CFG.MODULES_ANNOUNCEMENTS_RADIUS, 0))
+                + " || color: "
+                + StringParser.colorVar(arena.getArenaConfig().getString(
+                CFG.MODULES_ANNOUNCEMENTS_COLOR)));
+        player.sendMessage(StringParser.colorVar("advert", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_ADVERT))
+                + " || "
+                + StringParser.colorVar("custom", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_CUSTOM))
+                + " || "
+                + StringParser.colorVar("end", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_END))
+                + " || "
+                + StringParser.colorVar("join", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_JOIN))
+                + " || "
+                + StringParser.colorVar("loser", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_LOSER))
+                + " || "
+                + StringParser.colorVar("prize", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_PRIZE))
+                + " || "
+                + StringParser.colorVar("start", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_START))
+                + " || "
+                + StringParser.colorVar("winner", arena.getArenaConfig()
+                .getBoolean(CFG.MODULES_ANNOUNCEMENTS_WINNER)));
+    }
 
-		if (arena.isFreeForAll()) {
-			Announcement.announce(arena, Announcement.type.JOIN,
-					arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINED)
-							.replace("%1%", sender.getName()+
-									ChatColor.valueOf(arena.getArenaConfig().getString(
-											CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-		} else {
-			Announcement.announce(
-					arena,
-					Announcement.type.JOIN,
-					arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINEDTEAM)
-							.replace("%1%", sender.getName()+
-									ChatColor.valueOf(arena.getArenaConfig().getString(
-											CFG.MODULES_ANNOUNCEMENTS_COLOR)))
-							.replace("%2%", team.getColoredName()+
-									ChatColor.valueOf(arena.getArenaConfig().getString(
-											CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-		}
-	}
+    @Override
+    public void parseJoin(CommandSender sender, ArenaTeam team) {
 
-	@Override
-	public void parsePlayerLeave(Player player, ArenaTeam team) {
-		if (team == null) {
-			Announcement.announce(arena, Announcement.type.LOSER,
-					Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName()+
-							ChatColor.valueOf(arena.getArenaConfig().getString(
-							CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-		} else {
-			Announcement.announce(
-					arena,
-					Announcement.type.LOSER,
-					Language.parse(MSG.FIGHT_PLAYER_LEFT,
-							team.colorizePlayer(player)+
-							ChatColor.valueOf(arena.getArenaConfig().getString(
-							CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-		}
-	}
+        debug.i("parseJoin ... ", sender);
 
-	@Override
-	public void parseStart() {
-		Announcement.announce(arena, Announcement.type.START,
-				Language.parse(MSG.FIGHT_BEGINS));
-	}
+        if (TeamManager.countPlayersInTeams(arena) < 2) {
+            String arenaname =
+                    PVPArena.hasOverridePerms(sender) ? arena.getName() : ArenaManager.getIndirectArenaName(arena);
+            if (PVPArena.instance.getConfig().getBoolean("only_shortcuts")) {
+                Announcement.announce(arena, Announcement.type.ADVERT, Language
+                        .parse(arena, CFG.MSG_STARTING, arenaname +
+                                ChatColor.valueOf(arena.getArenaConfig().getString(
+                                        CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+            } else {
+                Announcement.announce(arena, Announcement.type.ADVERT, Language
+                        .parse(arena, CFG.MSG_STARTING, arenaname +
+                                ChatColor.valueOf(arena.getArenaConfig().getString(
+                                        CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+            }
+        }
+
+        if (arena.isFreeForAll()) {
+            Announcement.announce(arena, Announcement.type.JOIN,
+                    arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINED)
+                            .replace("%1%", sender.getName() +
+                                    ChatColor.valueOf(arena.getArenaConfig().getString(
+                                            CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+        } else {
+            Announcement.announce(
+                    arena,
+                    Announcement.type.JOIN,
+                    arena.getArenaConfig().getString(CFG.MSG_PLAYERJOINEDTEAM)
+                            .replace("%1%", sender.getName() +
+                                    ChatColor.valueOf(arena.getArenaConfig().getString(
+                                            CFG.MODULES_ANNOUNCEMENTS_COLOR)))
+                            .replace("%2%", team.getColoredName() +
+                                    ChatColor.valueOf(arena.getArenaConfig().getString(
+                                            CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+        }
+    }
+
+    @Override
+    public void parsePlayerLeave(Player player, ArenaTeam team) {
+        if (team == null) {
+            Announcement.announce(arena, Announcement.type.LOSER,
+                    Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName() +
+                            ChatColor.valueOf(arena.getArenaConfig().getString(
+                                    CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+        } else {
+            Announcement.announce(
+                    arena,
+                    Announcement.type.LOSER,
+                    Language.parse(MSG.FIGHT_PLAYER_LEFT,
+                            team.colorizePlayer(player) +
+                                    ChatColor.valueOf(arena.getArenaConfig().getString(
+                                            CFG.MODULES_ANNOUNCEMENTS_COLOR))));
+        }
+    }
+
+    @Override
+    public void parseStart() {
+        Announcement.announce(arena, Announcement.type.START,
+                Language.parse(MSG.FIGHT_BEGINS));
+    }
 }

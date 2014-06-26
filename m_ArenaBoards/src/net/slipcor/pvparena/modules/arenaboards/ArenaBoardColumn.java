@@ -2,75 +2,71 @@ package net.slipcor.pvparena.modules.arenaboards;
 
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
-
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
 public class ArenaBoardColumn {
-	protected ArenaBoard board;
-	private PABlockLocation location;
-	private Debug debug = new Debug(11);
+    protected ArenaBoard board;
+    private PABlockLocation location;
+    private Debug debug = new Debug(11);
 
-	private ArenaBoardSign[] signs = new ArenaBoardSign[5];
+    private ArenaBoardSign[] signs = new ArenaBoardSign[5];
 
-	/**
-	 * create an arena board column instance
-	 * 
-	 * @param ab
-	 *            the arena board to hook to
-	 * @param l
-	 *            the location of the column header
-	 */
-	public ArenaBoardColumn(ArenaBoard ab, PABlockLocation l) {
-		board = ab;
-		location = l;
+    /**
+     * create an arena board column instance
+     *
+     * @param ab the arena board to hook to
+     * @param l  the location of the column header
+     */
+    public ArenaBoardColumn(ArenaBoard ab, PABlockLocation l) {
+        board = ab;
+        location = l;
 
-		debug.i("fetching sign column");
-		fetchSigns();
-	}
+        debug.i("fetching sign column");
+        fetchSigns();
+    }
 
-	/**
-	 * fetch sub signs and attach them to the sign array
-	 */
-	private void fetchSigns() {
-		Location l = location.toLocation().getBlock().getRelative(BlockFace.DOWN)
-				.getLocation();
-		int i = 0;
-		try {
-			do {
-				Sign s = (Sign) l.getBlock().getState();
-				s.setLine(0, "");
-				s.setLine(1, "");
-				s.setLine(2, "");
-				s.setLine(3, "");
-				s.update();
-				signs[i] = (new ArenaBoardSign(this, l));
-				l = l.getBlock().getRelative(BlockFace.DOWN).getLocation();
-			} while (++i < 5);
-		} catch (Exception e) {
-			// no more signs, out!
-		}
-	}
+    /**
+     * fetch sub signs and attach them to the sign array
+     */
+    private void fetchSigns() {
+        Location l = location.toLocation().getBlock().getRelative(BlockFace.DOWN)
+                .getLocation();
+        int i = 0;
+        try {
+            do {
+                Sign s = (Sign) l.getBlock().getState();
+                s.setLine(0, "");
+                s.setLine(1, "");
+                s.setLine(2, "");
+                s.setLine(3, "");
+                s.update();
+                signs[i] = (new ArenaBoardSign(this, l));
+                l = l.getBlock().getRelative(BlockFace.DOWN).getLocation();
+            } while (++i < 5);
+        } catch (Exception e) {
+            // no more signs, out!
+        }
+    }
 
-	/**
-	 * write a string array to the signs
-	 * 
-	 * @param s
-	 *            the string array to save
-	 */
-	public void write(String[] s) {
-		int i = 0;
-		debug.i("writing to column at location " + location.toString());
-		for (ArenaBoardSign abs : signs) {
-			if (abs == null) {
-				return;
-			}
-			int ii = 0;
-			while (i < s.length && ii < 4) {
-				abs.set(ii++, s[i++]);
-			}
-			abs.update();
-		}
-	}
+    /**
+     * write a string array to the signs
+     *
+     * @param s the string array to save
+     */
+    public void write(String[] s) {
+        int i = 0;
+        debug.i("writing to column at location " + location.toString());
+        for (ArenaBoardSign abs : signs) {
+            if (abs == null) {
+                return;
+            }
+            int ii = 0;
+            while (i < s.length && ii < 4) {
+                abs.set(ii++, s[i++]);
+            }
+            abs.update();
+        }
+    }
 }

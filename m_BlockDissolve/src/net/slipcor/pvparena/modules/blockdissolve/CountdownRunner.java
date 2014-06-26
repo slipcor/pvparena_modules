@@ -6,20 +6,21 @@ import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class CountdownRunner extends ArenaRunnable {
-	private final MoveChecker checker;
-	public CountdownRunner(Arena arena, MoveChecker mc, int seconds) {
-		super(MSG.ARENA_STARTING_IN.getNode(), seconds, null, arena, false);
-		checker = mc;
-	}
+    private final MoveChecker checker;
 
-	@Override
-	protected void commit() {
-		checker.active = true;
-	}
+    public CountdownRunner(Arena arena, MoveChecker mc, int seconds) {
+        super(MSG.ARENA_STARTING_IN.getNode(), seconds, null, arena, false);
+        checker = mc;
+    }
 
-	@Override
-	protected void warn() {
-		PVPArena.instance.getLogger().warning("CountdownRunner not scheduled yet!");
-	}
+    @Override
+    protected void commit() {
+        checker.active = true;
+    }
+
+    @Override
+    protected void warn() {
+        PVPArena.instance.getLogger().warning("CountdownRunner not scheduled yet!");
+    }
 
 }

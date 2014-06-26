@@ -1,53 +1,52 @@
 package net.slipcor.pvparena.modules.items;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 public class Items extends ArenaModule {
-	private int id = -1;
+    private int id = -1;
 
-	public Items() {
-		super("Items");
-	}
+    public Items() {
+        super("Items");
+    }
 
-	@Override
-	public String version() {
-		return "v1.1.0.298";
-	}
-	
-	@Override
-	public void displayInfo(CommandSender sender) {
-		sender.sendMessage("interval: " + arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) +
-				"items: " + arena.getArenaConfig().getString(CFG.MODULES_ITEMS_ITEMS));
-	}
+    @Override
+    public String version() {
+        return "v1.3.0.495";
+    }
 
-	@Override
-	public boolean hasSpawn(String s) {
-		return s.toLowerCase().startsWith("item");
-	}
+    @Override
+    public void displayInfo(CommandSender sender) {
+        sender.sendMessage("interval: " + arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) +
+                "items: " + arena.getArenaConfig().getString(CFG.MODULES_ITEMS_ITEMS));
+    }
 
-	@Override
-	public void reset(boolean force) {
-		Bukkit.getScheduler().cancelTask(id);
-		id = -1;
-	}
+    @Override
+    public boolean hasSpawn(String s) {
+        return s.toLowerCase().startsWith("item");
+    }
 
-	@Override
-	public void parseStart() {
-		if (arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) > 0) {
-			Bukkit.getScheduler().cancelTask(id);
-			id = Bukkit.getScheduler()
-					.scheduleSyncRepeatingTask(
-							PVPArena.instance,
-							new ItemSpawnRunnable(arena, this),
-							arena.getArenaConfig().getInt(
-									CFG.MODULES_ITEMS_INTERVAL) * 20L,
-							arena.getArenaConfig().getInt(
-									CFG.MODULES_ITEMS_INTERVAL) * 20L);
-		}
-	}
+    @Override
+    public void reset(boolean force) {
+        Bukkit.getScheduler().cancelTask(id);
+        id = -1;
+    }
+
+    @Override
+    public void parseStart() {
+        if (arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) > 0) {
+            Bukkit.getScheduler().cancelTask(id);
+            id = Bukkit.getScheduler()
+                    .scheduleSyncRepeatingTask(
+                            PVPArena.instance,
+                            new ItemSpawnRunnable(arena),
+                            arena.getArenaConfig().getInt(
+                                    CFG.MODULES_ITEMS_INTERVAL) * 20L,
+                            arena.getArenaConfig().getInt(
+                                    CFG.MODULES_ITEMS_INTERVAL) * 20L);
+        }
+    }
 }
