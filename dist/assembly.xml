@@ -48,6 +48,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_AutoSneak/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_AutoVote/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
