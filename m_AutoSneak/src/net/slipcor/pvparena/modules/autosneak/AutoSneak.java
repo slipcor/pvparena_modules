@@ -25,7 +25,7 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.496";
+        return "v1.3.0.497";
     }
 
     private final ArrayList<String> sneaker = new ArrayList<String>();
@@ -42,7 +42,7 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @EventHandler
     public void onStart(final PAStartEvent e) {
-        if (!e.getArena().equals(arena)) {
+        if (!e.getArena().getName().equals(arena.getName())) {
             return;
         }
         final Set<String> players = e.getArena().getPlayedPlayers();
@@ -53,19 +53,13 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @EventHandler
     public void onDeath(final PADeathEvent e) {
-        if (!e.getArena().equals(arena)) {
-            return;
-        }
-        if (e.isRespawning()) {
+        if (e.isRespawning() && sneaker.contains(e.getPlayer().getName())) {
             doSneak(e.getPlayer().getName());
         }
     }
 
     @EventHandler
     public void OnLeave(final PALeaveEvent e) {
-        if (!e.getArena().equals(arena)) {
-            return;
-        }
         if (sneaker.contains(e.getPlayer().getName())) {
             stopSneak(e.getPlayer().getName());
         }
@@ -73,9 +67,6 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @EventHandler
     public void OnExit(final PAExitEvent e) {
-        if (!e.getArena().equals(arena)) {
-            return;
-        }
         if (sneaker.contains(e.getPlayer().getName())) {
             stopSneak(e.getPlayer().getName());
         }
@@ -91,9 +82,6 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @EventHandler
     public void OnEnd(final PAEndEvent e) {
-        if (!e.getArena().equals(arena)) {
-            return;
-        }
         for (String p : e.getArena().getPlayedPlayers()) {
             if (sneaker.contains(p)) {
                 stopSneak(p);
