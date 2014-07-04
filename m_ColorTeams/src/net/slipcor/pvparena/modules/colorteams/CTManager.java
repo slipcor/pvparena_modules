@@ -40,7 +40,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.500";
     }
 
     @Override
@@ -143,8 +143,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public void unload(final Player player) {
-        if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK) &&
-                !arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
+        if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             player.setDisplayName(player.getName());
         }
         if (tagAPIenabled) {
