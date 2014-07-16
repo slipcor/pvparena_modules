@@ -10,27 +10,29 @@ import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
+import net.slipcor.pvparena.events.PAPlayerClassChangeEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.IllegalPluginAccessException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-public class TempPerms extends ArenaModule {
+public class TempPerms extends ArenaModule implements Listener {
+    private boolean listening = false;
+
     public TempPerms() {
         super("TempPerms");
     }
 
     @Override
     public String version() {
-        return "v1.3.0.509";
+        return "v1.3.0.510";
     }
 
     @Override
@@ -94,7 +96,7 @@ public class TempPerms extends ArenaModule {
             return;
         }
 
-        HashMap<String, Boolean> map = getTempPerms(arena, "default");
+        Map<String, Boolean> map = getTempPerms(arena, "default");
 
         if (args.length == 1) {
             arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, "default"));
@@ -145,13 +147,37 @@ public class TempPerms extends ArenaModule {
         arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[2], "add | remove"));
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onClassChange(PAPlayerClassChangeEvent event) {
+        ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(event.getPlayer().getName());
+        if (arena != null && arena.getEveryone().contains(aPlayer)) {
+            Map<String, Boolean> classPerms =
+                    (aPlayer.getArenaClass()) == null?
+                            new HashMap<String, Boolean>():
+                            this.getTempPerms(arena, aPlayer.getArenaClass().getName());
+            this.removePermissions(event.getPlayer());
+
+            setPermissions(arena, aPlayer, getTempPerms(arena, "default"), getTempPerms(arena, aPlayer.getArenaTeam().getName()));
+        }
+    }
+
+    @Override
+    public void parseJoin(CommandSender player, ArenaTeam team) {
+        if (!listening) {
+            Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
+            listening = true;
+        }
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaTeam().getName()));
+    }
+
     /**
      * get the permissions map
      *
      * @return the temporary permissions map
      */
-    private HashMap<String, Boolean> getTempPerms(Arena arena, String node) {
-        HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+    private Map<String, Boolean> getTempPerms(Arena arena, String node) {
+        Map<String, Boolean> result = new HashMap<String, Boolean>();
 
         if (arena.getArenaConfig().getYamlConfiguration().contains("perms." + node)) {
             List<String> list = arena.getArenaConfig().getStringList("perms." + node,
@@ -165,7 +191,7 @@ public class TempPerms extends ArenaModule {
         return result;
     }
 
-    private void setTempPerms(Arena arena, HashMap<String, Boolean> map, String node) {
+    private void setTempPerms(Arena arena, Map<String, Boolean> map, String node) {
         List<String> result = new ArrayList<String>();
         for (String s : map.keySet()) {
             result.add((map.get(s) ? "" : "^") + s);
@@ -174,19 +200,9 @@ public class TempPerms extends ArenaModule {
         arena.getArenaConfig().save();
     }
 
-    @Override
-    public void parseJoin(CommandSender player, ArenaTeam team) {
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaTeam().getName()));
-    }
+    private void setPermissions(Arena arena, ArenaPlayer ap, Map<String, Boolean> mGlobal, Map<String, Boolean> mTeam) {
 
-    public boolean onPlayerInteract(PlayerInteractEvent event) {
-        return false;
-    }
-
-    private void setPermissions(Arena arena, ArenaPlayer ap, HashMap<String, Boolean> mGlobal, HashMap<String, Boolean> mTeam) {
-
-        HashMap<String, Boolean> mClass;
+        Map<String, Boolean> mClass;
 
         if (ap.getArenaClass() == null) {
             mClass = new HashMap<String, Boolean>();
@@ -194,7 +210,7 @@ public class TempPerms extends ArenaModule {
             mClass = getTempPerms(arena, ap.getArenaClass().getName());
         }
 
-        HashMap<String, Boolean> total = new HashMap<String, Boolean>();
+        Map<String, Boolean> total = new HashMap<String, Boolean>();
         for (String s : mGlobal.keySet()) {
             total.put(s, mGlobal.get(s));
         }
