@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.IllegalPluginAccessException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class TempPerms extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.509";
     }
 
     @Override
@@ -236,7 +237,11 @@ public class TempPerms extends ArenaModule {
 
     @Override
     public void resetPlayer(Player player, boolean force) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new ResetRunnable(this, player), 5L);
+        try {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new ResetRunnable(this, player), 5L);
+        } catch (IllegalPluginAccessException e) {
+            // we don't care. Perms don't need to be removed on shutdown
+        }
     }
     /*
 	@Override
