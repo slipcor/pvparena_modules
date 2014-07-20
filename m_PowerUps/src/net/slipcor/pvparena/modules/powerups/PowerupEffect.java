@@ -27,17 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class PowerupEffect {
-    protected boolean active = false;
-    protected int uses = -1;
-    protected int duration = -1;
-    protected PowerupType type = null;
-    protected String mobtype = null;
+class PowerupEffect {
+    boolean active = false;
+    int uses = -1;
+    int duration = -1;
+    PowerupType type = null;
+    private String mobtype = null;
     private double factor = 1.0;
     private double chance = 1.0;
     private int diff = 0;
-    private List<String> items = new ArrayList<String>();
-    private static Debug debug = new Debug(17);
+    private final List<String> items = new ArrayList<String>();
+    private static final Debug debug = new Debug(17);
     private PotionEffect potEff = null;
 
     /**
@@ -197,7 +197,7 @@ public class PowerupEffect {
      * @param player the player to commit the effect on
      * @return true if the commit succeeded, false otherwise
      */
-    public boolean commit(Player player) {
+    boolean commit(Player player) {
 
         debug.i("committing " + this.type.name(), player);
         Random r = new Random();

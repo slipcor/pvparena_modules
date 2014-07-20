@@ -8,11 +8,11 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import org.bukkit.Bukkit;
 
-public class DuelRunnable implements Runnable {
+class DuelRunnable implements Runnable {
     private final DuelManager dm;
     private final String hoster;
     private final String player;
-    private Debug debug = new Debug(77);
+    private final Debug debug = new Debug(77);
 
     public DuelRunnable(DuelManager dm, String h, String p) {
         this.dm = dm;

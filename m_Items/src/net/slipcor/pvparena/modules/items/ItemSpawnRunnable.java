@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class ItemSpawnRunnable implements Runnable {
+class ItemSpawnRunnable implements Runnable {
 
-    private ItemStack[] items;
+    private final ItemStack[] items;
     private final Set<PASpawn> spawns;
     private final Arena arena;
 

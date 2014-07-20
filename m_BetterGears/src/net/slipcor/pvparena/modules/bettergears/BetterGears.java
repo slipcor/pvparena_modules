@@ -28,8 +28,8 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.*;
 
 public class BetterGears extends ArenaModule {
-    static HashMap<String, String> defaultColors;
-    Debug debug = new Debug(600);
+    private static HashMap<String, String> defaultColors;
+    private Debug debug = new Debug(600);
 
     private Map<ArenaTeam, Short[]> colorMap = null;
     private Map<ArenaClass, Short> levelMap = null;

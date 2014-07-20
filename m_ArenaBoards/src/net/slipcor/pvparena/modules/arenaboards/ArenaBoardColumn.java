@@ -7,11 +7,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
 public class ArenaBoardColumn {
-    protected ArenaBoard board;
-    private PABlockLocation location;
-    private Debug debug = new Debug(11);
+    private final ArenaBoard board;
+    private final PABlockLocation location;
+    private final Debug debug = new Debug(11);
 
-    private ArenaBoardSign[] signs = new ArenaBoardSign[5];
+    private final ArenaBoardSign[] signs = new ArenaBoardSign[5];
 
     /**
      * create an arena board column instance

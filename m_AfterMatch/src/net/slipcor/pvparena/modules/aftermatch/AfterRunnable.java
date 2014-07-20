@@ -7,7 +7,7 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class AfterRunnable extends ArenaRunnable {
     private final AfterMatch pum;
-    private Debug debug = new Debug(41);
+    private final Debug debug = new Debug(41);
 
     public AfterRunnable(AfterMatch pm, int i) {
         super(MSG.MODULE_AFTERMATCH_STARTINGIN.getNode(), i, null, pm.getArena(), false);

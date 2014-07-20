@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Set;
 
 public class BattlefieldManager extends ArenaModule {
-    Debug debug = new Debug(690);
-    String loaded = null;
-    boolean changed = false;
+    private Debug debug = new Debug(690);
+    private String loaded = null;
+    private boolean changed = false;
 
     public BattlefieldManager() {
         super("BattlefieldManager");

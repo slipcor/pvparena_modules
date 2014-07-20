@@ -16,9 +16,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashSet;
 
-public class RealSpectateListener implements Listener {
-    final FlySpectate rs;
-    HashSet<Player> spectators = new HashSet<Player>();
+class RealSpectateListener implements Listener {
+    private final FlySpectate rs;
+    private final HashSet<Player> spectators = new HashSet<Player>();
 
     public RealSpectateListener(FlySpectate realSpectate) {
         rs = realSpectate;

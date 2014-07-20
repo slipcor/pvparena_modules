@@ -5,7 +5,7 @@ import net.slipcor.pvparena.events.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class PAListener implements Listener {
+class PAListener implements Listener {
     private final ScoreBoards module;
 
     public PAListener(ScoreBoards ea) {

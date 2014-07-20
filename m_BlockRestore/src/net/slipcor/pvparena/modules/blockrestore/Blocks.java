@@ -51,14 +51,14 @@ public class Blocks extends ArenaModule implements Listener {
 
     private boolean listening = false;
 
-    public static HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
+    public static final HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
     //public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
 
-    private static HashMap<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
+    private static final HashMap<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
 
-    private static Debug debug = new Debug(24);
+    private static final Debug debug = new Debug(24);
 
-    protected boolean restoring = false;
+    boolean restoring = false;
 
     private void checkBlock(Block b, BlockFace bf) {
         if (b.getType().equals(Material.LADDER) ||
@@ -246,9 +246,9 @@ public class Blocks extends ArenaModule implements Listener {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_BLOCKRESTORE_RESTOREBLOCKS)) {
             debug.i("resetting blocks");
             try {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, blocks, this));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new BlockRestoreRunnable(arena, this));
             } catch (IllegalPluginAccessException e) {
-                (new BlockRestoreRunnable(arena, blocks, this)).instantlyRestore();
+                (new BlockRestoreRunnable(arena, this)).instantlyRestore();
             }
         }
 
@@ -258,7 +258,7 @@ public class Blocks extends ArenaModule implements Listener {
     /**
      * restore chests, if wanted and possible
      */
-    public void restoreChests() {
+    void restoreChests() {
         debug.i("resetting chests");
         Set<ArenaRegion> bfs = arena.getRegionsByType(RegionType.BATTLE);
 
@@ -312,7 +312,7 @@ public class Blocks extends ArenaModule implements Listener {
     /**
      * save arena chest, if wanted and possible
      */
-    public void saveChests() {
+    void saveChests() {
         Set<ArenaRegion> bfs = arena.getRegionsByType(RegionType.BATTLE);
 
         if (bfs.size() < 1) {

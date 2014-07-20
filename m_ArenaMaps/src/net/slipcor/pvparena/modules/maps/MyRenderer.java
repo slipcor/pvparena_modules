@@ -21,15 +21,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class MyRenderer extends MapRenderer {
-    static HashMap<ChatColor, Byte> colors = new HashMap<ChatColor, Byte>();
+class MyRenderer extends MapRenderer {
+    private static final HashMap<ChatColor, Byte> colors = new HashMap<ChatColor, Byte>();
     private String playerName;
     private Arena arena;
-    private static YamlConfiguration playerMaps;
+    private static final YamlConfiguration playerMaps;
     private boolean showPlayers;
     private boolean showSpawns;
     private boolean showLives;
-    private Maps maps;
+    private final Maps maps;
 
     public MyRenderer(Maps m) {
         playerName = null;
@@ -88,7 +88,7 @@ public class MyRenderer extends MapRenderer {
         }
     }
 
-    static HashSet<Short> done = new HashSet<Short>();
+    private static final HashSet<Short> done = new HashSet<Short>();
 
     @Override
     public void render(MapView map, MapCanvas canvas, Player player) {

@@ -26,10 +26,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class AutoVote extends ArenaModule implements Listener {
-    static Map<String, String> votes = new HashMap<String, String>();
+    static final Map<String, String> votes = new HashMap<String, String>();
 
-    protected AutoVoteRunnable vote = null;
-    Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+    AutoVoteRunnable vote = null;
+    final Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
 
     public AutoVote() {
         super("AutoVote");
@@ -247,7 +247,7 @@ public class AutoVote extends ArenaModule implements Listener {
         }
     }
 
-    static String getDefinitionFromArena(Arena arena) {
+    private static String getDefinitionFromArena(Arena arena) {
         for (String name : ArenaManager.getShortcutValues().keySet()) {
             if (arena.equals(ArenaManager.getShortcutValues().get(name))) {
                 return name;
@@ -358,11 +358,6 @@ public class AutoVote extends ArenaModule implements Listener {
     public void parseJoin(CommandSender sender, ArenaTeam team) {
         arena.getDebugger().i("adding autovote player: " + sender.getName());
         players.add(ArenaPlayer.parsePlayer(sender.getName()));
-    }
-
-    @Override
-    public void parsePlayerLeave(Player player, ArenaTeam team) {
-        //players.remove(player.getName());
     }
 
     public boolean hasVoted(String name) {

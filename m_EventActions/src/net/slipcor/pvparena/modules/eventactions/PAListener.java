@@ -16,7 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class PAListener implements Listener {
+class PAListener implements Listener {
     private final EventActions ea;
 
     public PAListener(EventActions ea) {

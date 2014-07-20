@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class BanKick extends ArenaModule {
-    static List<String> commands = new ArrayList<String>();
+    private static final List<String> commands = new ArrayList<String>();
 
     static {
         commands.add("ban");
@@ -38,7 +38,7 @@ public class BanKick extends ArenaModule {
         return "v1.3.0.495";
     }
 
-    public List<String> banList = null;
+    private List<String> banList = null;
 
     @Override
     public boolean checkCommand(String s) {
@@ -167,22 +167,22 @@ public class BanKick extends ArenaModule {
         return banList;
     }
 
-    protected void doBan(CommandSender admin, String player) {
+    void doBan(CommandSender admin, String player) {
         getBans().add(player);
         if (admin != null) {
             arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_BANNED, player));
         }
-        tryNotify(admin, player, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
+        tryNotify(Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
         arena.getArenaConfig().setManually("bans", getBans());
         arena.getArenaConfig().save();
     }
 
-    protected void doUnBan(CommandSender admin, String player) {
+    void doUnBan(CommandSender admin, String player) {
         getBans().remove(player);
         if (admin != null) {
             arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_UNBANNED, player));
         }
-        tryNotify(admin, player, Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
+        tryNotify(Language.parse(MSG.MODULE_BANVOTE_YOUBANNED, arena.getName()));
         arena.getArenaConfig().setManually("bans", getBans());
         arena.getArenaConfig().save();
     }
@@ -239,7 +239,7 @@ public class BanKick extends ArenaModule {
         arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_KICKED, string));
     }
 
-    private void tryNotify(CommandSender sender, String player, String string) {
+    private void tryNotify(String string) {
         Player p = Bukkit.getPlayer(string);
         if (p == null) {
             return;

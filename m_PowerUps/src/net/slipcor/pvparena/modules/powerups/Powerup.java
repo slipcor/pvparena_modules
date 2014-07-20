@@ -10,11 +10,11 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.HashMap;
 
-public class Powerup {
-    public String name; // PowerUp display name
-    public Material item; // item that triggers this Powerup
+class Powerup {
+    public final String name; // PowerUp display name
+    public final Material item; // item that triggers this Powerup
     private PowerupEffect[] effects; // Effects the Powerup has
-    private Debug debug = new Debug(16);
+    private final Debug debug = new Debug(16);
 
     /**
      * construct a powerup instance

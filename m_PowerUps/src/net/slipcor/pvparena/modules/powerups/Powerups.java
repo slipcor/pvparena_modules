@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Powerups {
-    private Debug debug = new Debug(47);
+    private final Debug debug = new Debug(47);
 
-    public HashMap<Player, Powerup> puActive = new HashMap<Player, Powerup>();
-    public List<Powerup> puTotal = new ArrayList<Powerup>();
+    public final HashMap<Player, Powerup> puActive = new HashMap<Player, Powerup>();
+    public final List<Powerup> puTotal = new ArrayList<Powerup>();
 
     @SuppressWarnings("unchecked")
     public Powerups(HashMap<String, Object> powerUps) {

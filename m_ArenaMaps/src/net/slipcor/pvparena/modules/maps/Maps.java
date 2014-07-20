@@ -138,7 +138,7 @@ public class Maps extends ArenaModule {
         return items;
     }
 
-    public void trySetup() {
+    void trySetup() {
         if (setup)
             return;
         Bukkit.getPluginManager().registerEvents(new MapListener(this), PVPArena.instance);
@@ -159,7 +159,7 @@ public class Maps extends ArenaModule {
 
         maps.add(player.getName());
 
-        items.add(new MapItem(arena, player, team.getColor()));
+        items.add(new MapItem(player, team.getColor()));
         mappings = maps;
     }
 
@@ -174,7 +174,7 @@ public class Maps extends ArenaModule {
         for (ArenaTeam team : arena.getTeams()) {
             for (PASpawn spawn : arena.getSpawns()) {
                 if (spawn.getName().contains(team.getName())) {
-                    locations.add(new MapItem(arena, new PABlockLocation(spawn.getLocation().toLocation()), team.getColor()));
+                    locations.add(new MapItem(new PABlockLocation(spawn.getLocation().toLocation()), team.getColor()));
                 }
             }
 
@@ -182,7 +182,7 @@ public class Maps extends ArenaModule {
                 if (goal.getName().contains("Flag")) {
                     for (PASpawn spawn : arena.getSpawns()) {
                         if (spawn.getName().startsWith(team.getName() + "flag")) {
-                            locations.add(new MapItem(arena, new PABlockLocation(spawn.getLocation().toLocation()), team.getColor()));
+                            locations.add(new MapItem(new PABlockLocation(spawn.getLocation().toLocation()), team.getColor()));
                         }
                     }
                 }

@@ -5,10 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
-public class ArenaBoardSign {
-    protected ArenaBoardColumn column;
-    private BlockState state;
-    private Debug debug = new Debug(12);
+class ArenaBoardSign {
+    private final ArenaBoardColumn column;
+    private final BlockState state;
+    private final Debug debug = new Debug(12);
 
     /**
      * create an arena board sign instance

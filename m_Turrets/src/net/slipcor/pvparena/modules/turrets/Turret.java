@@ -6,10 +6,10 @@ import org.bukkit.entity.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Turret {
+class Turret {
     private final double yaw;
     private final double offset;
-    private static Map<String, Class<? extends Projectile>> types = new HashMap<String, Class<? extends Projectile>>();
+    private static final Map<String, Class<? extends Projectile>> types = new HashMap<String, Class<? extends Projectile>>();
     final private Class<? extends Projectile> type;
 
     static {
@@ -32,7 +32,7 @@ public class Turret {
         type = Arrow.class;
     }
 
-    protected Class<? extends Projectile> getType() {
+    Class<? extends Projectile> getType() {
         return type;
     }
 

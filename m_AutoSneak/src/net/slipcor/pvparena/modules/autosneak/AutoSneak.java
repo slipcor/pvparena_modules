@@ -89,12 +89,12 @@ public class AutoSneak extends ArenaModule implements Listener {
         }
     }
 
-    protected void doSneak(final String player) {
+    void doSneak(final String player) {
         Bukkit.getPlayer(player).setSneaking(true);
         sneaker.add(player);
     }
 
-    protected void stopSneak(final String player) {
+    void stopSneak(final String player) {
         Bukkit.getPlayer(player).setSneaking(false);
         sneaker.remove(player);
     }

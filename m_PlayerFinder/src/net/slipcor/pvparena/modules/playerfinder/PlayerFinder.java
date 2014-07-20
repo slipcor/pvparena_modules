@@ -28,7 +28,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
         super("PlayerFinder");
     }
 
-    boolean setup = false;
+    private boolean setup = false;
 
     @Override
     public String version() {

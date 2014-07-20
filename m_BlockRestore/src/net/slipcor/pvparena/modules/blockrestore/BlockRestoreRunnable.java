@@ -9,14 +9,14 @@ import org.bukkit.Location;
 
 import java.util.HashMap;
 
-public class BlockRestoreRunnable implements Runnable {
-    private HashMap<Location, ArenaBlock> removals;
-    private Arena arena;
-    private Debug debug = new Debug(67);
+class BlockRestoreRunnable implements Runnable {
+    private final HashMap<Location, ArenaBlock> removals;
+    private final Arena arena;
+    private final Debug debug = new Debug(67);
     private final Blocks module;
 
     public BlockRestoreRunnable(Arena arena,
-                                HashMap<Location, ArenaBlock> blocks, Blocks module) {
+                                Blocks module) {
         this.arena = arena;
         removals = getBlocks();
         this.module = module;

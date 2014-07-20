@@ -10,7 +10,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.HashSet;
 
-public class SpectateWrapper {
+class SpectateWrapper {
     final private Player suspect;
     final private HashSet<Player> spectators = new HashSet<Player>();
     final private RealSpectateListener listener;

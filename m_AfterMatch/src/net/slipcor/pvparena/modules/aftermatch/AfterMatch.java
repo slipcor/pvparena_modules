@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 public class AfterMatch extends ArenaModule implements Cloneable {
-    protected ArenaRunnable afterTask = null;
+    private ArenaRunnable afterTask = null;
     private boolean aftermatch = false;
 
     public AfterMatch() {

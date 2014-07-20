@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-public class BattleRunnable implements Runnable {
-    private Debug debug = new Debug(42);
+class BattleRunnable implements Runnable {
+    private final Debug debug = new Debug(42);
 
     /**
      * construct a battle runnable

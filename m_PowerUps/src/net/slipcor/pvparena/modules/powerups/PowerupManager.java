@@ -38,12 +38,12 @@ import java.util.*;
 public class PowerupManager extends ArenaModule implements Listener {
 
 
-    protected Powerups usesPowerups = null;
+    private Powerups usesPowerups = null;
 
     private int powerupDiff = 0;
     private int powerupDiffI = 0;
 
-    protected int SPAWN_ID = -1;
+    int SPAWN_ID = -1;
 
     private boolean setup = false;
 
@@ -60,7 +60,7 @@ public class PowerupManager extends ArenaModule implements Listener {
     /**
      * calculate a powerup and commit it
      */
-    protected void calcPowerupSpawn() {
+    void calcPowerupSpawn() {
         debug.i("powerups?");
         if (usesPowerups == null)
             return;
@@ -179,7 +179,7 @@ public class PowerupManager extends ArenaModule implements Listener {
      *
      * @param item the material to spawn
      */
-    protected void commitPowerupItemSpawn(Material item) {
+    void commitPowerupItemSpawn(Material item) {
         debug.i("dropping item?");
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
             dropItemOnSpawn(item);
@@ -277,7 +277,7 @@ public class PowerupManager extends ArenaModule implements Listener {
      *
      * @param item the item to drop
      */
-    protected void dropItemOnSpawn(Material item) {
+    void dropItemOnSpawn(Material item) {
         debug.i("calculating item spawn location");
         Set<PALocation> locs = SpawnManager.getSpawnsContaining(arena, "powerup");
         if (locs.size() < 1) {
@@ -408,7 +408,7 @@ public class PowerupManager extends ArenaModule implements Listener {
      * @param values the collection
      * @return the comma separated string
      */
-    protected String parseList(Collection<Object> values) {
+    String parseList(Collection<Object> values) {
         String s = "";
         for (Object o : values) {
             if (!s.equals("")) {

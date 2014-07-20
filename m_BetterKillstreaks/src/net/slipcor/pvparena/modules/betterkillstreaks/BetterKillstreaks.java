@@ -28,9 +28,9 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         super("BetterKillstreaks");
     }
 
-    Map<String, Integer> streaks = new HashMap<String, Integer>();
+    private final Map<String, Integer> streaks = new HashMap<String, Integer>();
 
-    boolean setup = false;
+    private boolean setup = false;
 
     @Override
     public String version() {

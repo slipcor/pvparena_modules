@@ -24,12 +24,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.HashMap;
 
 public class ArenaBoardManager extends ArenaModule implements Listener {
-    protected HashMap<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
-    protected int BOARD_ID = -1;
-    protected int GLOBAL_ID = -1;
-    protected static ArenaBoard globalBoard = null;
+    final HashMap<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
+    private int BOARD_ID = -1;
+    private int GLOBAL_ID = -1;
+    static ArenaBoard globalBoard = null;
 
-    protected int THIS_ID = -1;
+    private int THIS_ID = -1;
 
     public ArenaBoardManager() {
         super("ArenaBoards");

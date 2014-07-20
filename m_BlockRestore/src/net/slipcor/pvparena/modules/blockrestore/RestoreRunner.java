@@ -18,12 +18,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 
-public class RestoreRunner implements Runnable {
-    HashMap<Location, ItemStack[]> chests;
-    HashMap<Location, ItemStack[]> furnaces;
-    HashMap<Location, ItemStack[]> dispensers;
-    protected final Blocks blocks;
-    private Debug debug = new Debug(66);
+class RestoreRunner implements Runnable {
+    private final HashMap<Location, ItemStack[]> chests;
+    private final HashMap<Location, ItemStack[]> furnaces;
+    private final HashMap<Location, ItemStack[]> dispensers;
+    private final Blocks blocks;
+    private final Debug debug = new Debug(66);
 
     public RestoreRunner(Blocks blocks, HashMap<Location, ItemStack[]> chests,
                          HashMap<Location, ItemStack[]> furnaces,

@@ -11,16 +11,16 @@ import java.util.Set;
 /**
  * class for full access to player statistics
  */
-public final class PVPData {
+final class PVPData {
 
-    private Map<String, Long> startTimes = new HashMap<String, Long>(); // player -> currentMillis
-    private Map<String, String> teams = new HashMap<String, String>(); // player -> teamname
+    private final Map<String, Long> startTimes = new HashMap<String, Long>(); // player -> currentMillis
+    private final Map<String, String> teams = new HashMap<String, String>(); // player -> teamname
 
     private final Arena arena;
 
     private Integer id = null;
 
-    protected PVPData(final Arena arena) {
+    PVPData(final Arena arena) {
         this.arena = arena;
     }
 

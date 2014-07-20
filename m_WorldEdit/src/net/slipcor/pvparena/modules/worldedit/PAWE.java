@@ -173,11 +173,11 @@ public class PAWE extends ArenaModule {
         arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we create"));
     }
 
-    public void load(ArenaRegion ars) {
+    void load(ArenaRegion ars) {
         load(ars, ars.getArena().getName() + "_" + ars.getRegionName());
     }
 
-    public void load(ArenaRegion ars, String regionName) {
+    void load(ArenaRegion ars, String regionName) {
 
         try {
             CuboidClipboard cc = SchematicFormat.MCEDIT.load(new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
@@ -230,11 +230,11 @@ public class PAWE extends ArenaModule {
         }
     }
 
-    public void save(ArenaRegion ars) {
+    void save(ArenaRegion ars) {
         save(ars, ars.getArena().getName() + "_" + ars.getRegionName());
     }
 
-    public void save(ArenaRegion ars, String regionName) {
+    void save(ArenaRegion ars, String regionName) {
         CuboidSelection cs = new CuboidSelection(Bukkit.getWorld(ars.getWorldName()), ars.getShape().getMinimumLocation().toLocation(), ars.getShape().getMaximumLocation().toLocation());
         Vector min = cs.getNativeMinimumPoint();
         Vector max = cs.getNativeMaximumPoint();

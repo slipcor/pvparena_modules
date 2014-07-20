@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 public class CTManager extends ArenaModule implements Listener {
-    protected static boolean tagAPIenabled = false;
+    private static boolean tagAPIenabled = false;
     private Scoreboard board = null;
-    private Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
+    private final Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
 
     public CTManager() {
         super("ColorTeams");
@@ -163,7 +163,7 @@ public class CTManager extends ArenaModule implements Listener {
         }
     }
 
-    public void updateName(Player player) {
+    void updateName(Player player) {
         if (tagAPIenabled &&
                 !arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
             try {

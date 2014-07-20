@@ -71,7 +71,7 @@ public class ArenaRotate extends ArenaModule {
         a = null;
 
         if (vote == null) {
-            vote = new ArenaRotateRunnable(arena,
+            vote = new ArenaRotateRunnable(
                     arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
         }
     }

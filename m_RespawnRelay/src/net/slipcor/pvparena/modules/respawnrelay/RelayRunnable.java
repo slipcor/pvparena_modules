@@ -16,11 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class RelayRunnable extends ArenaRunnable {
-    private ArenaPlayer ap;
-    private Player maybePlayer;
-    List<ItemStack> drops;
-    private Debug debug = new Debug(77);
-    private RespawnRelay mod;
+    private final ArenaPlayer ap;
+    private final Player maybePlayer;
+    private final List<ItemStack> drops;
+    private final Debug debug = new Debug(77);
+    private final RespawnRelay mod;
 
     public RelayRunnable(RespawnRelay relay, Arena arena, ArenaPlayer ap, List<ItemStack> drops) {
 

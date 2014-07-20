@@ -3,9 +3,9 @@ package net.slipcor.pvparena.modules.powerups;
 import net.slipcor.pvparena.core.Debug;
 import org.bukkit.Bukkit;
 
-public class PowerupRunnable implements Runnable {
+class PowerupRunnable implements Runnable {
     private final PowerupManager pum;
-    private Debug debug = new Debug(41);
+    private final Debug debug = new Debug(41);
 
     /**
      * construct a powerup spawn runnable

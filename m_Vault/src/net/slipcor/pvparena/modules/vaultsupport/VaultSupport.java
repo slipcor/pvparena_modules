@@ -503,7 +503,7 @@ public class VaultSupport extends ArenaModule implements Listener {
         }
     }
 
-    private void killreward(Player p, Entity damager) {
+    private void killreward(Entity damager) {
         Player player = null;
         if (damager instanceof Player) {
             player = (Player) damager;
@@ -605,10 +605,10 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     public void parsePlayerDeath(Player p,
                                  EntityDamageEvent cause) {
-        killreward(p, ArenaPlayer.getLastDamagingPlayer(cause, p));
+        killreward(ArenaPlayer.getLastDamagingPlayer(cause, p));
     }
 
-    protected void pay(HashSet<String> result) {
+    void pay(HashSet<String> result) {
         if (result == null || result.size() == arena.getTeamNames().size()) {
             return;
         }

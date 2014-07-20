@@ -21,7 +21,7 @@ public class LateLounge extends ArenaModule {
         super("LateLounge");
     }
 
-    int priority = 3;
+    private final int priority = 3;
 
     @Override
     public String version() {

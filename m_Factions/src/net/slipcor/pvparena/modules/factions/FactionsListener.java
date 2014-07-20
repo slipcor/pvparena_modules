@@ -10,8 +10,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class FactionsListener implements Listener {
-    private Debug debug = new Debug(66);
+class FactionsListener implements Listener {
+    private final Debug debug = new Debug(66);
     private final FactionsSupport fs;
 
     public FactionsListener(FactionsSupport fs) {

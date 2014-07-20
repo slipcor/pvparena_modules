@@ -21,12 +21,12 @@ public class ScoreBoards extends ArenaModule {
     private static ScoreboardManager sbm = null;
 
     private Scoreboard board = null;
-    Objective obj = null;
-    Objective oBM = null;
-    Objective oTB = null;
+    private Objective obj = null;
+    private Objective oBM = null;
+    private Objective oTB = null;
     private BukkitTask updateTask = null;
 
-    Map<String, Scoreboard> playerBoards = new HashMap<String, Scoreboard>();
+    private final Map<String, Scoreboard> playerBoards = new HashMap<String, Scoreboard>();
 
     public ScoreBoards() {
         super("ScoreBoards");

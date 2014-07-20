@@ -23,10 +23,10 @@ import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 
-public class RealSpectateListener implements Listener {
+class RealSpectateListener implements Listener {
     final RealSpectate rs;
-    HashMap<Player, SpectateWrapper> spectated_players = new HashMap<Player, SpectateWrapper>();
-    Debug debug = new Debug(456);
+    final HashMap<Player, SpectateWrapper> spectated_players = new HashMap<Player, SpectateWrapper>();
+    private final Debug debug = new Debug(456);
 
     public RealSpectateListener(RealSpectate realSpectate) {
         rs = realSpectate;

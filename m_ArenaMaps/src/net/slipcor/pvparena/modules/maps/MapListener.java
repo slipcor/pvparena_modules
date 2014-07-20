@@ -6,8 +6,8 @@ import org.bukkit.event.server.MapInitializeEvent;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-public class MapListener implements Listener {
-    Maps maps;
+class MapListener implements Listener {
+    private final Maps maps;
 
     public MapListener(Maps m) {
         maps = m;

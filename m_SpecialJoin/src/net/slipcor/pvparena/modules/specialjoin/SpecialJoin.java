@@ -37,9 +37,9 @@ public class SpecialJoin extends ArenaModule implements Listener {
         super("SpecialJoin");
     }
 
-    static HashMap<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
-    static HashMap<String, Arena> selections = new HashMap<String, Arena>();
-    boolean setup = false;
+    private static final HashMap<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
+    private static final HashMap<String, Arena> selections = new HashMap<String, Arena>();
+    private boolean setup = false;
 
     @Override
     public String version() {

@@ -27,10 +27,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.*;
 
 public class Squads extends ArenaModule {
-    Debug debug = new Debug(690);
-    Set<ArenaSquad> squads = new HashSet<ArenaSquad>();
-    ArenaSquad auto = null;
-    boolean ingame = false;
+    private Debug debug = new Debug(690);
+    private final Set<ArenaSquad> squads = new HashSet<ArenaSquad>();
+    private ArenaSquad auto = null;
+    private boolean ingame = false;
 
     public Squads() {
         super("Squads");
@@ -208,7 +208,7 @@ public class Squads extends ArenaModule {
                     }
                 }
                 squad.add(ap);
-                add(sign, squad, ap);
+                add(sign, ap);
                 return true;
             }
         }
@@ -216,7 +216,7 @@ public class Squads extends ArenaModule {
         return false;
     }
 
-    private void add(final Sign sign, final ArenaSquad squad, final ArenaPlayer ap) {
+    private void add(final Sign sign, final ArenaPlayer ap) {
         for (int i = 2; i < 4; i++) {
             if (sign.getLine(i) == null || sign.getLine(i).equals("")) {
                 sign.setLine(i, ap.getName());
@@ -262,7 +262,7 @@ public class Squads extends ArenaModule {
         }
     }
 
-    Map<Sign, ArenaSquad> signs = new HashMap<Sign, ArenaSquad>();
+    private final Map<Sign, ArenaSquad> signs = new HashMap<Sign, ArenaSquad>();
 
     @Override
     public void parseJoin(CommandSender sender, ArenaTeam team) {

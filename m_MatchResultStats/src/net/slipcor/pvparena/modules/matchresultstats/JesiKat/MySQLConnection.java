@@ -30,7 +30,7 @@ public class MySQLConnection {
      * @param password The password for the database
      * @return The resulting MySQLConnection. Returns null if there was an error.
      */
-    public static MySQLConnection newJDBCConnection(String table, String host, int port, String database, String username, String password) {
+    private static MySQLConnection newJDBCConnection(String table, String host, int port, String database, String username, String password) {
         try {
             return new MySQLConnection(table, host, port, database, username, password);
         } catch (Exception e) {
@@ -93,19 +93,11 @@ public class MySQLConnection {
      * @return True if the disconnect was successful, false if otherwise.
      */
     public boolean disconnect() {
-        return disconnect(false);
-    }
-
-    /**
-     * @param printerror If this is true, this method will print an error if there is one and return false.
-     * @return True if the disconnect was successful, false if otherwise.
-     */
-    public boolean disconnect(boolean printerror) {
         try {
             this.databaseConnection.close();
             return true;
         } catch (SQLException e) {
-            if (printerror) e.printStackTrace();
+            if (false) e.printStackTrace();
             return false;
         }
     }
@@ -216,26 +208,16 @@ public class MySQLConnection {
     }
 
     /**
-     * @return A String array of all databases excluding those that are included with the MySQL installation.
-     * @throws SQLException
-     */
-    public String[] getDatabases() throws SQLException {
-        return getDatabases(true);
-    }
-
-    /**
-     * @param onlyAdded determines whether or not the method will get all databases or if the method should
-     *                  exclude the databases that are included with the MySQL installation.
      * @return A String array of all databases. If  onlyAdded is true, returns all databases. If onlyAdded is false,
      * returns all databases excluding those that are included with the MySQL installation.
      * @throws SQLException
      */
-    public String[] getDatabases(boolean onlyAdded) throws SQLException {
+    public String[] getDatabases() throws SQLException {
         ResultSet set = executeQuery("SHOW DATABASES;", false);
         ArrayList<String> databases = new ArrayList<String>();
         while (set.next()) {
             String database = set.getString(1);
-            if (onlyAdded) {
+            if (true) {
                 if (!(database.equalsIgnoreCase("information_schema") || database.equalsIgnoreCase("mysql") || database.equalsIgnoreCase("performance_schema"))) {
                     databases.add(database);
                 }

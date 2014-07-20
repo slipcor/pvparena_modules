@@ -10,7 +10,7 @@ import java.sql.SQLException;
  * @version v0.1.0
  */
 
-public final class MRSMySQL {
+final class MRSMySQL {
 
     private MRSMySQL() {
 
@@ -18,7 +18,7 @@ public final class MRSMySQL {
 
     private static MatchResultStats plugin = null;
 
-    public static void mysqlQuery(final String query) {
+    private static void mysqlQuery(final String query) {
         try {
             plugin.sqlHandler.executeQuery(query, true);
         } catch (SQLException e) {

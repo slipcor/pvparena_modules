@@ -31,12 +31,12 @@ import java.util.HashSet;
 import java.util.List;
 
 public class Skins extends ArenaModule {
-    protected static boolean mdHandler = false;
-    protected static boolean dcHandler = false;
-    protected static boolean enabled = false;
-    DisguiseCraftAPI dapi = null;
+    private static boolean mdHandler = false;
+    private static boolean dcHandler = false;
+    private static boolean enabled = false;
+    private DisguiseCraftAPI dapi = null;
 
-    HashSet<String> disguised = new HashSet<String>();
+    private final HashSet<String> disguised = new HashSet<String>();
 
     public Skins() {
         super("Skins");

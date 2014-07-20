@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 
 public class Announcement {
-    private static Debug debug = new Debug(7);
+    private static final Debug debug = new Debug(7);
 
     public static enum type {
         JOIN, ADVERT, START, END, WINNER, LOSER, PRIZE, CUSTOM
@@ -26,7 +26,7 @@ public class Announcement {
      * @param t       the type of announcement
      * @param message the message to announce
      */
-    protected static void announce(Arena a, type t, String message) {
+    static void announce(Arena a, type t, String message) {
         if (!sendCheck(a, t)) {
             return; // do not send the announcement type
         }

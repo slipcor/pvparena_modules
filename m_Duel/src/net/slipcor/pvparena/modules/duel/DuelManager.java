@@ -24,7 +24,7 @@ public class DuelManager extends ArenaModule {
         return "v1.3.0.495";
     }
 
-    public String duel = null;
+    private String duel = null;
 
     @Override
     public boolean checkCommand(String s) {

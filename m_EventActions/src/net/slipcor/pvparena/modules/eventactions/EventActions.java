@@ -68,7 +68,7 @@ public class EventActions extends ArenaModule {
         setup = true;
     }
 
-    protected void catchEvent(final String string, final Player p, Arena a) {
+    void catchEvent(final String string, final Player p, Arena a) {
 
         if (a == null || !a.equals(arena)) {
             return;

@@ -23,7 +23,7 @@ import java.util.*;
 
 public class BetterClasses extends ArenaModule {
 
-    HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>> superMap = new HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>>();
+    private final HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>> superMap = new HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>>();
 
     public BetterClasses() {
         super("BetterClasses");

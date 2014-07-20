@@ -20,15 +20,15 @@ import java.util.Map;
 
 public class ArenaBoard {
 
-    public static final Debug debug = new Debug(10);
+    private static final Debug debug = new Debug(10);
 
-    private PABlockLocation location;
-    protected ArenaBoardManager abm;
-    public boolean global;
+    private final PABlockLocation location;
+    private final ArenaBoardManager abm;
+    private final boolean global;
 
-    public StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
+    private StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
-    private Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
+    private final Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
 
     /**
      * create an arena board instance

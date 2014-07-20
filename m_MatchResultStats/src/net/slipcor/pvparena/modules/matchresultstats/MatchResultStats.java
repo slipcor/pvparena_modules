@@ -23,15 +23,15 @@ public class MatchResultStats extends ArenaModule {
         super("MatchResultStats");
     }
 
-    protected MySQLConnection sqlHandler; // MySQL handler
+    MySQLConnection sqlHandler; // MySQL handler
 
     // Settings Variables
-    protected static String dbHost = null;
-    protected static String dbUser = null;
-    protected static String dbPass = null;
-    protected static String dbDatabase = null;
-    protected static String dbTable = null;
-    protected static int dbPort = 3306;
+    private static String dbHost = null;
+    private static String dbUser = null;
+    private static String dbPass = null;
+    private static String dbDatabase = null;
+    static String dbTable = null;
+    private static int dbPort = 3306;
 
     @Override
     public String version() {

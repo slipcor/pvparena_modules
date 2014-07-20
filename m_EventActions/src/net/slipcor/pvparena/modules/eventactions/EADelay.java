@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 
-public class EADelay implements Runnable {
+class EADelay implements Runnable {
     private final Block block;
 
     public EADelay(PABlockLocation loc2) {

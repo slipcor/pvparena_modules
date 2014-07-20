@@ -22,27 +22,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RestoreContainer {
-    private Blocks blocks;
-    private ArenaRegion bfRegion;
+class RestoreContainer {
+    private final Blocks blocks;
+    private final ArenaRegion bfRegion;
 
-    private HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
-    private HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
-    private HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
+    private final HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
+    private final HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
+    private final HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
 
     public RestoreContainer(Blocks b, ArenaRegion r) {
         blocks = b;
         bfRegion = r;
     }
 
-    private static Debug debug = new Debug(55);
+    private static final Debug debug = new Debug(55);
 
-    protected void restoreChests() {
+    void restoreChests() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
                 new RestoreRunner(blocks, chests, furnaces, dispensers));
     }
 
-    protected static ItemStack[] cloneIS(ItemStack[] contents) {
+    static ItemStack[] cloneIS(ItemStack[] contents) {
         ItemStack[] result = new ItemStack[contents.length];
 
         for (int i = 0; i < result.length; i++) {

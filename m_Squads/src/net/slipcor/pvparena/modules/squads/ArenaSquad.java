@@ -5,7 +5,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ArenaSquad {
+class ArenaSquad {
     private final String name;
     private final int max;
     private final Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();

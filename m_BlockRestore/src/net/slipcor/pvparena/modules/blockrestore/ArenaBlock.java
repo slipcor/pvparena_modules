@@ -8,12 +8,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-public class ArenaBlock {
-    private Debug debug = new Debug(9);
+class ArenaBlock {
+    private final Debug debug = new Debug(9);
 
     public String arena;
     private final PABlockLocation location;
-    public final Material material;
+    private final Material material;
     private final byte data;
     private final String[] lines;
 

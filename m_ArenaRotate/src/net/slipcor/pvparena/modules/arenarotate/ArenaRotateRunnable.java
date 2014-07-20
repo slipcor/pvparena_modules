@@ -18,9 +18,9 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 
 public class ArenaRotateRunnable extends ArenaRunnable {
-    private Debug debug = new Debug(68);
+    private final Debug debug = new Debug(68);
 
-    public ArenaRotateRunnable(Arena a, int i) {
+    public ArenaRotateRunnable(int i) {
         super(MSG.ARENA_STARTING_IN.getNode(), i, null, null, true);
         debug.i("ArenaRotateRunnable constructor");
     }

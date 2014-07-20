@@ -19,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class RespawnRelay extends ArenaModule {
-    public class RelayListener implements Listener {
+    private class RelayListener implements Listener {
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
         public void onAsyncChat(AsyncPlayerChatEvent event) {
             ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
@@ -66,8 +66,8 @@ public class RespawnRelay extends ArenaModule {
         }
     }
 
-    protected Map<String, BukkitRunnable> runnerMap;
-    protected Map<String, String> overrideMap = new HashMap<String, String>();
+    private Map<String, BukkitRunnable> runnerMap;
+    final Map<String, String> overrideMap = new HashMap<String, String>();
     private static Listener listener = null;
 
     public RespawnRelay() {
@@ -94,7 +94,7 @@ public class RespawnRelay extends ArenaModule {
         sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_RESPAWNRELAY_INTERVAL));
     }
 
-    protected Map<String, BukkitRunnable> getRunnerMap() {
+    Map<String, BukkitRunnable> getRunnerMap() {
         if (runnerMap == null) {
             runnerMap = new HashMap<String, BukkitRunnable>();
         }

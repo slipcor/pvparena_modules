@@ -3,12 +3,12 @@ package net.slipcor.pvparena.command;
 import net.slipcor.pvparena.core.Debug;
 import org.bukkit.command.CommandSender;
 
-public class BanRunnable implements Runnable {
+class BanRunnable implements Runnable {
     private final CommandSender admin;
     private final String player;
     private final boolean ban;
     private final BanKick bk;
-    private Debug debug = new Debug(68);
+    private final Debug debug = new Debug(68);
 
     public BanRunnable(BanKick m, CommandSender admin, String p, boolean b) {
         this.bk = m;

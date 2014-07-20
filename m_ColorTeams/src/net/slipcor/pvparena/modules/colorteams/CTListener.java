@@ -11,8 +11,8 @@ import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 import java.util.HashSet;
 
-public class CTListener implements Listener {
-    HashSet<String> removals = new HashSet<String>();
+class CTListener implements Listener {
+    private final HashSet<String> removals = new HashSet<String>();
 
     @EventHandler
     public void onNameReceive(AsyncPlayerReceiveNameTagEvent event) {

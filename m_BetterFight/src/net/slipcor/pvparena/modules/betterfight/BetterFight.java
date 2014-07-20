@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class BetterFight extends ArenaModule {
 
-    Map<String, Integer> killMap = null;
+    private Map<String, Integer> killMap = null;
 
     public BetterFight() {
         super("BetterFight");

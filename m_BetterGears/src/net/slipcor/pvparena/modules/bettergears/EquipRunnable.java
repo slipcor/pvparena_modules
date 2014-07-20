@@ -4,10 +4,10 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import org.bukkit.Bukkit;
 
-public class EquipRunnable implements Runnable {
+class EquipRunnable implements Runnable {
 
-    final ArenaPlayer p;
-    final BetterGears m;
+    private final ArenaPlayer p;
+    private final BetterGears m;
 
     public EquipRunnable(ArenaPlayer ap, BetterGears mod) {
         p = ap;

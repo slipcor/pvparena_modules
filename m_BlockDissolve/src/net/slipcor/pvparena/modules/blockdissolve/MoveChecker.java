@@ -19,13 +19,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MoveChecker implements Listener {
-    private Debug debug = new Debug(42);
+class MoveChecker implements Listener {
+    private final Debug debug = new Debug(42);
     private final ItemStack[] materials;
     private final Arena arena;
-    private Map<Block, Runnable> map = new HashMap<Block, Runnable>();
-    final int delay;
-    final int startSeconds;
+    private final Map<Block, Runnable> map = new HashMap<Block, Runnable>();
+    private final int delay;
+    private final int startSeconds;
     boolean active = false;
 
     public MoveChecker(Arena arena, String definition, int delay) {

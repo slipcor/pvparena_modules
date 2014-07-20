@@ -2,9 +2,9 @@ package net.slipcor.pvparena.modules.arenaboards;
 
 import net.slipcor.pvparena.core.Debug;
 
-public class BoardRunnable implements Runnable {
-    protected ArenaBoardManager abm;
-    private Debug debug = new Debug(38);
+class BoardRunnable implements Runnable {
+    private final ArenaBoardManager abm;
+    private final Debug debug = new Debug(38);
 
     /**
      * create a timed arena runnable

@@ -24,9 +24,9 @@ public class RealSpectate extends ArenaModule {
         super("RealSpectate");
     }
 
-    RealSpectateListener listener = null;
+    private RealSpectateListener listener = null;
 
-    int priority = 2;
+    private final int priority = 2;
 
     @Override
     public String version() {

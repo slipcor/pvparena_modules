@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AutoVoteRunnable extends ArenaRunnable {
-    private Debug debug = new Debug(68);
+    private final Debug debug = new Debug(68);
     private final String definition;
     private final AutoVote module;
 

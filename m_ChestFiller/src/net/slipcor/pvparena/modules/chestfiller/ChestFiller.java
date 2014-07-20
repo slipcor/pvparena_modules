@@ -32,7 +32,7 @@ public class ChestFiller extends ArenaModule {
         super("ChestFiller");
     }
 
-    boolean setup = false;
+    private boolean setup = false;
 
     @Override
     public String version() {
