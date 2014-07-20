@@ -319,7 +319,6 @@ class RealSpectateListener implements Listener {
             // --> no clicking!!!
             event.setCancelled(true);
             switchPlayer(spectator, subject, event.getRightClicked() != null);
-            return;
         }
     }
 

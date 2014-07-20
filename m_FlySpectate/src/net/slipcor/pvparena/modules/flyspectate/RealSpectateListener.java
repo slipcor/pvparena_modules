@@ -92,7 +92,6 @@ class RealSpectateListener implements Listener {
         Player subject = event.getPlayer();
 
         if (!spectators.contains(subject)) {
-            return;
         }
 
         // subject is spectating

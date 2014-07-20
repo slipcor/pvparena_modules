@@ -81,8 +81,7 @@ public class MySQLConnection {
     public boolean connect(boolean printerror) {
         try {
             this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl + "?autoReconnect=true", this.dbUsername, this.dbPassword);
-            if (this.databaseConnection == null) return false;
-            return true;
+            return this.databaseConnection != null;
         } catch (SQLException e) {
             if (printerror) e.printStackTrace();
             return false;
@@ -97,7 +96,6 @@ public class MySQLConnection {
             this.databaseConnection.close();
             return true;
         } catch (SQLException e) {
-            if (false) e.printStackTrace();
             return false;
         }
     }
@@ -217,12 +215,9 @@ public class MySQLConnection {
         ArrayList<String> databases = new ArrayList<String>();
         while (set.next()) {
             String database = set.getString(1);
-            if (true) {
-                if (!(database.equalsIgnoreCase("information_schema") || database.equalsIgnoreCase("mysql") || database.equalsIgnoreCase("performance_schema"))) {
-                    databases.add(database);
-                }
-            } else
+            if (!(database.equalsIgnoreCase("information_schema") || database.equalsIgnoreCase("mysql") || database.equalsIgnoreCase("performance_schema"))) {
                 databases.add(database);
+            }
         }
         List<String> sorted = Arrays.asList(databases.toArray(new String[databases.size()]));
         Collections.sort(sorted, String.CASE_INSENSITIVE_ORDER);

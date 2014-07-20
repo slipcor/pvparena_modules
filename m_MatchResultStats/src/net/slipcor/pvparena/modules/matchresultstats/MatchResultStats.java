@@ -73,7 +73,6 @@ public class MatchResultStats extends ArenaModule {
         }
 
         if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{1, 2})) {
-            return;
         }
 
         // TODO: do something
