@@ -335,7 +335,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -359,7 +359,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -382,7 +382,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -406,7 +406,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;

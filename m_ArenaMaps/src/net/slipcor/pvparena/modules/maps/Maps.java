@@ -53,7 +53,7 @@ public class Maps extends ArenaModule {
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList(new String[]{"!map"});
+        return Arrays.asList("!map");
     }
 
     @Override

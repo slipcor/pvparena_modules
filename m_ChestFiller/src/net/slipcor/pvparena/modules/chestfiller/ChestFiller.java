@@ -89,10 +89,10 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public void displayInfo(CommandSender sender) {
-        sender.sendMessage("items: " + (String) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems"));
-        sender.sendMessage("max: " + (Integer) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")
+        sender.sendMessage("items: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems"));
+        sender.sendMessage("max: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")
                 + " | " +
-                "min: " + (Integer) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems"));
+                "min: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems"));
 
     }
 
