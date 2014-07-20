@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Set;
 
 public class BattlefieldManager extends ArenaModule {
-    private String loaded = null;
-    private boolean changed = false;
+    private String loaded;
+    private boolean changed;
 
     public BattlefieldManager() {
         super("BattlefieldManager");
@@ -36,8 +36,8 @@ public class BattlefieldManager extends ArenaModule {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return arena.getEveryone().size() < 1 && (s.equals("!bm") || s.startsWith("battlefieldm"));
+    public boolean checkCommand(final String s) {
+        return arena.getEveryone().size() < 1 && ("!bm".equals(s) || s.startsWith("battlefieldm"));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class BattlefieldManager extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"clear"});
         result.define(new String[]{"update"});
         result.define(new String[]{"save"});
@@ -60,14 +60,14 @@ public class BattlefieldManager extends ArenaModule {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !bm | show the currently loaded battle definitions
         // !bm [name] | load definition [name]
         // !bm clear | start defining a new definition
         // !bm update | update loaded definition with corrections/additions
         // !bm save [name] | save to definition [name]
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -99,7 +99,7 @@ public class BattlefieldManager extends ArenaModule {
         }
 
         if (args.length == 1) {
-            if (args[0].equals("clear")) {
+            if ("clear".equals(args[0])) {
                 // !bm update | update loaded definition with corrections/additions
 
                 if (loaded == null) {
@@ -115,7 +115,8 @@ public class BattlefieldManager extends ArenaModule {
                 changed = false;
                 loaded = null;
                 return;
-            } else if (args[0].equals("update")) {
+            }
+            if (args[0].equals("update")) {
                 // !bm update | update loaded definition with corrections/additions
 
                 if (loaded == null) {
@@ -126,7 +127,7 @@ public class BattlefieldManager extends ArenaModule {
                 /*
 				if (!changed) {
 					arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "No definition loaded!"));
-					
+
 					return;
 				}
 				*/
@@ -155,20 +156,20 @@ public class BattlefieldManager extends ArenaModule {
             arena.getSpawns().clear();
             arena.getBlocks().clear();
 
-            for (String key : keys) {
+            for (final String key : keys) {
                 if (key.startsWith(loaded + "->")) {
-                    String value = (String) arena.getArenaConfig().getUnsafe("spawns." + key);
+                    final String value = (String) arena.getArenaConfig().getUnsafe("spawns." + key);
                     try {
-                        PABlockLocation loc = Config.parseBlockLocation(value);
+                        final PABlockLocation loc = Config.parseBlockLocation(value);
 
-                        String[] split = ((String) arena.getArenaConfig().getUnsafe("spawns." + key)).split(">");
-                        String newKey = StringParser.joinArray(StringParser.shiftArrayBy(split, 1), "");
+                        final String[] split = ((String) arena.getArenaConfig().getUnsafe("spawns." + key)).split(">");
+                        final String newKey = StringParser.joinArray(StringParser.shiftArrayBy(split, 1), "");
                         arena.addBlock(new PABlock(loc, newKey));
-                    } catch (IllegalArgumentException e) {
-                        PALocation loc = Config.parseLocation(value);
+                    } catch (final IllegalArgumentException e) {
+                        final PALocation loc = Config.parseLocation(value);
 
-                        String[] split = ((String) arena.getArenaConfig().getUnsafe("spawns." + key)).split(">");
-                        String newKey = StringParser.joinArray(StringParser.shiftArrayBy(split, 1), "");
+                        final String[] split = ((String) arena.getArenaConfig().getUnsafe("spawns." + key)).split(">");
+                        final String newKey = StringParser.joinArray(StringParser.shiftArrayBy(split, 1), "");
                         arena.addSpawn(new PASpawn(loc, newKey));
                     }
                 }
@@ -182,7 +183,7 @@ public class BattlefieldManager extends ArenaModule {
 
             arena.getRegions().clear();
 
-            for (String key : keys) {
+            for (final String key : keys) {
                 if (key.startsWith(loaded + "->")) {
                     arena.addRegion(Config.parseRegion(arena, arena.getArenaConfig().getYamlConfiguration(), key));
                 }
@@ -193,13 +194,13 @@ public class BattlefieldManager extends ArenaModule {
 
         // !bm save [name] | save to definition [name]
 
-        for (PASpawn spawn : arena.getSpawns()) {
+        for (final PASpawn spawn : arena.getSpawns()) {
             arena.getArenaConfig().setManually(
                     "spawns." + encrypt(spawn.getName(), args[1]),
                     Config.parseToString(spawn.getLocation()));
         }
 
-        for (PABlock block : arena.getBlocks()) {
+        for (final PABlock block : arena.getBlocks()) {
             arena.getArenaConfig().setManually(
                     "spawns." + encrypt(block.getName(), args[1]),
                     Config.parseToString(block.getLocation()));
@@ -209,11 +210,11 @@ public class BattlefieldManager extends ArenaModule {
         loaded = args[1];
     }
 
-    private String encrypt(String name, String definition) {
-        StringBuilder buff = new StringBuilder(name);
+    private String encrypt(final String name, final String definition) {
+        final StringBuilder buff = new StringBuilder(name);
         buff.append("-");
 
-        for (char c : definition.toCharArray()) {
+        for (final char c : definition.toCharArray()) {
             buff.append(">");
             buff.append(c);
         }

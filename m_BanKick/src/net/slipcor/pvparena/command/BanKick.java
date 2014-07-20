@@ -39,10 +39,10 @@ public class BanKick extends ArenaModule {
         return "v1.3.0.495";
     }
 
-    private List<String> banList = null;
+    private List<String> banList;
 
     @Override
-    public boolean checkCommand(String s) {
+    public boolean checkCommand(final String s) {
         return commands.contains(s.toLowerCase());
     }
 
@@ -58,7 +58,7 @@ public class BanKick extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"kick", "{Player}"});
         result.define(new String[]{"tempban", "{Player}"});
         result.define(new String[]{"ban", "{Player}"});
@@ -68,8 +68,8 @@ public class BanKick extends ArenaModule {
     }
 
     @Override
-    public PACheck checkJoin(CommandSender sender,
-                             PACheck res, boolean b) {
+    public PACheck checkJoin(final CommandSender sender,
+                             final PACheck res, final boolean b) {
         if (res.hasError()) {
             return res;
         }
@@ -80,14 +80,14 @@ public class BanKick extends ArenaModule {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
 
         if (!commands.contains(args[0].toLowerCase())) {
             return;
         }
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(sender,
                     Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
@@ -101,62 +101,62 @@ public class BanKick extends ArenaModule {
 /pa [arenaname] tempunban [player] [timediff*]
 		 */
 
-        String cmd = args[0].toLowerCase();
+        final String cmd = args[0].toLowerCase();
 
-        Player p = Bukkit.getPlayer(args[1]);
+        final Player p = Bukkit.getPlayer(args[1]);
         if (p != null) {
             args[1] = p.getName();
         }
 
-        if (cmd.equals("kick")) {
+        if ("kick".equals(cmd)) {
             if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
                 return;
             }
             tryKick(sender, args[1]);
-        } else if (cmd.equals("tempban")) {
+        } else if ("tempban".equals(cmd)) {
             if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{3})) {
                 return;
             }
             tryKick(sender, args[1]);
-            long time = parseStringToSeconds(args[2]);
-            BanRunnable run = new BanRunnable(this, sender, args[1], false);
+            final long time = parseStringToSeconds(args[2]);
+            final BanRunnable run = new BanRunnable(this, sender, args[1], false);
             Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, run, 20 * time);
             doBan(sender, args[1]);
-        } else if (cmd.equals("ban")) {
+        } else if ("ban".equals(cmd)) {
             if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
                 return;
             }
             tryKick(sender, args[1]);
             doBan(sender, args[1]);
-        } else if (cmd.equals("unban")) {
+        } else if ("unban".equals(cmd)) {
             if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2})) {
                 return;
             }
             doUnBan(sender, args[1]);
-        } else if (cmd.equals("tempunban")) {
+        } else if ("tempunban".equals(cmd)) {
             if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{3})) {
                 return;
             }
-            long time = parseStringToSeconds(args[2]);
-            BanRunnable run = new BanRunnable(this, sender, args[1], true);
+            final long time = parseStringToSeconds(args[2]);
+            final BanRunnable run = new BanRunnable(this, sender, args[1], true);
             Bukkit.getScheduler().runTaskLaterAsynchronously(PVPArena.instance, run, 20 * time);
             doUnBan(sender, args[1]);
         }
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
-        List<String> lBans = config.getStringList("bans");
+    public void configParse(final YamlConfiguration config) {
+        final List<String> lBans = config.getStringList("bans");
 
-        Set<String> hsBans = new HashSet<String>();
+        final Set<String> hsBans = new HashSet<String>();
 
 
-        for (String s : lBans) {
+        for (final String s : lBans) {
             hsBans.add(s);
         }
 
         getBans().clear();
-        for (String s : hsBans) {
+        for (final String s : hsBans) {
             getBans().add(s);
         }
     }
@@ -168,7 +168,7 @@ public class BanKick extends ArenaModule {
         return banList;
     }
 
-    void doBan(CommandSender admin, String player) {
+    void doBan(final CommandSender admin, final String player) {
         getBans().add(player);
         if (admin != null) {
             arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_BANNED, player));
@@ -178,7 +178,7 @@ public class BanKick extends ArenaModule {
         arena.getArenaConfig().save();
     }
 
-    void doUnBan(CommandSender admin, String player) {
+    void doUnBan(final CommandSender admin, final String player) {
         getBans().remove(player);
         if (admin != null) {
             arena.msg(admin, Language.parse(MSG.MODULE_BANVOTE_UNBANNED, player));
@@ -188,19 +188,19 @@ public class BanKick extends ArenaModule {
         arena.getArenaConfig().save();
     }
 
-    private long parseStringToSeconds(String string) {
+    private long parseStringToSeconds(final String string) {
         String input = "";
 
         int pos = 0;
         char type = 's';
 
         while (pos < string.length()) {
-            Character c = string.charAt(pos);
+            final Character c = string.charAt(pos);
 
             try {
-                int i = Integer.parseInt("" + c);
+                final int i = Integer.parseInt("" + c);
                 input += String.valueOf(i);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 if (c == '.' || c == ',') {
                     input += ".";
                 } else {
@@ -229,8 +229,8 @@ public class BanKick extends ArenaModule {
         return (long) time;
     }
 
-    private void tryKick(CommandSender sender, String string) {
-        Player p = Bukkit.getPlayer(string);
+    private void tryKick(final CommandSender sender, final String string) {
+        final Player p = Bukkit.getPlayer(string);
         if (p == null) {
             arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_NOTKICKED, string));
             return;
@@ -240,8 +240,8 @@ public class BanKick extends ArenaModule {
         arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_KICKED, string));
     }
 
-    private void tryNotify(String string) {
-        Player p = Bukkit.getPlayer(string);
+    private void tryNotify(final String string) {
+        final Player p = Bukkit.getPlayer(string);
         if (p == null) {
             return;
         }

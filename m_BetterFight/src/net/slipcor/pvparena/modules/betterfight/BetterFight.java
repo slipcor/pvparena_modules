@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class BetterFight extends ArenaModule {
 
-    private Map<String, Integer> killMap = null;
+    private Map<String, Integer> killMap;
 
     public BetterFight() {
         super("BetterFight");
@@ -41,8 +41,8 @@ public class BetterFight extends ArenaModule {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!bf") || s.equals("betterfight");
+    public boolean checkCommand(final String s) {
+        return "!bf".equals(s) || "betterfight".equals(s);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"messages"});
         result.define(new String[]{"items"});
         result.define(new String[]{"reset"});
@@ -66,14 +66,14 @@ public class BetterFight extends ArenaModule {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !bf messages #
         // !bf items [items]
         // !bf reset
         // !bf explode
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -81,16 +81,17 @@ public class BetterFight extends ArenaModule {
             return;
         }
 
-        if (args[0].equals("!bf") || args[0].equals("betterfight")) {
+        if ("!bf".equals(args[0]) || "betterfight".equals(args[0])) {
             if (args.length == 2) {
-                if (args[1].equals("reset")) {
-                    boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH);
+                if ("reset".equals(args[1])) {
+                    final boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH);
 
                     arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH, !b);
                     arena.getArenaConfig().save();
                     arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH.getNode(), String.valueOf(!b)));
                     return;
-                } else if (args[1].equals("explode")) {
+                }
+                if (args[1].equals("explode")) {
                     boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH);
 
                     arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH, !b);
@@ -101,7 +102,7 @@ public class BetterFight extends ArenaModule {
                 arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | explode"));
                 return;
             }
-            if (args[1].equals("items")) {
+            if ("items".equals(args[1])) {
 
                 if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{3})) {
                     return;
@@ -112,7 +113,8 @@ public class BetterFight extends ArenaModule {
                 arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_ONEHITITEMS.getNode(), args[2]));
                 return;
 
-            } else if (args[1].equals("messages")) {
+            }
+            if (args[1].equals("messages")) {
                 int i;
                 try {
                     i = Integer.parseInt(args[2]);
@@ -133,13 +135,13 @@ public class BetterFight extends ArenaModule {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
 
         if (config.get("betterfight") != null) {
-            ConfigurationSection cs = config.getConfigurationSection("betterfight");
-            ConfigurationSection newCS = config.getConfigurationSection("modules.betterfight");
+            final ConfigurationSection cs = config.getConfigurationSection("betterfight");
+            final ConfigurationSection newCS = config.getConfigurationSection("modules.betterfight");
 
-            for (String node : cs.getKeys(true)) {
+            for (final String node : cs.getKeys(true)) {
                 newCS.set(node, cs.get(node));
             }
 
@@ -166,7 +168,7 @@ public class BetterFight extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
 
         sender.sendMessage("one-hit items: " + arena.getArenaConfig().getString(
                 CFG.MODULES_BETTERFIGHT_ONEHITITEMS));
@@ -190,10 +192,10 @@ public class BetterFight extends ArenaModule {
     }
 
     @Override
-    public void onEntityDamageByEntity(Player attacker,
-                                       Player defender, EntityDamageByEntityEvent event) {
-        String s = arena.getArenaConfig().getString(CFG.MODULES_BETTERFIGHT_ONEHITITEMS);
-        if (s.equalsIgnoreCase("none")) {
+    public void onEntityDamageByEntity(final Player attacker,
+                                       final Player defender, final EntityDamageByEntityEvent event) {
+        final String s = arena.getArenaConfig().getString(CFG.MODULES_BETTERFIGHT_ONEHITITEMS);
+        if ("none".equalsIgnoreCase(s)) {
             return;
         }
 
@@ -225,41 +227,41 @@ public class BetterFight extends ArenaModule {
         }
     }
 
-    private void handle(EntityDamageByEntityEvent event, String string) {
+    private void handle(final EntityDamageByEntityEvent event, final String string) {
         if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
-            Player shooter = (Player) ((Projectile) event.getDamager()).getShooter();
+            final Player shooter = (Player) ((Projectile) event.getDamager()).getShooter();
 
-            float volume = 1.0f;
-            float pitch = 1.0f;
+            final float volume = 1.0f;
+            final float pitch = 1.0f;
 
-            String node = "modules.betterfight.sounds." + string;
+            final String node = "modules.betterfight.sounds." + string;
 
-            String value = (String) arena.getArenaConfig().getUnsafe(node);
+            final String value = (String) arena.getArenaConfig().getUnsafe(node);
 
-            if (value.equals("none")) {
+            if ("none".equals(value)) {
                 return;
             }
 
             try {
 
-                Sound sound = Sound.valueOf(value.toUpperCase());
+                final Sound sound = Sound.valueOf(value.toUpperCase());
 
                 shooter.playSound(shooter.getLocation(), sound, volume, pitch);
                 if (event.getEntity() instanceof Player) {
-                    Player damagee = (Player) event.getEntity();
+                    final Player damagee = (Player) event.getEntity();
 
                     damagee.playSound(shooter.getLocation(), sound, volume, pitch);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 PVPArena.instance.getLogger().warning("Node " + node + " is not a valid sound in arena " + arena.getName());
             }
         }
     }
 
     @Override
-    public void parsePlayerDeath(Player player,
-                                 EntityDamageEvent cause) {
-        Player p = ArenaPlayer.getLastDamagingPlayer(cause, player);
+    public void parsePlayerDeath(final Player player,
+                                 final EntityDamageEvent cause) {
+        final Player p = ArenaPlayer.getLastDamagingPlayer(cause, player);
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_RESETKILLSTREAKONDEATH)) {
             getKills().put(player.getName(), 0);
@@ -270,7 +272,7 @@ public class BetterFight extends ArenaModule {
             class RunLater implements Runnable {
                 final Location l;
 
-                public RunLater(Location loc) {
+                public RunLater(final Location loc) {
                     l = loc;
                 }
 
@@ -294,16 +296,16 @@ public class BetterFight extends ArenaModule {
             return;
         }
 
-        String msg = (String) arena.getArenaConfig().getUnsafe("modules.betterfight.messages.m" + killcount);
+        final String msg = (String) arena.getArenaConfig().getUnsafe("modules.betterfight.messages.m" + killcount);
 
-        PAGoalEvent scoreEvent = new PAGoalEvent(arena, null, "BetterFight",
+        final PAGoalEvent scoreEvent = new PAGoalEvent(arena, null, "BetterFight",
                 "score:" + p.getName() + ":" + ArenaPlayer.parsePlayer(p.getName()).getArenaTeam().getName() +
                         ":" + killcount);
         Bukkit.getPluginManager().callEvent(scoreEvent);
 
         // content[X].contains(score) => "score:player:team:value"
 
-        if (msg == null || msg.equals("")) {
+        if (msg == null || "".equals(msg)) {
             return;
         }
 
@@ -312,15 +314,15 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public void parseStart() {
-        for (ArenaTeam team : arena.getTeams()) {
-            for (ArenaPlayer ap : team.getTeamMembers()) {
+        for (final ArenaTeam team : arena.getTeams()) {
+            for (final ArenaPlayer ap : team.getTeamMembers()) {
                 getKills().put(ap.getName(), 0);
             }
         }
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         getKills().clear();
     }
 }

@@ -26,22 +26,22 @@ class MoveChecker implements Listener {
     private final Map<Block, Runnable> map = new HashMap<Block, Runnable>();
     private final int delay;
     private final int startSeconds;
-    boolean active = false;
+    boolean active;
 
-    public MoveChecker(Arena arena, String definition, int delay) {
+    public MoveChecker(final Arena arena, final String definition, final int delay) {
         materials = StringParser.getItemStacksFromString(definition);
         debug.i("BattleRunnable constructor");
         this.arena = arena;
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
         this.delay = delay;
-        this.startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
+        startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onMove(PlayerMoveEvent event) {
+    public void onMove(final PlayerMoveEvent event) {
 
         if (active && arena.isFightInProgress()) {
-            ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
+            final ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
             if (arena != player.getArena()) {
                 return;
             }
@@ -54,10 +54,10 @@ class MoveChecker implements Listener {
         }
     }
 
-    private void checkBlock(Location location) {
+    private void checkBlock(final Location location) {
 
-        double x = ((location.getX() * 10) % 10) / 10;
-        double z = ((location.getZ() * 10) % 10) / 10;
+        final double x = location.getX() * 10 % 10 / 10;
+        final double z = location.getZ() * 10 % 10 / 10;
 
         if (x < 0.333) {
             checkBlock(location.clone().add(-1, 0, 0).getBlock());
@@ -84,18 +84,18 @@ class MoveChecker implements Listener {
         checkBlock(location.getBlock());
     }
 
-    private void checkBlock(Block block) {
-        Material mat = block.getType();
+    private void checkBlock(final Block block) {
+        final Material mat = block.getType();
 
-        for (ItemStack stack : materials) {
-            if (mat.equals(stack.getType())) {
+        for (final ItemStack stack : materials) {
+            if (mat == stack.getType()) {
                 access(block, false);
                 return;
             }
         }
     }
 
-    private synchronized void access(Block block, boolean remove) {
+    private synchronized void access(final Block block, final boolean remove) {
         if (block == null && remove) {
             map.clear();
             return;
@@ -114,7 +114,7 @@ class MoveChecker implements Listener {
     class RunLater implements Runnable {
         final Block block;
 
-        RunLater(Block b) {
+        RunLater(final Block b) {
             block = b;
             Bukkit.getScheduler().runTaskLater(PVPArena.instance, this, delay);
         }

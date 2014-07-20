@@ -18,13 +18,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ScoreBoards extends ArenaModule {
-    private static ScoreboardManager sbm = null;
+    private static ScoreboardManager sbm;
 
-    private Scoreboard board = null;
-    private Objective obj = null;
-    private Objective oBM = null;
-    private Objective oTB = null;
-    private BukkitTask updateTask = null;
+    private Scoreboard board;
+    private Objective obj;
+    private Objective oBM;
+    private Objective oTB;
+    private BukkitTask updateTask;
 
     private final Map<String, Scoreboard> playerBoards = new HashMap<String, Scoreboard>();
 
@@ -39,26 +39,26 @@ public class ScoreBoards extends ArenaModule {
 
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (sbm == null) {
             sbm = Bukkit.getScoreboardManager();
         }
         Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
     }
 
-    public void update(Player player) {
+    public void update(final Player player) {
         if (board == null || obj == null) {
             return;
         }
         if (arena.isFreeForAll()) {
-            Score score = obj.getScore(player);
+            final Score score = obj.getScore(player);
             score.setScore(PACheck.handleGetLives(arena, ArenaPlayer.parsePlayer(player.getName())));
         } else {
-            ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+            final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
             if (ap.getArenaTeam() == null) {
                 return;
             }
-            OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(ap.getArenaTeam().getName());
+            final OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(ap.getArenaTeam().getName());
             obj.getScore(op).setScore(PACheck.handleGetLives(arena, ap));
         }
         player.setScoreboard(board);
@@ -76,11 +76,11 @@ public class ScoreBoards extends ArenaModule {
         }
     }
 
-    private boolean block = false;
+    private boolean block;
 
     private void update() {
         block = true;
-        for (ArenaPlayer player : arena.getEveryone()) {
+        for (final ArenaPlayer player : arena.getEveryone()) {
             update(player.get());
         }
         block = false;
@@ -88,7 +88,7 @@ public class ScoreBoards extends ArenaModule {
     }
 
     @Override
-    public void resetPlayer(Player player, boolean force) {
+    public void resetPlayer(final Player player, final boolean force) {
         remove(player);
     }
 
@@ -96,7 +96,7 @@ public class ScoreBoards extends ArenaModule {
         if (board == null) {
             return;
         }
-        for (OfflinePlayer player : board.getPlayers()) {
+        for (final OfflinePlayer player : board.getPlayers()) {
             if (player != null) {
                 board.resetScores(player);
             }
@@ -112,14 +112,14 @@ public class ScoreBoards extends ArenaModule {
         }
     }
 
-    public void remove(Player player) {
+    public void remove(final Player player) {
         // after runnable: remove player's scoreboard, remove player from scoreboard
         // and update all players' scoreboards
         arena.getDebugger().i("ScoreBoards: remove: " + player.getName(), player);
 
         try {
             boolean found = false;
-            for (Team team : board.getTeams()) {
+            for (final Team team : board.getTeams()) {
                 if (team.hasPlayer(player)) {
                     team.removePlayer(player);
                     board.resetScores(player);
@@ -129,7 +129,7 @@ public class ScoreBoards extends ArenaModule {
             if (!found) {
                 board.resetScores(player);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
         }
         if (playerBoards.containsKey(player.getName())) {
@@ -167,20 +167,20 @@ public class ScoreBoards extends ArenaModule {
                         oTB.setDisplaySlot(DisplaySlot.PLAYER_LIST);
                     }
 
-                    for (ArenaTeam team : arena.getTeams()) {
+                    for (final ArenaTeam team : arena.getTeams()) {
 
                         try {
                             board.registerNewTeam(team.getName());
-                            Team bukkitTeam = board.getTeam(team.getName());
+                            final Team bukkitTeam = board.getTeam(team.getName());
                             bukkitTeam.setPrefix(team.getColor().toString());
-                            OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(team.getName());
+                            final OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(team.getName());
                             bukkitTeam.addPlayer(op);
                             bukkitTeam.setAllowFriendlyFire(arena.getArenaConfig().getBoolean(CFG.PERMS_TEAMKILL));
 
                             bukkitTeam.setCanSeeFriendlyInvisibles(
                                     !arena.isFreeForAll()
                             );
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
 
                         }
 
@@ -203,7 +203,7 @@ public class ScoreBoards extends ArenaModule {
 
                     update(player);
                 } else {
-                    ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+                    final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
                     if (aPlayer.getArenaTeam() != null) {
                         board.getTeam(aPlayer.getArenaTeam().getName()).addPlayer(player);
                     }
@@ -222,17 +222,17 @@ public class ScoreBoards extends ArenaModule {
             @Override
             public void run() {
 
-                ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+                final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
                 if (aPlayer.getArenaTeam() != null) {
                     board.getTeam(from.getName()).removePlayer(player);
 
-                    for (Team sTeam : board.getTeams()) {
+                    for (final Team sTeam : board.getTeams()) {
                         if (sTeam.getName().equals(to.getName())) {
                             sTeam.addPlayer(player);
                             return;
                         }
                     }
-                    Team sTeam = board.registerNewTeam(to.getName());
+                    final Team sTeam = board.registerNewTeam(to.getName());
                     sTeam.setPrefix(to.getColor().toString());
                     sTeam.addPlayer(player);
                 }
@@ -245,7 +245,7 @@ public class ScoreBoards extends ArenaModule {
 
     public void start() {
 
-        for (ArenaPlayer player : arena.getEveryone()) {
+        for (final ArenaPlayer player : arena.getEveryone()) {
             add(player.get());
         }
 
@@ -262,7 +262,7 @@ public class ScoreBoards extends ArenaModule {
         class UpdateTask implements Runnable {
             private final ScoreBoards mod;
 
-            UpdateTask(ScoreBoards mod) {
+            UpdateTask(final ScoreBoards mod) {
                 this.mod = mod;
             }
 

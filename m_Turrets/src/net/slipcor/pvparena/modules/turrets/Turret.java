@@ -10,7 +10,7 @@ class Turret {
     private final double yaw;
     private final double offset;
     private static final Map<String, Class<? extends Projectile>> types = new HashMap<String, Class<? extends Projectile>>();
-    final private Class<? extends Projectile> type;
+    private final Class<? extends Projectile> type;
 
     static {
         types.put("fire", Fireball.class);
@@ -23,7 +23,7 @@ class Turret {
     public Turret(final String name, final PALocation loc, final double offset) {
         yaw = loc.getYaw();
         this.offset = offset < 10 ? 10 : offset; // safety. less than 10 degrees is nonsense :p
-        for (String string : types.keySet()) {
+        for (final String string : types.keySet()) {
             if (name.contains(string)) {
                 type = types.get(string);
                 return;

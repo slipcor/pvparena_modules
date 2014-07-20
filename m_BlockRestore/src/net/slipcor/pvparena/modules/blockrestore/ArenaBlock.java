@@ -22,18 +22,18 @@ class ArenaBlock {
      *
      * @param block the block to copy
      */
-    public ArenaBlock(Block block) {
+    public ArenaBlock(final Block block) {
         location = new PABlockLocation(block.getLocation());
         material = block.getType();
         data = block.getData();
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location.toString() + "; mat: " + material.toString()
-                + "; data " + String.valueOf(data));
+        debug.i("loc: " + location + "; mat: " + material
+                + "; data " + data);
 
         try {
             arena = ArenaManager.getArenaByRegionLocation(location).getName();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             arena = "";
         }
         if (block.getState() instanceof Sign) {
@@ -49,11 +49,11 @@ class ArenaBlock {
      * @param block the block to copy
      * @param type  the Material to override (the Material before placing)
      */
-    public ArenaBlock(Block block, Material type) {
+    public ArenaBlock(final Block block, final Material type) {
         location = new PABlockLocation(block.getLocation());
         try {
             arena = ArenaManager.getArenaByRegionLocation(location).getName();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             arena = "";
         }
         material = type;
@@ -61,8 +61,8 @@ class ArenaBlock {
         lines = null;
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location.toString() + "; mat: " + material.toString()
-                + "; data " + String.valueOf(data));
+        debug.i("loc: " + location + "; mat: " + material
+                + "; data " + data);
 
     }
 
@@ -70,19 +70,19 @@ class ArenaBlock {
      * reset an arena block
      */
     public void reset() {
-        Block b = location.toLocation().getBlock();
+        final Block b = location.toLocation().getBlock();
         b.setType(material);
         b.setData(data);
         if (lines != null) {
             int i = 0;
-            for (String s : lines) {
+            for (final String s : lines) {
                 if (s != null) {
                     try {
                         ((Sign) b.getState()).setLine(i, s);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         PVPArena.instance.getLogger().warning(
                                 "tried to reset sign at location "
-                                        + location.toString());
+                                        + location);
                     }
                 }
                 i++;

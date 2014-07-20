@@ -19,18 +19,18 @@ public class Items extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage("interval: " + arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) +
                 "items: " + arena.getArenaConfig().getString(CFG.MODULES_ITEMS_ITEMS));
     }
 
     @Override
-    public boolean hasSpawn(String s) {
+    public boolean hasSpawn(final String s) {
         return s.toLowerCase().startsWith("item");
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         Bukkit.getScheduler().cancelTask(id);
         id = -1;
     }

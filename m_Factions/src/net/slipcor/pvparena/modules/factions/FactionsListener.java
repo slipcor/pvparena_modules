@@ -14,23 +14,23 @@ class FactionsListener implements Listener {
     private final Debug debug = new Debug(66);
     private final FactionsSupport fs;
 
-    public FactionsListener(FactionsSupport fs) {
+    public FactionsListener(final FactionsSupport fs) {
         this.fs = fs;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         if (!event.isCancelled()) {
             // not cancelled, no problem ^^
             return;
         }
 
         Entity p1 = event.getDamager();
-        Entity p2 = event.getEntity();
+        final Entity p2 = event.getEntity();
 
         debug.i("onEntityDamageByEntity: cause: " + event.getCause().name()
-                + " : " + event.getDamager().toString() + " => "
-                + event.getEntity().toString());
+                + " : " + event.getDamager() + " => "
+                + event.getEntity());
 
 
         if (p1 instanceof Projectile && ((Projectile) p1).getShooter() instanceof LivingEntity) {
@@ -40,11 +40,11 @@ class FactionsListener implements Listener {
         }
 
         if (event.getEntity() instanceof Wolf) {
-            Wolf wolf = (Wolf) event.getEntity();
+            final Wolf wolf = (Wolf) event.getEntity();
             if (wolf.getOwner() != null) {
                 try {
                     p1 = (Entity) wolf.getOwner();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     // wolf belongs to dead player or whatnot
                 }
             }
@@ -58,7 +58,7 @@ class FactionsListener implements Listener {
             }
         }
 
-        if ((p2 == null) || (!(p2 instanceof Player))) {
+        if ((!(p2 instanceof Player))) {
             return;
         }
 
@@ -70,7 +70,7 @@ class FactionsListener implements Listener {
 
         debug.i("onEntityDamageByEntity: fighting player");
 
-        if ((p1 == null) || (!(p1 instanceof Player))) {
+        if ((!(p1 instanceof Player))) {
             // attacker no player => out!
             return;
         }

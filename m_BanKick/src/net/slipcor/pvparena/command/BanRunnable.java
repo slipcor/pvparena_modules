@@ -10,7 +10,7 @@ class BanRunnable implements Runnable {
     private final BanKick bk;
     private final Debug debug = new Debug(68);
 
-    public BanRunnable(BanKick m, CommandSender admin, String p, boolean b) {
+    public BanRunnable(final BanKick m, final CommandSender admin, final String p, final boolean b) {
         this.bk = m;
         this.admin = admin;
         this.player = p;

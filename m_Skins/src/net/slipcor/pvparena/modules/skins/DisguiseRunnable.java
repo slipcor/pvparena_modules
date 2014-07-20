@@ -8,7 +8,7 @@ class DisguiseRunnable implements Runnable {
     private final Disguise disguise;
     private final Player player;
 
-    public DisguiseRunnable(Player p, Disguise d) {
+    public DisguiseRunnable(final Player p, final Disguise d) {
         player = p;
         disguise = d;
     }

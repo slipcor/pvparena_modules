@@ -8,7 +8,7 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 public class CountdownRunner extends ArenaRunnable {
     private final MoveChecker checker;
 
-    public CountdownRunner(Arena arena, MoveChecker mc, int seconds) {
+    public CountdownRunner(final Arena arena, final MoveChecker mc, final int seconds) {
         super(MSG.ARENA_STARTING_IN.getNode(), seconds, null, arena, false);
         checker = mc;
     }

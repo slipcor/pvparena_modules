@@ -33,9 +33,9 @@ public class PAWG extends ArenaModule {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return (s.equals("wgload")
-                || s.equals("!wgl") || s.equals("worldguard"));
+    public boolean checkCommand(final String s) {
+        return "wgload".equals(s)
+                || "!wgl".equals(s) || "worldguard".equals(s);
     }
 
     @Override
@@ -50,18 +50,18 @@ public class PAWG extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         if (arena == null) {
             return result;
         }
-        for (ArenaRegion region : arena.getRegions()) {
+        for (final ArenaRegion region : arena.getRegions()) {
             result.define(new String[]{region.getRegionName()});
         }
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         if (!sender.hasPermission("pvparena.admin")) {
             arena.msg(sender, Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
@@ -74,7 +74,7 @@ public class PAWG extends ArenaModule {
             return;
         }
 
-        ArenaRegion ars = arena.getRegion(args[1]);
+        final ArenaRegion ars = arena.getRegion(args[1]);
 
         if (ars == null) {
             create((Player) sender, arena, args[1], args[2]);
@@ -83,48 +83,48 @@ public class PAWG extends ArenaModule {
         }
     }
 
-    private void create(Player p, Arena arena, String regionName, String wgRegion) {
+    private void create(final Player p, final Arena arena, final String regionName, final String wgRegion) {
 
-        ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExact(wgRegion);
+        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExact(wgRegion);
 
         if (region == null) {
             arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));
             return;
         }
 
-        Location loc1 = new Location(p.getWorld(),
+        final Location loc1 = new Location(p.getWorld(),
                 region.getMinimumPoint().getBlockX(),
                 region.getMinimumPoint().getBlockY(),
                 region.getMinimumPoint().getBlockZ());
-        Location loc2 = new Location(p.getWorld(),
+        final Location loc2 = new Location(p.getWorld(),
                 region.getMaximumPoint().getBlockX(),
                 region.getMaximumPoint().getBlockY(),
                 region.getMaximumPoint().getBlockZ());
 
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
         ap.setSelection(loc1, false);
         ap.setSelection(loc2, true);
 
-        PAA_Region cmd = new PAA_Region();
-        String[] args = {regionName, "CUBOID"};
+        final PAA_Region cmd = new PAA_Region();
+        final String[] args = {regionName, "CUBOID"};
 
         cmd.commit(arena, p, args);
     }
 
-    private void update(Player p, Arena arena, ArenaRegion ars,
-                        String wgRegion) {
-        ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExact(wgRegion);
+    private void update(final Player p, final Arena arena, final ArenaRegion ars,
+                        final String wgRegion) {
+        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExact(wgRegion);
 
         if (region == null) {
             arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));
             return;
         }
 
-        Location loc1 = new Location(p.getWorld(),
+        final Location loc1 = new Location(p.getWorld(),
                 region.getMinimumPoint().getBlockX(),
                 region.getMinimumPoint().getBlockY(),
                 region.getMinimumPoint().getBlockZ());
-        Location loc2 = new Location(p.getWorld(),
+        final Location loc2 = new Location(p.getWorld(),
                 region.getMaximumPoint().getBlockX(),
                 region.getMaximumPoint().getBlockY(),
                 region.getMaximumPoint().getBlockZ());
@@ -135,14 +135,14 @@ public class PAWG extends ArenaModule {
         arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_SAVED, ars.getRegionName(), wgRegion));
     }
 
-    private void helpCommands(Arena arena, CommandSender sender) {
+    private void helpCommands(final Arena arena, final CommandSender sender) {
         arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa wgload [regionname] [wgregionname]"));
     }
 
     @Override
     public void onThisLoad() {
-        Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldGuard");
-        if ((pwep != null) && (pwep.isEnabled()) && ((pwep instanceof WorldGuardPlugin))) {
+        final Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldGuard");
+        if (pwep != null && pwep.isEnabled() && pwep instanceof WorldGuardPlugin) {
             worldGuard = (WorldGuardPlugin) pwep;
         }
     }

@@ -22,18 +22,18 @@ class RealSpectateListener implements Listener {
     private final FlySpectate rs;
     private final Set<Player> spectators = new HashSet<Player>();
 
-    public RealSpectateListener(FlySpectate realSpectate) {
+    public RealSpectateListener(final FlySpectate realSpectate) {
         rs = realSpectate;
     }
 
-    void initiate(ArenaPlayer ap) {
-        for (ArenaPlayer a : rs.getArena().getEveryone()) {
+    void initiate(final ArenaPlayer ap) {
+        for (final ArenaPlayer a : rs.getArena().getEveryone()) {
             a.get().hidePlayer(ap.get());
         }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onEntityEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void onEntityEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
             return;
         }
@@ -41,7 +41,7 @@ class RealSpectateListener implements Listener {
         Entity damager = event.getDamager();
 
         if (event.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) event.getDamager();
+            final Projectile projectile = (Projectile) event.getDamager();
 
             if (projectile.getShooter() instanceof LivingEntity) {
 
@@ -53,7 +53,7 @@ class RealSpectateListener implements Listener {
             return;
         }
 
-        Player subject = (Player) damager;
+        final Player subject = (Player) damager;
 
         if (!spectators.contains(subject)) {
             return;
@@ -64,21 +64,8 @@ class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Player subject = event.getPlayer();
-
-        if (!spectators.contains(subject)) {
-            return;
-        }
-
-        // subject is spectating
-        // --> cancel
-        event.setCancelled(true);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        Player subject = event.getPlayer();
+    public void onPlayerInteract(final PlayerInteractEvent event) {
+        final Player subject = event.getPlayer();
 
         if (!spectators.contains(subject)) {
             return;
@@ -90,8 +77,21 @@ class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        Player subject = event.getPlayer();
+    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
+        final Player subject = event.getPlayer();
+
+        if (!spectators.contains(subject)) {
+            return;
+        }
+
+        // subject is spectating
+        // --> cancel
+        event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        final Player subject = event.getPlayer();
 
         if (!spectators.contains(subject)) {
         }
@@ -101,8 +101,8 @@ class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryOpen(InventoryOpenEvent event) {
-        Player subject = (Player) event.getPlayer();
+    public void onInventoryOpen(final InventoryOpenEvent event) {
+        final Player subject = (Player) event.getPlayer();
 
         if (!spectators.contains(subject)) {
             return;
@@ -115,8 +115,8 @@ class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
-        Player subject = (Player) event.getWhoClicked();
+    public void onInventoryClick(final InventoryClickEvent event) {
+        final Player subject = (Player) event.getWhoClicked();
 
         if (!spectators.contains(subject)) {
             return;
@@ -129,14 +129,14 @@ class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+    public void onProjectileLaunch(final ProjectileLaunchEvent event) {
         if (event == null ||
                 event.getEntity() == null ||
                 event.getEntity().getShooter() == null ||
                 !(event.getEntity().getShooter() instanceof Player)) {
             return;
         }
-        Player subject = (Player) event.getEntity().getShooter();
+        final Player subject = (Player) event.getEntity().getShooter();
 
         if (!spectators.contains(subject)) {
             return;
@@ -155,7 +155,7 @@ class RealSpectateListener implements Listener {
                 @Override
                 public void run() {
 
-                    for (ArenaPlayer ap : rs.getArena().getEveryone()) {
+                    for (final ArenaPlayer ap : rs.getArena().getEveryone()) {
                         ap.get().hidePlayer(s);
                     }
                 }
@@ -165,7 +165,7 @@ class RealSpectateListener implements Listener {
     }
 
     public void hideAllSpectatorsLater() {
-        for (Player s : spectators) {
+        for (final Player s : spectators) {
 
             class LaterRun implements Runnable {
                 private final Player s;
@@ -176,7 +176,7 @@ class RealSpectateListener implements Listener {
 
                 @Override
                 public void run() {
-                    for (ArenaPlayer ap : rs.getArena().getEveryone()) {
+                    for (final ArenaPlayer ap : rs.getArena().getEveryone()) {
                         ap.get().hidePlayer(s);
                     }
                 }
@@ -185,14 +185,14 @@ class RealSpectateListener implements Listener {
         }
     }
 
-    public void removeSpectator(Player spectator) {
+    public void removeSpectator(final Player spectator) {
         spectators.remove(spectator);
     }
 
     public void stop() {
-        Collection<Player> removals = new HashSet<Player>();
+        final Collection<Player> removals = new HashSet<Player>();
         removals.addAll(spectators);
-        for (Player p : removals) {
+        for (final Player p : removals) {
             Bukkit.getServer().dispatchCommand(p, "pa leave");
         }
         spectators.clear();

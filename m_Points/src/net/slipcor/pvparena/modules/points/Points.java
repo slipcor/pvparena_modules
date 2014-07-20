@@ -27,8 +27,8 @@ import java.util.Map;
 public class Points extends ArenaModule implements Listener {
     private static final Map<String, Double> globalpoints = new HashMap<String, Double>();
     private final Map<String, Double> points = new HashMap<String, Double>();
-    private static YamlConfiguration globalconfig = null;
-    private static File gcf = null;
+    private static YamlConfiguration globalconfig;
+    private static File gcf;
 
     public Points() {
         super("Points");
@@ -40,9 +40,9 @@ public class Points extends ArenaModule implements Listener {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
-        for (ArenaClass aClass : arena.getClasses()) {
+        for (final ArenaClass aClass : arena.getClasses()) {
             config.addDefault("modules.points.classes." + aClass.getName(), 0d);
         }
 
@@ -50,7 +50,9 @@ public class Points extends ArenaModule implements Listener {
             if (globalconfig == null) {
                 gcf = new File(PVPArena.instance.getDataFolder(), "points.yml");
 
-                if (!gcf.exists()) {
+                if (gcf.exists()) {
+                    globalconfig = YamlConfiguration.loadConfiguration(gcf);
+                } else {
                     try {
                         gcf.createNewFile();
                         globalconfig = YamlConfiguration.loadConfiguration(gcf);
@@ -60,16 +62,14 @@ public class Points extends ArenaModule implements Listener {
                         globalconfig = null;
                         e.printStackTrace();
                     }
-                } else {
-                    globalconfig = YamlConfiguration.loadConfiguration(gcf);
                 }
 
                 if (config.get("modules.points.players") == null) {
                     return;
                 }
 
-                ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
-                for (String playerName : globalconfig.getKeys(false)) {
+                final ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
+                for (final String playerName : globalconfig.getKeys(false)) {
                     globalpoints.put(playerName, cs.getDouble(playerName));
                 }
             }
@@ -78,8 +78,8 @@ public class Points extends ArenaModule implements Listener {
                 return;
             }
 
-            ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
-            for (String playerName : cs.getKeys(false)) {
+            final ConfigurationSection cs = config.getConfigurationSection("modules.points.players");
+            for (final String playerName : cs.getKeys(false)) {
                 points.put(playerName, cs.getDouble(playerName));
             }
         }
@@ -87,14 +87,14 @@ public class Points extends ArenaModule implements Listener {
     }
 
     @Override
-    public void displayInfo(CommandSender player) {
+    public void displayInfo(final CommandSender player) {
         player.sendMessage(StringParser.colorVar(
                 "global", arena.getArenaConfig().getBoolean(
                         CFG.MODULES_POINTS_GLOBAL)));
     }
 
     @Override
-    public void resetPlayer(Player player, boolean force) {
+    public void resetPlayer(final Player player, final boolean force) {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
             globalconfig.set(player.getName(), globalpoints.get(player.getName()));
         } else {
@@ -103,11 +103,11 @@ public class Points extends ArenaModule implements Listener {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
             try {
                 globalconfig.save(gcf);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         } else {
@@ -117,15 +117,15 @@ public class Points extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean cannotSelectClass(Player player, String className) {
-        Object o = arena.getArenaConfig().getUnsafe("modules.points.classes." + className);
+    public boolean cannotSelectClass(final Player player, final String className) {
+        final Object o = arena.getArenaConfig().getUnsafe("modules.points.classes." + className);
 
         if (o == null) {
             // no requirement, out!
             return false;
         }
 
-        double d = (Double) o;
+        final double d = (Double) o;
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
             if (globalpoints.containsKey(player.getName())) {
@@ -140,31 +140,31 @@ public class Points extends ArenaModule implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onClassChange(PAPlayerClassChangeEvent event) {
+    public void onClassChange(final PAPlayerClassChangeEvent event) {
         if (event.getArenaClass() == null) {
             return;
         }
-        Object o = arena.getArenaConfig().getUnsafe("modules.points.classes." + event.getArenaClass().getName());
+        final Object o = arena.getArenaConfig().getUnsafe("modules.points.classes." + event.getArenaClass().getName());
 
         if (o == null) {
             // no requirement, out!
             return;
         }
 
-        double d = (Double) o;
+        final double d = (Double) o;
 
         remove(event.getPlayer().getName(), d);
     }
 
     @EventHandler
-    public void onGoalScore(PAGoalEvent event) {
+    public void onGoalScore(final PAGoalEvent event) {
 
         String lastTrigger = "";
 
 
         if (event.getArena().equals(arena)) {
             arena.getDebugger().i("[POINTS] it's us!");
-            String[] contents = event.getContents();
+            final String[] contents = event.getContents();
 
             for (String node : contents) {
                 node = node.toLowerCase();
@@ -178,18 +178,18 @@ public class Points extends ArenaModule implements Listener {
                 }
 
                 if (node.contains("playerKill")) {
-                    String[] val = node.split(":");
+                    final String[] val = node.split(":");
                     if (!val[1].equals(val[2])) {
                         newReward(val[1], "KILL");
                     }
                 }
 
                 if (node.contains("score")) {
-                    String[] val = node.split(":");
+                    final String[] val = node.split(":");
                     newReward(val[1], "SCORE", Integer.parseInt(val[3]));
                 }
 
-                if (node.equals("") && !lastTrigger.equals("")) {
+                if ("".equals(node) && !"".equals(lastTrigger)) {
                     newReward(lastTrigger, "WIN");
                 }
             }
@@ -197,7 +197,7 @@ public class Points extends ArenaModule implements Listener {
         }
     }
 
-    private void newReward(String playerName, String rewardType) {
+    private void newReward(final String playerName, final String rewardType) {
         if (playerName == null || playerName.length() < 1) {
             PVPArena.instance.getLogger().warning("winner is empty string in " + arena.getName());
             return;
@@ -206,7 +206,7 @@ public class Points extends ArenaModule implements Listener {
         newReward(playerName, rewardType, 1);
     }
 
-    private void newReward(String playerName, String rewardType, int amount) {
+    private void newReward(final String playerName, final String rewardType, final int amount) {
         if (playerName == null || playerName.length() < 1) {
             PVPArena.instance.getLogger().warning("winner is empty string in " + arena.getName());
             return;
@@ -214,10 +214,10 @@ public class Points extends ArenaModule implements Listener {
         arena.getDebugger().i("new Reward: " + amount + "x " + playerName + " -> " + rewardType);
         try {
 
-            double value = arena.getArenaConfig().getDouble(
+            final double value = arena.getArenaConfig().getDouble(
                     CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType), 0d);
 
-            double maybevalue = arena.getArenaConfig().getDouble(
+            final double maybevalue = arena.getArenaConfig().getDouble(
                     CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType), -1d);
 
             if (maybevalue < 0) {
@@ -236,26 +236,26 @@ public class Points extends ArenaModule implements Listener {
                     arena.msg(Bukkit.getPlayer(playerName), Language
                             .parse(MSG.MODULE_VAULT_YOUWON, value + " points"));
 
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     // nothing
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void add(String playerName, double value) {
+    private void add(final String playerName, final double value) {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
             if (globalpoints.containsKey(playerName)) {
-                double d = globalpoints.get(playerName);
+                final double d = globalpoints.get(playerName);
                 globalpoints.put(playerName, value + d);
             } else {
                 globalpoints.put(playerName, value);
             }
         } else {
             if (points.containsKey(playerName)) {
-                double d = points.get(playerName);
+                final double d = points.get(playerName);
                 points.put(playerName, value + d);
             } else {
                 points.put(playerName, value);
@@ -263,15 +263,15 @@ public class Points extends ArenaModule implements Listener {
         }
     }
 
-    private void remove(String playerName, double value) {
+    private void remove(final String playerName, final double value) {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
             if (globalpoints.containsKey(playerName)) {
-                double d = globalpoints.get(playerName);
+                final double d = globalpoints.get(playerName);
                 globalpoints.put(playerName, d - value);
             }
         } else {
             if (points.containsKey(playerName)) {
-                double d = points.get(playerName);
+                final double d = points.get(playerName);
                 points.put(playerName, d - value);
             }
         }

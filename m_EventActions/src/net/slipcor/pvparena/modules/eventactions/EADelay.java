@@ -10,7 +10,7 @@ import org.bukkit.material.MaterialData;
 class EADelay implements Runnable {
     private final Block block;
 
-    public EADelay(PABlockLocation loc2) {
+    public EADelay(final PABlockLocation loc2) {
         block = loc2.toLocation().getBlock();
     }
 

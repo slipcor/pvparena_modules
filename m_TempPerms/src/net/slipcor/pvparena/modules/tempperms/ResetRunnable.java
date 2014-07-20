@@ -7,7 +7,7 @@ class ResetRunnable implements Runnable {
     private final Player p;
     private final TempPerms tp;
 
-    public ResetRunnable(TempPerms tempPerms, Player player) {
+    public ResetRunnable(final TempPerms tempPerms, final Player player) {
         p = player;
         tp = tempPerms;
     }

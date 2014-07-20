@@ -19,11 +19,11 @@ public class MySQLConnection {
     /*The connection object*/
     private Connection databaseConnection;
 
-    public MySQLConnection(String table, String host, int port, String database, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        String dbTable = table;
-        this.dbUrl = host + ":" + port + "/" + database;
-        this.dbUsername = username;
-        this.dbPassword = password;
+    public MySQLConnection(final String table, final String host, final int port, final String database, final String username, final String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        final String dbTable = table;
+        dbUrl = host + ":" + port + "/" + database;
+        dbUsername = username;
+        dbPassword = password;
         Class.forName("com.mysql.jdbc.Driver").newInstance();
     }
 
@@ -31,12 +31,14 @@ public class MySQLConnection {
      * @param printerror If this is true, this method will print an error if there is one and return false
      * @return True if the connection was made successfully, false if otherwise.
      */
-    public boolean connect(boolean printerror) {
+    public boolean connect(final boolean printerror) {
         try {
-            this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl + "?autoReconnect=true", this.dbUsername, this.dbPassword);
-            return this.databaseConnection != null;
-        } catch (SQLException e) {
-            if (printerror) e.printStackTrace();
+            databaseConnection = DriverManager.getConnection("jdbc:mysql://" + dbUrl + "?autoReconnect=true", dbUsername, dbPassword);
+            return databaseConnection != null;
+        } catch (final SQLException e) {
+            if (printerror) {
+                e.printStackTrace();
+            }
             return false;
         }
     }
@@ -47,8 +49,8 @@ public class MySQLConnection {
      * @return If modifies is true, returns a valid ResultSet obtained from the Query. If modifies is false, returns null.
      * @throws SQLException if the Query had an error or there was not a valid connection.
      */
-    public ResultSet executeQuery(String query, boolean modifies) throws SQLException {
-        Statement statement = this.databaseConnection.createStatement();
+    public ResultSet executeQuery(final String query, final boolean modifies) throws SQLException {
+        final Statement statement = databaseConnection.createStatement();
         if (modifies) {
             statement.execute(query);
             return null;
@@ -65,11 +67,11 @@ public class MySQLConnection {
      * This method looks through the information schema that comes with a MySQL installation and checks
      * if a certain table exists within a database.
      */
-    public boolean tableExists(String database, String table) {
-        String format = "SELECT * FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA = '$DB' && TABLE_NAME = '$TABLE';";
+    public boolean tableExists(final String database, final String table) {
+        final String format = "SELECT * FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA = '$DB' && TABLE_NAME = '$TABLE';";
         try {
-            return this.databaseConnection.createStatement().executeQuery(format.replace("$DB", database).replace("$TABLE", table)).first();
-        } catch (SQLException e) {
+            return databaseConnection.createStatement().executeQuery(format.replace("$DB", database).replace("$TABLE", table)).first();
+        } catch (final SQLException e) {
             return false;
         }
     }

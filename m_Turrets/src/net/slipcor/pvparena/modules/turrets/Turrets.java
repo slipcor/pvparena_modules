@@ -29,11 +29,11 @@ public class Turrets extends ArenaModule implements Listener {
         debug = new Debug(413);
     }
 
-    private boolean setup = false;
+    private boolean setup;
     private final Map<String, Long> shootingPlayers = new HashMap<String, Long>();
     private final Map<PABlockLocation, Turret> turretMap = new HashMap<PABlockLocation, Turret>();
 
-    private int minInterval = 0;
+    private int minInterval;
 
     @Override
     public String version() {
@@ -62,7 +62,7 @@ public class Turrets extends ArenaModule implements Listener {
 
 
                 final Set<PASpawn> spawns = new HashSet<PASpawn>();
-                for (PASpawn spawn : arena.getSpawns()) {
+                for (final PASpawn spawn : arena.getSpawns()) {
                     if (spawn.getName().contains("turret")) {
                         spawns.add(spawn);
                     }
@@ -74,7 +74,7 @@ public class Turrets extends ArenaModule implements Listener {
                 }
 
                 final double degrees = arena.getArenaConfig().getDouble(CFG.MODULES_TURRETS_MAXDEGREES);
-                for (PASpawn location : spawns) {
+                for (final PASpawn location : spawns) {
                     final PALocation loc = location.getLocation();
                     turretMap.put(new PABlockLocation(loc.toLocation()), new Turret(location.getName(), loc, degrees));
                 }

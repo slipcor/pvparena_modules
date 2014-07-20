@@ -23,7 +23,7 @@ public enum PowerupType {
 
     final boolean activatedOnPickup;
 
-    PowerupType(boolean pickup) {
+    PowerupType(final boolean pickup) {
         this.activatedOnPickup = pickup;
     }
 

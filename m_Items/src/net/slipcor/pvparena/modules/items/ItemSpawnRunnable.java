@@ -17,12 +17,12 @@ class ItemSpawnRunnable implements Runnable {
     private final Set<PASpawn> spawns;
     private final Arena arena;
 
-    public ItemSpawnRunnable(Arena a) {
+    public ItemSpawnRunnable(final Arena a) {
         arena = a;
         arena.getDebugger().i("ItemSpawnRunnable constructor");
-        String sItems = arena.getArenaConfig().getString(CFG.MODULES_ITEMS_ITEMS);
+        final String sItems = arena.getArenaConfig().getString(CFG.MODULES_ITEMS_ITEMS);
 
-        if (sItems.equals("none")) {
+        if ("none".equals(sItems)) {
             items = new ItemStack[0];
             spawns = new HashSet<PASpawn>();
             return;
@@ -35,7 +35,7 @@ class ItemSpawnRunnable implements Runnable {
     public void run() {
         arena.getDebugger().i("ItemSpawnRunnable running");
         int i = (new Random()).nextInt(spawns.size());
-        for (PASpawn loc : spawns) {
+        for (final PASpawn loc : spawns) {
             if (--i <= 0) {
                 loc.getLocation().toLocation().getWorld().dropItemNaturally(
                         loc.getLocation().toLocation(), items[(new Random()).nextInt(items.length)]);

@@ -47,7 +47,7 @@ public class AutoSneak extends ArenaModule implements Listener {
             return;
         }
         final Set<String> players = e.getArena().getPlayedPlayers();
-        for (String player : players) {
+        for (final String player : players) {
             doSneak(player);
         }
     }
@@ -83,7 +83,7 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @EventHandler
     public void OnEnd(final PAEndEvent e) {
-        for (String p : e.getArena().getPlayedPlayers()) {
+        for (final String p : e.getArena().getPlayedPlayers()) {
             if (sneaker.contains(p)) {
                 stopSneak(p);
             }

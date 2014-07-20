@@ -16,12 +16,12 @@ final class MRSMySQL {
 
     }
 
-    private static MatchResultStats plugin = null;
+    private static MatchResultStats plugin;
 
     private static void mysqlQuery(final String query) {
         try {
             plugin.sqlHandler.executeQuery(query, true);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
     }
@@ -46,8 +46,8 @@ final class MRSMySQL {
             }
         }
     */
-    public static void save(int id, String arenaName, String playerName, boolean winning,
-                            String team, long time) {
+    public static void save(final int id, final String arenaName, final String playerName, final boolean winning,
+                            final String team, final long time) {
 
         mysqlQuery("INSERT INTO `" + MatchResultStats.dbTable + "` (`mid`,`arena`,`playername`,`winning`,`team`,`timespent`) VALUES ('"
                 + id + "', '" + arenaName + "', '" + playerName + "', " + (winning ? "1" : "0") + ", '" + team + "', " + time + ")");
@@ -61,17 +61,17 @@ final class MRSMySQL {
             try {
                 result = plugin.sqlHandler
                         .executeQuery("SELECT `mid` FROM `" + MatchResultStats.dbTable + "` WHERE 1;", false);
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 e.printStackTrace();
             }
             try {
                 while (result != null && result.next()) {
                     number = result.getInt("mid");
                 }
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 e.printStackTrace();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
         }
         return ++number;

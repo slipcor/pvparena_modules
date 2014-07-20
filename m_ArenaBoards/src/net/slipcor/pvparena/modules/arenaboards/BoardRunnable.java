@@ -11,7 +11,7 @@ class BoardRunnable implements Runnable {
      *
      * @param m the module
      */
-    public BoardRunnable(ArenaBoardManager m) {
+    public BoardRunnable(final ArenaBoardManager m) {
         abm = m;
         debug.i("BoardRunnable constructor");
     }
@@ -27,7 +27,7 @@ class BoardRunnable implements Runnable {
                 ArenaBoardManager.globalBoard.update();
             }
         } else {
-            for (ArenaBoard ab : abm.boards.values()) {
+            for (final ArenaBoard ab : abm.boards.values()) {
                 ab.update();
             }
         }

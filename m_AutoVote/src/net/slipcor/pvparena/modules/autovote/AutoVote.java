@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 public class AutoVote extends ArenaModule implements Listener {
     static final Map<String, String> votes = new HashMap<String, String>();
 
-    AutoVoteRunnable vote = null;
+    AutoVoteRunnable vote;
     final Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
 
     public AutoVote() {
@@ -41,8 +41,8 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean checkCommand(String cmd) {
-        return cmd.startsWith("vote") || cmd.equals("!av") || cmd.equals("autovote") || cmd.equals("votestop");
+    public boolean checkCommand(final String cmd) {
+        return cmd.startsWith("vote") || "!av".equals(cmd) || "autovote".equals(cmd) || "votestop".equals(cmd);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"everyone"});
         result.define(new String[]{"readyup"});
         result.define(new String[]{"seconds"});
@@ -70,8 +70,8 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     @Override
-    public PACheck checkJoin(CommandSender sender,
-                             PACheck res, boolean b) {
+    public PACheck checkJoin(final CommandSender sender,
+                             final PACheck res, final boolean b) {
         if (res.hasError() || !b) {
             return res;
         }
@@ -85,10 +85,10 @@ public class AutoVote extends ArenaModule implements Listener {
             return res;
         }
 
-        Player p = (Player) sender;
+        final Player p = (Player) sender;
 
-        for (Team team : p.getScoreboard().getTeams()) {
-            for (OfflinePlayer player : team.getPlayers()) {
+        for (final Team team : p.getScoreboard().getTeams()) {
+            for (final OfflinePlayer player : team.getPlayers()) {
                 if (player.getName().equals(p.getName())) {
                     res.setError(this, Language.parse(MSG.ERROR_COMMAND_BLOCKED, "You already have a scoreboard!"));
                     return res;
@@ -100,15 +100,15 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
 
         if (args[0].startsWith("vote")) {
 
             if (!arena.getArenaConfig().getBoolean(CFG.PERMS_JOINWITHSCOREBOARD)) {
-                Player p = (Player) sender;
+                final Player p = (Player) sender;
 
-                for (Team team : p.getScoreboard().getTeams()) {
-                    for (OfflinePlayer player : team.getPlayers()) {
+                for (final Team team : p.getScoreboard().getTeams()) {
+                    for (final OfflinePlayer player : team.getPlayers()) {
                         if (player.getName().equals(p.getName())) {
                             return;
                         }
@@ -118,13 +118,13 @@ public class AutoVote extends ArenaModule implements Listener {
 
             votes.put(sender.getName(), arena.getName());
             arena.msg(sender, Language.parse(MSG.MODULE_AUTOVOTE_YOUVOTED, arena.getName()));
-        } else if (args[0].equals("votestop")) {
+        } else if ("votestop".equals(args[0])) {
             if (vote != null) {
                 vote.cancel();
             }
         } else {
             if (!PVPArena.hasAdminPerms(sender)
-                    && !(PVPArena.hasCreatePerms(sender, arena))) {
+                    && !PVPArena.hasCreatePerms(sender, arena)) {
                 arena.msg(
                         sender,
                         Language.parse(MSG.ERROR_NOPERM,
@@ -140,33 +140,32 @@ public class AutoVote extends ArenaModule implements Listener {
             // !av readyup X
             // !av seconds X
 
-            if (args.length < 3 || args[1].equals("everyone")) {
-                boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE);
+            if (args.length < 3 || "everyone".equals(args[1])) {
+                final boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_EVERYONE);
                 arena.getArenaConfig().set(CFG.MODULES_ARENAVOTE_EVERYONE, !b);
                 arena.getArenaConfig().save();
                 arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_ARENAVOTE_EVERYONE.getNode(), String.valueOf(!b)));
                 return;
-            } else {
-                CFG c = null;
-                if (args[1].equals("readyup")) {
-                    c = CFG.MODULES_ARENAVOTE_READYUP;
-                } else if (args[1].equals("seconds")) {
-                    c = CFG.MODULES_ARENAVOTE_SECONDS;
-                }
-                if (c != null) {
-                    int i;
-                    try {
-                        i = Integer.parseInt(args[2]);
-                    } catch (Exception e) {
-                        arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
-                        return;
-                    }
-
-                    arena.getArenaConfig().set(c, i);
-                    arena.getArenaConfig().save();
-                    arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(i)));
+            }
+            CFG c = null;
+            if (args[1].equals("readyup")) {
+                c = CFG.MODULES_ARENAVOTE_READYUP;
+            } else if (args[1].equals("seconds")) {
+                c = CFG.MODULES_ARENAVOTE_SECONDS;
+            }
+            if (c != null) {
+                int i;
+                try {
+                    i = Integer.parseInt(args[2]);
+                } catch (Exception e) {
+                    arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
                     return;
                 }
+
+                arena.getArenaConfig().set(c, i);
+                arena.getArenaConfig().save();
+                arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(i)));
+                return;
             }
 
             arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "everyone | readyup | seconds"));
@@ -174,7 +173,7 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     @Override
-    public void displayInfo(CommandSender player) {
+    public void displayInfo(final CommandSender player) {
         player.sendMessage("seconds:"
                 + StringParser.colorVar(arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS))
                 + " | readyup: "
@@ -184,9 +183,9 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
 
-        String definition = getDefinitionFromArena(arena);
+        final String definition = getDefinitionFromArena(arena);
 
         if (definition == null) {
             removeFromVotes(arena.getName());
@@ -196,7 +195,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
         if (vote == null) {
 
-            for (String def : ArenaManager.getShortcutValues().keySet()) {
+            for (final String def : ArenaManager.getShortcutValues().keySet()) {
                 if (ArenaManager.getShortcutValues().get(def).equals(arena)) {
 
                     vote = new AutoVoteRunnable(arena,
@@ -213,11 +212,11 @@ public class AutoVote extends ArenaModule implements Listener {
         }
     }
 
-    private void removeValuesFromVotes(String definition) {
+    private void removeValuesFromVotes(final String definition) {
         boolean done = false;
         while (!done) {
             done = true;
-            for (String player : votes.keySet()) {
+            for (final String player : votes.keySet()) {
                 if (votes.get(player).equalsIgnoreCase(definition)) {
                     votes.remove(player);
                     done = false;
@@ -227,15 +226,15 @@ public class AutoVote extends ArenaModule implements Listener {
         }
     }
 
-    private void removeFromVotes(String name) {
-        List<String> names = ArenaManager.getShortcutDefinitions().get(name);
+    private void removeFromVotes(final String name) {
+        final List<String> names = ArenaManager.getShortcutDefinitions().get(name);
 
         if (names != null) {
-            for (String arena : names) {
+            for (final String arena : names) {
                 boolean done = false;
                 while (!done) {
                     done = true;
-                    for (String player : votes.keySet()) {
+                    for (final String player : votes.keySet()) {
                         if (votes.get(player).equalsIgnoreCase(arena)) {
                             votes.remove(player);
                             done = false;
@@ -247,14 +246,14 @@ public class AutoVote extends ArenaModule implements Listener {
         }
     }
 
-    private static String getDefinitionFromArena(Arena arena) {
-        for (String name : ArenaManager.getShortcutValues().keySet()) {
+    private static String getDefinitionFromArena(final Arena arena) {
+        for (final String name : ArenaManager.getShortcutValues().keySet()) {
             if (arena.equals(ArenaManager.getShortcutValues().get(name))) {
                 return name;
             }
         }
 
-        for (Entry<String, List<String>> name : ArenaManager.getShortcutDefinitions().entrySet()) {
+        for (final Entry<String, List<String>> name : ArenaManager.getShortcutDefinitions().entrySet()) {
             if (name.getValue().contains(arena.getName())) {
                 return name.getKey();
             }
@@ -263,19 +262,19 @@ public class AutoVote extends ArenaModule implements Listener {
         return null;
     }
 
-    public static void commit(String definition, Set<ArenaPlayer> players) {
-        Map<String, String> tempVotes = new HashMap<String, String>();
+    public static void commit(final String definition, final Set<ArenaPlayer> players) {
+        final Map<String, String> tempVotes = new HashMap<String, String>();
 
         debug.i("committing definition " + definition + " for " + players.size());
 
-        List<String> arenas = ArenaManager.getShortcutDefinitions().get(definition);
+        final List<String> arenas = ArenaManager.getShortcutDefinitions().get(definition);
 
         if (arenas == null || arenas.size() < 1) {
             debug.i("this definition has no arenas!");
             return;
         }
 
-        for (String node : votes.keySet()) {
+        for (final String node : votes.keySet()) {
             debug.i(node + " voted " + votes.get(node));
             if (!arenas.contains(votes.get(node))) {
                 debug.i("not our business!");
@@ -284,12 +283,12 @@ public class AutoVote extends ArenaModule implements Listener {
             tempVotes.put(node, votes.get(node));
         }
 
-        HashMap<String, Integer> counts = new HashMap<String, Integer>();
+        final HashMap<String, Integer> counts = new HashMap<String, Integer>();
         int max = 0;
 
         String voted = null;
 
-        for (String name : tempVotes.values()) {
+        for (final String name : tempVotes.values()) {
             int i = 0;
             if (counts.containsKey(name)) {
                 i = counts.get(name);
@@ -302,7 +301,7 @@ public class AutoVote extends ArenaModule implements Listener {
                 voted = name;
             }
         }
-        debug.i("max voted: " + String.valueOf(voted));
+        debug.i("max voted: " + voted);
 
         Arena a = ArenaManager.getArenaByName(voted);
 
@@ -326,9 +325,9 @@ public class AutoVote extends ArenaModule implements Listener {
     public void onThisLoad() {
         boolean active = false;
 
-        for (Arena arena : ArenaManager.getArenas()) {
-            for (ArenaModule mod : arena.getMods()) {
-                if (mod.getName().equals(this.getName())) {
+        for (final Arena arena : ArenaManager.getArenas()) {
+            for (final ArenaModule mod : arena.getMods()) {
+                if (mod.getName().equals(getName())) {
                     Bukkit.getPluginManager().registerEvents((AutoVote) mod, PVPArena.instance);
                     if (!arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_AUTOSTART)) {
                         continue;
@@ -355,17 +354,17 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     @Override
-    public void parseJoin(CommandSender sender, ArenaTeam team) {
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         arena.getDebugger().i("adding autovote player: " + sender.getName());
         players.add(ArenaPlayer.parsePlayer(sender.getName()));
     }
 
-    public boolean hasVoted(String name) {
+    public boolean hasVoted(final String name) {
         return votes.containsKey(name);
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onTryJoin(PAJoinEvent event) {
+    public void onTryJoin(final PAJoinEvent event) {
         arena.getDebugger().i("tryJoin " + event.getPlayer().getName());
         if (vote != null) {
             arena.getDebugger().i("vote is not null! denying " + event.getPlayer().getName());

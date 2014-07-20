@@ -12,11 +12,15 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class Announcement {
+public final class Announcement {
     private static final Debug debug = new Debug(7);
 
-    public static enum type {
+    public enum type {
         JOIN, ADVERT, START, END, WINNER, LOSER, PRIZE, CUSTOM
+    }
+
+    private Announcement() {
+
     }
 
     /**
@@ -26,14 +30,14 @@ public class Announcement {
      * @param t       the type of announcement
      * @param message the message to announce
      */
-    static void announce(Arena a, type t, String message) {
+    static void announce(final Arena a, final type t, final String message) {
         if (!sendCheck(a, t)) {
             return; // do not send the announcement type
         }
         debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
                 + message);
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (final Player p : Bukkit.getOnlinePlayers()) {
             if (a.hasPlayer(p) || ArenaPlayer.parsePlayer(p.getName()).isIgnoringAnnouncements()) {
                 continue;
             }
@@ -54,8 +58,8 @@ public class Announcement {
      * @return true if the arena is configured to send this announcement type,
      * false otherwise
      */
-    private static boolean sendCheck(Arena a, type t) {
-        CFG cfg = CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name());
+    private static boolean sendCheck(final Arena a, final type t) {
+        final CFG cfg = CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name());
         return a.getArenaConfig().getBoolean(cfg);
     }
 
@@ -66,11 +70,11 @@ public class Announcement {
      * @param p       the player to send the message
      * @param message the message to send
      */
-    private static void send(Arena a, Player p, String message) {
+    private static void send(final Arena a, final Player p, final String message) {
         if (a.getArenaConfig().getInt(CFG.MODULES_ANNOUNCEMENTS_RADIUS) > 0) {
-            Set<ArenaRegion> bfs = a
+            final Set<ArenaRegion> bfs = a
                     .getRegionsByType(RegionType.BATTLE);
-            for (ArenaRegion ars : bfs) {
+            for (final ArenaRegion ars : bfs) {
                 if (ars.getShape().tooFarAway(
                         a.getArenaConfig().getInt(
                                 CFG.MODULES_ANNOUNCEMENTS_RADIUS),

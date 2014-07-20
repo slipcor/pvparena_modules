@@ -6,7 +6,7 @@ class StartFreezer extends BukkitRunnable {
 
     private final StartFreeze module;
 
-    StartFreezer(StartFreeze mod) {
+    StartFreezer(final StartFreeze mod) {
         module = mod;
     }
 

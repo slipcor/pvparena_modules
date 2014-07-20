@@ -26,7 +26,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
         debug = new Debug(403);
     }
 
-    private boolean setup = false;
+    private boolean setup;
 
     @Override
     public String version() {
@@ -34,7 +34,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (!setup) {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
             setup = true;
@@ -42,45 +42,45 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
     }
 
     @EventHandler
-    public void onRedStone(BlockRedstoneEvent event) {
-        Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));
+    public void onRedStone(final BlockRedstoneEvent event) {
+        final Arena arena = ArenaManager.getArenaByRegionLocation(new PABlockLocation(event.getBlock().getLocation()));
         if (arena == null || !arena.equals(this.arena)) {
             return;
         }
-        debug.i("redstone in arena " + arena.toString());
+        debug.i("redstone in arena " + arena);
 
-        Block block = event.getBlock();
+        final Block block = event.getBlock();
 
         if (!(block.getState() instanceof Sign)) {
             return;
         }
 
-        Sign s = (Sign) block.getState();
+        final Sign s = (Sign) block.getState();
 
-        if (s.getLine(0).equals("[WIN]")) {
-            for (ArenaTeam team : arena.getTeams()) {
+        if ("[WIN]".equals(s.getLine(0))) {
+            for (final ArenaTeam team : arena.getTeams()) {
                 if (team.getName().equalsIgnoreCase(s.getLine(1))) {
                     // skip winner
                     continue;
                 }
-                for (ArenaPlayer ap : team.getTeamMembers()) {
-                    if (ap.getStatus().equals(Status.FIGHT)) {
+                for (final ArenaPlayer ap : team.getTeamMembers()) {
+                    if (ap.getStatus() == Status.FIGHT) {
                         event.getBlock().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10);
+                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10);
                         PlayerListener.finallyKillPlayer(arena, ap.get(), e);
                     }
                 }
             }
-        } else if (s.getLine(0).equals("[LOSE]")) {
-            for (ArenaTeam team : arena.getTeams()) {
+        } else if ("[LOSE]".equals(s.getLine(0))) {
+            for (final ArenaTeam team : arena.getTeams()) {
                 if (!team.getName().equalsIgnoreCase(s.getLine(1))) {
                     // skip winner
                     continue;
                 }
-                for (ArenaPlayer ap : team.getTeamMembers()) {
-                    if (ap.getStatus().equals(Status.FIGHT)) {
+                for (final ArenaPlayer ap : team.getTeamMembers()) {
+                    if (ap.getStatus() == Status.FIGHT) {
                         event.getBlock().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10);
+                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10);
                         PlayerListener.finallyKillPlayer(arena, ap.get(), e);
                     }
                 }

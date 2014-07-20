@@ -38,14 +38,14 @@ import java.util.*;
 public class PowerupManager extends ArenaModule implements Listener {
 
 
-    private Powerups usesPowerups = null;
+    private Powerups usesPowerups;
 
-    private int powerupDiff = 0;
-    private int powerupDiffI = 0;
+    private int powerupDiff;
+    private int powerupDiffI;
 
     int SPAWN_ID = -1;
 
-    private boolean setup = false;
+    private boolean setup;
 
     public PowerupManager() {
         super("PowerUps");
@@ -62,19 +62,22 @@ public class PowerupManager extends ArenaModule implements Listener {
      */
     void calcPowerupSpawn() {
         debug.i("powerups?");
-        if (usesPowerups == null)
+        if (usesPowerups == null) {
             return;
+        }
 
-        if (usesPowerups.puTotal.size() <= 0)
+        if (usesPowerups.puTotal.size() <= 0) {
             return;
+        }
 
         debug.i("totals are filled");
-        Random r = new Random();
+        final Random r = new Random();
         int i = r.nextInt(usesPowerups.puTotal.size());
 
-        for (Powerup p : usesPowerups.puTotal) {
-            if (--i > 0)
+        for (final Powerup p : usesPowerups.puTotal) {
+            if (--i > 0) {
                 continue;
+            }
             commitPowerupItemSpawn(p.item);
             arena.broadcast(Language.parse(MSG.MODULE_POWERUPS_SERVER, p.name));
             return;
@@ -83,8 +86,8 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!pu") || s.startsWith("powerup");
+    public boolean checkCommand(final String s) {
+        return "!pu".equals(s) || s.startsWith("powerup");
     }
 
     @Override
@@ -99,7 +102,7 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"time"});
         result.define(new String[]{"death"});
         result.define(new String[]{"off"});
@@ -108,12 +111,12 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !pu time 6
         // !pu death 4
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -125,14 +128,15 @@ public class PowerupManager extends ArenaModule implements Listener {
             return;
         }
 
-        if (args[0].equals("!pu") || args[0].startsWith("powerup")) {
+        if ("!pu".equals(args[0]) || args[0].startsWith("powerup")) {
             if (args.length == 2) {
-                if (args[1].equals("off")) {
+                if ("off".equals(args[1])) {
                     arena.getArenaConfig().set(CFG.MODULES_POWERUPS_USAGE, args[1]);
                     arena.getArenaConfig().save();
                     arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_POWERUPS_USAGE.getNode(), args[1]));
                     return;
-                } else if (args[1].equals("dropspawn")) {
+                }
+                if (args[1].equals("dropspawn")) {
                     boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN);
                     arena.getArenaConfig().set(CFG.MODULES_POWERUPS_DROPSPAWN, !b);
                     arena.getArenaConfig().save();
@@ -141,15 +145,15 @@ public class PowerupManager extends ArenaModule implements Listener {
                 arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "off | dropspawn"));
                 return;
             }
-            int i;
+            final int i;
             try {
                 i = Integer.parseInt(args[2]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender,
                         Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
                 return;
             }
-            if (args[1].equals("time") || args[1].equals("death")) {
+            if ("time".equals(args[1]) || "death".equals(args[1])) {
                 arena.getArenaConfig().set(CFG.MODULES_POWERUPS_USAGE, args[1] + ":" + i);
                 arena.getArenaConfig().save();
                 arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_POWERUPS_USAGE.getNode(), args[1] + ":" + i));
@@ -161,7 +165,7 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean commitEnd(ArenaTeam arg1) {
+    public boolean commitEnd(final ArenaTeam arg1) {
         if (usesPowerups != null) {
             if (arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE).startsWith("death")) {
                 debug.i("calculating powerup trigger death");
@@ -179,23 +183,23 @@ public class PowerupManager extends ArenaModule implements Listener {
      *
      * @param item the material to spawn
      */
-    void commitPowerupItemSpawn(Material item) {
+    void commitPowerupItemSpawn(final Material item) {
         debug.i("dropping item?");
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
             dropItemOnSpawn(item);
         } else {
-            Set<ArenaRegion> ars = arena.getRegionsByType(RegionType.BATTLE);
-            for (ArenaRegion ar : ars) {
+            final Set<ArenaRegion> ars = arena.getRegionsByType(RegionType.BATTLE);
+            for (final ArenaRegion ar : ars) {
 
-                PABlockLocation min = ar.getShape().getMinimumLocation();
-                PABlockLocation max = ar.getShape().getMaximumLocation();
+                final PABlockLocation min = ar.getShape().getMinimumLocation();
+                final PABlockLocation max = ar.getShape().getMaximumLocation();
 
-                Random r = new Random();
+                final Random r = new Random();
 
-                int x = r.nextInt(max.getX() - min.getX());
-                int z = r.nextInt(max.getZ() - min.getZ());
+                final int x = r.nextInt(max.getX() - min.getX());
+                final int z = r.nextInt(max.getZ() - min.getZ());
 
-                World w = Bukkit.getWorld(min.getWorldName());
+                final World w = Bukkit.getWorld(min.getWorldName());
 
                 mark(w.dropItem(w.getHighestBlockAt(min.getX() + x, min.getZ() + z).getRelative(BlockFace.UP).getLocation(), new ItemStack(item, 1)));
 
@@ -205,30 +209,30 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (!setup) {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
             setup = true;
         }
-        HashMap<String, Object> powerups = new HashMap<String, Object>();
+        final HashMap<String, Object> powerups = new HashMap<String, Object>();
         if (config.getConfigurationSection("powerups") != null) {
-            Map<String, Object> map = (HashMap<String, Object>) config
+            final Map<String, Object> map = (HashMap<String, Object>) config
                     .getConfigurationSection("powerups").getValues(false);
             Map<String, Object> map2;
             Map<String, Object> map3 = new HashMap<String, Object>();
             debug.i("parsing powerups");
-            for (String key : map.keySet()) {
+            for (final String key : map.keySet()) {
                 // key e.g. "OneUp"
                 map2 = (HashMap<String, Object>) config
                         .getConfigurationSection("powerups." + key).getValues(
                                 false);
-                Map<String, Object> temp_map = new HashMap<String, Object>();
-                for (String kkey : map2.keySet()) {
+                final Map<String, Object> temp_map = new HashMap<String, Object>();
+                for (final String kkey : map2.keySet()) {
                     // kkey e.g. "dmg_receive"
-                    if (kkey.equals("item")) {
+                    if ("item".equals(kkey)) {
                         temp_map.put(kkey, String.valueOf(map2.get(kkey)));
                         debug.i(key + " => " + kkey + " => "
-                                + String.valueOf(map2.get(kkey)));
+                                + map2.get(kkey));
                     } else {
                         debug.i(key + " => " + kkey + " => "
                                 + parseList(map3.values()));
@@ -247,13 +251,10 @@ public class PowerupManager extends ArenaModule implements Listener {
             return;
         }
 
-        String pu = arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE, "off");
+        final String pu = arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE, "off");
 
-        String[] ss = pu.split(":");
-        if (pu.startsWith("death")) {
-            powerupDiff = Integer.parseInt(ss[1]);
-            usesPowerups = new Powerups(powerups);
-        } else if (pu.startsWith("time")) {
+        final String[] ss = pu.split(":");
+        if (pu.startsWith("death") || pu.startsWith("time")) {
             powerupDiff = Integer.parseInt(ss[1]);
             usesPowerups = new Powerups(powerups);
         } else {
@@ -264,7 +265,7 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void displayInfo(CommandSender player) {
+    public void displayInfo(final CommandSender player) {
         player.sendMessage("usage: "
                 + StringParser.colorVar(usesPowerups != null)
                 + "("
@@ -277,20 +278,20 @@ public class PowerupManager extends ArenaModule implements Listener {
      *
      * @param item the item to drop
      */
-    void dropItemOnSpawn(Material item) {
+    void dropItemOnSpawn(final Material item) {
         debug.i("calculating item spawn location");
-        Set<PALocation> locs = SpawnManager.getSpawnsContaining(arena, "powerup");
+        final Set<PALocation> locs = SpawnManager.getSpawnsContaining(arena, "powerup");
         if (locs.size() < 1) {
             PVPArena.instance.getLogger().warning("No valid powerup spawns found!");
             return;
         }
-        int pos = (new Random()).nextInt(locs.size());
-        for (PALocation loc : locs) {
+        int pos = new Random().nextInt(locs.size());
+        for (final PALocation loc : locs) {
             if (--pos > 0) {
                 continue;
             }
-            Location aim = loc.toLocation().add(0, 1, 0);
-            debug.i("dropping item on spawn: " + aim.toString());
+            final Location aim = loc.toLocation().add(0, 1, 0);
+            debug.i("dropping item on spawn: " + aim);
             mark(Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1)));
             break;
         }
@@ -298,14 +299,14 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean hasSpawn(String s) {
+    public boolean hasSpawn(final String s) {
         return s.toLowerCase().startsWith("powerup");
     }
 
     private final String POWERUPSTRING = ChatColor.RED + "Power\nUp";
 
-    private void mark(Item drop) {
-        ItemMeta meta = drop.getItemStack().getItemMeta();
+    private void mark(final Item drop) {
+        final ItemMeta meta = drop.getItemStack().getItemMeta();
 
         meta.setDisplayName(POWERUPSTRING);
         drop.getItemStack().setItemMeta(meta);
@@ -319,18 +320,18 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void onEntityDamageByEntity(Player attacker,
-                                       Player defender, EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(final Player attacker,
+                                       final Player defender, final EntityDamageByEntityEvent event) {
         if (usesPowerups != null) {
             debug.i("committing powerup triggers", attacker);
             debug.i("committing powerup triggers", defender);
             Powerup p = usesPowerups.puActive.get(attacker);
-            if ((p != null) && (p.canBeTriggered())) {
+            if (p != null && p.canBeTriggered()) {
 
                 p.commit(attacker, defender, event, true);
             }
             p = usesPowerups.puActive.get(defender);
-            if ((p != null) && (p.canBeTriggered())) {
+            if (p != null && p.canBeTriggered()) {
                 p.commit(attacker, defender, event, false);
             }
         }
@@ -338,10 +339,10 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+    public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (usesPowerups != null && event.getEntity() instanceof Player) {
             debug.i("regaining health");
-            Powerup p = usesPowerups.puActive.get(event.getEntity());
+            final Powerup p = usesPowerups.puActive.get(event.getEntity());
             if (p != null) {
                 if (p.canBeTriggered()) {
                     if (p.isEffectActive(PowerupType.HEAL)) {
@@ -355,20 +356,20 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @EventHandler
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        Player player = event.getPlayer();
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
+        final Player player = event.getPlayer();
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         if (!arena.equals(ap.getArena())) {
             return;
         }
         if (usesPowerups != null && isPowerup(event.getItem().getItemStack())) {
             debug.i("onPlayerPickupItem: fighting player", player);
             debug.i("item: " + event.getItem().getItemStack().getType(), player);
-            for (Powerup p : usesPowerups.puTotal) {
+            for (final Powerup p : usesPowerups.puTotal) {
                 debug.i("is it " + p.item + "?", player);
-                if (event.getItem().getItemStack().getType().equals(p.item)) {
+                if (event.getItem().getItemStack().getType() == p.item) {
                     debug.i("yes!", player);
-                    Powerup newP = new Powerup(p);
+                    final Powerup newP = new Powerup(p);
                     if (usesPowerups.puActive.containsKey(player)) {
                         usesPowerups.puActive.get(player).deactivate(player);
                         usesPowerups.puActive.remove(player);
@@ -378,8 +379,9 @@ public class PowerupManager extends ArenaModule implements Listener {
                             player.getName(), newP.name));
                     event.setCancelled(true);
                     event.getItem().remove();
-                    if (newP.canBeTriggered())
+                    if (newP.canBeTriggered()) {
                         newP.activate(player); // activate for the first time
+                    }
 
                     return;
                 }
@@ -388,10 +390,10 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void onPlayerVelocity(PlayerVelocityEvent event) {
+    public void onPlayerVelocity(final PlayerVelocityEvent event) {
         debug.i("inPlayerVelocity: fighting player", event.getPlayer());
         if (usesPowerups != null) {
-            Powerup p = usesPowerups.puActive.get(event.getPlayer());
+            final Powerup p = usesPowerups.puActive.get(event.getPlayer());
             if (p != null) {
                 if (p.canBeTriggered()) {
                     if (p.isEffectActive(PowerupType.JUMP)) {
@@ -408,16 +410,16 @@ public class PowerupManager extends ArenaModule implements Listener {
      * @param values the collection
      * @return the comma separated string
      */
-    String parseList(Collection<Object> values) {
+    String parseList(final Collection<Object> values) {
         String s = "";
-        for (Object o : values) {
-            if (!s.equals("")) {
+        for (final Object o : values) {
+            if (!"".equals(s)) {
                 s += ",";
             }
             try {
                 s += String.valueOf(o);
                 debug.i("a");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 debug.i("b");
                 s += o.toString();
             }
@@ -426,12 +428,12 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @EventHandler
-    public void parseMove(PlayerMoveEvent event) {
+    public void parseMove(final PlayerMoveEvent event) {
 
         // debug.i("onPlayerMove: fighting player!");
         if (usesPowerups != null) {
             //debug.i("parsing move");
-            Powerup p = usesPowerups.puActive.get(event.getPlayer());
+            final Powerup p = usesPowerups.puActive.get(event.getPlayer());
             if (p != null) {
                 if (p.canBeTriggered()) {
                     if (p.isEffectActive(PowerupType.FREEZE)) {
@@ -454,14 +456,16 @@ public class PowerupManager extends ArenaModule implements Listener {
      * powerup tick, tick each arena that uses powerups
      */
     protected void powerupTick() {
-        if (usesPowerups != null)
+        if (usesPowerups != null) {
             usesPowerups.tick();
+        }
     }
 
     @Override
-    public void reset(boolean force) {
-        if (SPAWN_ID > -1)
+    public void reset(final boolean force) {
+        if (SPAWN_ID > -1) {
             Bukkit.getScheduler().cancelTask(SPAWN_ID);
+        }
         SPAWN_ID = -1;
         if (usesPowerups != null) {
             usesPowerups.puActive.clear();
@@ -471,8 +475,8 @@ public class PowerupManager extends ArenaModule implements Listener {
     @Override
     public void parseStart() {
         if (usesPowerups != null) {
-            String pu = arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE);
-            String[] ss = pu.split(":");
+            final String pu = arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE);
+            final String[] ss = pu.split(":");
             if (pu.startsWith("time")) {
                 // arena.powerupTrigger = "time";
                 powerupDiff = Integer.parseInt(ss[1]);

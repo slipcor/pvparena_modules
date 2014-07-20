@@ -22,7 +22,7 @@ public class RelayRunnable extends ArenaRunnable {
     private final Debug debug = new Debug(77);
     private final RespawnRelay mod;
 
-    public RelayRunnable(RespawnRelay relay, Arena arena, ArenaPlayer ap, List<ItemStack> drops) {
+    public RelayRunnable(final RespawnRelay relay, final Arena arena, final ArenaPlayer ap, final List<ItemStack> drops) {
 
         super(MSG.TIMER_STARTING_IN.getNode(), arena.getArenaConfig().getInt(CFG.MODULES_RESPAWNRELAY_INTERVAL), ap.get(), null, false);
         mod = relay;
@@ -47,7 +47,7 @@ public class RelayRunnable extends ArenaRunnable {
         }
 
         new InventoryRefillRunnable(ap.getArena(), maybePlayer, drops);
-        String spawn = mod.overrideMap.get(ap.getName());
+        final String spawn = mod.overrideMap.get(ap.getName());
         SpawnManager.respawn(ap.getArena(), ap, spawn);
         ap.getArena().unKillPlayer(ap.get(), maybePlayer.getLastDamageCause() == null ? null : ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
         ap.setStatus(Status.FIGHT);

@@ -9,7 +9,7 @@ public class AfterRunnable extends ArenaRunnable {
     private final AfterMatch pum;
     private final Debug debug = new Debug(41);
 
-    public AfterRunnable(AfterMatch pm, int i) {
+    public AfterRunnable(final AfterMatch pm, final int i) {
         super(MSG.MODULE_AFTERMATCH_STARTINGIN.getNode(), i, null, pm.getArena(), false);
         pum = pm;
         debug.i("AfterRunnable constructor");

@@ -14,7 +14,7 @@ class ArenaBoardSign {
      *
      * @param loc the location where the sign resides
      */
-    public ArenaBoardSign(Location loc) {
+    public ArenaBoardSign(final Location loc) {
         state = loc.getBlock().getState();
         debug.i("adding sign at location " + loc.toString());
     }
@@ -25,7 +25,7 @@ class ArenaBoardSign {
      * @param i      the line to set
      * @param string the string to set
      */
-    public void set(int i, String string) {
+    public void set(final int i, final String string) {
         ((Sign) state).setLine(i, string);
     }
 

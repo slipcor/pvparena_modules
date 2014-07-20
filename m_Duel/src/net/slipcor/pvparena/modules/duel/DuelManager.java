@@ -24,11 +24,11 @@ public class DuelManager extends ArenaModule {
         return "v1.3.0.495";
     }
 
-    private String duel = null;
+    private String duel;
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.toLowerCase().equals("duel") || s.toLowerCase().equals("accept");
+    public boolean checkCommand(final String s) {
+        return "duel".equals(s.toLowerCase()) || "accept".equals(s.toLowerCase());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"{Player}"});
         return result;
     }
@@ -54,14 +54,14 @@ public class DuelManager extends ArenaModule {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         if (arena.isFightInProgress()) {
             arena.msg(sender,
                     Language.parse(MSG.ERROR_FIGHT_IN_PROGRESS));
             return;
         }
-        if (args[0].toLowerCase().equals("duel")) {
-            Player p = Bukkit.getPlayer(args[1]);
+        if ("duel".equals(args[0].toLowerCase())) {
+            final Player p = Bukkit.getPlayer(args[1]);
             if (p == null) {
                 arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[1]));
                 return;
@@ -69,10 +69,10 @@ public class DuelManager extends ArenaModule {
             arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE, sender.getName(), arena.getName()));
             arena.msg(p, Language.parse(MSG.MODULE_DUEL_REQUESTED, sender.getName()));
             duel = sender.getName();
-        } else if (args[0].toLowerCase().equals("accept")) {
+        } else if ("accept".equals(args[0].toLowerCase())) {
             if (duel != null) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DuelRunnable(this, duel, sender.getName()), 500L);
-                Player p = Bukkit.getPlayer(duel);
+                final Player p = Bukkit.getPlayer(duel);
                 if (p != null) {
                     p.sendMessage(Language.parse(MSG.MODULE_DUEL_ACCEPTED, sender.getName()));
                 }

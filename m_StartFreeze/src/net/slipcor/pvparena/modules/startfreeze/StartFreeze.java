@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StartFreeze extends ArenaModule implements Listener {
-    StartFreezer runnable = null;
-    private boolean setup = false;
+    StartFreezer runnable;
+    private boolean setup;
 
 
     public StartFreeze() {
@@ -34,8 +34,8 @@ public class StartFreeze extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("startfreeze") || s.equals("!sf");
+    public boolean checkCommand(final String s) {
+        return "startfreeze".equals(s) || "!sf".equals(s);
     }
 
     @Override
@@ -49,11 +49,11 @@ public class StartFreeze extends ArenaModule implements Listener {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !sf 5
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -65,11 +65,11 @@ public class StartFreeze extends ArenaModule implements Listener {
             return;
         }
 
-        if (args[0].equals("!sf") || args[0].equals("startfreeze")) {
-            int i;
+        if ("!sf".equals(args[0]) || "startfreeze".equals(args[0])) {
+            final int i;
             try {
                 i = Integer.parseInt(args[1]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender,
                         Language.parse(MSG.ERROR_NOT_NUMERIC, args[1]));
                 return;
@@ -82,14 +82,15 @@ public class StartFreeze extends ArenaModule implements Listener {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER));
     }
 
     @Override
-    public void reset(boolean force) {
-        if (runnable != null)
+    public void reset(final boolean force) {
+        if (runnable != null) {
             runnable.cancel();
+        }
         runnable = null;
     }
 
@@ -103,7 +104,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (!setup) {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
             setup = true;
@@ -111,18 +112,18 @@ public class StartFreeze extends ArenaModule implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player p = event.getPlayer();
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
-        if (ap.getArena() == null || (!arena.equals(ap.getArena()))) {
+    public void onPlayerMove(final PlayerMoveEvent event) {
+        final Player p = event.getPlayer();
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+        if (ap.getArena() == null || !arena.equals(ap.getArena())) {
             return;
         }
         if (runnable != null) {
-            Location from = event.getFrom();
-            Location to = event.getTo();
-            if ((from.getBlockX() != to.getBlockX()) ||
-                    (from.getBlockY() != to.getBlockY()) ||
-                    (from.getBlockZ() != to.getBlockZ())) {
+            final Location from = event.getFrom();
+            final Location to = event.getTo();
+            if (from.getBlockX() != to.getBlockX() ||
+                    from.getBlockY() != to.getBlockY() ||
+                    from.getBlockZ() != to.getBlockZ()) {
                 event.setCancelled(true);
             }
         }

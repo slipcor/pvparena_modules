@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Walls extends ArenaModule {
-    WallsRunner runnable = null;
+    WallsRunner runnable;
 
 
     public Walls() {
@@ -30,8 +30,8 @@ public class Walls extends ArenaModule {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("walls") || s.equals("wallmaterial") || s.equals("!ww") || s.equals("!wm");
+    public boolean checkCommand(final String s) {
+        return "walls".equals(s) || "wallmaterial".equals(s) || "!ww".equals(s) || "!wm".equals(s);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"{Material}"});
         return result;
     }
@@ -54,13 +54,13 @@ public class Walls extends ArenaModule {
     private void createWalls() {
         Material mat;
         try {
-            Material newMat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
+            final Material newMat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
             mat = Material.getMaterial(newMat.name());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             mat = Material.SAND;
         }
 
-        for (ArenaRegion region : arena.getRegions()) {
+        for (final ArenaRegion region : arena.getRegions()) {
             if (region.getRegionName().toLowerCase().contains("wall")) {
                 final World world = region.getWorld();
                 final int x1 = region.getShape().getMinimumLocation().getX();
@@ -83,11 +83,11 @@ public class Walls extends ArenaModule {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !sf 5
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -99,12 +99,12 @@ public class Walls extends ArenaModule {
             return;
         }
 
-        if (args[0].equals("!ww") || args[0].equals("walls")) {
+        if ("!ww".equals(args[0]) || "walls".equals(args[0])) {
             // setting walls seconds
-            int i;
+            final int i;
             try {
                 i = Integer.parseInt(args[1]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender,
                         Language.parse(MSG.ERROR_NOT_NUMERIC, args[1]));
                 return;
@@ -115,11 +115,11 @@ public class Walls extends ArenaModule {
             arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_WALLS_SECONDS.getNode(), String.valueOf(i)));
         } else {
             // setting walls material
-            Material mat;
+            final Material mat;
             try {
                 mat = Material.getMaterial(args[0].toUpperCase());
                 debug.i("wall material: " + mat.name());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender, Language.parse(MSG.ERROR_MAT_NOT_FOUND, args[0]));
                 return;
             }
@@ -131,7 +131,7 @@ public class Walls extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_WALLS_SECONDS) +
                 "material: " + arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
     }
@@ -143,7 +143,7 @@ public class Walls extends ArenaModule {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         if (runnable != null) {
             runnable.cancel();
         }
@@ -152,7 +152,7 @@ public class Walls extends ArenaModule {
     }
 
     public void removeWalls() {
-        for (ArenaRegion region : arena.getRegions()) {
+        for (final ArenaRegion region : arena.getRegions()) {
 
             if (region.getRegionName().toLowerCase().contains("wall")) {
                 final World world = region.getWorld();

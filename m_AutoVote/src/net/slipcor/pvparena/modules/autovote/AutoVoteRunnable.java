@@ -19,7 +19,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
     private final String definition;
     private final AutoVote module;
 
-    public AutoVoteRunnable(Arena a, int i, AutoVote mod, String definition) {
+    public AutoVoteRunnable(final Arena a, final int i, final AutoVote mod, final String definition) {
         super(MSG.MODULE_AUTOVOTE_VOTENOW.getNode(), i, null, a, false);
         this.definition = definition;
         debug.i("AutoVoteRunnable constructor");
@@ -34,7 +34,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
             public void run() {
                 module.vote = null;
                 arena.getDebugger().i("clearing 'AutoVote.players'");
-                for (String player : AutoVote.votes.keySet()) {
+                for (final String player : AutoVote.votes.keySet()) {
                     arena.getDebugger().i("removing vote of: " + player);
                 }
                 AutoVote.votes.clear();
@@ -53,27 +53,27 @@ public class AutoVoteRunnable extends ArenaRunnable {
         if ((super.message == null) || (MESSAGES.get(seconds) == null)) {
             return;
         }
-        MSG msg = MSG.getByNode(this.message);
+        final MSG msg = MSG.getByNode(this.message);
         if (msg == null) {
             PVPArena.instance.getLogger().warning("MSG not found: " + this.message);
             return;
         }
 
-        String arenastring;
+        final String arenastring;
 
         if (definition == null) {
             arenastring = ArenaManager.getNames();
         } else {
-            Set<String> arenas = new HashSet<String>();
-            for (String string : ArenaManager.getShortcutDefinitions().get(definition)) {
+            final Set<String> arenas = new HashSet<String>();
+            for (final String string : ArenaManager.getShortcutDefinitions().get(definition)) {
                 arenas.add(string);
             }
             arenastring = StringParser.joinSet(arenas, ", ");
         }
 
-        String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), arenastring) : MESSAGES.get(seconds);
+        final String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), arenastring) : MESSAGES.get(seconds);
 
-        for (ArenaPlayer ap : module.players) {
+        for (final ArenaPlayer ap : module.players) {
             if (!module.hasVoted(ap.getName())) {
                 module.getArena().msg(ap.get(), message);
             }

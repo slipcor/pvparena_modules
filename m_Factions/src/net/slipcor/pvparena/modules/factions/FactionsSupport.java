@@ -11,7 +11,7 @@ public class FactionsSupport extends ArenaModule {
         super("Factions");
     }
 
-    private boolean setup = false;
+    private boolean setup;
 
     @Override
     public String version() {
@@ -19,9 +19,10 @@ public class FactionsSupport extends ArenaModule {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
-        if (setup)
+    public void configParse(final YamlConfiguration config) {
+        if (setup) {
             return;
+        }
         Bukkit.getPluginManager().registerEvents(new FactionsListener(this), PVPArena.instance);
         setup = true;
     }

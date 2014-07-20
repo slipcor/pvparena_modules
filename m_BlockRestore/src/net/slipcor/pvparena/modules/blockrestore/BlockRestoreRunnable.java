@@ -16,8 +16,8 @@ class BlockRestoreRunnable implements Runnable {
     private final Debug debug = new Debug(67);
     private final Blocks module;
 
-    public BlockRestoreRunnable(Arena arena,
-                                Blocks module) {
+    public BlockRestoreRunnable(final Arena arena,
+                                final Blocks module) {
         this.arena = arena;
         removals = getBlocks();
         this.module = module;
@@ -26,8 +26,8 @@ class BlockRestoreRunnable implements Runnable {
     @Override
     public void run() {
         module.restoring = true;
-        for (Location l : removals.keySet()) {
-            debug.i("location: " + l.toString());
+        for (final Location l : removals.keySet()) {
+            debug.i("location: " + l);
             removals.get(l).reset();
             removals.remove(l);
             Blocks.blocks.remove(l);
@@ -44,14 +44,14 @@ class BlockRestoreRunnable implements Runnable {
      * @return a map of location=>block to reset
      */
     private HashMap<Location, ArenaBlock> getBlocks() {
-        HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
+        final HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
 
         debug.i("reading all arenablocks");
-        for (Location l : Blocks.blocks.keySet()) {
+        for (final Location l : Blocks.blocks.keySet()) {
             if (Blocks.blocks.get(l).arena.equals(arena.getName())
-                    || Blocks.blocks.get(l).arena.equals("")) {
+                    || "".equals(Blocks.blocks.get(l).arena)) {
                 result.put(l, Blocks.blocks.get(l));
-                debug.i(" - " + l.toString());
+                debug.i(" - " + l);
             }
         }
 
@@ -59,8 +59,8 @@ class BlockRestoreRunnable implements Runnable {
     }
 
     public void instantlyRestore() {
-        for (Location l : removals.keySet()) {
-            debug.i("location: " + l.toString());
+        for (final Location l : removals.keySet()) {
+            debug.i("location: " + l);
             removals.get(l).reset();
             removals.remove(l);
             Blocks.blocks.remove(l);

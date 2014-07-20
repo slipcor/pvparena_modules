@@ -17,7 +17,7 @@ public class ArenaBoardColumn {
      *
      * @param l  the location of the column header
      */
-    public ArenaBoardColumn(PABlockLocation l) {
+    public ArenaBoardColumn(final PABlockLocation l) {
         location = l;
 
         debug.i("fetching sign column");
@@ -33,7 +33,7 @@ public class ArenaBoardColumn {
         int i = 0;
         try {
             do {
-                Sign s = (Sign) l.getBlock().getState();
+                final Sign s = (Sign) l.getBlock().getState();
                 s.setLine(0, "");
                 s.setLine(1, "");
                 s.setLine(2, "");
@@ -42,7 +42,7 @@ public class ArenaBoardColumn {
                 signs[i] = (new ArenaBoardSign(l));
                 l = l.getBlock().getRelative(BlockFace.DOWN).getLocation();
             } while (++i < 5);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // no more signs, out!
         }
     }
@@ -52,10 +52,10 @@ public class ArenaBoardColumn {
      *
      * @param s the string array to save
      */
-    public void write(String[] s) {
+    public void write(final String[] s) {
         int i = 0;
         debug.i("writing to column at location " + location.toString());
-        for (ArenaBoardSign abs : signs) {
+        for (final ArenaBoardSign abs : signs) {
             if (abs == null) {
                 return;
             }

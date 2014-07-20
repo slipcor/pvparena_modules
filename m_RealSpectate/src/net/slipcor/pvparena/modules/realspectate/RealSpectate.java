@@ -25,7 +25,7 @@ public class RealSpectate extends ArenaModule {
         super("RealSpectate");
     }
 
-    private RealSpectateListener listener = null;
+    private RealSpectateListener listener;
 
     private final int priority = 2;
 
@@ -35,10 +35,11 @@ public class RealSpectate extends ArenaModule {
     }
 
     @Override
-    public PACheck checkJoin(CommandSender sender,
-                             PACheck res, boolean join) {
-        if (join)
+    public PACheck checkJoin(final CommandSender sender,
+                             final PACheck res, final boolean join) {
+        if (join) {
             return res;
+        }
 
         if (arena.getFighters().size() < 1) {
             res.setError(this, Language.parse(MSG.ERROR_NOPLAYERFOUND));
@@ -51,9 +52,9 @@ public class RealSpectate extends ArenaModule {
     }
 
     @Override
-    public void commitSpectate(Player player) {
+    public void commitSpectate(final Player player) {
         debug.i("committing REAL spectate", player);
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         ap.setLocation(new PALocation(ap.get().getLocation()));
 
 
@@ -71,7 +72,7 @@ public class RealSpectate extends ArenaModule {
 
             if (ap.getArenaTeam() != null && ap.getArenaClass() == null) {
                 final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
-                if (autoClass != null && !autoClass.equals("none") && arena.getClass(autoClass) != null) {
+                if (autoClass != null && !"none".equals(autoClass) && arena.getClass(autoClass) != null) {
                     arena.chooseClass(player, null, autoClass);
                 }
                 if (autoClass == null) {
@@ -88,8 +89,8 @@ public class RealSpectate extends ArenaModule {
     }
 
     @Override
-    public void parseJoin(CommandSender sender, ArenaTeam team) {
-        for (SpectateWrapper sw : getListener().spectated_players.values()) {
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
+        for (final SpectateWrapper sw : getListener().spectated_players.values()) {
             sw.update();
         }
     }
@@ -101,14 +102,14 @@ public class RealSpectate extends ArenaModule {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         getListener();
-        Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
-        for (SpectateWrapper sw : getListener().spectated_players.values()) {
+        final Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
+        for (final SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }
 
-        for (SpectateWrapper sw : list) {
+        for (final SpectateWrapper sw : list) {
             sw.stopHard();
         }
         getListener().spectated_players.clear();
@@ -116,18 +117,18 @@ public class RealSpectate extends ArenaModule {
     }
 
     @Override
-    public void unload(Player player) {
-        Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
-        for (SpectateWrapper sw : getListener().spectated_players.values()) {
+    public void unload(final Player player) {
+        final Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
+        for (final SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }
 
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (final Player p : Bukkit.getOnlinePlayers()) {
             p.showPlayer(player);
         }
 
-        for (SpectateWrapper sw : list) {
+        for (final SpectateWrapper sw : list) {
             if (sw.hasSpectator(player)) {
                 sw.removeSpectator(player);
                 return;
@@ -135,12 +136,12 @@ public class RealSpectate extends ArenaModule {
         }
 
         if (arena.getFighters().size() < 1) {
-            Set<SpectateWrapper> list2 = new HashSet<SpectateWrapper>();
-            for (SpectateWrapper sw : getListener().spectated_players.values()) {
+            final Set<SpectateWrapper> list2 = new HashSet<SpectateWrapper>();
+            for (final SpectateWrapper sw : getListener().spectated_players.values()) {
                 list2.add(sw);
             }
 
-            for (SpectateWrapper sw : list2) {
+            for (final SpectateWrapper sw : list2) {
                 sw.stopSpectating();
             }
             getListener().spectated_players.clear();

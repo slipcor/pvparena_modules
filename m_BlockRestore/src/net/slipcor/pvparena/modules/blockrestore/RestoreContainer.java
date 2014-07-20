@@ -30,7 +30,7 @@ class RestoreContainer {
     private final HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
     private final HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
 
-    public RestoreContainer(Blocks b, ArenaRegion r) {
+    public RestoreContainer(final Blocks b, final ArenaRegion r) {
         blocks = b;
         bfRegion = r;
     }
@@ -42,19 +42,19 @@ class RestoreContainer {
                 new RestoreRunner(blocks, chests, furnaces, dispensers));
     }
 
-    static ItemStack[] cloneIS(ItemStack[] contents) {
-        ItemStack[] result = new ItemStack[contents.length];
+    static ItemStack[] cloneIS(final ItemStack[] contents) {
+        final ItemStack[] result = new ItemStack[contents.length];
 
         for (int i = 0; i < result.length; i++) {
             if (contents[i] == null) {
                 continue;
             }
-            ItemStack is = contents[i];
+            final ItemStack is = contents[i];
             result[i] = new ItemStack(is.getType(), is.getAmount(),
                     is.getDurability());
             result[i].setData(is.getData());
 
-            for (Enchantment ench : is.getEnchantments().keySet()) {
+            for (final Enchantment ench : is.getEnchantments().keySet()) {
                 result[i].addUnsafeEnchantment(ench,
                         is.getEnchantments().get(ench));
             }
@@ -66,15 +66,15 @@ class RestoreContainer {
 
     public void saveChests() {
 
-        if (blocks.getArena().getArenaConfig().getStringList("inventories", new ArrayList<String>()).size() > 0) {
+        if (!blocks.getArena().getArenaConfig().getStringList("inventories", new ArrayList<String>()).isEmpty()) {
 
-            List<String> tempList = blocks.getArena().getArenaConfig()
+            final List<String> tempList = blocks.getArena().getArenaConfig()
                     .getStringList("inventories", null);
 
             debug.i("reading inventories");
 
-            for (String s : tempList) {
-                Location loc = parseStringToLocation(s);
+            for (final String s : tempList) {
+                final Location loc = parseStringToLocation(s);
 
                 saveBlock(loc.getWorld(), loc.getBlockX(), loc.getBlockY(),
                         loc.getBlockZ());
@@ -91,15 +91,15 @@ class RestoreContainer {
         int y;
         int z;
 
-        PABlockLocation min = bfRegion.getShape().getMinimumLocation();
-        PABlockLocation max = bfRegion.getShape().getMaximumLocation();
+        final PABlockLocation min = bfRegion.getShape().getMinimumLocation();
+        final PABlockLocation max = bfRegion.getShape().getMaximumLocation();
 
-        debug.i("min: " + min.toString());
-        debug.i("max: " + max.toString());
+        debug.i("min: " + min);
+        debug.i("max: " + max);
 
-        World world = Bukkit.getWorld(max.getWorldName());
+        final World world = Bukkit.getWorld(max.getWorldName());
 
-        List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>();
 
         if (bfRegion.getShape() instanceof CuboidRegion) {
             debug.i("cube!");
@@ -107,11 +107,11 @@ class RestoreContainer {
             for (x = min.getX(); x <= max.getX(); x++) {
                 for (y = min.getY(); y <= max.getY(); y++) {
                     for (z = min.getZ(); z <= max.getZ(); z++) {
-                        Location loc = saveBlock(world, x, y, z);
+                        final Location loc = saveBlock(world, x, y, z);
                         if (loc == null) {
                             continue;
                         }
-                        debug.i("loc not null: " + loc.toString());
+                        debug.i("loc not null: " + loc);
                         result.add(parseLocationToString(loc));
                     }
                 }
@@ -121,11 +121,11 @@ class RestoreContainer {
             for (x = min.getX(); x <= max.getX(); x++) {
                 for (y = min.getY(); y <= max.getY(); y++) {
                     for (z = min.getZ(); z <= max.getZ(); z++) {
-                        Location loc = saveBlock(world, x, y, z);
+                        final Location loc = saveBlock(world, x, y, z);
                         if (loc == null) {
                             continue;
                         }
-                        debug.i("loc not null: " + loc.toString());
+                        debug.i("loc not null: " + loc);
                         result.add(parseLocationToString(loc));
                     }
                 }
@@ -135,20 +135,22 @@ class RestoreContainer {
         blocks.getArena().getArenaConfig().save();
     }
 
-    private Location saveBlock(World world, int x, int y, int z) {
-        Block b = world.getBlockAt(x, y, z);
+    private Location saveBlock(final World world, final int x, final int y, final int z) {
+        final Block b = world.getBlockAt(x, y, z);
         if (b.getType() == Material.CHEST) {
-            Chest c = (Chest) b.getState();
+            final Chest c = (Chest) b.getState();
 
             chests.put(b.getLocation(), cloneIS(c.getInventory().getContents()));
             return b.getLocation();
-        } else if (b.getType() == Material.FURNACE) {
+        }
+        if (b.getType() == Material.FURNACE) {
             Furnace c = (Furnace) b.getState();
 
             furnaces.put(b.getLocation(), cloneIS(c.getInventory()
                     .getContents()));
             return b.getLocation();
-        } else if (b.getType() == Material.DISPENSER) {
+        }
+        if (b.getType() == Material.DISPENSER) {
             Dispenser c = (Dispenser) b.getState();
 
             dispensers.put(b.getLocation(), cloneIS(c.getInventory()
@@ -158,19 +160,19 @@ class RestoreContainer {
         return null;
     }
 
-    private Location parseStringToLocation(String loc) {
+    private Location parseStringToLocation(final String loc) {
         // world,x,y,z
-        String[] args = loc.split(",");
+        final String[] args = loc.split(",");
 
-        World world = Bukkit.getWorld(args[0]);
-        int x = Integer.parseInt(args[1]);
-        int y = Integer.parseInt(args[2]);
-        int z = Integer.parseInt(args[3]);
+        final World world = Bukkit.getWorld(args[0]);
+        final int x = Integer.parseInt(args[1]);
+        final int y = Integer.parseInt(args[2]);
+        final int z = Integer.parseInt(args[3]);
 
         return new Location(world, x, y, z);
     }
 
-    private String parseLocationToString(Location loc) {
+    private String parseLocationToString(final Location loc) {
         return loc.getWorld().getName() + "," + loc.getBlockX() + ","
                 + loc.getBlockY() + "," + loc.getBlockZ();
     }

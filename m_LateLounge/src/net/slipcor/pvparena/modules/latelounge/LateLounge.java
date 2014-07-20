@@ -29,23 +29,23 @@ public class LateLounge extends ArenaModule {
         return "v1.3.0.495";
     }
 
-    private List<String> playerList = null;
+    private List<String> playerList;
 
     @Override
-    public PACheck checkJoin(CommandSender sender,
-                             PACheck res, boolean b) {
+    public PACheck checkJoin(final CommandSender sender,
+                             final PACheck res, final boolean b) {
         if (!b || res.hasError() || res.getPriority() > priority) {
             return res;
         }
 
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
 
         if (getPlayerList().contains(player.getName())) {
             if (getPlayerList().size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
                 res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
                 int pos = 1;
 
-                for (String name : getPlayerList()) {
+                for (final String name : getPlayerList()) {
                     if (name.equals(player.getName())) {
                         break;
                     }
@@ -61,23 +61,24 @@ public class LateLounge extends ArenaModule {
             // not enough players
             getPlayerList().add(player.getName());
             final int pos = getPlayerList().size();
-            Player[] aPlayers = Bukkit.getOnlinePlayers();
+            final Player[] aPlayers = Bukkit.getOnlinePlayers();
 
-            for (Player p : aPlayers) {
+            for (final Player p : aPlayers) {
                 if (p.equals(player)) {
                     continue;
                 }
                 try {
                     arena.msg(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, ArenaManager.getIndirectArenaName(arena), player.getName()));
 
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     //
                 }
             }
             arena.msg(player, Language.parse(MSG.MODULE_LATELOUNGE_POSITION, String.valueOf(pos)));
             res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
             return res;
-        } else if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == getPlayerList().size() + 1) {
+        }
+        if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == getPlayerList().size() + 1) {
             // not enough players
             getPlayerList().add(player.getName());
 
@@ -137,12 +138,12 @@ public class LateLounge extends ArenaModule {
     }
 
     @Override
-    public boolean hasSpawn(String name) {
+    public boolean hasSpawn(final String name) {
         return playerList.contains(name);
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         getPlayerList().clear();
     }
 }

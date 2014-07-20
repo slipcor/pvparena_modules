@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CTManager extends ArenaModule implements Listener {
-    private static boolean tagAPIenabled = false;
-    private Scoreboard board = null;
+    private static boolean tagAPIenabled;
+    private Scoreboard board;
     private final Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
 
     public CTManager() {
@@ -44,8 +44,8 @@ public class CTManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!ct") || s.equals("colorteams");
+    public boolean checkCommand(final String s) {
+        return "!ct".equals(s) || "colorteams".equals(s);
     }
 
     @Override
@@ -60,17 +60,17 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"hidename"});
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !ct [value]
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -84,7 +84,7 @@ public class CTManager extends ArenaModule implements Listener {
 
         CFG c = null;
 
-        if (args[1].equals("hidename")) {
+        if ("hidename".equals(args[1])) {
             c = CFG.CHAT_COLORNICK;
         }
 
@@ -93,7 +93,7 @@ public class CTManager extends ArenaModule implements Listener {
             return;
         }
 
-        boolean b = arena.getArenaConfig().getBoolean(c);
+        final boolean b = arena.getArenaConfig().getBoolean(c);
         arena.getArenaConfig().set(c, !b);
         arena.getArenaConfig().save();
         arena.msg(sender, Language.parse(MSG.SET_DONE, c.getNode(), String.valueOf(!b)));
@@ -101,7 +101,7 @@ public class CTManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void displayInfo(CommandSender player) {
+    public void displayInfo(final CommandSender player) {
         player.sendMessage(StringParser.colorVar("enabled", arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK))
                 + " | "
                 + StringParser.colorVar("scoreboard", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD))
@@ -110,7 +110,7 @@ public class CTManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
         if (tagAPIenabled) {
             return;
@@ -124,8 +124,8 @@ public class CTManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void tpPlayerToCoordName(Player player, String place) {
-        ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+    public void tpPlayerToCoordName(final Player player, final String place) {
+        final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
         if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             String n;
             if (team == null) {
@@ -157,42 +157,42 @@ public class CTManager extends ArenaModule implements Listener {
             try {
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunner()
                         , 20 * 3L);
-            } catch (IllegalPluginAccessException e) {
+            } catch (final IllegalPluginAccessException e) {
 
             }
         }
     }
 
-    void updateName(Player player) {
+    void updateName(final Player player) {
         if (tagAPIenabled &&
                 !arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
             try {
                 TagAPI.refreshPlayer(player);
-            } catch (Exception e) {
+            } catch (final Exception e) {
 
             }
         }
     }
 
-    public void parseJoin(CommandSender sender, ArenaTeam team) {
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
             return;
         }
-        Scoreboard board = getScoreboard();
+        final Scoreboard board = getScoreboard();
         ((Player) sender).setScoreboard(board);
-        for (Team sTeam : board.getTeams()) {
+        for (final Team sTeam : board.getTeams()) {
             if (sTeam.getName().equals(team.getName())) {
                 sTeam.addPlayer((Player) sender);
                 return;
             }
         }
-        Team sTeam = board.registerNewTeam(team.getName());
+        final Team sTeam = board.registerNewTeam(team.getName());
         sTeam.setPrefix(team.getColor().toString());
         sTeam.addPlayer((Player) sender);
     }
 
     @Override
-    public void parsePlayerLeave(Player player, ArenaTeam team) {
+    public void parsePlayerLeave(final Player player, final ArenaTeam team) {
         if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
             return;
         }
@@ -205,11 +205,11 @@ public class CTManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public void resetPlayer(Player player, boolean force) {
+    public void resetPlayer(final Player player, final boolean force) {
         if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
             return;
         }
-        ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+        final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team != null) {
             getScoreboard().getTeam(team.getName()).removePlayer(player);
@@ -224,10 +224,10 @@ public class CTManager extends ArenaModule implements Listener {
     private Scoreboard getScoreboard() {
         if (board == null) {
             board = Bukkit.getScoreboardManager().getNewScoreboard();
-            for (ArenaTeam team : arena.getTeams()) {
-                Team sTeam = board.registerNewTeam(team.getName());
+            for (final ArenaTeam team : arena.getTeams()) {
+                final Team sTeam = board.registerNewTeam(team.getName());
                 sTeam.setPrefix(team.getColor().toString());
-                for (ArenaPlayer aPlayer : team.getTeamMembers()) {
+                for (final ArenaPlayer aPlayer : team.getTeamMembers()) {
                     sTeam.addPlayer(aPlayer.get());
                 }
             }
@@ -235,7 +235,7 @@ public class CTManager extends ArenaModule implements Listener {
         return board;
     }
 
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         if (force) {
             backup.clear();
         } else {
@@ -252,7 +252,7 @@ public class CTManager extends ArenaModule implements Listener {
     }
 
     @EventHandler
-    public void onChange(PATeamChangeEvent event) {
+    public void onChange(final PATeamChangeEvent event) {
         if (event.getArena() != arena) {
             return;
         }
@@ -260,13 +260,13 @@ public class CTManager extends ArenaModule implements Listener {
         board.getTeam(event.getFrom().getName()).removePlayer(event.getPlayer());
 
 
-        for (Team sTeam : board.getTeams()) {
+        for (final Team sTeam : board.getTeams()) {
             if (sTeam.getName().equals(event.getTo().getName())) {
                 sTeam.addPlayer(event.getPlayer());
                 return;
             }
         }
-        Team sTeam = board.registerNewTeam(event.getTo().getName());
+        final Team sTeam = board.registerNewTeam(event.getTo().getName());
         sTeam.setPrefix(event.getTo().getColor().toString());
         sTeam.addPlayer(event.getPlayer());
     }

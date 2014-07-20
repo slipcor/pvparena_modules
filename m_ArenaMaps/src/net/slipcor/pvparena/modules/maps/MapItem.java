@@ -12,7 +12,7 @@ class MapItem {
     private final String name;
     private final ChatColor color;
 
-    public MapItem(Player p, ChatColor c) {
+    public MapItem(final Player p, final ChatColor c) {
         player = true;
         color = c;
         name = p.getName();
@@ -20,7 +20,7 @@ class MapItem {
         z = 0;
     }
 
-    public MapItem(PABlockLocation coord, ChatColor c) {
+    public MapItem(final PABlockLocation coord, final ChatColor c) {
         player = false;
         name = null;
         color = c;
@@ -32,7 +32,7 @@ class MapItem {
         if (player) {
             try {
                 return Bukkit.getPlayerExact(name).getLocation().getBlockX();
-            } catch (NullPointerException e) {
+            } catch (final NullPointerException e) {
 
             }
         }
@@ -43,7 +43,7 @@ class MapItem {
         if (player) {
             try {
                 return Bukkit.getPlayerExact(name).getLocation().getBlockZ();
-            } catch (NullPointerException e) {
+            } catch (final NullPointerException e) {
 
             }
         }

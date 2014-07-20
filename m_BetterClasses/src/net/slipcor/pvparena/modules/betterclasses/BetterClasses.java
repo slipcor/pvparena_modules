@@ -34,26 +34,26 @@ public class BetterClasses extends ArenaModule {
         return "v1.3.0.510";
     }
 
-    private final static int DURATION = 2400; // 60000 => 2400
+    private static final int DURATION = 2400; // 60000 => 2400
 
-    private BukkitTask potionRunner = null;
+    private BukkitTask potionRunner;
 
     @Override
-    public boolean cannotSelectClass(Player player,
-                                     String className) {
+    public boolean cannotSelectClass(final Player player,
+                                     final String className) {
 
         if (notEnoughEXP(player, className)) {
             arena.msg(player, Language.parse(MSG.ERROR_CLASS_NOTENOUGHEXP, className));
             return true;
         }
 
-        int max;
-        int globalmax;
+        final int max;
+        final int globalmax;
 
         try {
             max = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxPlayers." + className);
             globalmax = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxGlobalPlayers." + className);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
 
@@ -63,13 +63,13 @@ public class BetterClasses extends ArenaModule {
 
         int sum = 0;
         int globalsum = 0;
-        ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+        final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team == null) {
             return true;
         }
-        for (ArenaTeam ateam : arena.getTeams()) {
-            for (ArenaPlayer ap : ateam.getTeamMembers()) {
+        for (final ArenaTeam ateam : arena.getTeams()) {
+            for (final ArenaPlayer ap : ateam.getTeamMembers()) {
                 if (ap.getArenaClass() == null) {
                     continue;
                 }
@@ -91,8 +91,8 @@ public class BetterClasses extends ArenaModule {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!bc") || s.startsWith("betterclass");
+    public boolean checkCommand(final String s) {
+        return "!bc".equals(s) || s.startsWith("betterclass");
     }
 
     @Override
@@ -107,11 +107,11 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         if (arena == null) {
             return result;
         }
-        for (ArenaClass aClass : arena.getClasses()) {
+        for (final ArenaClass aClass : arena.getClasses()) {
             result.define(new String[]{aClass.getName(), "add"});
             result.define(new String[]{aClass.getName(), "clear"});
             result.define(new String[]{aClass.getName(), "set", "exp"});
@@ -122,7 +122,7 @@ public class BetterClasses extends ArenaModule {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !bc [classname] | show
         // !bc [classname] add [def]| add
         // !bc [classname] remove [type] | remove
@@ -132,7 +132,7 @@ public class BetterClasses extends ArenaModule {
         // !bc [classname] set max [count]
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(sender,
                     Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
@@ -142,32 +142,32 @@ public class BetterClasses extends ArenaModule {
             return;
         }
 
-        ArenaClass c = arena.getClass(args[1]);
+        final ArenaClass c = arena.getClass(args[1]);
 
         if (c == null) {
             arena.msg(sender, Language.parse(MSG.ERROR_CLASS_NOT_FOUND, args[1]));
             return;
         }
 
-        if (args.length == 5 && args[2].equals("set")) {
-            int value;
+        if (args.length == 5 && "set".equals(args[2])) {
+            final int value;
             try {
                 value = Integer.parseInt(args[4]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[4]));
                 return;
             }
 
-            if (args[3].equalsIgnoreCase("exp")) {
-                String node = "modules.betterclasses.neededEXPLevel." + c.getName();
+            if ("exp".equalsIgnoreCase(args[3])) {
+                final String node = "modules.betterclasses.neededEXPLevel." + c.getName();
                 arena.getArenaConfig().setManually(node, value);
                 arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
-            } else if (args[3].equalsIgnoreCase("max")) {
-                String node = "modules.betterclasses.maxPlayers." + c.getName();
+            } else if ("max".equalsIgnoreCase(args[3])) {
+                final String node = "modules.betterclasses.maxPlayers." + c.getName();
                 arena.getArenaConfig().setManually(node, value);
                 arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
-            } else if (args[3].equalsIgnoreCase("globalmax")) {
-                String node = "modules.betterclasses.maxGlobalPlayers." + c.getName();
+            } else if ("globalmax".equalsIgnoreCase(args[3])) {
+                final String node = "modules.betterclasses.maxGlobalPlayers." + c.getName();
                 arena.getArenaConfig().setManually(node, value);
                 arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
             }
@@ -177,7 +177,7 @@ public class BetterClasses extends ArenaModule {
 
         HashSet<PotionEffect> ape = new HashSet<PotionEffect>();
 
-        String s = (String) arena.getArenaConfig().getUnsafe("modules.betterclasses.permEffects." + c.getName());
+        final String s = (String) arena.getArenaConfig().getUnsafe("modules.betterclasses.permEffects." + c.getName());
         if (s != null) {
             ape = parseStringToPotionEffects(s);
         }
@@ -186,7 +186,7 @@ public class BetterClasses extends ArenaModule {
             // !bc [classname] | show
             arena.msg(sender, Language.parse(MSG.MODULE_BETTERCLASSES_LISTHEAD, c.getName()));
             if (ape.size() >= 1) {
-                for (PotionEffect pe : ape) {
+                for (final PotionEffect pe : ape) {
                     arena.msg(sender, pe.getType().getName() + "x" + pe.getAmplifier());
                 }
             } else {
@@ -197,7 +197,7 @@ public class BetterClasses extends ArenaModule {
 
         if (args.length < 4) {
             // !bc [classname] clear | clear
-            if (!args[2].equals("clear")) {
+            if (!"clear".equals(args[2])) {
                 printHelp(arena, sender);
                 return;
             }
@@ -208,12 +208,12 @@ public class BetterClasses extends ArenaModule {
             return;
         }
 
-        if (args[2].equals("add")) {
+        if ("add".equals(args[2])) {
             // 0   1           2      3     4
             // !bc [classname] add    [def] [amp]| add
             PotionEffectType pet = null;
 
-            for (PotionEffectType x : PotionEffectType.values()) {
+            for (final PotionEffectType x : PotionEffectType.values()) {
                 if (x == null) {
                     continue;
                 }
@@ -233,7 +233,7 @@ public class BetterClasses extends ArenaModule {
             if (args.length == 5) {
                 try {
                     amp = Integer.parseInt(args[4]);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[4]));
                     return;
                 }
@@ -244,7 +244,8 @@ public class BetterClasses extends ArenaModule {
             arena.getArenaConfig().save();
             arena.msg(sender, Language.parse(MSG.MODULE_BETTERCLASSES_ADD, c.getName(), pet.getName()));
             return;
-        } else if (args[2].equals("remove")) {
+        }
+        if (args[2].equals("remove")) {
             // 0   1           2      3
             // !bc [classname] remove [type] | remove
             PotionEffectType pet = null;
@@ -283,8 +284,8 @@ public class BetterClasses extends ArenaModule {
     }
 
     @Override
-    public void configParse(YamlConfiguration cfg) {
-        for (ArenaClass c : arena.getClasses()) {
+    public void configParse(final YamlConfiguration cfg) {
+        for (final ArenaClass c : arena.getClasses()) {
             cfg.addDefault("modules.betterclasses.permEffects." + c.getName(), "none");
             cfg.addDefault("modules.betterclasses.maxPlayers." + c.getName(), 0);
             cfg.addDefault("modules.betterclasses.maxGlobalPlayers." + c.getName(), 0);
@@ -293,16 +294,16 @@ public class BetterClasses extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         if (superMap == null || !superMap.containsKey(arena)) {
             return;
         }
 
-        Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+        final Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
 
-        for (ArenaClass aClass : map.keySet()) {
-            Set<String> set = new HashSet<String>();
-            for (PotionEffect pef : map.get(aClass)) {
+        for (final ArenaClass aClass : map.keySet()) {
+            final Set<String> set = new HashSet<String>();
+            for (final PotionEffect pef : map.get(aClass)) {
                 set.add(pef.getType().getName() + "x" + pef.getAmplifier() + 1);
             }
             sender.sendMessage(aClass.getName() + ": " + StringParser.joinSet(
@@ -311,120 +312,120 @@ public class BetterClasses extends ArenaModule {
     }
 
     @Override
-    public void lateJoin(Player player) {
+    public void lateJoin(final Player player) {
         if (!superMap.containsKey(arena)) {
             init_map();
         }
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        debug.i("respawning player " + String.valueOf(ap), player);
-        Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        debug.i("respawning player " + ap, player);
+        final Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
         if (map == null) {
-            PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
+            PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena);
             return;
         }
 
-        ArenaClass c = ap.getArenaClass();
+        final ArenaClass c = ap.getArenaClass();
 
-        Iterable<PotionEffect> ape = map.get(c);
+        final Iterable<PotionEffect> ape = map.get(c);
         if (ape == null) {
-            debug.i("no effects for team " + String.valueOf(c), player);
+            debug.i("no effects for team " + c, player);
             return;
         }
-        for (PotionEffect pe : ape) {
+        for (final PotionEffect pe : ape) {
             debug.i("adding " + pe.getType(), player);
             player.addPotionEffect(pe);
         }
     }
 
     private void init_map() {
-        HashMap<ArenaClass, HashSet<PotionEffect>> map = new HashMap<ArenaClass, HashSet<PotionEffect>>();
+        final HashMap<ArenaClass, HashSet<PotionEffect>> map = new HashMap<ArenaClass, HashSet<PotionEffect>>();
 
         superMap.put(arena, map);
 
-        for (ArenaClass c : arena.getClasses()) {
-            String s = (String) arena.getArenaConfig().getUnsafe("modules.betterclasses.permEffects." + c.getName());
+        for (final ArenaClass c : arena.getClasses()) {
+            final String s = (String) arena.getArenaConfig().getUnsafe("modules.betterclasses.permEffects." + c.getName());
             if (s == null) {
                 continue;
             }
-            HashSet<PotionEffect> ape = parseStringToPotionEffects(s);
+            final HashSet<PotionEffect> ape = parseStringToPotionEffects(s);
             if (ape == null || ape.size() < 1) {
                 continue;
             }
             map.put(c, ape);
         }
 
-        for (ArenaPlayer ap : arena.getFighters()) {
-            Iterable<PotionEffect> ape = map.get(ap.getArenaClass());
+        for (final ArenaPlayer ap : arena.getFighters()) {
+            final Iterable<PotionEffect> ape = map.get(ap.getArenaClass());
             if (ape == null) {
                 continue;
             }
-            for (PotionEffect pe : ape) {
+            for (final PotionEffect pe : ape) {
                 ap.get().addPotionEffect(pe);
             }
         }
     }
 
-    private boolean notEnoughEXP(Player player, String className) {
-        int needed;
-        int available;
+    private boolean notEnoughEXP(final Player player, final String className) {
+        final int needed;
+        final int available;
 
         try {
             needed = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.neededEXPLevel." + className);
-            PlayerState state = ArenaPlayer.parsePlayer(player.getName()).getState();
+            final PlayerState state = ArenaPlayer.parsePlayer(player.getName()).getState();
 
-            Field value = state.getClass().getDeclaredField("explevel");
+            final Field value = state.getClass().getDeclaredField("explevel");
             value.setAccessible(true);
             available = value.getInt(state);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
 
         return available < needed;
     }
 
-    private String parsePotionEffectsToString(Iterable<PotionEffect> ape) {
-        Set<String> result = new HashSet<String>();
-        for (PotionEffect pe : ape) {
+    private String parsePotionEffectsToString(final Iterable<PotionEffect> ape) {
+        final Set<String> result = new HashSet<String>();
+        for (final PotionEffect pe : ape) {
             result.add(pe.getType().getName() + ":" + pe.getAmplifier());
         }
         return StringParser.joinSet(result, ",");
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         if (potionRunner != null) {
             potionRunner.cancel();
             potionRunner = null;
         }
     }
 
-    public void parseRespawn(Player player, ArenaTeam team, DamageCause cause, Entity damager) {
+    public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause cause, final Entity damager) {
         if (!superMap.containsKey(arena)) {
             init_map();
         }
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        debug.i("respawning player " + String.valueOf(ap), player);
-        Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        debug.i("respawning player " + ap, player);
+        final Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
         if (map == null) {
-            PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
+            PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena);
             return;
         }
 
         if ((team != null || cause != null || damager != null) &&
-                player.getActivePotionEffects() != null && player.getActivePotionEffects().size() > 0) {
-            for (PotionEffect eff : player.getActivePotionEffects()) {
+                player.getActivePotionEffects() != null && !player.getActivePotionEffects().isEmpty()) {
+            for (final PotionEffect eff : player.getActivePotionEffects()) {
                 player.removePotionEffect(eff.getType());
             }
         }
 
-        ArenaClass c = ap.getArenaClass();
+        final ArenaClass c = ap.getArenaClass();
 
-        Iterable<PotionEffect> ape = map.get(c);
+        final Iterable<PotionEffect> ape = map.get(c);
         if (ape == null) {
-            debug.i("no effects for class " + String.valueOf(c), player);
+            debug.i("no effects for class " + c, player);
             return;
         }
-        for (PotionEffect pe : ape) {
+        for (final PotionEffect pe : ape) {
             if (team == null && cause == null && damager == null) {
                 player.removePotionEffect(pe.getType());
             }
@@ -438,14 +439,14 @@ public class BetterClasses extends ArenaModule {
         if (!superMap.containsKey(arena)) {
             init_map();
         }
-        for (ArenaPlayer ap : arena.getFighters()) {
+        for (final ArenaPlayer ap : arena.getFighters()) {
             parseRespawn(ap.get(), null, null, null);
         }
         class RunLater implements Runnable {
 
             @Override
             public void run() {
-                for (ArenaPlayer ap : arena.getFighters()) {
+                for (final ArenaPlayer ap : arena.getFighters()) {
                     parseRespawn(ap.get(), null, null, null);
                 }
             }
@@ -455,37 +456,37 @@ public class BetterClasses extends ArenaModule {
 
     }
 
-    private HashSet<PotionEffect> parseStringToPotionEffects(String s) {
-        HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
+    private HashSet<PotionEffect> parseStringToPotionEffects(final String s) {
+        final HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
 
-        if (s == null || s.equals("none") || s.equals("")) {
+        if (s == null || "none".equals(s) || "".equals(s)) {
             return spe;
         }
 
         String current = null;
 
         try {
-            String[] ss = s.split(",");
-            for (String sss : ss) {
+            final String[] ss = s.split(",");
+            for (final String sss : ss) {
                 current = sss;
 
-                String[] values = sss.split(":");
+                final String[] values = sss.split(":");
 
-                PotionEffectType type = PotionEffectType.getByName(values[0].toUpperCase());
+                final PotionEffectType type = PotionEffectType.getByName(values[0].toUpperCase());
 
-                int amp = values.length < 2 ? 1 : Integer.parseInt(values[1]);
+                final int amp = values.length < 2 ? 1 : Integer.parseInt(values[1]);
 
-                PotionEffect pe = new PotionEffect(type, DURATION, amp - 1);
+                final PotionEffect pe = new PotionEffect(type, DURATION, amp - 1);
                 spe.add(pe);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             PVPArena.instance.getLogger().warning("error while parsing POTION EFFECT DEFINITION \"" + s + "\" : " + current);
         }
 
         return spe;
     }
 
-    private void printHelp(Arena arena, CommandSender sender) {
+    private void printHelp(final Arena arena, final CommandSender sender) {
         arena.msg(sender, "/pa [arenaname] !bc [classname] | list potion effects");
         arena.msg(sender, "/pa [arenaname] !bc [classname] clear | clear potion effects");
         arena.msg(sender, "/pa [arenaname] !bc [classname] add [type] [amp] | add potion effect");

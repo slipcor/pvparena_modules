@@ -32,7 +32,7 @@ public class ChestFiller extends ArenaModule {
         super("ChestFiller");
     }
 
-    private boolean setup = false;
+    private boolean setup;
 
     @Override
     public String version() {
@@ -40,8 +40,8 @@ public class ChestFiller extends ArenaModule {
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!cf") || s.startsWith("chestfiller");
+    public boolean checkCommand(final String s) {
+        return "!cf".equals(s) || s.startsWith("chestfiller");
     }
 
     @Override
@@ -56,16 +56,16 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"clear"});
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !cf clear | clear inventory definitions
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -77,7 +77,7 @@ public class ChestFiller extends ArenaModule {
             return;
         }
 
-        if (!args[1].equals("clear")) {
+        if (!"clear".equals(args[1])) {
             return;
         }
 
@@ -88,7 +88,7 @@ public class ChestFiller extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage("items: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems"));
         sender.sendMessage("max: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")
                 + " | " +
@@ -117,24 +117,24 @@ public class ChestFiller extends ArenaModule {
             setup = true;
         }
 
-        String items;
+        final String items;
         try {
             items = (String) arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return;
         }
 
-        boolean clear;
+        final boolean clear;
         try {
             clear = (Boolean) arena.getArenaConfig().getUnsafe("modules.chestfiller.clear");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return;
         }
 
         final int cmax = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")));
         final int cmin = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems")));
 
-        ItemStack[] stacks = StringParser.getItemStacksFromString(items);
+        final ItemStack[] stacks = StringParser.getItemStacksFromString(items);
 
         if (stacks.length < 1) {
             return;
@@ -143,15 +143,15 @@ public class ChestFiller extends ArenaModule {
 
         // ----------------------------------------
 
-        if (arena.getArenaConfig().getStringList("inventories", new ArrayList<String>()).size() > 0) {
+        if (!arena.getArenaConfig().getStringList("inventories", new ArrayList<String>()).isEmpty()) {
 
-            List<String> tempList = arena.getArenaConfig()
+            final List<String> tempList = arena.getArenaConfig()
                     .getStringList("inventories", null);
 
             debug.i("reading inventories");
 
-            for (String s : tempList) {
-                Location loc = parseStringToLocation(s);
+            for (final String s : tempList) {
+                final Location loc = parseStringToLocation(s);
 
                 fill(loc, clear, cmin, cmax, stacks);
             }
@@ -163,16 +163,16 @@ public class ChestFiller extends ArenaModule {
         int x;
         int y;
         int z;
-        List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>();
 
-        for (ArenaRegion bfRegion : arena.getRegionsByType(RegionType.BATTLE)) {
-            PABlockLocation min = bfRegion.getShape().getMinimumLocation();
-            PABlockLocation max = bfRegion.getShape().getMaximumLocation();
+        for (final ArenaRegion bfRegion : arena.getRegionsByType(RegionType.BATTLE)) {
+            final PABlockLocation min = bfRegion.getShape().getMinimumLocation();
+            final PABlockLocation max = bfRegion.getShape().getMaximumLocation();
 
-            debug.i("min: " + min.toString());
-            debug.i("max: " + max.toString());
+            debug.i("min: " + min);
+            debug.i("max: " + max);
 
-            World world = Bukkit.getWorld(max.getWorldName());
+            final World world = Bukkit.getWorld(max.getWorldName());
 
 
             if (bfRegion.getShape() instanceof CuboidRegion) {
@@ -181,11 +181,11 @@ public class ChestFiller extends ArenaModule {
                 for (x = min.getX(); x <= max.getX(); x++) {
                     for (y = min.getY(); y <= max.getY(); y++) {
                         for (z = min.getZ(); z <= max.getZ(); z++) {
-                            Location loc = saveBlock(world, x, y, z);
+                            final Location loc = saveBlock(world, x, y, z);
                             if (loc == null) {
                                 continue;
                             }
-                            debug.i("loc not null: " + loc.toString());
+                            debug.i("loc not null: " + loc);
                             result.add(parseLocationToString(loc));
                         }
                     }
@@ -195,11 +195,11 @@ public class ChestFiller extends ArenaModule {
                 for (x = min.getX(); x <= max.getX(); x++) {
                     for (y = min.getY(); y <= max.getY(); y++) {
                         for (z = min.getZ(); z <= max.getZ(); z++) {
-                            Location loc = saveBlock(world, x, y, z);
+                            final Location loc = saveBlock(world, x, y, z);
                             if (loc == null) {
                                 continue;
                             }
-                            debug.i("loc not null: " + loc.toString());
+                            debug.i("loc not null: " + loc);
                             result.add(parseLocationToString(loc));
                         }
                     }
@@ -215,24 +215,24 @@ public class ChestFiller extends ArenaModule {
 
     }
 
-    private Location parseStringToLocation(String loc) {
+    private Location parseStringToLocation(final String loc) {
         // world,x,y,z
-        String[] args = loc.split(",");
+        final String[] args = loc.split(",");
 
-        World world = Bukkit.getWorld(args[0]);
-        int x = Integer.parseInt(args[1]);
-        int y = Integer.parseInt(args[2]);
-        int z = Integer.parseInt(args[3]);
+        final World world = Bukkit.getWorld(args[0]);
+        final int x = Integer.parseInt(args[1]);
+        final int y = Integer.parseInt(args[2]);
+        final int z = Integer.parseInt(args[3]);
 
         return new Location(world, x, y, z);
     }
 
-    private void fill(Location loc, boolean clear, int min, int max, ItemStack[] stacks) {
-        Chest c;
+    private void fill(final Location loc, final boolean clear, final int min, final int max, final ItemStack[] stacks) {
+        final Chest c;
 
         try {
             c = (Chest) loc.getBlock().getState();
-        } catch (ClassCastException cce) {
+        } catch (final ClassCastException cce) {
             return;
         }
 
@@ -240,35 +240,35 @@ public class ChestFiller extends ArenaModule {
             c.getBlockInventory().clear();
         }
 
-        List<ItemStack> adding = new ArrayList<ItemStack>();
+        final List<ItemStack> adding = new ArrayList<ItemStack>();
 
-        Random r = (new Random());
+        final Random r = new Random();
 
-        int count = r.nextInt(max - min) + min;
+        final int count = r.nextInt(max - min) + min;
 
 
         int i = 0;
 
         while (i++ < count) {
-            int d = r.nextInt(stacks.length);
+            final int d = r.nextInt(stacks.length);
             adding.add(stacks[d].clone());
         }
 
-        for (ItemStack it : adding) {
+        for (final ItemStack it : adding) {
             c.getInventory().addItem(it);
         }
         c.update();
     }
 
-    private Location saveBlock(World world, int x, int y, int z) {
-        Block b = world.getBlockAt(x, y, z);
+    private Location saveBlock(final World world, final int x, final int y, final int z) {
+        final Block b = world.getBlockAt(x, y, z);
         if (b.getType() == Material.CHEST) {
             return b.getLocation();
         }
         return null;
     }
 
-    private String parseLocationToString(Location loc) {
+    private String parseLocationToString(final Location loc) {
         return loc.getWorld().getName() + "," + loc.getBlockX() + ","
                 + loc.getBlockY() + "," + loc.getBlockZ();
     }

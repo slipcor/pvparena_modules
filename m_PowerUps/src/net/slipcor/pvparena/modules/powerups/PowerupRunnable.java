@@ -12,7 +12,7 @@ class PowerupRunnable implements Runnable {
      *
      * @param pm the module instance
      */
-    public PowerupRunnable(PowerupManager pm) {
+    public PowerupRunnable(final PowerupManager pm) {
         pum = pm;
         debug.i("PowerupRunnable constructor");
     }
@@ -23,12 +23,12 @@ class PowerupRunnable implements Runnable {
     @Override
     public void run() {
         debug.i("PowerupRunnable commiting spawn");
-        if (!pum.getArena().isLocked()) {
-
-            pum.calcPowerupSpawn();
-        } else {
+        if (pum.getArena().isLocked()) {
             // deactivate the auto saving task
             Bukkit.getServer().getScheduler().cancelTask(pum.SPAWN_ID);
+        } else {
+
+            pum.calcPowerupSpawn();
         }
     }
 }

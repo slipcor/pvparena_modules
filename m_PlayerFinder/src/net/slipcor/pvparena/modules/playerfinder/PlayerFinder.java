@@ -25,7 +25,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
         super("PlayerFinder");
     }
 
-    private boolean setup = false;
+    private boolean setup;
 
     @Override
     public String version() {
@@ -41,7 +41,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerFind(PlayerInteractEvent event) {
+    public void onPlayerFind(final PlayerInteractEvent event) {
         final Player player = event.getPlayer();
 
         if (ArenaPlayer.parsePlayer(player.getName()).getArena() == null) {
@@ -59,20 +59,20 @@ public class PlayerFinder extends ArenaModule implements Listener {
             return;
         }
 
-        int maxRadius = arena.getArenaConfig().getInt(CFG.MODULES_PLAYERFINDER_MAXRADIUS, 100);
+        final int maxRadius = arena.getArenaConfig().getInt(CFG.MODULES_PLAYERFINDER_MAXRADIUS, 100);
 
-        List<Entity> list = player.getNearbyEntities(maxRadius, maxRadius, maxRadius);
-        Map<Double, Player> sortMap = new HashMap<Double, Player>();
+        final List<Entity> list = player.getNearbyEntities(maxRadius, maxRadius, maxRadius);
+        final Map<Double, Player> sortMap = new HashMap<Double, Player>();
 
         debug.i("ok!", player);
 
-        for (Entity e : list) {
+        for (final Entity e : list) {
             if (e instanceof Player) {
                 if (e == player) {
                     continue;
                 }
 
-                Player innerPlayer = (Player) e;
+                final Player innerPlayer = (Player) e;
 
                 if (ArenaPlayer.parsePlayer(innerPlayer.getName()).getStatus() != Status.FIGHT) {
                     continue;
@@ -90,18 +90,18 @@ public class PlayerFinder extends ArenaModule implements Listener {
             //TODO tell "noone there";
         }
 
-        SortedMap<Double, Player> sortedMap = new TreeMap<Double, Player>(sortMap);
+        final SortedMap<Double, Player> sortedMap = new TreeMap<Double, Player>(sortMap);
 
-        if (event.getAction() == (Action.LEFT_CLICK_AIR)) {
+        if (event.getAction() == Action.LEFT_CLICK_AIR) {
             debug.i("left");
-            for (Player otherPlayer : sortedMap.values()) {
+            for (final Player otherPlayer : sortedMap.values()) {
                 player.setCompassTarget(otherPlayer.getLocation());
                 Arena.pmsg(player, Language.parse(MSG.MODULE_PLAYERFINDER_POINT, otherPlayer.getName()));
                 break;
             }
-        } else if (event.getAction() == (Action.RIGHT_CLICK_AIR)) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
             debug.i("right");
-            for (double d : sortedMap.keySet()) {
+            for (final double d : sortedMap.keySet()) {
                 Arena.pmsg(player, Language.parse(MSG.MODULE_PLAYERFINDER_NEAR, String.valueOf((int) d)));
                 break;
             }

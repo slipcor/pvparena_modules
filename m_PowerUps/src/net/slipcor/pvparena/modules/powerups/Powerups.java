@@ -15,11 +15,11 @@ public class Powerups {
     public final List<Powerup> puTotal = new ArrayList<Powerup>();
 
     @SuppressWarnings("unchecked")
-    public Powerups(Map<String, Object> powerUps) {
+    public Powerups(final Map<String, Object> powerUps) {
 
         debug.i("initialising powerupmanager");
         Powerup p;
-        for (String pName : powerUps.keySet()) {
+        for (final String pName : powerUps.keySet()) {
             debug.i("reading powerUps");
             p = new Powerup(pName,
                     (HashMap<String, Object>) powerUps.get(pName));
@@ -31,7 +31,7 @@ public class Powerups {
      * trigger all powerups
      */
     public void tick() {
-        for (Powerup p : puActive.values()) {
+        for (final Powerup p : puActive.values()) {
             if (p.canBeTriggered()) {
                 p.tick();
             }

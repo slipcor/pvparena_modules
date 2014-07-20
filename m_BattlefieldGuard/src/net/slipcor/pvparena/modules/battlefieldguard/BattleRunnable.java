@@ -26,24 +26,25 @@ class BattleRunnable implements Runnable {
      */
     @Override
     public void run() {
-        if (!Debug.override)
+        if (!Debug.override) {
             debug.i("BattleRunnable commiting");
+        }
         try {
-            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+            for (final Player p : Bukkit.getServer().getOnlinePlayers()) {
+                final ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
 
-                String name = PVPArenaAPI.getArenaNameByLocation(p.getLocation());
+                final String name = PVPArenaAPI.getArenaNameByLocation(p.getLocation());
 
                 if (p.hasPermission("pvparena.admin")) {
                     continue;
                 }
 
                 if (!Debug.override) {
-                    debug.i("arena pos: " + String.valueOf(name), p);
-                    debug.i("arena IN : " + String.valueOf(ap.getArena()), p);
+                    debug.i("arena pos: " + name, p);
+                    debug.i("arena IN : " + ap.getArena(), p);
                 }
 
-                if (name == null || name.equals("")) {
+                if (name == null || "".equals(name)) {
                     continue; // not physically in an arena
                 }
 
@@ -60,7 +61,7 @@ class BattleRunnable implements Runnable {
                         continue;
                     }
 
-                    Arena a = ArenaManager.getArenaByName(name);
+                    final Arena a = ArenaManager.getArenaByName(name);
                     if (a.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
                         p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM, 1000));
                         p.setHealth(0);
@@ -70,7 +71,7 @@ class BattleRunnable implements Runnable {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
