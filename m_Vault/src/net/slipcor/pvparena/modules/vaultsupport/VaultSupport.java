@@ -67,11 +67,6 @@ public class VaultSupport extends ArenaModule implements Listener {
     }
 
     @Override
-    public List<String> getShort() {
-        return Arrays.asList(new String[0]);
-    }
-
-    @Override
     public CommandTree<String> getSubs(final Arena arena) {
         final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"bet", "{Player}"});
@@ -604,6 +599,7 @@ public class VaultSupport extends ArenaModule implements Listener {
         }
     }
 
+    @Override
     public void parsePlayerDeath(final Player p,
                                  final EntityDamageEvent cause) {
         killreward(ArenaPlayer.getLastDamagingPlayer(cause, p));

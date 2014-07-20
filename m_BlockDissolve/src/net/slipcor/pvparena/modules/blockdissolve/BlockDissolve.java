@@ -42,6 +42,7 @@ public class BlockDissolve extends ArenaModule {
         checker.start();
     }
 
+    @Override
     public void reset(final boolean force) {
         checker.clear();
     }

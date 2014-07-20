@@ -174,6 +174,7 @@ public class CTManager extends ArenaModule implements Listener {
         }
     }
 
+    @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
             return;
@@ -235,6 +236,7 @@ public class CTManager extends ArenaModule implements Listener {
         return board;
     }
 
+    @Override
     public void reset(final boolean force) {
         if (force) {
             backup.clear();

@@ -399,6 +399,7 @@ public class BetterClasses extends ArenaModule {
         }
     }
 
+    @Override
     public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause cause, final Entity damager) {
         if (!superMap.containsKey(arena)) {
             init_map();

@@ -354,6 +354,7 @@ public class PowerupManager extends ArenaModule implements Listener {
         }
     }
 
+    @Override
     @EventHandler
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         final Player player = event.getPlayer();

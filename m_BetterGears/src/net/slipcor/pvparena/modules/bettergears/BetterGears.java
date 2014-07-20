@@ -342,6 +342,7 @@ public class BetterGears extends ArenaModule {
         return null;
     }
 
+    @Override
     public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause cause,
                              final Entity damager) {
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());

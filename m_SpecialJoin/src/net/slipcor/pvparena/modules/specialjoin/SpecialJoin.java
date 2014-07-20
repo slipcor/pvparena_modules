@@ -54,11 +54,6 @@ public class SpecialJoin extends ArenaModule implements Listener {
     }
 
     @Override
-    public List<String> getShort() {
-        return Arrays.asList(new String[0]);
-    }
-
-    @Override
     public void configParse(final YamlConfiguration config) {
         try {
             final List<String> res = config.getStringList("modules.specialjoin.places");

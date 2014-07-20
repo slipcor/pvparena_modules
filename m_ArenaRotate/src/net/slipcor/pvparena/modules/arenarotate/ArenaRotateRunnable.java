@@ -25,6 +25,7 @@ public class ArenaRotateRunnable extends ArenaRunnable {
         debug.i("ArenaRotateRunnable constructor");
     }
 
+    @Override
     protected void commit() {
         debug.i("ArenaRotateRunnable commiting");
         ArenaRotate.commit();

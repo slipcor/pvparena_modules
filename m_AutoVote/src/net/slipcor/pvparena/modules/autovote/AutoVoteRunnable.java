@@ -26,6 +26,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
         module = mod;
     }
 
+    @Override
     protected void commit() {
         debug.i("ArenaVoteRunnable commiting");
         AutoVote.commit(definition, module.players);
