@@ -25,11 +25,11 @@ class Powerup {
      */
     @SuppressWarnings("unchecked")
     public Powerup(final String pName, final Map<String, Object> puEffects) {
-        int count = 0;
         name = pName;
         debug.i("creating powerup " + pName);
         item = Material.valueOf((String) puEffects.get("item"));
         debug.i("item added: " + item);
+        int count = 0;
         for (final String eClass : puEffects.keySet()) {
             final PowerupType pec = PowerupEffect.parseClass(eClass);
             if (pec == null) {

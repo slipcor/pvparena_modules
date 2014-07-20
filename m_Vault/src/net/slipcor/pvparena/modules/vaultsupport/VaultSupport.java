@@ -367,8 +367,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 
         arena.getDebugger().i("giving rewards to player " + player.getName(), player);
 
-        int winners = 0;
         arena.getDebugger().i("giving Vault rewards to Player " + player, player);
+        int winners = 0;
         for (final ArenaPlayer p : arena.getFighters()) {
             arena.getDebugger().i("- checking fighter " + p.getName(), p.getName());
             if (p.getStatus() != null && p.getStatus() == Status.FIGHT) {
@@ -786,8 +786,6 @@ public class VaultSupport extends ArenaModule implements Listener {
     @EventHandler
     public void onGoalScore(final PAGoalEvent event) {
 
-        String lastTrigger = "";
-
 
         if (event.getArena().equals(arena)) {
             arena.getDebugger().i("it's us!");
@@ -806,6 +804,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 			*
 			*/
 
+            String lastTrigger = "";
             for (String node : contents) {
                 node = node.toLowerCase();
                 if (node.contains("trigger")) {

@@ -160,9 +160,6 @@ public class ChestFiller extends ArenaModule {
         }
         debug.i("NO inventories");
 
-        int x;
-        int y;
-        int z;
         final List<String> result = new ArrayList<String>();
 
         for (final ArenaRegion bfRegion : arena.getRegionsByType(RegionType.BATTLE)) {
@@ -175,6 +172,9 @@ public class ChestFiller extends ArenaModule {
             final World world = Bukkit.getWorld(max.getWorldName());
 
 
+            int z;
+            int y;
+            int x;
             if (bfRegion.getShape() instanceof CuboidRegion) {
                 debug.i("cube!");
 

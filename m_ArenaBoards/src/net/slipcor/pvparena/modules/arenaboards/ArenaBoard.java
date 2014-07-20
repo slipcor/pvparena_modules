@@ -50,11 +50,11 @@ public class ArenaBoard {
      */
     private void construct() {
         PABlockLocation l = location;
-        int border = 10;
         try {
             Sign s = (Sign) l.toLocation().getBlock().getState();
             final BlockFace bf = getRightDirection(s);
             debug.i("parsing signs: ");
+            int border = 10;
             do {
                 StatisticsManager.type t = null;
                 try {

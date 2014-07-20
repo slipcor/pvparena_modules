@@ -159,13 +159,12 @@ public class Points extends ArenaModule implements Listener {
     @EventHandler
     public void onGoalScore(final PAGoalEvent event) {
 
-        String lastTrigger = "";
-
 
         if (event.getArena().equals(arena)) {
             arena.getDebugger().i("[POINTS] it's us!");
             final String[] contents = event.getContents();
 
+            String lastTrigger = "";
             for (String node : contents) {
                 node = node.toLowerCase();
                 if (node.contains("trigger")) {

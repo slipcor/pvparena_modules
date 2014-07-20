@@ -61,13 +61,13 @@ public class BetterClasses extends ArenaModule {
             return false;
         }
 
-        int sum = 0;
-        int globalsum = 0;
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team == null) {
             return true;
         }
+        int globalsum = 0;
+        int sum = 0;
         for (final ArenaTeam ateam : arena.getTeams()) {
             for (final ArenaPlayer ap : ateam.getTeamMembers()) {
                 if (ap.getArenaClass() == null) {

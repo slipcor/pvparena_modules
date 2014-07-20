@@ -231,9 +231,6 @@ public class BetterFight extends ArenaModule {
         if (((Projectile) event.getDamager()).getShooter() instanceof Player) {
             final Player shooter = (Player) ((Projectile) event.getDamager()).getShooter();
 
-            final float volume = 1.0f;
-            final float pitch = 1.0f;
-
             final String node = "modules.betterfight.sounds." + string;
 
             final String value = (String) arena.getArenaConfig().getUnsafe(node);
@@ -246,6 +243,8 @@ public class BetterFight extends ArenaModule {
 
                 final Sound sound = Sound.valueOf(value.toUpperCase());
 
+                final float pitch = 1.0f;
+                final float volume = 1.0f;
                 shooter.playSound(shooter.getLocation(), sound, volume, pitch);
                 if (event.getEntity() instanceof Player) {
                     final Player damagee = (Player) event.getEntity();

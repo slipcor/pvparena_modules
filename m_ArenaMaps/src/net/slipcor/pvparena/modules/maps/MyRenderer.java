@@ -157,9 +157,7 @@ class MyRenderer extends MapRenderer {
 
                 final byte color = colors.get(item.getColor());
 
-                final byte outline;
-
-                outline = color;
+                final byte outline = color;
 
                 final int mapX = ((item.getX() - mapcenterx) / 2) + 64;
                 final int mapZ = ((item.getZ() - mapcenterz) / 2) + 64;
@@ -189,9 +187,7 @@ class MyRenderer extends MapRenderer {
 
                 final byte color = colors.get(item.getColor());
 
-                final byte outline;
-
-                outline = MapPalette.matchColor(0, 0, 0);
+                final byte outline = MapPalette.matchColor(0, 0, 0);
 
                 final int mapX = ((item.getX() - mapcenterx) / 2) + 64;
                 final int mapZ = ((item.getZ() - mapcenterz) / 2) + 64;

@@ -30,8 +30,8 @@ public class ArenaBoardColumn {
     private void fetchSigns() {
         Location l = location.toLocation().getBlock().getRelative(BlockFace.DOWN)
                 .getLocation();
-        int i = 0;
         try {
+            int i = 0;
             do {
                 final Sign s = (Sign) l.getBlock().getState();
                 s.setLine(0, "");
@@ -53,8 +53,8 @@ public class ArenaBoardColumn {
      * @param s the string array to save
      */
     public void write(final String[] s) {
-        int i = 0;
         debug.i("writing to column at location " + location.toString());
+        int i = 0;
         for (final ArenaBoardSign abs : signs) {
             if (abs == null) {
                 return;

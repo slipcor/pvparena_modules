@@ -60,9 +60,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     @Override
     public void configParse(final YamlConfiguration config) {
-        final List<String> res;
         try {
-            res = config.getStringList("modules.specialjoin.places");
+            final List<String> res = config.getStringList("modules.specialjoin.places");
             for (final String s : res) {
                 places.put(Config.parseBlockLocation(s), arena);
             }

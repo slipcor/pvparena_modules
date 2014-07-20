@@ -68,8 +68,8 @@ public class MySQLConnection {
      * if a certain table exists within a database.
      */
     public boolean tableExists(final String database, final String table) {
-        final String format = "SELECT * FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA = '$DB' && TABLE_NAME = '$TABLE';";
         try {
+            final String format = "SELECT * FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA = '$DB' && TABLE_NAME = '$TABLE';";
             return databaseConnection.createStatement().executeQuery(format.replace("$DB", database).replace("$TABLE", table)).first();
         } catch (final SQLException e) {
             return false;

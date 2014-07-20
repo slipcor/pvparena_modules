@@ -87,9 +87,6 @@ class RestoreContainer {
         chests.clear();
         furnaces.clear();
         dispensers.clear();
-        int x;
-        int y;
-        int z;
 
         final PABlockLocation min = bfRegion.getShape().getMinimumLocation();
         final PABlockLocation max = bfRegion.getShape().getMaximumLocation();
@@ -101,6 +98,9 @@ class RestoreContainer {
 
         final List<String> result = new ArrayList<String>();
 
+        int z;
+        int y;
+        int x;
         if (bfRegion.getShape() instanceof CuboidRegion) {
             debug.i("cube!");
 
