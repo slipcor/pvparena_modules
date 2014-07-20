@@ -211,7 +211,7 @@ public class BattlefieldManager extends ArenaModule {
     }
 
     private String encrypt(String name, String definition) {
-        StringBuffer buff = new StringBuffer(name);
+        StringBuilder buff = new StringBuilder(name);
         buff.append("-");
 
         for (char c : definition.toCharArray()) {
