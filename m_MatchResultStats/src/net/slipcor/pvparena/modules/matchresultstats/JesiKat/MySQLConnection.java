@@ -16,7 +16,9 @@ import java.util.List;
  */
 public class MySQLConnection {
     /*The host for the database, the username for the database, and the password*/
-    private final String dbUrl, dbUsername, dbPassword, dbTable;
+    private final String dbUrl;
+    private final String dbUsername;
+    private final String dbPassword;
 
     /*The connection object*/
     private Connection databaseConnection;
@@ -60,7 +62,7 @@ public class MySQLConnection {
     }
 
     public MySQLConnection(String table, String host, int port, String database, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        this.dbTable = table;
+        String dbTable = table;
         this.dbUrl = host + ":" + port + "/" + database;
         this.dbUsername = username;
         this.dbPassword = password;
