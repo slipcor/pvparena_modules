@@ -485,7 +485,7 @@ public class PowerupManager extends ArenaModule implements Listener {
                     + powerupDiff);
             if (powerupDiff > 0) {
                 debug.i("powerup time trigger!");
-                powerupDiff = powerupDiff * 20; // calculate ticks to seconds
+                powerupDiff *= 20; // calculate ticks to seconds
                 // initiate autosave timer
                 SPAWN_ID = Bukkit
                         .getServer()
