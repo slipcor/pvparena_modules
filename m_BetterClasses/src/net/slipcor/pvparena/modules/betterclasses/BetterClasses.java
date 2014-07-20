@@ -31,7 +31,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.510";
     }
 
     private final static int DURATION = 2400; // 60000 => 2400
@@ -48,34 +48,41 @@ public class BetterClasses extends ArenaModule {
         }
 
         int max;
+        int globalmax;
 
         try {
             max = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxPlayers." + className);
+            globalmax = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxGlobalPlayers." + className);
         } catch (Exception e) {
             return false;
         }
 
-        if (max < 1) {
+        if (max < 1 || globalmax < 1) {
             return false;
         }
 
         int sum = 0;
+        int globalsum = 0;
         ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team == null) {
             return true;
         }
-
-        for (ArenaPlayer ap : team.getTeamMembers()) {
-            if (ap.getArenaClass() == null) {
-                continue;
-            }
-            if (ap.getArenaClass().getName().equals(className)) {
-                sum++;
+        for (ArenaTeam ateam : arena.getTeams()) {
+            for (ArenaPlayer ap : ateam.getTeamMembers()) {
+                if (ap.getArenaClass() == null) {
+                    continue;
+                }
+                if (ap.getArenaClass().getName().equals(className)) {
+                    globalsum++;
+                    if (team.equals(ateam)) {
+                        sum++;
+                    }
+                }
             }
         }
 
-        if (sum >= max) {
+        if (sum >= max || globalsum > globalmax) {
             arena.msg(player, Language.parse(MSG.ERROR_CLASS_FULL, className));
             return true;
         }
@@ -157,6 +164,10 @@ public class BetterClasses extends ArenaModule {
                 arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
             } else if (args[3].equalsIgnoreCase("max")) {
                 String node = "modules.betterclasses.maxPlayers." + c.getName();
+                arena.getArenaConfig().setManually(node, value);
+                arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
+            } else if (args[3].equalsIgnoreCase("globalmax")) {
+                String node = "modules.betterclasses.maxGlobalPlayers." + c.getName();
                 arena.getArenaConfig().setManually(node, value);
                 arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
             }
@@ -276,6 +287,7 @@ public class BetterClasses extends ArenaModule {
         for (ArenaClass c : arena.getClasses()) {
             cfg.addDefault("modules.betterclasses.permEffects." + c.getName(), "none");
             cfg.addDefault("modules.betterclasses.maxPlayers." + c.getName(), 0);
+            cfg.addDefault("modules.betterclasses.maxGlobalPlayers." + c.getName(), 0);
             cfg.addDefault("modules.betterclasses.neededEXPLevel." + c.getName(), 0);
         }
     }
