@@ -29,8 +29,6 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
     private int GLOBAL_ID = -1;
     static ArenaBoard globalBoard = null;
 
-    private int THIS_ID = -1;
-
     public ArenaBoardManager() {
         super("ArenaBoards");
     }
@@ -62,7 +60,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
                     PVPArena.instance, new BoardRunnable(null), 100L, 100L);
         }
 
-        THIS_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+        BOARD_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 PVPArena.instance, new BoardRunnable(this), 100L, 100L);
 
         Bukkit.getServer().getPluginManager().registerEvents(this, PVPArena.instance);

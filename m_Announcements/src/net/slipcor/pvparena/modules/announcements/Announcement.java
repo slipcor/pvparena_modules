@@ -47,37 +47,6 @@ public class Announcement {
     }
 
     /**
-     * Announce a message to the public
-     *
-     * @param a       the arena from where the announcement should come
-     * @param sType   the type of announcement
-     * @param message the message to announce
-     */
-    protected static void announce(Arena a, String sType, String message) {
-        type t = type.valueOf(sType);
-        debug.i("announce?");
-        if (!sendCheck(a, t)) {
-            return; // do not send the announcement type
-        }
-        debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
-                + message);
-        Bukkit.getServer().getWorld(a.getWorld()).getPlayers();
-
-        message = message.replace(
-                ChatColor.WHITE.toString(),
-                ChatColor.valueOf(
-                        a.getArenaConfig().getString(
-                                CFG.MODULES_ANNOUNCEMENTS_COLOR)).toString());
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (a.hasPlayer(p)) {
-                continue;
-            }
-            send(a, p, message);
-        }
-    }
-
-    /**
      * check the arena for the announcement tyoe
      *
      * @param a the arena to check

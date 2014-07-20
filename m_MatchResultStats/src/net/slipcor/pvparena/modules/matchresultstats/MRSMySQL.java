@@ -26,23 +26,6 @@ final class MRSMySQL {
         }
     }
 
-    public static boolean mysqlExists(final String query) {
-        ResultSet result = null;
-        try {
-            result = plugin.sqlHandler.executeQuery(query, false);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            while (result != null && result.next()) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
 
     public static void initiate(final MatchResultStats pvpStats) {
         plugin = pvpStats;

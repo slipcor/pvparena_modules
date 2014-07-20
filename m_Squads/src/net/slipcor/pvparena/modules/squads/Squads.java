@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.*;
 
 public class Squads extends ArenaModule {
-    private Debug debug = new Debug(690);
     private final Set<ArenaSquad> squads = new HashSet<ArenaSquad>();
     private ArenaSquad auto = null;
     private boolean ingame = false;
@@ -105,6 +104,10 @@ public class Squads extends ArenaModule {
         }
 
         if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{0, 2, 3})) {
+            return;
+        }
+
+        if (!ingame && arena.isFightInProgress()) {
             return;
         }
 

@@ -29,8 +29,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
     protected void commit() {
         debug.i("ArenaVoteRunnable commiting");
         AutoVote.commit(definition, module.players);
-        class RunLater implements Runnable {
-
+        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
             @Override
             public void run() {
                 module.vote = null;
@@ -41,9 +40,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
                 AutoVote.votes.clear();
                 module.players.clear();
             }
-
-        }
-        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
+        }, 20L);
     }
 
     @Override

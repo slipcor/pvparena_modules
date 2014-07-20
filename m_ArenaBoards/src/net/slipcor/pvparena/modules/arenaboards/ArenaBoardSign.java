@@ -6,18 +6,15 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
 class ArenaBoardSign {
-    private final ArenaBoardColumn column;
     private final BlockState state;
     private final Debug debug = new Debug(12);
 
     /**
      * create an arena board sign instance
      *
-     * @param abc the arena board column to hook to
      * @param loc the location where the sign resides
      */
-    public ArenaBoardSign(ArenaBoardColumn abc, Location loc) {
-        column = abc;
+    public ArenaBoardSign(Location loc) {
         state = loc.getBlock().getState();
         debug.i("adding sign at location " + loc.toString());
     }

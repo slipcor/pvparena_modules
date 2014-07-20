@@ -7,7 +7,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
 public class ArenaBoardColumn {
-    private final ArenaBoard board;
     private final PABlockLocation location;
     private final Debug debug = new Debug(11);
 
@@ -16,11 +15,9 @@ public class ArenaBoardColumn {
     /**
      * create an arena board column instance
      *
-     * @param ab the arena board to hook to
      * @param l  the location of the column header
      */
-    public ArenaBoardColumn(ArenaBoard ab, PABlockLocation l) {
-        board = ab;
+    public ArenaBoardColumn(PABlockLocation l) {
         location = l;
 
         debug.i("fetching sign column");
@@ -42,7 +39,7 @@ public class ArenaBoardColumn {
                 s.setLine(2, "");
                 s.setLine(3, "");
                 s.update();
-                signs[i] = (new ArenaBoardSign(this, l));
+                signs[i] = (new ArenaBoardSign(l));
                 l = l.getBlock().getRelative(BlockFace.DOWN).getLocation();
             } while (++i < 5);
         } catch (Exception e) {

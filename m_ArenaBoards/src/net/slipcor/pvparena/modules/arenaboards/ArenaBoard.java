@@ -64,7 +64,7 @@ public class ArenaBoard {
                     // nothing
                 }
 
-                columns.put(t, new ArenaBoardColumn(this, l));
+                columns.put(t, new ArenaBoardColumn(l));
                 debug.i("putting column type " + toString());
                 l = new PABlockLocation(l.toLocation().getBlock().getRelative(bf).getLocation());
                 s = (Sign) l.toLocation().getBlock().getState();
