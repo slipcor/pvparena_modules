@@ -26,7 +26,7 @@ public class FlySpectate extends ArenaModule {
 
     private RealSpectateListener listener;
 
-    private final int priority = 3;
+    private static final int priority = 3;
 
     @Override
     public String version() {

@@ -63,7 +63,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("bet");
+        return Collections.singletonList("bet");
     }
 
     @Override
@@ -184,7 +184,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
             economy.withdrawPlayer(player.getName(), amount);
             arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
-            getPlayerBetMap().put(player.getName() + ":" + args[1], amount);
+            getPlayerBetMap().put(player.getName() + ':' + args[1], amount);
         } else {
 
             final double amount;
@@ -292,8 +292,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 
                 List<String> stringList = new ArrayList<String>();
 
-                for (String node : list.keySet()) {
-                    stringList.add(node + ":" + list.get(node));
+                for (Map.Entry<String, Double> stringDoubleEntry : list.entrySet()) {
+                    stringList.add(stringDoubleEntry.getKey() + ':' + stringDoubleEntry.getValue());
                 }
                 arena.getArenaConfig().setManually("modules.vault.permfactors", stringList);
                 arena.getArenaConfig().save();
@@ -434,7 +434,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                 arena.getDebugger().i("calculating win reward: " + amount, player);
 
 
-                double factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR);
+                double factor;
 
                 try {
                     factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
@@ -824,7 +824,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                     newReward(val[1], "SCORE", Integer.parseInt(val[3]));
                 }
 
-                if ("".equals(node) && !"".equals(lastTrigger)) {
+                if (node != null && node.isEmpty() && lastTrigger != null && !lastTrigger.isEmpty()) {
                     newReward(lastTrigger, "WIN");
                 }
             }

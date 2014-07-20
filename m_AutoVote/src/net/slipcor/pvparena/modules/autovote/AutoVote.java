@@ -52,7 +52,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!av");
+        return Collections.singletonList("!av");
     }
 
     @Override
@@ -216,9 +216,9 @@ public class AutoVote extends ArenaModule implements Listener {
         boolean done = false;
         while (!done) {
             done = true;
-            for (final String player : votes.keySet()) {
-                if (votes.get(player).equalsIgnoreCase(definition)) {
-                    votes.remove(player);
+            for (final Entry<String, String> stringStringEntry : votes.entrySet()) {
+                if (stringStringEntry.getValue().equalsIgnoreCase(definition)) {
+                    votes.remove(stringStringEntry.getKey());
                     done = false;
                     break;
                 }
@@ -234,9 +234,9 @@ public class AutoVote extends ArenaModule implements Listener {
                 boolean done = false;
                 while (!done) {
                     done = true;
-                    for (final String player : votes.keySet()) {
-                        if (votes.get(player).equalsIgnoreCase(arena)) {
-                            votes.remove(player);
+                    for (final Entry<String, String> stringStringEntry : votes.entrySet()) {
+                        if (stringStringEntry.getValue().equalsIgnoreCase(arena)) {
+                            votes.remove(stringStringEntry.getKey());
                             done = false;
                             break;
                         }
@@ -274,13 +274,13 @@ public class AutoVote extends ArenaModule implements Listener {
             return;
         }
 
-        for (final String node : votes.keySet()) {
-            debug.i(node + " voted " + votes.get(node));
-            if (!arenas.contains(votes.get(node))) {
+        for (final Entry<String, String> stringStringEntry : votes.entrySet()) {
+            debug.i(stringStringEntry.getKey() + " voted " + stringStringEntry.getValue());
+            if (!arenas.contains(stringStringEntry.getValue())) {
                 debug.i("not our business!");
                 continue;
             }
-            tempVotes.put(node, votes.get(node));
+            tempVotes.put(stringStringEntry.getKey(), stringStringEntry.getValue());
         }
 
         final HashMap<String, Integer> counts = new HashMap<String, Integer>();

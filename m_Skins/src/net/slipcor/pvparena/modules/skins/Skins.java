@@ -26,7 +26,7 @@ import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.disguise.Disguise;
 import pgDev.bukkit.DisguiseCraft.disguise.DisguiseType;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,12 +55,12 @@ public class Skins extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("skins");
+        return Collections.singletonList("skins");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!sk");
+        return Collections.singletonList("!sk");
     }
 
     @Override

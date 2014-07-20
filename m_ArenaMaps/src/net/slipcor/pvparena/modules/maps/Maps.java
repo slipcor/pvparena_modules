@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -48,12 +48,12 @@ public class Maps extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("arenamaps");
+        return Collections.singletonList("arenamaps");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!map");
+        return Collections.singletonList("!map");
     }
 
     @Override

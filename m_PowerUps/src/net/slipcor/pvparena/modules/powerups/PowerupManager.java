@@ -92,12 +92,12 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("powerups");
+        return Collections.singletonList("powerups");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!pu");
+        return Collections.singletonList("!pu");
     }
 
     @Override
@@ -154,9 +154,9 @@ public class PowerupManager extends ArenaModule implements Listener {
                 return;
             }
             if ("time".equals(args[1]) || "death".equals(args[1])) {
-                arena.getArenaConfig().set(CFG.MODULES_POWERUPS_USAGE, args[1] + ":" + i);
+                arena.getArenaConfig().set(CFG.MODULES_POWERUPS_USAGE, args[1] + ':' + i);
                 arena.getArenaConfig().save();
-                arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_POWERUPS_USAGE.getNode(), args[1] + ":" + i));
+                arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_POWERUPS_USAGE.getNode(), args[1] + ':' + i));
                 return;
             }
 
@@ -226,20 +226,20 @@ public class PowerupManager extends ArenaModule implements Listener {
                         .getConfigurationSection("powerups." + key).getValues(
                                 false);
                 final Map<String, Object> temp_map = new HashMap<String, Object>();
-                for (final String kkey : map2.keySet()) {
+                for (final Map.Entry<String, Object> stringObjectEntry : map2.entrySet()) {
                     // kkey e.g. "dmg_receive"
-                    if ("item".equals(kkey)) {
-                        temp_map.put(kkey, String.valueOf(map2.get(kkey)));
-                        debug.i(key + " => " + kkey + " => "
-                                + map2.get(kkey));
+                    if ("item".equals(stringObjectEntry.getKey())) {
+                        temp_map.put(stringObjectEntry.getKey(), String.valueOf(stringObjectEntry.getValue()));
+                        debug.i(key + " => " + stringObjectEntry.getKey() + " => "
+                                + stringObjectEntry.getValue());
                     } else {
-                        debug.i(key + " => " + kkey + " => "
+                        debug.i(key + " => " + stringObjectEntry.getKey() + " => "
                                 + parseList(map3.values()));
                         map3 = (HashMap<String, Object>) config
                                 .getConfigurationSection(
-                                        "powerups." + key + "." + kkey)
+                                        "powerups." + key + '.' + stringObjectEntry.getKey())
                                 .getValues(false);
-                        temp_map.put(kkey, map3);
+                        temp_map.put(stringObjectEntry.getKey(), map3);
                     }
                 }
                 powerups.put(key, temp_map);
@@ -267,9 +267,9 @@ public class PowerupManager extends ArenaModule implements Listener {
     public void displayInfo(final CommandSender player) {
         player.sendMessage("usage: "
                 + StringParser.colorVar(usesPowerups != null)
-                + "("
+                + '('
                 + StringParser.colorVar(arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE))
-                + ")");
+                + ')');
     }
 
     /**
@@ -302,7 +302,7 @@ public class PowerupManager extends ArenaModule implements Listener {
         return s.toLowerCase().startsWith("powerup");
     }
 
-    private final String POWERUPSTRING = ChatColor.RED + "Power\nUp";
+    private static final String POWERUPSTRING = ChatColor.RED + "Power\nUp";
 
     private void mark(final Item drop) {
         final ItemMeta meta = drop.getItemStack().getItemMeta();
@@ -366,7 +366,7 @@ public class PowerupManager extends ArenaModule implements Listener {
             debug.i("onPlayerPickupItem: fighting player", player);
             debug.i("item: " + event.getItem().getItemStack().getType(), player);
             for (final Powerup p : usesPowerups.puTotal) {
-                debug.i("is it " + p.item + "?", player);
+                debug.i("is it " + p.item + '?', player);
                 if (event.getItem().getItemStack().getType() == p.item) {
                     debug.i("yes!", player);
                     final Powerup newP = new Powerup(p);
@@ -413,7 +413,7 @@ public class PowerupManager extends ArenaModule implements Listener {
     String parseList(final Collection<Object> values) {
         String s = "";
         for (final Object o : values) {
-            if (!"".equals(s)) {
+            if (s != null && !s.isEmpty()) {
                 s += ",";
             }
             try {

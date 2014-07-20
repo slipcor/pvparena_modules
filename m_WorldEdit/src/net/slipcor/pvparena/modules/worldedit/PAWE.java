@@ -31,6 +31,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PAWE extends ArenaModule {
@@ -58,7 +59,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!we");
+        return Collections.singletonList("!we");
     }
 
     @Override
@@ -178,7 +179,7 @@ public class PAWE extends ArenaModule {
     }
 
     void load(final ArenaRegion ars) {
-        load(ars, ars.getArena().getName() + "_" + ars.getRegionName());
+        load(ars, ars.getArena().getName() + '_' + ars.getRegionName());
     }
 
     void load(final ArenaRegion ars, final String regionName) {
@@ -235,7 +236,7 @@ public class PAWE extends ArenaModule {
     }
 
     void save(final ArenaRegion ars) {
-        save(ars, ars.getArena().getName() + "_" + ars.getRegionName());
+        save(ars, ars.getArena().getName() + '_' + ars.getRegionName());
     }
 
     void save(final ArenaRegion ars, final String regionName) {

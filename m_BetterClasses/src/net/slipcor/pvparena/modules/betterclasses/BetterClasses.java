@@ -97,12 +97,12 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("betterclasses");
+        return Collections.singletonList("betterclasses");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bc");
+        return Collections.singletonList("!bc");
     }
 
     @Override
@@ -187,7 +187,7 @@ public class BetterClasses extends ArenaModule {
             arena.msg(sender, Language.parse(MSG.MODULE_BETTERCLASSES_LISTHEAD, c.getName()));
             if (ape.size() >= 1) {
                 for (final PotionEffect pe : ape) {
-                    arena.msg(sender, pe.getType().getName() + "x" + pe.getAmplifier());
+                    arena.msg(sender, pe.getType().getName() + 'x' + pe.getAmplifier());
                 }
             } else {
                 arena.msg(sender, "---");
@@ -301,12 +301,12 @@ public class BetterClasses extends ArenaModule {
 
         final Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
 
-        for (final ArenaClass aClass : map.keySet()) {
+        for (final Map.Entry<ArenaClass, HashSet<PotionEffect>> arenaClassHashSetEntry : map.entrySet()) {
             final Set<String> set = new HashSet<String>();
-            for (final PotionEffect pef : map.get(aClass)) {
-                set.add(pef.getType().getName() + "x" + pef.getAmplifier() + 1);
+            for (final PotionEffect pef : arenaClassHashSetEntry.getValue()) {
+                set.add(pef.getType().getName() + 'x' + pef.getAmplifier() + 1);
             }
-            sender.sendMessage(aClass.getName() + ": " + StringParser.joinSet(
+            sender.sendMessage(arenaClassHashSetEntry.getKey().getName() + ": " + StringParser.joinSet(
                     set, "; "));
         }
     }
@@ -386,7 +386,7 @@ public class BetterClasses extends ArenaModule {
     private String parsePotionEffectsToString(final Iterable<PotionEffect> ape) {
         final Set<String> result = new HashSet<String>();
         for (final PotionEffect pe : ape) {
-            result.add(pe.getType().getName() + ":" + pe.getAmplifier());
+            result.add(pe.getType().getName() + ':' + pe.getAmplifier());
         }
         return StringParser.joinSet(result, ",");
     }
@@ -460,7 +460,7 @@ public class BetterClasses extends ArenaModule {
     private HashSet<PotionEffect> parseStringToPotionEffects(final String s) {
         final HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
 
-        if (s == null || "none".equals(s) || "".equals(s)) {
+        if (s == null || "none".equals(s) || s != null && s.isEmpty()) {
             return spe;
         }
 

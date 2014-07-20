@@ -44,12 +44,12 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("betterkillstreaks");
+        return Collections.singletonList("betterkillstreaks");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bk");
+        return Collections.singletonList("!bk");
     }
 
     @Override
@@ -218,7 +218,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     private String parsePotionEffectsToString(final Iterable<PotionEffect> ape) {
         final Set<String> result = new HashSet<String>();
         for (final PotionEffect pe : ape) {
-            result.add(pe.getType().getName() + ":" + pe.getAmplifier());
+            result.add(pe.getType().getName() + ':' + pe.getAmplifier());
         }
         return StringParser.joinSet(result, ",");
     }
@@ -226,7 +226,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     private Iterable<PotionEffect> parseStringToPotionEffects(final String s) {
         final HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
 
-        if (s == null || "none".equals(s) || "".equals(s)) {
+        if (s == null || "none".equals(s) || s != null && s.isEmpty()) {
             return spe;
         }
 

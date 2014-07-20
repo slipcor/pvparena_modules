@@ -76,12 +76,12 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("blockrestore");
+        return Collections.singletonList("blockrestore");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!br");
+        return Collections.singletonList("!br");
     }
 
     @Override

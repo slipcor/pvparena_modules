@@ -19,7 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AnnouncementManager extends ArenaModule {
@@ -46,12 +46,12 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("announce");
+        return Collections.singletonList("announce");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!aa");
+        return Collections.singletonList("!aa");
     }
 
     @Override

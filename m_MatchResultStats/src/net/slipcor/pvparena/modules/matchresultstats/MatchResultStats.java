@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MatchResultStats extends ArenaModule {
@@ -45,12 +45,12 @@ public class MatchResultStats extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("sqlstats");
+        return Collections.singletonList("sqlstats");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!ss");
+        return Collections.singletonList("!ss");
     }
 
     @Override
@@ -100,7 +100,7 @@ public class MatchResultStats extends ArenaModule {
 
             if (sqlHandler == null) {
                 try {
-                    sqlHandler = new MySQLConnection(dbTable, dbHost, dbPort, dbDatabase, dbUser,
+                    sqlHandler = new MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
                             dbPass);
                 } catch (final InstantiationException e1) {
                     e1.printStackTrace();

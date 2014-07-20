@@ -23,7 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -46,12 +46,12 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("chestfiller");
+        return Collections.singletonList("chestfiller");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!cf");
+        return Collections.singletonList("!cf");
     }
 
     @Override
@@ -269,7 +269,7 @@ public class ChestFiller extends ArenaModule {
     }
 
     private String parseLocationToString(final Location loc) {
-        return loc.getWorld().getName() + "," + loc.getBlockX() + ","
-                + loc.getBlockY() + "," + loc.getBlockZ();
+        return loc.getWorld().getName() + ',' + loc.getBlockX() + ','
+                + loc.getBlockY() + ',' + loc.getBlockZ();
     }
 }

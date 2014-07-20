@@ -24,7 +24,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.kitteh.tag.TagAPI;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,12 +50,12 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("colorteams");
+        return Collections.singletonList("colorteams");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!ct");
+        return Collections.singletonList("!ct");
     }
 
     @Override

@@ -53,31 +53,31 @@ class PowerupEffect {
         potEff = effect;
 
         debug.i("effect class is " + type);
-        for (final Object evName : puEffectVals.keySet()) {
-            if ("uses".equals(evName)) {
-                uses = (Integer) puEffectVals.get(evName);
+        for (final Map.Entry<String, Object> stringObjectEntry : puEffectVals.entrySet()) {
+            if ("uses".equals(stringObjectEntry.getKey())) {
+                uses = (Integer) stringObjectEntry.getValue();
                 debug.i("uses :" + uses);
-            } else if ("duration".equals(evName)) {
-                duration = (Integer) puEffectVals.get(evName);
+            } else if ("duration".equals(stringObjectEntry.getKey())) {
+                duration = (Integer) stringObjectEntry.getValue();
                 debug.i("duration: " + duration);
-            } else if ("factor".equals(evName)) {
-                factor = (Double) puEffectVals.get(evName);
+            } else if ("factor".equals(stringObjectEntry.getKey())) {
+                factor = (Double) stringObjectEntry.getValue();
                 debug.i("factor: " + factor);
-            } else if ("chance".equals(evName)) {
-                chance = (Double) puEffectVals.get(evName);
+            } else if ("chance".equals(stringObjectEntry.getKey())) {
+                chance = (Double) stringObjectEntry.getValue();
                 debug.i("chance: " + chance);
-            } else if ("diff".equals(evName)) {
-                diff = (Integer) puEffectVals.get(evName);
+            } else if ("diff".equals(stringObjectEntry.getKey())) {
+                diff = (Integer) stringObjectEntry.getValue();
                 debug.i("diff: " + diff);
-            } else if ("items".equals(evName)) {
-                items.add((String) puEffectVals.get(evName));
+            } else if ("items".equals(stringObjectEntry.getKey())) {
+                items.add((String) stringObjectEntry.getValue());
                 debug.i("items: " + items);
-            } else if ("type".equals(evName)) {
+            } else if ("type".equals(stringObjectEntry.getKey())) {
                 // mob type
-                mobtype = (String) puEffectVals.get(evName);
+                mobtype = (String) stringObjectEntry.getValue();
                 debug.i("type: " + type.name());
             } else {
-                debug.i("undefined effect class value: " + evName);
+                debug.i("undefined effect class value: " + stringObjectEntry.getKey());
             }
         }
     }

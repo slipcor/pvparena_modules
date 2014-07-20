@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PAWG extends ArenaModule {
@@ -45,7 +46,7 @@ public class PAWG extends ArenaModule {
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!wgl");
+        return Collections.singletonList("!wgl");
     }
 
     @Override

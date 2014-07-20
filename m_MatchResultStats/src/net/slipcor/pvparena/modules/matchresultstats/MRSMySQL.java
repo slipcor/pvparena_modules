@@ -50,7 +50,7 @@ final class MRSMySQL {
                             final String team, final long time) {
 
         mysqlQuery("INSERT INTO `" + MatchResultStats.dbTable + "` (`mid`,`arena`,`playername`,`winning`,`team`,`timespent`) VALUES ('"
-                + id + "', '" + arenaName + "', '" + playerName + "', " + (winning ? "1" : "0") + ", '" + team + "', " + time + ")");
+                + id + "', '" + arenaName + "', '" + playerName + "', " + (winning ? "1" : "0") + ", '" + team + "', " + time + ')');
     }
 
     public static Integer getNextID() {

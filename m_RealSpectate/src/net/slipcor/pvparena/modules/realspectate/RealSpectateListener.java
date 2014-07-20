@@ -51,7 +51,7 @@ class RealSpectateListener implements Listener {
     SpectateWrapper createSpectateWrapper(final Player s,
                                           final Player f) {
         //debug.i("createSwapper", s);
-        debug.i("create wrapper: " + s.getName() + "+" + f, s);
+        debug.i("create wrapper: " + s.getName() + '+' + f, s);
         if (!spectated_players.containsKey(f)) {
             spectated_players.put(f, new SpectateWrapper(s, f, this));
         }

@@ -228,11 +228,11 @@ class MyRenderer extends MapRenderer {
 
         String string = "";
 
-        for (final String s : lives.keySet()) {
-            if (!"".equals(string)) {
+        for (final Map.Entry<String, Integer> stringIntegerEntry : lives.entrySet()) {
+            if (string != null && !string.isEmpty()) {
                 string += " | ";
             }
-            string += calculate(s, lives.get(s));
+            string += calculate(stringIntegerEntry.getKey(), stringIntegerEntry.getValue());
         }
         try {
             canvas.drawText(0, 10, MinecraftFont.Font, string);

@@ -27,7 +27,7 @@ public class RealSpectate extends ArenaModule {
 
     private RealSpectateListener listener;
 
-    private final int priority = 2;
+    private static final int priority = 2;
 
     @Override
     public String version() {

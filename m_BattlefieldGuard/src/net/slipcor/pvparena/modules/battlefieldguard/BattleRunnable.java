@@ -44,7 +44,7 @@ class BattleRunnable implements Runnable {
                     debug.i("arena IN : " + ap.getArena(), p);
                 }
 
-                if (name == null || "".equals(name)) {
+                if (name == null || name != null && name.isEmpty()) {
                     continue; // not physically in an arena
                 }
 

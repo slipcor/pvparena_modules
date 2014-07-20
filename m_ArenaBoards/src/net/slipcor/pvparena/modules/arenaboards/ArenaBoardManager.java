@@ -97,7 +97,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
     public void onSignChange(final SignChangeEvent event) {
 
         String headline = event.getLine(0);
-        if (headline == null || "".equals(headline)) {
+        if (headline == null || headline != null && headline.isEmpty()) {
             return;
         }
 
@@ -137,9 +137,9 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
             final Float yaw = loc.getYaw();
             final Float pitch = loc.getPitch();
 
-            final String s = loc.getWorld().getName() + "," + x + ","
-                    + y + "," + z + "," + yaw
-                    + "," + pitch;
+            final String s = loc.getWorld().getName() + ',' + x + ','
+                    + y + ',' + z + ',' + yaw
+                    + ',' + pitch;
             PVPArena.instance.getConfig().set("leaderboard", s);
             PVPArena.instance.saveConfig();
 

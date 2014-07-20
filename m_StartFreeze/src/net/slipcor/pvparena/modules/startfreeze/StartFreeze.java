@@ -16,7 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class StartFreeze extends ArenaModule implements Listener {
@@ -40,12 +40,12 @@ public class StartFreeze extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("startfreeze");
+        return Collections.singletonList("startfreeze");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!sf");
+        return Collections.singletonList("!sf");
     }
 
     @Override

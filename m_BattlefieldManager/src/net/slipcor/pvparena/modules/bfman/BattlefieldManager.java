@@ -17,7 +17,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -42,12 +42,12 @@ public class BattlefieldManager extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("battlefieldmanager");
+        return Collections.singletonList("battlefieldmanager");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bm");
+        return Collections.singletonList("!bm");
     }
 
     @Override
@@ -212,10 +212,10 @@ public class BattlefieldManager extends ArenaModule {
 
     private String encrypt(final String name, final String definition) {
         final StringBuilder buff = new StringBuilder(name);
-        buff.append("-");
+        buff.append('-');
 
         for (final char c : definition.toCharArray()) {
-            buff.append(">");
+            buff.append('>');
             buff.append(c);
         }
 

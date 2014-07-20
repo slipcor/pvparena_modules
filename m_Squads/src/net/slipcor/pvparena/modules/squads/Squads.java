@@ -67,12 +67,12 @@ public class Squads extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("squads");
+        return Collections.singletonList("squads");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!sq");
+        return Collections.singletonList("!sq");
     }
 
     @Override
@@ -121,7 +121,7 @@ public class Squads extends ArenaModule {
                 for (final ArenaSquad squad : squads) {
                     final String suffix = squad.equals(auto) ? " (auto)" : "";
                     final String max = squad.getMax() > 0 ? String.valueOf(squad.getMax()) : "none";
-                    arena.msg(sender, "Squad '" + squad.getName() + "' (max: " + max + ")" + suffix);
+                    arena.msg(sender, "Squad '" + squad.getName() + "' (max: " + max + ')' + suffix);
 
                 }
             }
@@ -217,7 +217,7 @@ public class Squads extends ArenaModule {
 
     private void add(final Sign sign, final ArenaPlayer ap) {
         for (int i = 2; i < 4; i++) {
-            if (sign.getLine(i) == null || "".equals(sign.getLine(i))) {
+            if (sign.getLine(i) == null || sign.getLine(i) != null && sign.getLine(i).isEmpty()) {
                 sign.setLine(i, ap.getName());
                 sign.update();
                 return;
@@ -229,7 +229,7 @@ public class Squads extends ArenaModule {
         if (block.getState() instanceof Sign) {
             final Sign sign2 = (Sign) block.getState();
             for (int i = 2; i < 4; i++) {
-                if (sign2.getLine(i) == null || "".equals(sign2.getLine(i))) {
+                if (sign2.getLine(i) == null || sign2.getLine(i) != null && sign2.getLine(i).isEmpty()) {
                     sign2.setLine(i, ap.getName());
                     sign2.update();
                     return;

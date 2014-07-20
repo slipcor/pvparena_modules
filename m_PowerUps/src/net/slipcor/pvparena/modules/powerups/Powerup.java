@@ -30,17 +30,17 @@ class Powerup {
         item = Material.valueOf((String) puEffects.get("item"));
         debug.i("item added: " + item);
         int count = 0;
-        for (final String eClass : puEffects.keySet()) {
-            final PowerupType pec = PowerupEffect.parseClass(eClass);
+        for (final Map.Entry<String, Object> stringObjectEntry1 : puEffects.entrySet()) {
+            final PowerupType pec = PowerupEffect.parseClass(stringObjectEntry1.getKey());
             if (pec == null) {
-                if (!"item".equals(eClass)) {
-                    PVPArena.instance.getLogger().warning("unknown effect class: " + eClass);
+                if (!"item".equals(stringObjectEntry1.getKey())) {
+                    PVPArena.instance.getLogger().warning("unknown effect class: " + stringObjectEntry1.getKey());
                 }
                 continue;
             }
-            final PowerupEffect pe = new PowerupEffect(eClass,
-                    (HashMap<String, Object>) puEffects.get(eClass),
-                    PowerupEffect.parsePotionEffect(eClass));
+            final PowerupEffect pe = new PowerupEffect(stringObjectEntry1.getKey(),
+                    (HashMap<String, Object>) stringObjectEntry1.getValue(),
+                    PowerupEffect.parsePotionEffect(stringObjectEntry1.getKey()));
             if (pe.type == null) {
                 continue;
             }
@@ -54,14 +54,14 @@ class Powerup {
         effects = new PowerupEffect[count];
 
         count = 0;
-        for (final String eClass : puEffects.keySet()) {
-            final PowerupType pec = PowerupEffect.parseClass(eClass);
+        for (final Map.Entry<String, Object> stringObjectEntry : puEffects.entrySet()) {
+            final PowerupType pec = PowerupEffect.parseClass(stringObjectEntry.getKey());
             if (pec == null) {
                 continue;
             }
-            final PowerupEffect pe = new PowerupEffect(eClass,
-                    (HashMap<String, Object>) puEffects.get(eClass),
-                    PowerupEffect.parsePotionEffect(eClass));
+            final PowerupEffect pe = new PowerupEffect(stringObjectEntry.getKey(),
+                    (HashMap<String, Object>) stringObjectEntry.getValue(),
+                    PowerupEffect.parsePotionEffect(stringObjectEntry.getKey()));
             if (pe.type == null) {
                 continue;
             }

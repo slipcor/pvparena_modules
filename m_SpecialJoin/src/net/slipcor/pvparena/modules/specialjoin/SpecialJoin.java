@@ -50,7 +50,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("setjoin");
+        return Collections.singletonList("setjoin");
     }
 
     @Override
@@ -232,9 +232,9 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     private static void update(final Arena a) {
         final List<String> locs = new ArrayList<String>();
-        for (final PABlockLocation l : places.keySet()) {
-            if (a.getName().equals(places.get(l).getName())) {
-                locs.add(Config.parseToString(l));
+        for (final Map.Entry<PABlockLocation, Arena> paBlockLocationArenaEntry : places.entrySet()) {
+            if (a.getName().equals(paBlockLocationArenaEntry.getValue().getName())) {
+                locs.add(Config.parseToString(paBlockLocationArenaEntry.getKey()));
             }
         }
         a.getArenaConfig().setManually("modules.specialjoin.places", locs);
@@ -247,13 +247,13 @@ public class SpecialJoin extends ArenaModule implements Listener {
             @Override
             public void run() {
 
-                for (final PABlockLocation loc : places.keySet()) {
-                    final Arena arena = places.get(loc);
+                for (final Map.Entry<PABlockLocation, Arena> paBlockLocationArenaEntry : places.entrySet()) {
+                    final Arena arena = paBlockLocationArenaEntry.getValue();
                     if (!arena.getArenaConfig().getBoolean(CFG.MODULES_SPECIALJOIN_SHOWPLAYERS)) {
                         continue;
                     }
 
-                    final BlockState state = loc.toLocation().getBlock().getState();
+                    final BlockState state = paBlockLocationArenaEntry.getKey().toLocation().getBlock().getState();
 
                     if (!(state instanceof Sign)) {
                         continue;

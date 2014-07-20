@@ -23,9 +23,9 @@ class Turret {
     public Turret(final String name, final PALocation loc, final double offset) {
         yaw = loc.getYaw();
         this.offset = offset < 10 ? 10 : offset; // safety. less than 10 degrees is nonsense :p
-        for (final String string : types.keySet()) {
-            if (name.contains(string)) {
-                type = types.get(string);
+        for (final Map.Entry<String, Class<? extends Projectile>> stringClassEntry : types.entrySet()) {
+            if (name.contains(stringClassEntry.getKey())) {
+                type = stringClassEntry.getValue();
                 return;
             }
         }

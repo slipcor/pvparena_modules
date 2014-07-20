@@ -18,7 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -66,12 +66,12 @@ public class AfterMatch extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("aftermatch");
+        return Collections.singletonList("aftermatch");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!am");
+        return Collections.singletonList("!am");
     }
 
     @Override
@@ -131,9 +131,9 @@ public class AfterMatch extends ArenaModule {
                 return;
             }
             if ("time".equals(args[1]) || "death".equals(args[1])) {
-                arena.getArenaConfig().set(CFG.MODULES_AFTERMATCH_AFTERMATCH, args[1] + ":" + i);
+                arena.getArenaConfig().set(CFG.MODULES_AFTERMATCH_AFTERMATCH, args[1] + ':' + i);
                 arena.getArenaConfig().save();
-                arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), args[1] + ":" + i));
+                arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), args[1] + ':' + i));
                 return;
             }
 
@@ -154,9 +154,9 @@ public class AfterMatch extends ArenaModule {
     public void displayInfo(final CommandSender player) {
         player.sendMessage("active: "
                 + StringParser.colorVar(!"off".equals(arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)))
-                + "("
+                + '('
                 + StringParser.colorVar(arena.getArenaConfig()
-                .getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)) + ")");
+                .getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)) + ')');
     }
 
     @Override

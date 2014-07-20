@@ -16,7 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class InventoryLoss extends ArenaModule {
@@ -37,12 +37,12 @@ public class InventoryLoss extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("fixinventoryloss");
+        return Collections.singletonList("fixinventoryloss");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!fil");
+        return Collections.singletonList("!fil");
     }
 
     @Override

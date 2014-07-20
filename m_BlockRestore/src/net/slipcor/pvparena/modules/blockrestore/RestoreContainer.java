@@ -173,7 +173,7 @@ class RestoreContainer {
     }
 
     private String parseLocationToString(final Location loc) {
-        return loc.getWorld().getName() + "," + loc.getBlockX() + ","
-                + loc.getBlockY() + "," + loc.getBlockZ();
+        return loc.getWorld().getName() + ',' + loc.getBlockX() + ','
+                + loc.getBlockY() + ',' + loc.getBlockZ();
     }
 }

@@ -22,7 +22,7 @@ public class LateLounge extends ArenaModule {
         super("LateLounge");
     }
 
-    private final int priority = 3;
+    private static final int priority = 3;
 
     @Override
     public String version() {

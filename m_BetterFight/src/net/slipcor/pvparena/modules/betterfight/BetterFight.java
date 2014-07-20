@@ -22,7 +22,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +47,12 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("betterfight");
+        return Collections.singletonList("betterfight");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bf");
+        return Collections.singletonList("!bf");
     }
 
     @Override
@@ -298,13 +298,13 @@ public class BetterFight extends ArenaModule {
         final String msg = (String) arena.getArenaConfig().getUnsafe("modules.betterfight.messages.m" + killcount);
 
         final PAGoalEvent scoreEvent = new PAGoalEvent(arena, null, "BetterFight",
-                "score:" + p.getName() + ":" + ArenaPlayer.parsePlayer(p.getName()).getArenaTeam().getName() +
-                        ":" + killcount);
+                "score:" + p.getName() + ':' + ArenaPlayer.parsePlayer(p.getName()).getArenaTeam().getName() +
+                        ':' + killcount);
         Bukkit.getPluginManager().callEvent(scoreEvent);
 
         // content[X].contains(score) => "score:player:team:value"
 
-        if (msg == null || "".equals(msg)) {
+        if (msg == null || msg != null && msg.isEmpty()) {
             return;
         }
 

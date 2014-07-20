@@ -18,10 +18,10 @@ public class Powerups {
     public Powerups(final Map<String, Object> powerUps) {
 
         debug.i("initialising powerupmanager");
-        for (final String pName : powerUps.keySet()) {
+        for (final Map.Entry<String, Object> stringObjectEntry : powerUps.entrySet()) {
             debug.i("reading powerUps");
-            Powerup p = new Powerup(pName,
-                    (HashMap<String, Object>) powerUps.get(pName));
+            Powerup p = new Powerup(stringObjectEntry.getKey(),
+                    (HashMap<String, Object>) stringObjectEntry.getValue());
             puTotal.add(p);
         }
     }

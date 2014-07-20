@@ -198,7 +198,7 @@ public class BanKick extends ArenaModule {
             final Character c = string.charAt(pos);
 
             try {
-                final int i = Integer.parseInt("" + c);
+                final int i = Integer.parseInt(String.valueOf(c));
                 input += String.valueOf(i);
             } catch (final Exception e) {
                 if (c == '.' || c == ',') {

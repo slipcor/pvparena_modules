@@ -20,7 +20,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -43,7 +43,7 @@ public class EventActions extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("setpower");
+        return Collections.singletonList("setpower");
     }
 
     @Override

@@ -140,7 +140,7 @@ public class ArenaBoard {
 
         if (!abm.boards.containsKey(new PABlockLocation(event.getClickedBlock().getLocation()))
                 && ArenaBoardManager.globalBoard == null
-                || !ArenaBoardManager.globalBoard.getLocation().equals(
+                || !ArenaBoardManager.globalBoard.location.equals(
                 new PABlockLocation(event.getClickedBlock().getLocation()))) {
             return false;
         }

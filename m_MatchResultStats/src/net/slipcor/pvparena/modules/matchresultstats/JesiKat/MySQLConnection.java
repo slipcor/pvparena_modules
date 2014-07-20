@@ -19,9 +19,8 @@ public class MySQLConnection {
     /*The connection object*/
     private Connection databaseConnection;
 
-    public MySQLConnection(final String table, final String host, final int port, final String database, final String username, final String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        final String dbTable = table;
-        dbUrl = host + ":" + port + "/" + database;
+    public MySQLConnection(final String host, final int port, final String database, final String username, final String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        dbUrl = host + ':' + port + '/' + database;
         dbUsername = username;
         dbPassword = password;
         Class.forName("com.mysql.jdbc.Driver").newInstance();

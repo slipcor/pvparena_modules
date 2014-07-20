@@ -26,11 +26,11 @@ class BlockRestoreRunnable implements Runnable {
     @Override
     public void run() {
         module.restoring = true;
-        for (final Location l : removals.keySet()) {
-            debug.i("location: " + l);
-            removals.get(l).reset();
-            removals.remove(l);
-            Blocks.blocks.remove(l);
+        for (final Map.Entry<Location, ArenaBlock> locationArenaBlockEntry : removals.entrySet()) {
+            debug.i("location: " + locationArenaBlockEntry.getKey());
+            locationArenaBlockEntry.getValue().reset();
+            removals.remove(locationArenaBlockEntry.getKey());
+            Blocks.blocks.remove(locationArenaBlockEntry.getKey());
             Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
                     this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
             return;
@@ -49,7 +49,7 @@ class BlockRestoreRunnable implements Runnable {
         debug.i("reading all arenablocks");
         for (final Location l : Blocks.blocks.keySet()) {
             if (Blocks.blocks.get(l).arena.equals(arena.getName())
-                    || "".equals(Blocks.blocks.get(l).arena)) {
+                    || Blocks.blocks.get(l).arena != null && Blocks.blocks.get(l).arena.isEmpty()) {
                 result.put(l, Blocks.blocks.get(l));
                 debug.i(" - " + l);
             }
@@ -59,11 +59,11 @@ class BlockRestoreRunnable implements Runnable {
     }
 
     public void instantlyRestore() {
-        for (final Location l : removals.keySet()) {
-            debug.i("location: " + l);
-            removals.get(l).reset();
-            removals.remove(l);
-            Blocks.blocks.remove(l);
+        for (final Map.Entry<Location, ArenaBlock> locationArenaBlockEntry : removals.entrySet()) {
+            debug.i("location: " + locationArenaBlockEntry.getKey());
+            locationArenaBlockEntry.getValue().reset();
+            removals.remove(locationArenaBlockEntry.getKey());
+            Blocks.blocks.remove(locationArenaBlockEntry.getKey());
         }
         removals.clear();
     }

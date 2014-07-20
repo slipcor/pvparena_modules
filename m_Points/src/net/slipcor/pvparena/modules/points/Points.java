@@ -188,7 +188,7 @@ public class Points extends ArenaModule implements Listener {
                     newReward(val[1], "SCORE", Integer.parseInt(val[3]));
                 }
 
-                if ("".equals(node) && !"".equals(lastTrigger)) {
+                if (node != null && node.isEmpty() && lastTrigger != null && !lastTrigger.isEmpty()) {
                     newReward(lastTrigger, "WIN");
                 }
             }

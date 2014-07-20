@@ -42,12 +42,12 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("tempperms");
+        return Collections.singletonList("tempperms");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!tps");
+        return Collections.singletonList("!tps");
     }
 
     @Override
@@ -100,8 +100,8 @@ public class TempPerms extends ArenaModule implements Listener {
 
         if (args.length == 1) {
             arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, "default"));
-            for (final String s : map.keySet()) {
-                arena.msg(sender, s + " - " + StringParser.colorVar(map.get(s)));
+            for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
+                arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
             }
             return;
         }
@@ -126,8 +126,8 @@ public class TempPerms extends ArenaModule implements Listener {
         map = getTempPerms(arena, args[1]);
         if (args.length == 2) {
             arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, args[1]));
-            for (final String s : map.keySet()) {
-                arena.msg(sender, s + " - " + StringParser.colorVar(map.get(s)));
+            for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
+                arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
             }
             return;
         }
@@ -189,8 +189,8 @@ public class TempPerms extends ArenaModule implements Listener {
 
     private void setTempPerms(final Arena arena, final Map<String, Boolean> map, final String node) {
         final List<String> result = new ArrayList<String>();
-        for (final String s : map.keySet()) {
-            result.add((map.get(s) ? "" : "^") + s);
+        for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
+            result.add((stringBooleanEntry.getValue() ? "" : "^") + stringBooleanEntry.getKey());
         }
         arena.getArenaConfig().setManually("perms." + node, result);
         arena.getArenaConfig().save();
@@ -207,14 +207,14 @@ public class TempPerms extends ArenaModule implements Listener {
         }
 
         final Map<String, Boolean> total = new HashMap<String, Boolean>();
-        for (final String s : mGlobal.keySet()) {
-            total.put(s, mGlobal.get(s));
+        for (final Map.Entry<String, Boolean> stringBooleanEntry3 : mGlobal.entrySet()) {
+            total.put(stringBooleanEntry3.getKey(), stringBooleanEntry3.getValue());
         }
-        for (final String s : mTeam.keySet()) {
-            total.put(s, mTeam.get(s));
+        for (final Map.Entry<String, Boolean> stringBooleanEntry2 : mTeam.entrySet()) {
+            total.put(stringBooleanEntry2.getKey(), stringBooleanEntry2.getValue());
         }
-        for (final String s : mClass.keySet()) {
-            total.put(s, mClass.get(s));
+        for (final Map.Entry<String, Boolean> stringBooleanEntry1 : mClass.entrySet()) {
+            total.put(stringBooleanEntry1.getKey(), stringBooleanEntry1.getValue());
         }
 
         if (total.isEmpty()) {
@@ -223,8 +223,8 @@ public class TempPerms extends ArenaModule implements Listener {
 
         final PermissionAttachment pa = ap.get().addAttachment(PVPArena.instance);
 
-        for (final String entry : total.keySet()) {
-            pa.setPermission(entry, total.get(entry));
+        for (final Map.Entry<String, Boolean> stringBooleanEntry : total.entrySet()) {
+            pa.setPermission(stringBooleanEntry.getKey(), stringBooleanEntry.getValue());
         }
         ap.get().recalculatePermissions();
         ap.getTempPermissions().add(pa);

@@ -51,12 +51,12 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("bettergears");
+        return Collections.singletonList("bettergears");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bg");
+        return Collections.singletonList("!bg");
     }
 
     @Override
@@ -106,7 +106,7 @@ public class BetterGears extends ArenaModule {
                     arena.msg(sender, Language.parse(
                             MSG.MODULE_BETTERGEARS_SHOWTEAM,
                             team.getColoredName(),
-                            String.valueOf(getColorMap().get(team))));
+                            Arrays.toString(getColorMap().get(team))));
                     return;
                 }
 
@@ -195,14 +195,14 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        for (final ArenaTeam team : colorMap.keySet()) {
-            final Short[] colors = colorMap.get(team);
-            sender.sendMessage(team.getName() + ": " +
+        for (final Map.Entry<ArenaTeam, Short[]> arenaTeamEntry : colorMap.entrySet()) {
+            final Short[] colors = arenaTeamEntry.getValue();
+            sender.sendMessage(arenaTeamEntry.getKey().getName() + ": " +
                     StringParser.joinArray(colors, ""));
         }
 
-        for (final ArenaClass aClass : levelMap.keySet()) {
-            sender.sendMessage(aClass.getName() + ": " + levelMap.get(aClass));
+        for (final Map.Entry<ArenaClass, Short> arenaClassShortEntry : levelMap.entrySet()) {
+            sender.sendMessage(arenaClassShortEntry.getKey().getName() + ": " + arenaClassShortEntry.getValue());
         }
     }
 
@@ -366,7 +366,7 @@ public class BetterGears extends ArenaModule {
 
         final String s = (String) o;
 
-        if ("".equals(s) || !s.contains(",")
+        if (s != null && s.isEmpty() || !s.contains(",")
                 || s.split(",").length < 3) {
             return result;
         }

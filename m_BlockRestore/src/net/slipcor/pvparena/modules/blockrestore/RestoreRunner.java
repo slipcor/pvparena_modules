@@ -51,24 +51,24 @@ class RestoreRunner implements Runnable {
     public void run() {
         PAA_Edit.activeEdits.put("server", blocks.getArena());
         final World world = Bukkit.getWorld(blocks.getArena().getWorld());
-        for (final Location loc : chests.keySet()) {
-            if (loc == null) {
+        for (final Map.Entry<Location, ItemStack[]> locationEntry1 : chests.entrySet()) {
+            if (locationEntry1.getKey() == null) {
                 break;
             }
             try {
-                debug.i("trying to restore chest: " + loc);
-                final Block b = world.getBlockAt(loc);
+                debug.i("trying to restore chest: " + locationEntry1.getKey());
+                final Block b = world.getBlockAt(locationEntry1.getKey());
                 b.setType(Material.CHEST);
                 final Inventory inv = ((Chest) b.getState())
                         .getInventory();
                 inv.clear();
                 int i = 0;
-                for (final ItemStack is : chests.get(loc)) {
+                for (final ItemStack is : locationEntry1.getValue()) {
                     debug.i("restoring: " + StringParser.getStringFromItemStack(is));
                     inv.setItem(i++, is);
                 }
                 debug.i("success!");
-                chests.remove(loc);
+                chests.remove(locationEntry1.getKey());
                 Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
                         this, blocks.getArena().getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
                 return;
@@ -76,23 +76,23 @@ class RestoreRunner implements Runnable {
                 e.printStackTrace();
             }
         }
-        for (final Location loc : dispensers.keySet()) {
-            if (loc == null) {
+        for (final Map.Entry<Location, ItemStack[]> locationEntry : dispensers.entrySet()) {
+            if (locationEntry.getKey() == null) {
                 break;
             }
             try {
-                debug.i("trying to restore dispenser: " + loc);
+                debug.i("trying to restore dispenser: " + locationEntry.getKey());
 
-                final Inventory inv = ((Dispenser) world.getBlockAt(loc).getState())
+                final Inventory inv = ((Dispenser) world.getBlockAt(locationEntry.getKey()).getState())
                         .getInventory();
                 inv.clear();
-                for (final ItemStack is : dispensers.get(loc)) {
+                for (final ItemStack is : locationEntry.getValue()) {
                     if (is != null) {
                         inv.addItem(is.clone());
                     }
                 }
                 debug.i("success!");
-                dispensers.remove(loc);
+                dispensers.remove(locationEntry.getKey());
                 Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
                         this, blocks.getArena().getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
                 return;
