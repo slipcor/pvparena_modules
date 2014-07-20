@@ -40,6 +40,7 @@ public class RelayRunnable extends ArenaRunnable {
         if (ap.get() == null) {
             if (maybePlayer == null) {
                 PVPArena.instance.getLogger().warning("player null: " + ap.getName());
+                return;
             }
         } else {
             maybePlayer = ap.get();

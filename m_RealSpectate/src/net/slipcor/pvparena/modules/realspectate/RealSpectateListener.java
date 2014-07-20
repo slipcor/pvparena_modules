@@ -499,7 +499,6 @@ public class RealSpectateListener implements Listener {
         }
 
         Player nextPlayer = null;
-        boolean next = false;
         for (ArenaPlayer ap : rs.getArena().getFighters()) {
             debug.i("checking " + ap.getName(), spectator);
             Player p = ap.get();
@@ -516,13 +515,9 @@ public class RealSpectateListener implements Listener {
             }
 
 
-            if (!p.equals(subject) || next) {
+            if (!p.equals(subject)) {
                 debug.i("||", spectator);
                 nextPlayer = p;
-                if (next) { //TODO: next is always false!
-                    debug.i("next", spectator);
-                    break;
-                }
                 continue;
             }
 
@@ -536,6 +531,7 @@ public class RealSpectateListener implements Listener {
                         debug.i(ap2.getName(), spectator);
                         nextPlayer = ap2.get();
                     }
+                    continue;
                 } // else: nextPlayer has content. yay!
 
                 debug.i("==>" + nextPlayer.getName(), spectator);

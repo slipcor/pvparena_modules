@@ -103,10 +103,6 @@ public class RealSpectate extends ArenaModule {
     public void reset(boolean force) {
         getListener();
         HashSet<SpectateWrapper> list = new HashSet<SpectateWrapper>();
-        HashSet<Player> pList = new HashSet<Player>();
-        for (Player p : getListener().spectated_players.keySet()) {
-            pList.add(p);
-        }
         for (SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }

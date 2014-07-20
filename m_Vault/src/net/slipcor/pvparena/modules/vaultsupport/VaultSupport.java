@@ -156,7 +156,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                 return;
             }
 
-            double amount = 0;
+            double amount;
 
             try {
                 amount = Double.parseDouble(args[2]);
@@ -191,7 +191,7 @@ public class VaultSupport extends ArenaModule implements Listener {
             getPlayerBetMap().put(player.getName() + ":" + args[1], amount);
         } else {
 
-            double amount = 0;
+            double amount;
 
             try {
                 amount = Double.parseDouble(args[0]);
@@ -332,6 +332,10 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public void giveRewards(Player player) {
+        if (player == null) {
+            return;
+        }
+
         final int minPlayTime = arena.getArenaConfig().getInt(CFG.MODULES_VAULT_MINPLAYTIME);
 
         if (minPlayTime > arena.getPlayedSeconds()) {
@@ -362,7 +366,6 @@ public class VaultSupport extends ArenaModule implements Listener {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
 
         arena.getDebugger().i("giving rewards to player " + player.getName(), player);
 
@@ -417,16 +420,14 @@ public class VaultSupport extends ArenaModule implements Listener {
                 double amount = winners > 0 ? pot / winners : 0;
 
 
-                if (player != null) {
-                    double factor = 1d;
-                    for (String node : getPermList().keySet()) {
-                        if (player.hasPermission(node)) {
-                            factor = Math.max(factor, getPermList().get(node));
-                        }
+                double factor = 1d;
+                for (String node : getPermList().keySet()) {
+                    if (player.hasPermission(node)) {
+                        factor = Math.max(factor, getPermList().get(node));
                     }
-
-                    amount *= factor;
                 }
+
+                amount *= factor;
 
                 arena.getDebugger().i("3 depositing " + amount + " to " + player.getName());
                 if (amount > 0) {
@@ -440,27 +441,25 @@ public class VaultSupport extends ArenaModule implements Listener {
                 arena.getDebugger().i("calculating win reward: " + amount, player);
 
 
-                if (player != null) {
-                    double factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR);
+                double factor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR);
 
-                    try {
-                        factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
-                                , field.getInt(arena));
-                    } catch (Exception e) {
-                        PVPArena.instance.getLogger().warning("Failed to get playedPlayers, using winners!");
-                        factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
-                                , winners);
-                    }
-
-                    for (String node : getPermList().keySet()) {
-                        if (player.hasPermission(node)) {
-                            factor = Math.max(factor, getPermList().get(node));
-                            arena.getDebugger().i("has perm '" + node + "'; factor set to " + factor, player);
-                        }
-                    }
-
-                    amount *= factor;
+                try {
+                    factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
+                            , field.getInt(arena));
+                } catch (Exception e) {
+                    PVPArena.instance.getLogger().warning("Failed to get playedPlayers, using winners!");
+                    factor = Math.pow(arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINREWARDPLAYERFACTOR)
+                            , winners);
                 }
+
+                for (String node : getPermList().keySet()) {
+                    if (player.hasPermission(node)) {
+                        factor = Math.max(factor, getPermList().get(node));
+                        arena.getDebugger().i("has perm '" + node + "'; factor set to " + factor, player);
+                    }
+                }
+
+                amount *= factor;
 
                 arena.getDebugger().i("4 depositing " + amount + " to " + player.getName());
                 if (amount > 0) {
@@ -478,16 +477,14 @@ public class VaultSupport extends ArenaModule implements Listener {
                     double amount = getPlayerJoinMap().get(nKey) * playerFactor;
 
 
-                    if (player != null) {
-                        double factor = 1d;
-                        for (String node : getPermList().keySet()) {
-                            if (player.hasPermission(node)) {
-                                factor = Math.max(factor, getPermList().get(node));
-                            }
+                    double factor = 1d;
+                    for (String node : getPermList().keySet()) {
+                        if (player.hasPermission(node)) {
+                            factor = Math.max(factor, getPermList().get(node));
                         }
-
-                        amount *= factor;
                     }
+
+                    amount *= factor;
 
                     arena.getDebugger().i("5 depositing " + amount + " to " + player.getName());
                     if (amount > 0) {
@@ -529,16 +526,14 @@ public class VaultSupport extends ArenaModule implements Listener {
             return;
         }
 
-        if (player != null) {
-            double factor = 1d;
-            for (String node : getPermList().keySet()) {
-                if (player.hasPermission(node)) {
-                    factor = Math.max(factor, getPermList().get(node));
-                }
+        double factor = 1d;
+        for (String node : getPermList().keySet()) {
+            if (player.hasPermission(node)) {
+                factor = Math.max(factor, getPermList().get(node));
             }
-
-            amount *= factor;
         }
+
+        amount *= factor;
         arena.getDebugger().i("6 depositing " + amount + " to " + player.getName());
 
         if (amount > 0) {

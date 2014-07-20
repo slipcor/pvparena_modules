@@ -339,7 +339,7 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-        if (usesPowerups != null) {
+        if (usesPowerups != null && event.getEntity() instanceof Player) {
             debug.i("regaining health");
             Powerup p = usesPowerups.puActive.get(event.getEntity());
             if (p != null) {
@@ -443,7 +443,7 @@ public class PowerupManager extends ArenaModule implements Listener {
                         event.getPlayer().setSprinting(true);
                     }
                     if (p.isEffectActive(PowerupType.SLIP)) {
-                        //
+                        //TODO add slippery effect!
                     }
                 }
             }

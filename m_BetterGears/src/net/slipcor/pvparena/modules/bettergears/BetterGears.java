@@ -106,7 +106,7 @@ public class BetterGears extends ArenaModule {
                     arena.msg(sender, Language.parse(
                             MSG.MODULE_BETTERGEARS_SHOWTEAM,
                             team.getColoredName(),
-                            String.valueOf(getLevelMap().get(team.getName()))));
+                            String.valueOf(getColorMap().get(team))));
                     return;
                 }
 
@@ -307,8 +307,8 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public void reset(boolean force) {
-        getColorMap().remove(arena.getName());
-        getLevelMap().remove(arena.getName());
+        getColorMap().clear();
+        getLevelMap().clear();
     }
 
     @Override
