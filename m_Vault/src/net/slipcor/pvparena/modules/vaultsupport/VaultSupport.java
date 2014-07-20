@@ -309,7 +309,6 @@ public class VaultSupport extends ArenaModule implements Listener {
     /**
      * bettingPlayerName:betGoal => betAmount
      *
-     * @return
      */
     private Map<String, Double> getPlayerBetMap() {
         if (playerBetMap == null) {
@@ -320,8 +319,6 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     /**
      * bettingPlayerName => joinBetAmount
-     *
-     * @return
      */
     private Map<String, Double> getPlayerJoinMap() {
         if (playerJoinMap == null) {
