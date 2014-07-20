@@ -287,8 +287,8 @@ public class VaultSupport extends ArenaModule implements Listener {
                 }
             } else {
 
-                list.put("pa.vault.supervip", 3d);
-                list.put("pa.vault.vip", 2d);
+                list.put("pa.vault.supervip", 3.0d);
+                list.put("pa.vault.vip", 2.0d);
 
                 List<String> stringList = new ArrayList<String>();
 
@@ -413,7 +413,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                 double amount = winners > 0 ? pot / winners : 0;
 
 
-                double factor = 1d;
+                double factor = 1.0d;
                 for (final String node : getPermList().keySet()) {
                     if (player.hasPermission(node)) {
                         factor = Math.max(factor, getPermList().get(node));
@@ -470,7 +470,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                     double amount = getPlayerJoinMap().get(nKey) * playerFactor;
 
 
-                    double factor = 1d;
+                    double factor = 1.0d;
                     for (final String node : getPermList().keySet()) {
                         if (player.hasPermission(node)) {
                             factor = Math.max(factor, getPermList().get(node));
@@ -519,7 +519,7 @@ public class VaultSupport extends ArenaModule implements Listener {
             return;
         }
 
-        double factor = 1d;
+        double factor = 1.0d;
         for (final String node : getPermList().keySet()) {
             if (player.hasPermission(node)) {
                 factor = Math.max(factor, getPermList().get(node));
@@ -666,7 +666,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                     System.out.print("player null: " + nSplit[0]);
                     arena.getDebugger().i("Player is null!");
                 } else {
-                    double factor = 1d;
+                    double factor = 1.0d;
                     for (final String node : getPermList().keySet()) {
                         if (player.hasPermission(node)) {
                             factor = Math.max(factor, getPermList().get(node));
@@ -850,17 +850,17 @@ public class VaultSupport extends ArenaModule implements Listener {
         try {
 
             double value = arena.getArenaConfig().getDouble(
-                    CFG.valueOf("MODULES_VAULT_REWARD_" + rewardType), 0d);
+                    CFG.valueOf("MODULES_VAULT_REWARD_" + rewardType), 0.0d);
 
             final double maybevalue = arena.getArenaConfig().getDouble(
-                    CFG.valueOf("MODULES_VAULT_REWARD_" + rewardType), -1d);
+                    CFG.valueOf("MODULES_VAULT_REWARD_" + rewardType), -1.0d);
 
             if (maybevalue < 0) {
                 PVPArena.instance.getLogger().warning("config value is not set: " + CFG.valueOf("MODULES_VAULT_REWARD_" + rewardType).getNode());
             }
             final Player player = Bukkit.getPlayer(playerName);
             if (player != null) {
-                double factor = 1d;
+                double factor = 1.0d;
                 for (final String node : getPermList().keySet()) {
                     if (player.hasPermission(node)) {
                         factor = Math.max(factor, getPermList().get(node));

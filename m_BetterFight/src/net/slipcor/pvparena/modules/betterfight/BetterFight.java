@@ -277,7 +277,7 @@ public class BetterFight extends ArenaModule {
 
                 @Override
                 public void run() {
-                    l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2f, false, false);
+                    l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.0f, false, false);
                 }
 
             }

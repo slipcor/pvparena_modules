@@ -43,7 +43,7 @@ public class Points extends ArenaModule implements Listener {
     public void configParse(final YamlConfiguration config) {
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
         for (final ArenaClass aClass : arena.getClasses()) {
-            config.addDefault("modules.points.classes." + aClass.getName(), 0d);
+            config.addDefault("modules.points.classes." + aClass.getName(), 0.0d);
         }
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
@@ -56,7 +56,7 @@ public class Points extends ArenaModule implements Listener {
                     try {
                         gcf.createNewFile();
                         globalconfig = YamlConfiguration.loadConfiguration(gcf);
-                        globalconfig.addDefault("slipcor", 0d);
+                        globalconfig.addDefault("slipcor", 0.0d);
                         globalconfig.save(gcf);
                     } catch (IOException e) {
                         globalconfig = null;
@@ -136,7 +136,7 @@ public class Points extends ArenaModule implements Listener {
                 return points.get(player.getName()) < d;
             }
         }
-        return d > 0d;
+        return d > 0.0d;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -214,10 +214,10 @@ public class Points extends ArenaModule implements Listener {
         try {
 
             final double value = arena.getArenaConfig().getDouble(
-                    CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType), 0d);
+                    CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType), 0.0d);
 
             final double maybevalue = arena.getArenaConfig().getDouble(
-                    CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType), -1d);
+                    CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType), -1.0d);
 
             if (maybevalue < 0) {
                 PVPArena.instance.getLogger().warning("config value is not set: " + CFG.valueOf("MODULES_POINTS_REWARD_" + rewardType).getNode());
