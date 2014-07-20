@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LateLounge extends ArenaModule {
     public LateLounge() {
@@ -80,7 +81,7 @@ public class LateLounge extends ArenaModule {
             // not enough players
             getPlayerList().add(player.getName());
 
-            HashSet<String> removals = new HashSet<String>();
+            Set<String> removals = new HashSet<String>();
 
             for (String s : getPlayerList()) {
                 Player p = Bukkit.getPlayerExact(s);

@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BanKick extends ArenaModule {
     private static final List<String> commands = new ArrayList<String>();
@@ -147,7 +148,7 @@ public class BanKick extends ArenaModule {
     public void configParse(YamlConfiguration config) {
         List<String> lBans = config.getStringList("bans");
 
-        HashSet<String> hsBans = new HashSet<String>();
+        Set<String> hsBans = new HashSet<String>();
 
 
         for (String s : lBans) {

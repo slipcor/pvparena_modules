@@ -29,6 +29,7 @@ import pgDev.bukkit.DisguiseCraft.disguise.DisguiseType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Skins extends ArenaModule {
     private static boolean mdHandler = false;
@@ -36,7 +37,7 @@ public class Skins extends ArenaModule {
     private static boolean enabled = false;
     private DisguiseCraftAPI dapi = null;
 
-    private final HashSet<String> disguised = new HashSet<String>();
+    private final Set<String> disguised = new HashSet<String>();
 
     public Skins() {
         super("Skins");

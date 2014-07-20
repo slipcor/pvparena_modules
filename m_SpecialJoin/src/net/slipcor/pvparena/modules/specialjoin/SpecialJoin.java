@@ -27,18 +27,15 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.IllegalPluginAccessException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SpecialJoin extends ArenaModule implements Listener {
     public SpecialJoin() {
         super("SpecialJoin");
     }
 
-    private static final HashMap<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
-    private static final HashMap<String, Arena> selections = new HashMap<String, Arena>();
+    private static final Map<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
+    private static final Map<String, Arena> selections = new HashMap<String, Arena>();
     private boolean setup = false;
 
     @Override
@@ -240,7 +237,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
     }
 
     private static void update(Arena a) {
-        ArrayList<String> locs = new ArrayList<String>();
+        List<String> locs = new ArrayList<String>();
         for (PABlockLocation l : places.keySet()) {
             if (a.getName().equals(places.get(l).getName())) {
                 locs.add(Config.parseToString(l));

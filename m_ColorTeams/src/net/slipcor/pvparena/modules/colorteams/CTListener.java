@@ -10,9 +10,10 @@ import org.bukkit.event.Listener;
 import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 import java.util.HashSet;
+import java.util.Set;
 
 class CTListener implements Listener {
-    private final HashSet<String> removals = new HashSet<String>();
+    private final Set<String> removals = new HashSet<String>();
 
     @EventHandler
     public void onNameReceive(AsyncPlayerReceiveNameTagEvent event) {

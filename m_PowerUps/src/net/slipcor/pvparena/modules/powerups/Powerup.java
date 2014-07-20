@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.HashMap;
+import java.util.Map;
 
 class Powerup {
     public final String name; // PowerUp display name
@@ -23,7 +24,7 @@ class Powerup {
      * @param puEffects the powerup effects
      */
     @SuppressWarnings("unchecked")
-    public Powerup(String pName, HashMap<String, Object> puEffects) {
+    public Powerup(String pName, Map<String, Object> puEffects) {
         int count = 0;
         this.name = pName;
         debug.i("creating powerup " + pName);

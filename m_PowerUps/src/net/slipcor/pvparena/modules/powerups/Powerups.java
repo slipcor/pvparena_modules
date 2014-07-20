@@ -6,15 +6,16 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Powerups {
     private final Debug debug = new Debug(47);
 
-    public final HashMap<Player, Powerup> puActive = new HashMap<Player, Powerup>();
+    public final Map<Player, Powerup> puActive = new HashMap<Player, Powerup>();
     public final List<Powerup> puTotal = new ArrayList<Powerup>();
 
     @SuppressWarnings("unchecked")
-    public Powerups(HashMap<String, Object> powerUps) {
+    public Powerups(Map<String, Object> powerUps) {
 
         debug.i("initialising powerupmanager");
         Powerup p;

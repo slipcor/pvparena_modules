@@ -215,15 +215,15 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         reward(event.getPlayer(), value);
     }
 
-    private String parsePotionEffectsToString(HashSet<PotionEffect> ape) {
-        HashSet<String> result = new HashSet<String>();
+    private String parsePotionEffectsToString(Iterable<PotionEffect> ape) {
+        Set<String> result = new HashSet<String>();
         for (PotionEffect pe : ape) {
             result.add(pe.getType().getName() + ":" + pe.getAmplifier());
         }
         return StringParser.joinSet(result, ",");
     }
 
-    private HashSet<PotionEffect> parseStringToPotionEffects(String s) {
+    private Iterable<PotionEffect> parseStringToPotionEffects(String s) {
         HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
 
         if (s == null || s.equals("none") || s.equals("")) {

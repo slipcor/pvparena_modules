@@ -9,10 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashSet;
+import java.util.Set;
 
 class SpectateWrapper {
     final private Player suspect;
-    final private HashSet<Player> spectators = new HashSet<Player>();
+    final private Set<Player> spectators = new HashSet<Player>();
     final private RealSpectateListener listener;
 
     public SpectateWrapper(Player spectator, Player fighter, RealSpectateListener listener) {

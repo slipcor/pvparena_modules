@@ -33,10 +33,7 @@ import org.bukkit.material.Attachable;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.util.BlockIterator;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Blocks extends ArenaModule implements Listener {
 
@@ -51,10 +48,10 @@ public class Blocks extends ArenaModule implements Listener {
 
     private boolean listening = false;
 
-    public static final HashMap<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
+    public static final Map<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
     //public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
 
-    private static final HashMap<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
+    private static final Map<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
 
     private static final Debug debug = new Debug(24);
 

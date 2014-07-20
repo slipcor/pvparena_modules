@@ -8,9 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.HashMap;
+import java.util.Map;
 
 class BlockRestoreRunnable implements Runnable {
-    private final HashMap<Location, ArenaBlock> removals;
+    private final Map<Location, ArenaBlock> removals;
     private final Arena arena;
     private final Debug debug = new Debug(67);
     private final Blocks module;

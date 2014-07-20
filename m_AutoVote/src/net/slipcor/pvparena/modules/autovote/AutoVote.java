@@ -264,7 +264,7 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     public static void commit(String definition, Set<ArenaPlayer> players) {
-        HashMap<String, String> tempVotes = new HashMap<String, String>();
+        Map<String, String> tempVotes = new HashMap<String, String>();
 
         debug.i("committing definition " + definition + " for " + players.size());
 

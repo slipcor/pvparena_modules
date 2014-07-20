@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class RealSpectate extends ArenaModule {
     public RealSpectate() {
@@ -102,7 +103,7 @@ public class RealSpectate extends ArenaModule {
     @Override
     public void reset(boolean force) {
         getListener();
-        HashSet<SpectateWrapper> list = new HashSet<SpectateWrapper>();
+        Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
         for (SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }
@@ -116,7 +117,7 @@ public class RealSpectate extends ArenaModule {
 
     @Override
     public void unload(Player player) {
-        HashSet<SpectateWrapper> list = new HashSet<SpectateWrapper>();
+        Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
         for (SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }
@@ -134,7 +135,7 @@ public class RealSpectate extends ArenaModule {
         }
 
         if (arena.getFighters().size() < 1) {
-            HashSet<SpectateWrapper> list2 = new HashSet<SpectateWrapper>();
+            Set<SpectateWrapper> list2 = new HashSet<SpectateWrapper>();
             for (SpectateWrapper sw : getListener().spectated_players.values()) {
                 list2.add(sw);
             }

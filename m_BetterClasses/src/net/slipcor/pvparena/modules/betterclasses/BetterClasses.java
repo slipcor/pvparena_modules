@@ -23,7 +23,7 @@ import java.util.*;
 
 public class BetterClasses extends ArenaModule {
 
-    private final HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>> superMap = new HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>>();
+    private final Map<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>> superMap = new HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>>();
 
     public BetterClasses() {
         super("BetterClasses");
@@ -298,7 +298,7 @@ public class BetterClasses extends ArenaModule {
             return;
         }
 
-        HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+        Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
 
         for (ArenaClass aClass : map.keySet()) {
             Set<String> set = new HashSet<String>();
@@ -317,7 +317,7 @@ public class BetterClasses extends ArenaModule {
         }
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         debug.i("respawning player " + String.valueOf(ap), player);
-        HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+        Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
         if (map == null) {
             PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
             return;
@@ -325,7 +325,7 @@ public class BetterClasses extends ArenaModule {
 
         ArenaClass c = ap.getArenaClass();
 
-        HashSet<PotionEffect> ape = map.get(c);
+        Iterable<PotionEffect> ape = map.get(c);
         if (ape == null) {
             debug.i("no effects for team " + String.valueOf(c), player);
             return;
@@ -354,7 +354,7 @@ public class BetterClasses extends ArenaModule {
         }
 
         for (ArenaPlayer ap : arena.getFighters()) {
-            HashSet<PotionEffect> ape = map.get(ap.getArenaClass());
+            Iterable<PotionEffect> ape = map.get(ap.getArenaClass());
             if (ape == null) {
                 continue;
             }
@@ -382,8 +382,8 @@ public class BetterClasses extends ArenaModule {
         return available < needed;
     }
 
-    private String parsePotionEffectsToString(HashSet<PotionEffect> ape) {
-        HashSet<String> result = new HashSet<String>();
+    private String parsePotionEffectsToString(Iterable<PotionEffect> ape) {
+        Set<String> result = new HashSet<String>();
         for (PotionEffect pe : ape) {
             result.add(pe.getType().getName() + ":" + pe.getAmplifier());
         }
@@ -404,7 +404,7 @@ public class BetterClasses extends ArenaModule {
         }
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         debug.i("respawning player " + String.valueOf(ap), player);
-        HashMap<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
+        Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
         if (map == null) {
             PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena.toString());
             return;
@@ -419,7 +419,7 @@ public class BetterClasses extends ArenaModule {
 
         ArenaClass c = ap.getArenaClass();
 
-        HashSet<PotionEffect> ape = map.get(c);
+        Iterable<PotionEffect> ape = map.get(c);
         if (ape == null) {
             debug.i("no effects for class " + String.valueOf(c), player);
             return;

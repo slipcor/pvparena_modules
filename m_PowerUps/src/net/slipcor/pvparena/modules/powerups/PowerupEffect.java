@@ -23,8 +23,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 class PowerupEffect {
@@ -46,7 +46,7 @@ class PowerupEffect {
      * @param eClass       the effect class to create
      * @param puEffectVals the map of effect values to set/add
      */
-    public PowerupEffect(String eClass, HashMap<String, Object> puEffectVals,
+    public PowerupEffect(String eClass, Map<String, Object> puEffectVals,
                          PotionEffect effect) {
         debug.i("adding effect " + eClass);
         this.type = parseClass(eClass);

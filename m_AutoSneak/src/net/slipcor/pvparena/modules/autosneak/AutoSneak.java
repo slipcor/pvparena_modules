@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,7 +29,7 @@ public class AutoSneak extends ArenaModule implements Listener {
         return "v1.3.0.497";
     }
 
-    private final ArrayList<String> sneaker = new ArrayList<String>();
+    private final List<String> sneaker = new ArrayList<String>();
 
     @Override
     public void configParse(final YamlConfiguration config) {

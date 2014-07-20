@@ -20,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 class MyRenderer extends MapRenderer {
     private static final HashMap<ChatColor, Byte> colors = new HashMap<ChatColor, Byte>();
@@ -88,7 +90,7 @@ class MyRenderer extends MapRenderer {
         }
     }
 
-    private static final HashSet<Short> done = new HashSet<Short>();
+    private static final Set<Short> done = new HashSet<Short>();
 
     @Override
     public void render(MapView map, MapCanvas canvas, Player player) {
@@ -142,7 +144,7 @@ class MyRenderer extends MapRenderer {
             }
         }
 
-        HashSet<MapItem> items = maps.getItems();
+        Iterable<MapItem> items = maps.getItems();
 
         if (showSpawns) {
 
@@ -216,7 +218,7 @@ class MyRenderer extends MapRenderer {
             return;
         }
 
-        HashMap<String, Integer> lives = new HashMap<String, Integer>();
+        Map<String, Integer> lives = new HashMap<String, Integer>();
 
         for (ArenaTeam team : arena.getTeams()) {
             if (team.getName().equals("free")) {

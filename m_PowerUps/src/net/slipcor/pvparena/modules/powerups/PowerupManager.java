@@ -212,17 +212,17 @@ public class PowerupManager extends ArenaModule implements Listener {
         }
         HashMap<String, Object> powerups = new HashMap<String, Object>();
         if (config.getConfigurationSection("powerups") != null) {
-            HashMap<String, Object> map = (HashMap<String, Object>) config
+            Map<String, Object> map = (HashMap<String, Object>) config
                     .getConfigurationSection("powerups").getValues(false);
-            HashMap<String, Object> map2;
-            HashMap<String, Object> map3 = new HashMap<String, Object>();
+            Map<String, Object> map2;
+            Map<String, Object> map3 = new HashMap<String, Object>();
             debug.i("parsing powerups");
             for (String key : map.keySet()) {
                 // key e.g. "OneUp"
                 map2 = (HashMap<String, Object>) config
                         .getConfigurationSection("powerups." + key).getValues(
                                 false);
-                HashMap<String, Object> temp_map = new HashMap<String, Object>();
+                Map<String, Object> temp_map = new HashMap<String, Object>();
                 for (String kkey : map2.keySet()) {
                     // kkey e.g. "dmg_receive"
                     if (kkey.equals("item")) {

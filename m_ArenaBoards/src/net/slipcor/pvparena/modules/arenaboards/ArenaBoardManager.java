@@ -22,9 +22,10 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ArenaBoardManager extends ArenaModule implements Listener {
-    final HashMap<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
+    final Map<PABlockLocation, ArenaBoard> boards = new HashMap<PABlockLocation, ArenaBoard>();
     private int BOARD_ID = -1;
     private int GLOBAL_ID = -1;
     static ArenaBoard globalBoard = null;

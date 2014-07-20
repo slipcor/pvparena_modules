@@ -35,8 +35,8 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     private static Economy economy = null;
     private static Permission permission = null;
-    private HashMap<String, Double> playerBetMap = null;
-    private HashMap<String, Double> playerJoinMap = null;
+    private Map<String, Double> playerBetMap = null;
+    private Map<String, Double> playerJoinMap = null;
     private double pot = 0;
     private Map<String, Double> list = null;
 
@@ -608,7 +608,7 @@ public class VaultSupport extends ArenaModule implements Listener {
         killreward(ArenaPlayer.getLastDamagingPlayer(cause, p));
     }
 
-    void pay(HashSet<String> result) {
+    void pay(Set<String> result) {
         if (result == null || result.size() == arena.getTeamNames().size()) {
             return;
         }

@@ -14,11 +14,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 class RealSpectateListener implements Listener {
     private final FlySpectate rs;
-    private final HashSet<Player> spectators = new HashSet<Player>();
+    private final Set<Player> spectators = new HashSet<Player>();
 
     public RealSpectateListener(FlySpectate realSpectate) {
         rs = realSpectate;
@@ -188,7 +190,7 @@ class RealSpectateListener implements Listener {
     }
 
     public void stop() {
-        HashSet<Player> removals = new HashSet<Player>();
+        Collection<Player> removals = new HashSet<Player>();
         removals.addAll(spectators);
         for (Player p : removals) {
             Bukkit.getServer().dispatchCommand(p, "pa leave");

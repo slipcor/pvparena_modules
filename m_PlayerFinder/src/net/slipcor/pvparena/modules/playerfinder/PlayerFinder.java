@@ -18,10 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class PlayerFinder extends ArenaModule implements Listener {
     public PlayerFinder() {
@@ -93,7 +90,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
             //TODO tell "noone there";
         }
 
-        TreeMap<Double, Player> sortedMap = new TreeMap<Double, Player>(sortMap);
+        SortedMap<Double, Player> sortedMap = new TreeMap<Double, Player>(sortMap);
 
         if (event.getAction() == (Action.LEFT_CLICK_AIR)) {
             debug.i("left");
