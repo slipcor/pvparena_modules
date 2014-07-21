@@ -21,9 +21,9 @@ public enum PowerupType {
     JUMP(false),
     POTEFF(true);
 
-    boolean activatedOnPickup;
+    final boolean activatedOnPickup;
 
-    PowerupType(boolean pickup) {
+    PowerupType(final boolean pickup) {
         this.activatedOnPickup = pickup;
     }
 

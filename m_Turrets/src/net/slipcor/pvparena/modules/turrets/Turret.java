@@ -6,11 +6,11 @@ import org.bukkit.entity.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Turret {
+class Turret {
     private final double yaw;
     private final double offset;
-    private static Map<String, Class<? extends Projectile>> types = new HashMap<String, Class<? extends Projectile>>();
-    final private Class<? extends Projectile> type;
+    private static final Map<String, Class<? extends Projectile>> types = new HashMap<String, Class<? extends Projectile>>();
+    private final Class<? extends Projectile> type;
 
     static {
         types.put("fire", Fireball.class);
@@ -23,16 +23,16 @@ public class Turret {
     public Turret(final String name, final PALocation loc, final double offset) {
         yaw = loc.getYaw();
         this.offset = offset < 10 ? 10 : offset; // safety. less than 10 degrees is nonsense :p
-        for (String string : types.keySet()) {
-            if (name.contains(string)) {
-                type = types.get(string);
+        for (final Map.Entry<String, Class<? extends Projectile>> stringClassEntry : types.entrySet()) {
+            if (name.contains(stringClassEntry.getKey())) {
+                type = stringClassEntry.getValue();
                 return;
             }
         }
         type = Arrow.class;
     }
 
-    protected Class<? extends Projectile> getType() {
+    Class<? extends Projectile> getType() {
         return type;
     }
 

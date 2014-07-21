@@ -28,11 +28,11 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import java.util.*;
 
 public class BetterGears extends ArenaModule {
-    static HashMap<String, String> defaultColors;
-    Debug debug = new Debug(600);
+    private static Map<String, String> defaultColors;
+    private Debug debug = new Debug(600);
 
-    private Map<ArenaTeam, Short[]> colorMap = null;
-    private Map<ArenaClass, Short> levelMap = null;
+    private Map<ArenaTeam, Short[]> colorMap;
+    private Map<ArenaClass, Short> levelMap;
 
     public BetterGears() {
         super("BetterGears");
@@ -41,47 +41,47 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!bg") || s.startsWith("bettergear");
+    public boolean checkCommand(final String s) {
+        return "!bg".equals(s) || s.startsWith("bettergear");
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("bettergears");
+        return Collections.singletonList("bettergears");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bg");
+        return Collections.singletonList("!bg");
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         if (arena == null) {
             return result;
         }
-        for (String team : arena.getTeamNames()) {
+        for (final String team : arena.getTeamNames()) {
             result.define(new String[]{team, "color"});
         }
-        for (ArenaClass aClass : arena.getClasses()) {
+        for (final ArenaClass aClass : arena.getClasses()) {
             result.define(new String[]{aClass.getName(), "level"});
         }
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !bg [teamname] | show
         // !bg [teamname] color <R> <G> <B> | set color
         // !bg [classname] | show
         // !bg [classname] level <level> | protection level
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -94,10 +94,10 @@ public class BetterGears extends ArenaModule {
             return;
         }
 
-        ArenaClass c = arena.getClass(args[1]);
+        final ArenaClass c = arena.getClass(args[1]);
 
         if (c == null) {
-            ArenaTeam team = arena.getTeam(args[1]);
+            final ArenaTeam team = arena.getTeam(args[1]);
             if (team != null) {
                 // !bg [teamname] | show
                 // !bg [teamname] color <R> <G> <B> | set color
@@ -106,17 +106,17 @@ public class BetterGears extends ArenaModule {
                     arena.msg(sender, Language.parse(
                             MSG.MODULE_BETTERGEARS_SHOWTEAM,
                             team.getColoredName(),
-                            String.valueOf(getLevelMap().get(team.getName()))));
+                            Arrays.toString(getColorMap().get(team))));
                     return;
                 }
 
-                if ((args.length != 6) || !args[2].equalsIgnoreCase("color")) {
+                if (args.length != 6 || !"color".equalsIgnoreCase(args[2])) {
                     printHelp(sender);
                     return;
                 }
 
                 try {
-                    Short[] rgb = new Short[3];
+                    final Short[] rgb = new Short[3];
                     rgb[0] = Short.parseShort(args[3]);
                     rgb[1] = Short.parseShort(args[4]);
                     rgb[2] = Short.parseShort(args[5]);
@@ -128,7 +128,7 @@ public class BetterGears extends ArenaModule {
                     arena.msg(sender, Language.parse(
                             MSG.MODULE_BETTERGEARS_TEAMDONE,
                             team.getColoredName(), args[3]));
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     arena.msg(sender,
                             Language.parse(MSG.ERROR_NOT_NUMERIC, args[3]));
                 }
@@ -154,13 +154,13 @@ public class BetterGears extends ArenaModule {
             return;
         }
 
-        if ((args.length != 4) || !args[2].equalsIgnoreCase("level")) {
+        if (args.length != 4 || !"level".equalsIgnoreCase(args[2])) {
             printHelp(sender);
             return;
         }
 
         try {
-            short l = Short.parseShort(args[3]);
+            final short l = Short.parseShort(args[3]);
             arena.getArenaConfig().setManually(
                     "modules.bettergears.levels." + c.getName(), l);
             arena.getArenaConfig().save();
@@ -169,22 +169,24 @@ public class BetterGears extends ArenaModule {
                     sender,
                     Language.parse(MSG.MODULE_BETTERGEARS_CLASSDONE,
                             c.getName(), args[3]));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[3]));
         }
     }
 
     @Override
-    public void configParse(YamlConfiguration cfg) {
-        for (ArenaClass c : arena.getClasses()) {
-            if (cfg.get("modules.bettergears.levels." + c.getName()) == null)
+    public void configParse(final YamlConfiguration cfg) {
+        for (final ArenaClass c : arena.getClasses()) {
+            if (cfg.get("modules.bettergears.levels." + c.getName()) == null) {
                 cfg.set("modules.bettergears.levels." + c.getName(),
                         parseClassNameToDefaultProtection(c.getName()));
+            }
         }
-        for (ArenaTeam t : arena.getTeams()) {
-            if (cfg.get("modules.bettergears.colors." + t.getName()) == null)
+        for (final ArenaTeam t : arena.getTeams()) {
+            if (cfg.get("modules.bettergears.colors." + t.getName()) == null) {
                 cfg.set("modules.bettergears.colors." + t.getName(),
                         parseTeamColorStringToRGB(t.getColor().name()));
+            }
         }
         if (getColorMap().isEmpty()) {
             setup();
@@ -192,28 +194,28 @@ public class BetterGears extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
-        for (ArenaTeam team : colorMap.keySet()) {
-            Short[] colors = colorMap.get(team);
-            sender.sendMessage(team.getName() + ": " +
+    public void displayInfo(final CommandSender sender) {
+        for (final Map.Entry<ArenaTeam, Short[]> arenaTeamEntry : colorMap.entrySet()) {
+            final Short[] colors = arenaTeamEntry.getValue();
+            sender.sendMessage(arenaTeamEntry.getKey().getName() + ": " +
                     StringParser.joinArray(colors, ""));
         }
 
-        for (ArenaClass aClass : levelMap.keySet()) {
-            sender.sendMessage(aClass.getName() + ": " + levelMap.get(aClass));
+        for (final Map.Entry<ArenaClass, Short> arenaClassShortEntry : levelMap.entrySet()) {
+            sender.sendMessage(arenaClassShortEntry.getKey().getName() + ": " + arenaClassShortEntry.getValue());
         }
     }
 
-    void equip(ArenaPlayer ap) {
+    void equip(final ArenaPlayer ap) {
 
-        short r;
-        short g;
-        short b;
+        final short r;
+        final short g;
+        final short b;
 
         if (getArena().isFreeForAll()) {
-            r = (short) ((new Random()).nextInt(256));
-            g = (short) ((new Random()).nextInt(256));
-            b = (short) ((new Random()).nextInt(256));
+            r = (short) new Random().nextInt(256);
+            g = (short) new Random().nextInt(256);
+            b = (short) new Random().nextInt(256);
         } else {
             r = getColorMap().get(ap.getArenaTeam())[0];
             g = getColorMap().get(ap.getArenaTeam())[1];
@@ -221,15 +223,15 @@ public class BetterGears extends ArenaModule {
         }
 
 
-        ItemStack[] isArmor = new ItemStack[4];
+        final ItemStack[] isArmor = new ItemStack[4];
         isArmor[0] = new ItemStack(Material.LEATHER_HELMET, 1);
         isArmor[1] = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
         isArmor[2] = new ItemStack(Material.LEATHER_LEGGINGS, 1);
         isArmor[3] = new ItemStack(Material.LEATHER_BOOTS, 1);
 
-        Color c = Color.fromBGR(b, g, r);
+        final Color c = Color.fromBGR(b, g, r);
         for (int i = 0; i < 4; i++) {
-            LeatherArmorMeta lam = (LeatherArmorMeta) isArmor[i].getItemMeta();
+            final LeatherArmorMeta lam = (LeatherArmorMeta) isArmor[i].getItemMeta();
 
             lam.setColor(c);
             isArmor[i].setItemMeta(lam);
@@ -238,8 +240,8 @@ public class BetterGears extends ArenaModule {
         Short s = getLevelMap().get(ap.getArenaClass());
 
         if (s == null) {
-            String autoClass = getArena().getArenaConfig().getString(CFG.READY_AUTOCLASS);
-            ArenaClass ac = getArena().getClass(autoClass);
+            final String autoClass = getArena().getArenaConfig().getString(CFG.READY_AUTOCLASS);
+            final ArenaClass ac = getArena().getClass(autoClass);
             s = getLevelMap().get(ac);
         }
 
@@ -294,21 +296,21 @@ public class BetterGears extends ArenaModule {
     }
 
     @Override
-    public void initiate(Player player) {
+    public void initiate(final Player player) {
         if (getColorMap().isEmpty()) {
             setup();
         }
     }
 
     @Override
-    public void lateJoin(Player player) {
+    public void lateJoin(final Player player) {
         equip(ArenaPlayer.parsePlayer(player.getName()));
     }
 
     @Override
-    public void reset(boolean force) {
-        getColorMap().remove(arena.getName());
-        getLevelMap().remove(arena.getName());
+    public void reset(final boolean force) {
+        getColorMap().clear();
+        getLevelMap().clear();
     }
 
     @Override
@@ -319,34 +321,38 @@ public class BetterGears extends ArenaModule {
         }
         // debug();
 
-        for (ArenaPlayer ap : arena.getFighters()) {
+        for (final ArenaPlayer ap : arena.getFighters()) {
             equip(ap);
         }
     }
 
-    private Short parseClassNameToDefaultProtection(String name) {
-        if (name.equals("Tank")) {
+    private Short parseClassNameToDefaultProtection(final String name) {
+        if ("Tank".equals(name)) {
             return 10;
-        } else if (name.equals("Swordsman")) {
+        }
+        if (name.equals("Swordsman")) {
             return 4;
-        } else if (name.equals("Ranger")) {
+        }
+        if (name.equals("Ranger")) {
             return 1;
-        } else if (name.equals("Pyro")) {
+        }
+        if (name.equals("Pyro")) {
             return 1;
         }
         return null;
     }
 
-    public void parseRespawn(Player player, ArenaTeam team, DamageCause cause,
-                             Entity damager) {
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+    @Override
+    public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause cause,
+                             final Entity damager) {
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         if (arena.getArenaConfig().getBoolean(CFG.PLAYER_REFILLINVENTORY)) {
             new EquipRunnable(ap, this);
         }
     }
 
-    private Short[] parseRGBToShortArray(Object o) {
-        Short[] result = new Short[3];
+    private Short[] parseRGBToShortArray(final Object o) {
+        final Short[] result = new Short[3];
         result[0] = 255;
         result[1] = 255;
         result[2] = 255;
@@ -358,24 +364,24 @@ public class BetterGears extends ArenaModule {
             return result;
         }
 
-        String s = (String) o;
+        final String s = (String) o;
 
-        if (s.equals("") || !s.contains(",")
+        if (s != null && s.isEmpty() || !s.contains(",")
                 || s.split(",").length < 3) {
             return result;
         }
 
         try {
-            String[] split = s.split(",");
+            final String[] split = s.split(",");
             result[0] = Short.parseShort(split[0]);
             result[1] = Short.parseShort(split[1]);
             result[2] = Short.parseShort(split[2]);
-        } catch (Exception e) {
+        } catch (final Exception e) {
         }
         return result;
     }
 
-    private String parseTeamColorStringToRGB(String name) {
+    private String parseTeamColorStringToRGB(final String name) {
         if (defaultColors == null) {
             defaultColors = new HashMap<String, String>();
 
@@ -400,12 +406,12 @@ public class BetterGears extends ArenaModule {
             defaultColors.put("WHITE", "255,255,255");
         }
 
-        String s = defaultColors.get(name);
+        final String s = defaultColors.get(name);
         debug.i("team " + name + " : " + s);
         return s == null ? "255,255,255" : s;
     }
 
-    private void printHelp(CommandSender sender) {
+    private void printHelp(final CommandSender sender) {
         arena.msg(sender, "/pa [arenaname] !bg [teamname]  | show team color");
         arena.msg(sender,
                 "/pa [arenaname] !bg [teamname] color " + ChatColor.RED + "<R> " + ChatColor.GREEN + "<G> " + ChatColor.BLUE + "<B>" + ChatColor.RESET + " | set color");
@@ -418,7 +424,7 @@ public class BetterGears extends ArenaModule {
     private void setup() {
         debug.i("Setting up BetterGears");
 
-        for (ArenaClass c : arena.getClasses()) {
+        for (final ArenaClass c : arena.getClasses()) {
             Short s = 0;
             try {
                 s = Short
@@ -427,13 +433,13 @@ public class BetterGears extends ArenaModule {
                                         "modules.bettergears.levels."
                                                 + c.getName())));
                 debug.i(c.getName() + " : " + s);
-            } catch (Exception e) {
+            } catch (final Exception e) {
             }
             getLevelMap().put(c, s);
         }
 
-        for (ArenaTeam t : arena.getTeams()) {
-            Short[] s = parseRGBToShortArray(arena.getArenaConfig().getUnsafe(
+        for (final ArenaTeam t : arena.getTeams()) {
+            final Short[] s = parseRGBToShortArray(arena.getArenaConfig().getUnsafe(
                     "modules.bettergears.colors." + t.getName()));
             getColorMap().put(t, s);
             debug.i(t.getName() + " : " + StringParser.joinArray(s, ","));

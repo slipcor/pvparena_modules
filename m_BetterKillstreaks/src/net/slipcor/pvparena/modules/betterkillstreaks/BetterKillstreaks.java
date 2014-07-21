@@ -28,33 +28,33 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         super("BetterKillstreaks");
     }
 
-    Map<String, Integer> streaks = new HashMap<String, Integer>();
+    private final Map<String, Integer> streaks = new HashMap<String, Integer>();
 
-    boolean setup = false;
+    private boolean setup;
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!bk") || s.startsWith("betterkillstreaks");
+    public boolean checkCommand(final String s) {
+        return "!bk".equals(s) || s.startsWith("betterkillstreaks");
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("betterkillstreaks");
+        return Collections.singletonList("betterkillstreaks");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!bk");
+        return Collections.singletonList("!bk");
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"{int}", "potion"});
         result.define(new String[]{"{int}", "clear"});
         result.define(new String[]{"{int}", "items"});
@@ -62,10 +62,10 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(sender,
                     Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
@@ -75,11 +75,11 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
             return;
         }
 
-        Integer level;
+        final Integer level;
 
         try {
             level = Integer.parseInt(args[1]);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[1]));
             return;
         }
@@ -96,7 +96,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
             return;
         }
 
-        if (args[2].equals("clear")) {
+        if ("clear".equals(args[2])) {
             // !bk [level] clear | clear the definition
             cs.set("d" + level, null);
             arena.msg(sender, "level " + level + " removed!");
@@ -104,17 +104,17 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
             return;
         }
 
-        if (args[2].equals("items")) {
+        if ("items".equals(args[2])) {
             // !bk [level] items | set the items to your inventory
-            ItemStack[] items = ((Player) sender).getInventory().getContents().clone();
-            String val = StringParser.getStringFromItemStacks(items);
+            final ItemStack[] items = ((Player) sender).getInventory().getContents().clone();
+            final String val = StringParser.getStringFromItemStacks(items);
             cs.set("d" + level + ".items", val);
             arena.getArenaConfig().save();
             arena.msg(sender, "Items of level " + level + " set to: " + val);
             return;
         }
 
-        if (!args[2].equals("potion")) {
+        if (!"potion".equals(args[2])) {
             arena.msg(sender, "/pa [arenaname] !bk [level] | list level settings");
             arena.msg(sender, "/pa [arenaname] !bk [level] clear | clear level settings");
             arena.msg(sender, "/pa [arenaname] !bk [level] potion [type] {amp} {duration} | add potion effect");
@@ -125,14 +125,14 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
         // !bk [level] potion [def]| add potioneffect definition
 
-        HashSet<PotionEffect> ape = new HashSet<PotionEffect>();
+        final HashSet<PotionEffect> ape = new HashSet<PotionEffect>();
 
 
         // 0   1           2      3     4    5
         // !bc [level] potion    [def] [amp] [dur]| add
         PotionEffectType pet = null;
 
-        for (PotionEffectType x : PotionEffectType.values()) {
+        for (final PotionEffectType x : PotionEffectType.values()) {
             if (x == null) {
                 continue;
             }
@@ -152,7 +152,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         if (args.length >= 5) {
             try {
                 amp = Integer.parseInt(args[4]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[4]));
                 return;
             }
@@ -163,7 +163,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         if (args.length >= 6) {
             try {
                 duration = Integer.parseInt(args[5]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[5]));
                 return;
             }
@@ -171,7 +171,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
         ape.add(new PotionEffect(pet, duration, amp));
 
-        String val = parsePotionEffectsToString(ape);
+        final String val = parsePotionEffectsToString(ape);
 
         cs.set("d" + level + ".potion", val);
 
@@ -180,7 +180,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (!setup) {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
             setup = true;
@@ -193,18 +193,18 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         streaks.clear();
     }
 
     @EventHandler
-    public void onPlayerDeath(PADeathEvent event) {
+    public void onPlayerDeath(final PADeathEvent event) {
         streaks.remove(event.getPlayer().getName());
     }
 
     @EventHandler
-    public void onPlayerKill(PAKillEvent event) {
-        int value;
+    public void onPlayerKill(final PAKillEvent event) {
+        final int value;
         if (streaks.containsKey(event.getPlayer().getName())) {
             value = streaks.get(event.getPlayer().getName()) + 1;
 
@@ -215,40 +215,40 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         reward(event.getPlayer(), value);
     }
 
-    private String parsePotionEffectsToString(HashSet<PotionEffect> ape) {
-        HashSet<String> result = new HashSet<String>();
-        for (PotionEffect pe : ape) {
-            result.add(pe.getType().getName() + ":" + pe.getAmplifier());
+    private String parsePotionEffectsToString(final Iterable<PotionEffect> ape) {
+        final Set<String> result = new HashSet<String>();
+        for (final PotionEffect pe : ape) {
+            result.add(pe.getType().getName() + ':' + pe.getAmplifier());
         }
         return StringParser.joinSet(result, ",");
     }
 
-    private HashSet<PotionEffect> parseStringToPotionEffects(String s) {
-        HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
+    private Iterable<PotionEffect> parseStringToPotionEffects(final String s) {
+        final HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
 
-        if (s == null || s.equals("none") || s.equals("")) {
+        if (s == null || "none".equals(s) || s != null && s.isEmpty()) {
             return spe;
         }
 
         String current = null;
 
         try {
-            String[] ss = s.split(",");
-            for (String sss : ss) {
+            final String[] ss = s.split(",");
+            for (final String sss : ss) {
                 current = sss;
 
-                String[] values = sss.split(":");
+                final String[] values = sss.split(":");
 
-                PotionEffectType type = PotionEffectType.getByName(values[0].toUpperCase());
+                final PotionEffectType type = PotionEffectType.getByName(values[0].toUpperCase());
 
-                int amp = values.length < 2 ? 1 : Integer.parseInt(values[1]);
+                final int amp = values.length < 2 ? 1 : Integer.parseInt(values[1]);
 
-                int duration = values.length < 3 ? 2400 : Integer.parseInt(values[2]);
+                final int duration = values.length < 3 ? 2400 : Integer.parseInt(values[2]);
 
-                PotionEffect pe = new PotionEffect(type, duration, amp - 1);
+                final PotionEffect pe = new PotionEffect(type, duration, amp - 1);
                 spe.add(pe);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             PVPArena.instance.getLogger().warning("error while parsing POTION EFFECT DEFINITION \"" + s + "\" : " + current);
         }
 
@@ -256,19 +256,19 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     }
 
 
-    private void reward(Player player, int value) {
-        ConfigurationSection cs = arena.getArenaConfig().getYamlConfiguration().getConfigurationSection("modules.betterkillstreaks.definitions");
-        for (String key : cs.getKeys(false)) {
+    private void reward(final Player player, final int value) {
+        final ConfigurationSection cs = arena.getArenaConfig().getYamlConfiguration().getConfigurationSection("modules.betterkillstreaks.definitions");
+        for (final String key : cs.getKeys(false)) {
             if (key.equals("d" + value)) {
-                ItemStack[] items = StringParser.getItemStacksFromString(cs.getString("items", "AIR"));
-                for (ItemStack item : items) {
+                final ItemStack[] items = StringParser.getItemStacksFromString(cs.getString("items", "AIR"));
+                for (final ItemStack item : items) {
                     player.getInventory().addItem(item);
                 }
 
-                String pot = cs.getString("d" + value, "���");
+                final String pot = cs.getString("d" + value, "���");
 
-                if (!pot.equals("���")) {
-                    for (PotionEffect pe : parseStringToPotionEffects(pot)) {
+                if (!"���".equals(pot)) {
+                    for (final PotionEffect pe : parseStringToPotionEffects(pot)) {
                         player.addPotionEffect(pe);
                     }
                 }

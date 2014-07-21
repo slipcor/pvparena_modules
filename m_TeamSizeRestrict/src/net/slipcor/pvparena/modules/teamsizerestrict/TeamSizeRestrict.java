@@ -18,13 +18,13 @@ public class TeamSizeRestrict extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         try {
-            Integer i = Integer.parseInt(arena.getArenaConfig().getUnsafe("modules.teamsize." + team.getName()).toString());
+            final Integer i = Integer.parseInt(arena.getArenaConfig().getUnsafe("modules.teamsize." + team.getName()).toString());
             if (team.getTeamMembers().size() > i) {
                 class RunLater implements Runnable {
 
@@ -39,7 +39,7 @@ public class TeamSizeRestrict extends ArenaModule {
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 1L);
 
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             arena.getArenaConfig().setManually("modules.teamsize." + team.getName(), -1);
             arena.getArenaConfig().save();
         }

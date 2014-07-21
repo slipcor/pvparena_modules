@@ -26,17 +26,18 @@ import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.disguise.Disguise;
 import pgDev.bukkit.DisguiseCraft.disguise.DisguiseType;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Skins extends ArenaModule {
-    protected static boolean mdHandler = false;
-    protected static boolean dcHandler = false;
-    protected static boolean enabled = false;
-    DisguiseCraftAPI dapi = null;
+    private static boolean mdHandler;
+    private static boolean dcHandler;
+    private static boolean enabled;
+    private DisguiseCraftAPI dapi;
 
-    HashSet<String> disguised = new HashSet<String>();
+    private final Set<String> disguised = new HashSet<String>();
 
     public Skins() {
         super("Skins");
@@ -44,45 +45,45 @@ public class Skins extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!sk") || s.startsWith("skins");
+    public boolean checkCommand(final String s) {
+        return "!sk".equals(s) || s.startsWith("skins");
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("skins");
+        return Collections.singletonList("skins");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!sk");
+        return Collections.singletonList("!sk");
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         if (arena == null) {
             return result;
         }
-        for (String team : arena.getTeamNames()) {
+        for (final String team : arena.getTeamNames()) {
             result.define(new String[]{team});
         }
-        for (ArenaClass aClass : arena.getClasses()) {
+        for (final ArenaClass aClass : arena.getClasses()) {
             result.define(new String[]{aClass.getName()});
         }
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !sk [teamname] [skin] |
         // !sk [classname] [skin] |
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -94,10 +95,10 @@ public class Skins extends ArenaModule {
             return;
         }
 
-        ArenaClass c = arena.getClass(args[1]);
+        final ArenaClass c = arena.getClass(args[1]);
 
         if (c == null) {
-            ArenaTeam team = arena.getTeam(args[1]);
+            final ArenaTeam team = arena.getTeam(args[1]);
             if (team != null) {
                 // !sk [teamname] [skin]
 
@@ -141,10 +142,10 @@ public class Skins extends ArenaModule {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (config.get("skins") == null) {
-            for (ArenaTeam team : arena.getTeams()) {
-                String sName = team.getName();
+            for (final ArenaTeam team : arena.getTeams()) {
+                final String sName = team.getName();
                 config.addDefault("skins." + sName, "Herobrine");
             }
             config.options().copyDefaults(true);
@@ -152,7 +153,7 @@ public class Skins extends ArenaModule {
     }
 
     @Override
-    public void parseRespawn(Player player, ArenaTeam team, DamageCause lastDamageCause, Entity damager) {
+    public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause lastDamageCause, final Entity damager) {
         if (dcHandler) {
             if (dapi.isDisguised(player)) {
                 dapi.undisguisePlayer(player);
@@ -185,7 +186,7 @@ public class Skins extends ArenaModule {
         Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(m));
     }
 
-    private void printHelp(Arena arena, CommandSender sender) {
+    private void printHelp(final Arena arena, final CommandSender sender) {
         arena.msg(sender, "/pa [arenaname] !sk [teamname]  | show team disguise");
         arena.msg(sender, "/pa [arenaname] !sk [teamname] [skin] | set team disguise");
         arena.msg(sender, "/pa [arenaname] !sk [classname]  | show class disguise");
@@ -193,32 +194,32 @@ public class Skins extends ArenaModule {
     }
 
     @Override
-    public void tpPlayerToCoordName(final Player player, String place) {
+    public void tpPlayerToCoordName(final Player player, final String place) {
         if (dcHandler) {
             dapi = DisguiseCraft.getAPI();
         }
 
         if (!dcHandler && !mdHandler) {
-            ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+            final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
             if (team != null) {
                 final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
-                String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
+                final String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
                 if (disguise == null) {
                     return;
                 }
-                if (disguise.equals("SKELETON")) {
+                if ("SKELETON".equals(disguise)) {
                     is.setDurability((short) 0);
-                } else if (disguise.equals("WITHER_SKELETON")) {
+                } else if ("WITHER_SKELETON".equals(disguise)) {
                     is.setDurability((short) 1);
-                } else if (disguise.equals("ZOMBIE")) {
+                } else if ("ZOMBIE".equals(disguise)) {
                     is.setDurability((short) 2);
-                } else if (disguise.equals("PLAYER")) {
+                } else if ("PLAYER".equals(disguise)) {
                     is.setDurability((short) 3);
-                } else if (disguise.equals("CREEPER")) {
+                } else if ("CREEPER".equals(disguise)) {
                     is.setDurability((short) 4);
                 } else {
                     is.setDurability((short) 3);
-                    SkullMeta sm = (SkullMeta) is.getItemMeta();
+                    final SkullMeta sm = (SkullMeta) is.getItemMeta();
                     sm.setOwner(disguise);
                     is.setItemMeta(sm);
                 }
@@ -239,25 +240,25 @@ public class Skins extends ArenaModule {
             return;
         }
 
-        ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+        final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
         if (team == null) {
             return;
         }
         String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
 
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 
-        if (ap.getArenaClass() != null && (disguise == null || disguise.equals("none"))) {
+        if (ap.getArenaClass() != null && (disguise == null || "none".equals(disguise))) {
             disguise = (String) arena.getArenaConfig().getUnsafe("skins." + ap.getArenaClass().getName());
         }
 
-        if (disguise == null || disguise.equals("none")) {
+        if (disguise == null || "none".equals(disguise)) {
             return;
         }
 
         if (dcHandler) {
-            DisguiseType t = DisguiseType.fromString(disguise);
-            Disguise d = new Disguise(dapi.newEntityID(), disguise, t == null ? DisguiseType.Player : t);
+            final DisguiseType t = DisguiseType.fromString(disguise);
+            final Disguise d = new Disguise(dapi.newEntityID(), disguise, t == null ? DisguiseType.Player : t);
             if (dapi.isDisguised(player)) {
                 dapi.undisguisePlayer(player);
             }
@@ -276,7 +277,7 @@ public class Skins extends ArenaModule {
     }
 
     @Override
-    public void unload(Player player) {
+    public void unload(final Player player) {
         if (dcHandler) {
             dapi.undisguisePlayer(player);
         } else if (mdHandler) {

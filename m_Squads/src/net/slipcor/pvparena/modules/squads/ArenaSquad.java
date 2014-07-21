@@ -5,12 +5,12 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ArenaSquad {
+class ArenaSquad {
     private final String name;
     private final int max;
     private final Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
 
-    public ArenaSquad(String sName, int iMax) {
+    public ArenaSquad(final String sName, final int iMax) {
         name = sName;
         max = iMax;
     }
@@ -27,15 +27,15 @@ public class ArenaSquad {
         return name;
     }
 
-    public void add(ArenaPlayer player) {
+    public void add(final ArenaPlayer player) {
         players.add(player);
     }
 
-    public boolean contains(ArenaPlayer player) {
+    public boolean contains(final ArenaPlayer player) {
         return players.contains(player);
     }
 
-    public void remove(ArenaPlayer player) {
+    public void remove(final ArenaPlayer player) {
         players.remove(player);
     }
 
@@ -44,8 +44,8 @@ public class ArenaSquad {
     }
 
     public Set<ArenaPlayer> getPlayers() {
-        Set<ArenaPlayer> result = new HashSet<ArenaPlayer>();
-        for (ArenaPlayer ap : players) {
+        final Set<ArenaPlayer> result = new HashSet<ArenaPlayer>();
+        for (final ArenaPlayer ap : players) {
             result.add(ap);
         }
         return result;

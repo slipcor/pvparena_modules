@@ -27,57 +27,48 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.IllegalPluginAccessException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class SpecialJoin extends ArenaModule implements Listener {
     public SpecialJoin() {
         super("SpecialJoin");
     }
 
-    static HashMap<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
-    static HashMap<String, Arena> selections = new HashMap<String, Arena>();
-    boolean setup = false;
+    private static final Map<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
+    private static final Map<String, Arena> selections = new HashMap<String, Arena>();
+    private boolean setup;
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.toLowerCase().equals("setjoin");
+    public boolean checkCommand(final String s) {
+        return "setjoin".equals(s.toLowerCase());
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("setjoin");
+        return Collections.singletonList("setjoin");
     }
 
     @Override
-    public List<String> getShort() {
-        return Arrays.asList(new String[0]);
-    }
-
-    @Override
-    public void configParse(YamlConfiguration config) {
-        List<String> res;
+    public void configParse(final YamlConfiguration config) {
         try {
-            res = config.getStringList("modules.specialjoin.places");
-            for (String s : res) {
+            final List<String> res = config.getStringList("modules.specialjoin.places");
+            for (final String s : res) {
                 places.put(Config.parseBlockLocation(s), arena);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(sender,
                     Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
@@ -107,7 +98,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
     }
 
     @EventHandler
-    public void onSpecialJoin(PlayerInteractEvent event) {
+    public void onSpecialJoin(final PlayerInteractEvent event) {
         if (event.isCancelled()) {
             debug.i("PIA cancelled!", event.getPlayer());
             return;
@@ -120,7 +111,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
             debug.i("edit mode. OUT!", event.getPlayer());
             return;
         }
-        if (event.getAction().equals(Action.PHYSICAL)) {
+        if (event.getAction() == Action.PHYSICAL) {
 
             debug.i("Join via pressure plate!", event.getPlayer());
 
@@ -128,11 +119,11 @@ public class SpecialJoin extends ArenaModule implements Listener {
                 debug.i("wth?", event.getPlayer());
                 return;
             }
-            PABlockLocation loc = new PABlockLocation(event.getPlayer().getLocation());
+            final PABlockLocation loc = new PABlockLocation(event.getPlayer().getLocation());
 
             PABlockLocation find = null;
 
-            for (PABlockLocation l : places.keySet()) {
+            for (final PABlockLocation l : places.keySet()) {
                 if (l.getWorldName().equals(loc.getWorldName())
                         && l.getDistance(loc) < 0.1f) {
                     find = l;
@@ -143,7 +134,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
                 debug.i("not contained!", event.getPlayer());
                 return;
             }
-            PAG_Join j = new PAG_Join();
+            final PAG_Join j = new PAG_Join();
             j.commit(places.get(find), event.getPlayer(), new String[0]);
             return;
         }
@@ -156,8 +147,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
         if (selections.containsKey(event.getPlayer().getName())) {
             debug.i("selection contains!", event.getPlayer());
 
-            Material mat = event.getClickedBlock().getType();
-            String place;
+            final Material mat = event.getClickedBlock().getType();
+            final String place;
 
             if (mat == Material.STONE_PLATE || mat == Material.WOOD_PLATE) {
                 place = mat.name();
@@ -168,7 +159,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
             } else {
                 return;
             }
-            Arena a = selections.get(event.getPlayer().getName());
+            final Arena a = selections.get(event.getPlayer().getName());
             places.put(new PABlockLocation(event.getClickedBlock().getLocation()), a);
             selections.remove(event.getPlayer().getName());
             a.msg(event.getPlayer(),
@@ -178,11 +169,11 @@ public class SpecialJoin extends ArenaModule implements Listener {
             return;
         }
 
-        PABlockLocation loc = new PABlockLocation(event.getClickedBlock().getLocation());
+        final PABlockLocation loc = new PABlockLocation(event.getClickedBlock().getLocation());
 
         PABlockLocation find = null;
 
-        for (PABlockLocation l : places.keySet()) {
+        for (final PABlockLocation l : places.keySet()) {
             if (l.getWorldName().equals(loc.getWorldName())
                     && l.getDistance(loc) < 0.1f) {
                 find = l;
@@ -197,20 +188,20 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
         event.setCancelled(true);
 
-        PAG_Join j = new PAG_Join();
+        final PAG_Join j = new PAG_Join();
 
-        Material mat = event.getClickedBlock().getType();
+        final Material mat = event.getClickedBlock().getType();
 
         if (mat == Material.STONE_BUTTON || mat == Material.WOOD_BUTTON || mat == Material.LEVER) {
             j.commit(places.get(find), event.getPlayer(), new String[0]);
         } else if (mat == Material.SIGN || mat == Material.SIGN_POST || mat == Material.WALL_SIGN) {
-            Sign s = (Sign) event.getClickedBlock().getState();
-            String[] arr = new String[1];
+            final Sign s = (Sign) event.getClickedBlock().getState();
+            final String[] arr = new String[1];
             arr[0] = s.getLine(1); // second line
 
 
-            if (s.getLine(2) != null && s.getLine(2).length() > 0) {
-                PAG_Spectate jj = new PAG_Spectate();
+            if (s.getLine(2) != null && !s.getLine(2).isEmpty()) {
+                final PAG_Spectate jj = new PAG_Spectate();
                 jj.commit(places.get(find), event.getPlayer(), new String[0]);
             } else {
                 j.commit(places.get(find), event.getPlayer(), arr);
@@ -220,12 +211,12 @@ public class SpecialJoin extends ArenaModule implements Listener {
     }
 
     @Override
-    public void parseJoin(CommandSender sender, ArenaTeam team) {
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         updateSignDisplay();
     }
 
     @Override
-    public void parsePlayerLeave(Player player, ArenaTeam team) {
+    public void parsePlayerLeave(final Player player, final ArenaTeam team) {
         updateSignDisplay();
     }
 
@@ -235,15 +226,15 @@ public class SpecialJoin extends ArenaModule implements Listener {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         updateSignDisplay();
     }
 
-    private static void update(Arena a) {
-        ArrayList<String> locs = new ArrayList<String>();
-        for (PABlockLocation l : places.keySet()) {
-            if (a.getName().equals(places.get(l).getName())) {
-                locs.add(Config.parseToString(l));
+    private static void update(final Arena a) {
+        final List<String> locs = new ArrayList<String>();
+        for (final Map.Entry<PABlockLocation, Arena> paBlockLocationArenaEntry : places.entrySet()) {
+            if (a.getName().equals(paBlockLocationArenaEntry.getValue().getName())) {
+                locs.add(Config.parseToString(paBlockLocationArenaEntry.getKey()));
             }
         }
         a.getArenaConfig().setManually("modules.specialjoin.places", locs);
@@ -256,21 +247,21 @@ public class SpecialJoin extends ArenaModule implements Listener {
             @Override
             public void run() {
 
-                for (PABlockLocation loc : places.keySet()) {
-                    Arena arena = places.get(loc);
+                for (final Map.Entry<PABlockLocation, Arena> paBlockLocationArenaEntry : places.entrySet()) {
+                    final Arena arena = paBlockLocationArenaEntry.getValue();
                     if (!arena.getArenaConfig().getBoolean(CFG.MODULES_SPECIALJOIN_SHOWPLAYERS)) {
                         continue;
                     }
 
-                    BlockState state = loc.toLocation().getBlock().getState();
+                    final BlockState state = paBlockLocationArenaEntry.getKey().toLocation().getBlock().getState();
 
                     if (!(state instanceof Sign)) {
                         continue;
                     }
 
-                    Sign sign = (Sign) state;
+                    final Sign sign = (Sign) state;
 
-                    String line = (arena.isFightInProgress() ? ChatColor.GREEN.toString() : (arena.isLocked() ? ChatColor.RED.toString() : ChatColor.GOLD.toString())) + arena.getFighters().size();
+                    String line = (arena.isFightInProgress() ? ChatColor.GREEN.toString() : arena.isLocked() ? ChatColor.RED.toString() : ChatColor.GOLD.toString()) + arena.getFighters().size();
 
                     final int maxPlayers = arena.getArenaConfig().getInt(CFG.READY_MAXPLAYERS);
 
@@ -285,7 +276,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
         }
         try {
             Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
-        } catch (IllegalPluginAccessException e) {
+        } catch (final IllegalPluginAccessException e) {
         }
     }
 }

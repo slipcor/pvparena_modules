@@ -18,13 +18,14 @@ import org.bukkit.entity.Player;
 import java.util.Set;
 
 public class ArenaRotateRunnable extends ArenaRunnable {
-    private Debug debug = new Debug(68);
+    private final Debug debug = new Debug(68);
 
-    public ArenaRotateRunnable(Arena a, int i) {
+    public ArenaRotateRunnable(final int i) {
         super(MSG.ARENA_STARTING_IN.getNode(), i, null, null, true);
         debug.i("ArenaRotateRunnable constructor");
     }
 
+    @Override
     protected void commit() {
         debug.i("ArenaRotateRunnable commiting");
         ArenaRotate.commit();
@@ -40,23 +41,23 @@ public class ArenaRotateRunnable extends ArenaRunnable {
         if ((super.message == null) || (MESSAGES.get(seconds) == null)) {
             return;
         }
-        MSG msg = MSG.getByNode(this.message);
+        final MSG msg = MSG.getByNode(this.message);
         if (msg == null) {
             PVPArena.instance.getLogger().warning("MSG not found: " + this.message);
             return;
         }
-        String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), ArenaManager.getNames()) : MESSAGES.get(seconds);
+        final String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), ArenaManager.getNames()) : MESSAGES.get(seconds);
         if (global) {
-            Player[] players = Bukkit.getOnlinePlayers();
+            final Player[] players = Bukkit.getOnlinePlayers();
 
             playerssss:
-            for (Player p : players) {
-                for (Arena aaa : ArenaManager.getArenas()) {
+            for (final Player p : players) {
+                for (final Arena aaa : ArenaManager.getArenas()) {
                     if (!aaa.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ONLYSPAMTOJOIN)) {
                         Arena.pmsg(p, message);
                         continue playerssss;
                     }
-                    for (ArenaRegion region : aaa.getRegionsByType(RegionType.JOIN)) {
+                    for (final ArenaRegion region : aaa.getRegionsByType(RegionType.JOIN)) {
                         if (region.getShape().contains(new PABlockLocation(p.getLocation()))) {
                             Arena.pmsg(p, message);
                             continue playerssss;
@@ -68,8 +69,8 @@ public class ArenaRotateRunnable extends ArenaRunnable {
             return;
         }
         if (arena != null) {
-            Set<ArenaPlayer> players = arena.getFighters();
-            for (ArenaPlayer ap : players) {
+            final Set<ArenaPlayer> players = arena.getFighters();
+            for (final ArenaPlayer ap : players) {
                 if (sPlayer != null) {
                     if (ap.getName().equals(sPlayer)) {
                         continue;

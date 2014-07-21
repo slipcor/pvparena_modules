@@ -9,12 +9,13 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class Powerup {
-    public String name; // PowerUp display name
-    public Material item; // item that triggers this Powerup
+class Powerup {
+    public final String name; // PowerUp display name
+    public final Material item; // item that triggers this Powerup
     private PowerupEffect[] effects; // Effects the Powerup has
-    private Debug debug = new Debug(16);
+    private final Debug debug = new Debug(16);
 
     /**
      * construct a powerup instance
@@ -23,42 +24,44 @@ public class Powerup {
      * @param puEffects the powerup effects
      */
     @SuppressWarnings("unchecked")
-    public Powerup(String pName, HashMap<String, Object> puEffects) {
-        int count = 0;
-        this.name = pName;
+    public Powerup(final String pName, final Map<String, Object> puEffects) {
+        name = pName;
         debug.i("creating powerup " + pName);
-        this.item = Material.valueOf((String) puEffects.get("item"));
-        debug.i("item added: " + this.item.toString());
-        for (String eClass : puEffects.keySet()) {
-            PowerupType pec = PowerupEffect.parseClass(eClass);
+        item = Material.valueOf((String) puEffects.get("item"));
+        debug.i("item added: " + item);
+        int count = 0;
+        for (final Map.Entry<String, Object> stringObjectEntry1 : puEffects.entrySet()) {
+            final PowerupType pec = PowerupEffect.parseClass(stringObjectEntry1.getKey());
             if (pec == null) {
-                if (!eClass.equals("item"))
-                    PVPArena.instance.getLogger().warning("unknown effect class: " + eClass);
+                if (!"item".equals(stringObjectEntry1.getKey())) {
+                    PVPArena.instance.getLogger().warning("unknown effect class: " + stringObjectEntry1.getKey());
+                }
                 continue;
             }
-            PowerupEffect pe = new PowerupEffect(eClass,
-                    (HashMap<String, Object>) puEffects.get(eClass),
-                    PowerupEffect.parsePotionEffect(eClass));
+            final PowerupEffect pe = new PowerupEffect(stringObjectEntry1.getKey(),
+                    (HashMap<String, Object>) stringObjectEntry1.getValue(),
+                    PowerupEffect.parsePotionEffect(stringObjectEntry1.getKey()));
             if (pe.type == null) {
                 continue;
             }
             count++;
         }
         debug.i("effects found: " + count);
-        if (count < 1)
+        if (count < 1) {
             return;
+        }
 
         effects = new PowerupEffect[count];
 
         count = 0;
-        for (String eClass : puEffects.keySet()) {
-            PowerupType pec = PowerupEffect.parseClass(eClass);
+        for (final Map.Entry<String, Object> stringObjectEntry : puEffects.entrySet()) {
+            final PowerupType pec = PowerupEffect.parseClass(stringObjectEntry.getKey());
             if (pec == null) {
                 continue;
             }
-            PowerupEffect pe = new PowerupEffect(eClass,
-                    (HashMap<String, Object>) puEffects.get(eClass),
-                    PowerupEffect.parsePotionEffect(eClass));
+            final PowerupEffect pe = new PowerupEffect(stringObjectEntry.getKey(),
+                    (HashMap<String, Object>) stringObjectEntry.getValue(),
+                    PowerupEffect.parsePotionEffect(stringObjectEntry.getKey()));
             if (pe.type == null) {
                 continue;
             }
@@ -71,10 +74,10 @@ public class Powerup {
      *
      * @param p the Powerup reference
      */
-    public Powerup(Powerup p) {
-        this.name = p.name;
-        this.effects = p.effects;
-        this.item = p.item;
+    public Powerup(final Powerup p) {
+        name = p.name;
+        effects = p.effects;
+        item = p.item;
     }
 
     /**
@@ -83,9 +86,10 @@ public class Powerup {
      * @return true if an effect still is active, false otherwise
      */
     public boolean isActive() {
-        for (PowerupEffect pe : effects) {
-            if (pe.active)
+        for (final PowerupEffect pe : effects) {
+            if (pe.active) {
                 return true;
+            }
         }
         return false;
     }
@@ -96,11 +100,12 @@ public class Powerup {
      * @param peClass the class to check
      * @return true if an effect still is active, false otherwise
      */
-    public boolean isEffectActive(PowerupType peClass) {
-        for (PowerupEffect pe : effects) {
-            if (pe.uses != 0 && pe.duration != 0)
+    public boolean isEffectActive(final PowerupType peClass) {
+        for (final PowerupEffect pe : effects) {
+            if (pe.uses != 0 && pe.duration != 0) {
                 if (pe.type.equals(peClass))
                     return true;
+            }
         }
         return false;
     }
@@ -111,9 +116,10 @@ public class Powerup {
      * @return true if an event can be fired, false otherwise
      */
     public boolean canBeTriggered() {
-        for (PowerupEffect pe : effects) {
-            if (pe.uses != 0 && pe.duration != 0)
+        for (final PowerupEffect pe : effects) {
+            if (pe.uses != 0 && pe.duration != 0) {
                 return true; // one effect still can be triggered
+            }
         }
         return false;
     }
@@ -123,11 +129,12 @@ public class Powerup {
      *
      * @param player the player to commit the effect on
      */
-    public void activate(Player player) {
+    public void activate(final Player player) {
         debug.i("activating! - " + name, player);
-        for (PowerupEffect pe : effects) {
-            if (pe.uses != 0 && pe.duration != 0)
+        for (final PowerupEffect pe : effects) {
+            if (pe.uses != 0 && pe.duration != 0) {
                 pe.init(player);
+            }
         }
     }
 
@@ -139,11 +146,11 @@ public class Powerup {
      * @param event    the triggering event
      * @param isAttacker is the player attacking
      */
-    public void commit(Player attacker, Player defender,
-                       EntityDamageByEntityEvent event, boolean isAttacker) {
+    public void commit(final Player attacker, final Player defender,
+                       final EntityDamageByEntityEvent event, final boolean isAttacker) {
         debug.i("committing effects:", attacker);
         debug.i("committing effects:", defender);
-        for (PowerupEffect pe : effects) {
+        for (final PowerupEffect pe : effects) {
             if (pe.uses != 0 && pe.duration != 0) {
                 pe.commit(attacker, defender, event, isAttacker);
             }
@@ -155,11 +162,12 @@ public class Powerup {
      *
      * @param event the triggering event
      */
-    public void commit(EntityRegainHealthEvent event) {
-        for (PowerupEffect pe : effects) {
-            if (pe.uses != 0 && pe.duration != 0)
+    public void commit(final EntityRegainHealthEvent event) {
+        for (final PowerupEffect pe : effects) {
+            if (pe.uses != 0 && pe.duration != 0) {
                 if (pe.type.equals(PowerupType.HEAL))
                     pe.commit(event);
+            }
         }
     }
 
@@ -168,11 +176,12 @@ public class Powerup {
      *
      * @param event the triggering event
      */
-    public void commit(PlayerVelocityEvent event) {
-        for (PowerupEffect pe : effects) {
-            if (pe.uses != 0 && pe.duration != 0)
+    public void commit(final PlayerVelocityEvent event) {
+        for (final PowerupEffect pe : effects) {
+            if (pe.uses != 0 && pe.duration != 0) {
                 if (pe.type.equals(PowerupType.HEAL))
                     pe.commit(event);
+            }
         }
     }
 
@@ -180,17 +189,18 @@ public class Powerup {
      * calculate down the duration
      */
     public void tick() {
-        for (PowerupEffect pe : effects) {
-            if (pe.uses != 0 && pe.duration > 0)
+        for (final PowerupEffect pe : effects) {
+            if (pe.uses != 0 && pe.duration > 0) {
                 pe.duration--;
+            }
         }
     }
 
-    public void deactivate(Player player) {
+    public void deactivate(final Player player) {
         if (effects == null) {
             return;
         }
-        for (PowerupEffect eff : effects) {
+        for (final PowerupEffect eff : effects) {
             eff.removeEffect(player);
         }
     }

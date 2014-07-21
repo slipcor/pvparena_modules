@@ -8,15 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class BlockRestoreRunnable implements Runnable {
-    private HashMap<Location, ArenaBlock> removals;
-    private Arena arena;
-    private Debug debug = new Debug(67);
+class BlockRestoreRunnable implements Runnable {
+    private final Map<Location, ArenaBlock> removals;
+    private final Arena arena;
+    private final Debug debug = new Debug(67);
     private final Blocks module;
 
-    public BlockRestoreRunnable(Arena arena,
-                                HashMap<Location, ArenaBlock> blocks, Blocks module) {
+    public BlockRestoreRunnable(final Arena arena,
+                                final Blocks module) {
         this.arena = arena;
         removals = getBlocks();
         this.module = module;
@@ -25,11 +26,11 @@ public class BlockRestoreRunnable implements Runnable {
     @Override
     public void run() {
         module.restoring = true;
-        for (Location l : removals.keySet()) {
-            debug.i("location: " + l.toString());
-            removals.get(l).reset();
-            removals.remove(l);
-            Blocks.blocks.remove(l);
+        for (final Map.Entry<Location, ArenaBlock> locationArenaBlockEntry : removals.entrySet()) {
+            debug.i("location: " + locationArenaBlockEntry.getKey());
+            locationArenaBlockEntry.getValue().reset();
+            removals.remove(locationArenaBlockEntry.getKey());
+            Blocks.blocks.remove(locationArenaBlockEntry.getKey());
             Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
                     this, arena.getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
             return;
@@ -43,14 +44,14 @@ public class BlockRestoreRunnable implements Runnable {
      * @return a map of location=>block to reset
      */
     private HashMap<Location, ArenaBlock> getBlocks() {
-        HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
+        final HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
 
         debug.i("reading all arenablocks");
-        for (Location l : Blocks.blocks.keySet()) {
+        for (final Location l : Blocks.blocks.keySet()) {
             if (Blocks.blocks.get(l).arena.equals(arena.getName())
-                    || Blocks.blocks.get(l).arena.equals("")) {
+                    || Blocks.blocks.get(l).arena != null && Blocks.blocks.get(l).arena.isEmpty()) {
                 result.put(l, Blocks.blocks.get(l));
-                debug.i(" - " + l.toString());
+                debug.i(" - " + l);
             }
         }
 
@@ -58,11 +59,11 @@ public class BlockRestoreRunnable implements Runnable {
     }
 
     public void instantlyRestore() {
-        for (Location l : removals.keySet()) {
-            debug.i("location: " + l.toString());
-            removals.get(l).reset();
-            removals.remove(l);
-            Blocks.blocks.remove(l);
+        for (final Map.Entry<Location, ArenaBlock> locationArenaBlockEntry : removals.entrySet()) {
+            debug.i("location: " + locationArenaBlockEntry.getKey());
+            locationArenaBlockEntry.getValue().reset();
+            removals.remove(locationArenaBlockEntry.getKey());
+            Blocks.blocks.remove(locationArenaBlockEntry.getKey());
         }
         removals.clear();
     }

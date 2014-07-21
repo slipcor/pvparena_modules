@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class BlockDissolve extends ArenaModule {
 
-    private boolean setup = false;
+    private boolean setup;
     private MoveChecker checker;
 
     public BlockDissolve() {
@@ -16,11 +16,11 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (setup) {
             return;
         }
@@ -32,7 +32,7 @@ public class BlockDissolve extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage("ticks: " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
         sender.sendMessage("materials: " + arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS));
     }
@@ -42,7 +42,8 @@ public class BlockDissolve extends ArenaModule {
         checker.start();
     }
 
-    public void reset(boolean force) {
+    @Override
+    public void reset(final boolean force) {
         checker.clear();
     }
 }

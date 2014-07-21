@@ -20,15 +20,15 @@ import java.util.Map;
 
 public class ArenaBoard {
 
-    public static final Debug debug = new Debug(10);
+    private static final Debug debug = new Debug(10);
 
-    private PABlockLocation location;
-    protected ArenaBoardManager abm;
-    public boolean global;
+    private final PABlockLocation location;
+    private final ArenaBoardManager abm;
+    private final boolean global;
 
-    public StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
+    private StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
-    private Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
+    private final Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
 
     /**
      * create an arena board instance
@@ -36,7 +36,7 @@ public class ArenaBoard {
      * @param loc the location to hook to
      * @param a   the arena to save the board to
      */
-    public ArenaBoard(ArenaBoardManager m, PABlockLocation loc, Arena a) {
+    public ArenaBoard(final ArenaBoardManager m, final PABlockLocation loc, final Arena a) {
         abm = m;
         location = loc;
         global = a == null;
@@ -50,26 +50,26 @@ public class ArenaBoard {
      */
     private void construct() {
         PABlockLocation l = location;
-        int border = 10;
         try {
             Sign s = (Sign) l.toLocation().getBlock().getState();
-            BlockFace bf = getRightDirection(s);
+            final BlockFace bf = getRightDirection(s);
             debug.i("parsing signs: ");
+            int border = 10;
             do {
                 StatisticsManager.type t = null;
                 try {
                     t = StatisticsManager.getTypeBySignLine(s.getLine(0));
                     s.setLine(0, ChatColor.AQUA + t.getNiceName());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     // nothing
                 }
 
-                columns.put(t, new ArenaBoardColumn(this, l));
-                debug.i("putting column type " + toString());
+                columns.put(t, new ArenaBoardColumn(l));
+                debug.i("putting column type " + this);
                 l = new PABlockLocation(l.toLocation().getBlock().getRelative(bf).getLocation());
                 s = (Sign) l.toLocation().getBlock().getState();
             } while (border-- > 0);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // no more signs, out!
         }
     }
@@ -84,19 +84,23 @@ public class ArenaBoard {
      * @param s the sign to check
      * @return the blockface of the direction of the next column
      */
-    private BlockFace getRightDirection(Sign s) {
+    private BlockFace getRightDirection(final Sign s) {
 
-        Block block = s.getBlock();
-        org.bukkit.material.Sign sign = (org.bukkit.material.Sign) block.getState().getData();
+        final Block block = s.getBlock();
+        final org.bukkit.material.Sign sign = (org.bukkit.material.Sign) block.getState().getData();
 
-        if (sign.getFacing() == BlockFace.EAST)
+        if (sign.getFacing() == BlockFace.EAST) {
             return BlockFace.NORTH;
-        if (sign.getFacing() == BlockFace.WEST)
+        }
+        if (sign.getFacing() == BlockFace.WEST) {
             return BlockFace.SOUTH;
-        if (sign.getFacing() == BlockFace.NORTH)
+        }
+        if (sign.getFacing() == BlockFace.NORTH) {
             return BlockFace.WEST;
-        if (sign.getFacing() == BlockFace.SOUTH)
+        }
+        if (sign.getFacing() == BlockFace.SOUTH) {
             return BlockFace.EAST;
+        }
 
         return null;
     }
@@ -106,13 +110,13 @@ public class ArenaBoard {
      */
     public void update() {
         debug.i("ArenaBoard update()");
-        for (StatisticsManager.type t : StatisticsManager.type.values()) {
+        for (final StatisticsManager.type t : StatisticsManager.type.values()) {
             debug.i("checking stat: " + t.name());
             if (!columns.containsKey(t)) {
                 continue;
             }
             debug.i("found! reading!");
-            String[] s = StatisticsManager.read(
+            final String[] s = StatisticsManager.read(
                     StatisticsManager.getStats(global ? null : abm.getArena(), sortBy), t, global);
             columns.get(t).write(s);
         }
@@ -124,8 +128,8 @@ public class ArenaBoard {
      * @param event the InteractEvent
      * @return true if the player clicked a leaderboard sign, false otherwise
      */
-    public static boolean checkInteract(ArenaBoardManager abm, PlayerInteractEvent event) {
-        Player player = event.getPlayer();
+    public static boolean checkInteract(final ArenaBoardManager abm, final PlayerInteractEvent event) {
+        final Player player = event.getPlayer();
         debug.i("checking ArenaBoard interact", player);
 
         if (event.getClickedBlock() == null) {
@@ -136,7 +140,7 @@ public class ArenaBoard {
 
         if (!abm.boards.containsKey(new PABlockLocation(event.getClickedBlock().getLocation()))
                 && ArenaBoardManager.globalBoard == null
-                || !ArenaBoardManager.globalBoard.getLocation().equals(
+                || !ArenaBoardManager.globalBoard.location.equals(
                 new PABlockLocation(event.getClickedBlock().getLocation()))) {
             return false;
         }
@@ -151,12 +155,12 @@ public class ArenaBoard {
 
         if (ab.global) {
             debug.i("global!", player);
-            if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 ab.sortBy = StatisticsManager.type.next(ab.sortBy);
                 Arena.pmsg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
                 return true;
-            } else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 ab.sortBy = StatisticsManager.type.last(ab.sortBy);
                 Arena.pmsg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
@@ -164,12 +168,12 @@ public class ArenaBoard {
             }
         } else {
             debug.i("not global!", player);
-            if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 ab.sortBy = StatisticsManager.type.next(ab.sortBy);
                 ab.abm.getArena().msg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
                 return true;
-            } else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 ab.sortBy = StatisticsManager.type.last(ab.sortBy);
                 ab.abm.getArena().msg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));

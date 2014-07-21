@@ -16,37 +16,37 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class PAListener implements Listener {
+class PAListener implements Listener {
     private final EventActions ea;
 
-    public PAListener(EventActions ea) {
+    public PAListener(final EventActions ea) {
         this.ea = ea;
     }
 
     @EventHandler
-    public void onDeath(PADeathEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onDeath(final PADeathEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
         ea.catchEvent("death", p, a);
     }
 
     @EventHandler
-    public void onEnd(PAEndEvent event) {
-        Arena a = event.getArena();
+    public void onEnd(final PAEndEvent event) {
+        final Arena a = event.getArena();
         ea.catchEvent("end", null, a);
     }
 
     @EventHandler
-    public void onExit(PAExitEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onExit(final PAExitEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
         ea.catchEvent("exit", p, a);
     }
 
     @EventHandler
-    public void onJoin(PAJoinEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onJoin(final PAJoinEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
 
         if (event.isSpectator()) {
             ea.catchEvent("spectate", p, a);
@@ -56,36 +56,36 @@ public class PAListener implements Listener {
     }
 
     @EventHandler
-    public void onKill(PAKillEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onKill(final PAKillEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
         ea.catchEvent("kill", p, a);
     }
 
     @EventHandler
-    public void onLeave(PALeaveEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onLeave(final PALeaveEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
         ea.catchEvent("leave", p, a);
     }
 
     @EventHandler
-    public void onLose(PALoseEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onLose(final PALoseEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
         ea.catchEvent("lose", p, a);
     }
 
     @EventHandler
-    public void onStart(PAStartEvent event) {
-        Arena a = event.getArena();
+    public void onStart(final PAStartEvent event) {
+        final Arena a = event.getArena();
         ea.catchEvent("start", null, a);
     }
 
     @EventHandler
-    public void onWin(PAWinEvent event) {
-        Arena a = event.getArena();
-        Player p = event.getPlayer();
+    public void onWin(final PAWinEvent event) {
+        final Arena a = event.getArena();
+        final Player p = event.getPlayer();
         ea.catchEvent("win", p, a);
     }
 
@@ -96,23 +96,23 @@ public class PAListener implements Listener {
 
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public boolean playerInteract(PlayerInteractEvent event) {
+    public boolean playerInteract(final PlayerInteractEvent event) {
         if (!event.hasBlock()) {
             return false;
         }
 //		debug.i("interact eventactions", event.getPlayer());
-        Arena a = PAA_Edit.activeEdits.get(event.getPlayer().getName() + "_power");
+        final Arena a = PAA_Edit.activeEdits.get(event.getPlayer().getName() + "_power");
 
         if (a != null) {
 //			debug.i("found edit arena", event.getPlayer());
-            Location loc = event.getClickedBlock().getLocation();
+            final Location loc = event.getClickedBlock().getLocation();
 
-            String s = "power";
+            final String s = "power";
             int i = 0;
             for (String node : a.getArenaConfig().getKeys("spawns")) {
                 if (node.startsWith(s) && !node.contains("powerup")) {
 
-                    PABlockLocation locc = Config.parseBlockLocation(
+                    final PABlockLocation locc = Config.parseBlockLocation(
                             (String) a.getArenaConfig().getUnsafe("spawns." + node)
                     );
                     if (loc.equals(locc.toLocation())) {

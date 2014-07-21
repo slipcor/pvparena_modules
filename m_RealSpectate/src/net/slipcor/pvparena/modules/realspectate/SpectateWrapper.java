@@ -9,21 +9,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashSet;
+import java.util.Set;
 
-public class SpectateWrapper {
-    final private Player suspect;
-    final private HashSet<Player> spectators = new HashSet<Player>();
-    final private RealSpectateListener listener;
+class SpectateWrapper {
+    private final Player suspect;
+    private final Set<Player> spectators = new HashSet<Player>();
+    private final RealSpectateListener listener;
 
-    public SpectateWrapper(Player spectator, Player fighter, RealSpectateListener listener) {
+    public SpectateWrapper(final Player spectator, final Player fighter, final RealSpectateListener listener) {
         suspect = fighter;
         spectators.add(spectator);
         ArenaPlayer.parsePlayer(spectator.getName()).setTelePass(true);
         this.listener = listener;
     }
 
-    public void debug(Debug debugger) {
-        for (Player spec : spectators) {
+    public void debug(final Debug debugger) {
+        for (final Player spec : spectators) {
             debugger.i(spec.getName());
         }
     }
@@ -44,7 +45,7 @@ public class SpectateWrapper {
 
                     s.teleport(suspect.getLocation());
 
-                    for (ArenaPlayer ap : listener.rs.getArena().getEveryone()) {
+                    for (final ArenaPlayer ap : listener.rs.getArena().getEveryone()) {
                         ap.get().hidePlayer(s);
                     }
                     s.hidePlayer(suspect);
@@ -55,7 +56,7 @@ public class SpectateWrapper {
     }
 
     public void update() {
-        for (Player s : spectators) {
+        for (final Player s : spectators) {
 
             class LaterRun implements Runnable {
                 private final Player s;
@@ -75,7 +76,7 @@ public class SpectateWrapper {
 
                     s.teleport(suspect.getLocation());
 
-                    for (ArenaPlayer ap : listener.rs.getArena().getEveryone()) {
+                    for (final ArenaPlayer ap : listener.rs.getArena().getEveryone()) {
                         ap.get().hidePlayer(s);
                     }
                     s.hidePlayer(suspect);
@@ -89,7 +90,7 @@ public class SpectateWrapper {
         return suspect;
     }
 
-    public boolean hasSpectator(Player p) {
+    public boolean hasSpectator(final Player p) {
         return spectators.contains(p);
     }
 
@@ -102,32 +103,32 @@ public class SpectateWrapper {
 
 
     public void closeInventory() {
-        for (Player p : spectators) {
+        for (final Player p : spectators) {
             p.closeInventory();
         }
     }
 
-    public void openInventory(Inventory inventory) {
-        for (Player p : spectators) {
+    public void openInventory(final Inventory inventory) {
+        for (final Player p : spectators) {
             p.openInventory(inventory);
         }
     }
 
-    public void removeSpectator(Player spectator) {
+    public void removeSpectator(final Player spectator) {
         spectators.remove(spectator);
         if (spectators.size() < 1) {
             listener.spectated_players.remove(suspect);
         }
     }
 
-    public void selectItem(int newSlot) {
-		for (Player p : spectators) {
+    public void selectItem(final int newSlot) {
+		for (final Player p : spectators) {
 			p.getInventory().setHeldItemSlot(newSlot);
 		}
     }
 
     public void stopSpectating() {
-        for (Player p : spectators) {
+        for (final Player p : spectators) {
             if (listener.spectated_players.size() < 1) {
                 Bukkit.getServer().dispatchCommand(p, "pa leave");
             } else {
@@ -141,7 +142,7 @@ public class SpectateWrapper {
         class LaterRun implements Runnable {
             @Override
             public void run() {
-                for (Player p : spectators) {
+                for (final Player p : spectators) {
                     p.setHealth(suspect.getHealth() > 0 ? suspect.getHealth() : 1);
                 }
             }
@@ -153,7 +154,7 @@ public class SpectateWrapper {
         class LaterRun implements Runnable {
             @Override
             public void run() {
-                for (Player p : spectators) {
+                for (final Player p : spectators) {
                     InventoryManager.clearInventory(p);
                     p.getInventory().setArmorContents(suspect.getInventory().getArmorContents());
                     p.getInventory().setContents(suspect.getInventory().getContents());
@@ -165,13 +166,13 @@ public class SpectateWrapper {
     }
 
     public void updateLocation() {
-        for (Player p : spectators) {
+        for (final Player p : spectators) {
             p.teleport(suspect.getLocation());
         }
     }
 
     public void stopHard() {
-        for (Player p : spectators) {
+        for (final Player p : spectators) {
             Bukkit.getServer().dispatchCommand(p, "pa leave");
         }
     }

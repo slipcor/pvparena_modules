@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class BattlefieldGuard extends ArenaModule {
-    private boolean setup = false;
+    private boolean setup;
 
     public BattlefieldGuard() {
         super("BattlefieldGuard");
@@ -17,25 +17,26 @@ public class BattlefieldGuard extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
-        if (setup)
+    public void configParse(final YamlConfiguration config) {
+        if (setup) {
             return;
+        }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(PVPArena.instance, new BattleRunnable(), 20L, 20L);
         setup = true;
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage(StringParser.colorVar("enterdeath", arena.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)));
     }
 
     @Override
-    public boolean hasSpawn(String s) {
-        return s.equalsIgnoreCase("exit");
+    public boolean hasSpawn(final String s) {
+        return "exit".equalsIgnoreCase(s);
     }
 
     @Override

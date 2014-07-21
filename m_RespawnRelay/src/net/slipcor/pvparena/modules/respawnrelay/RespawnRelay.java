@@ -19,10 +19,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class RespawnRelay extends ArenaModule {
-    public class RelayListener implements Listener {
+    private class RelayListener implements Listener {
         @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-        public void onAsyncChat(AsyncPlayerChatEvent event) {
-            ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
+        public void onAsyncChat(final AsyncPlayerChatEvent event) {
+            final ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
 
             if (player.getArena() == null) {
                 return;
@@ -30,8 +30,8 @@ public class RespawnRelay extends ArenaModule {
 
             RespawnRelay module = null;
 
-            for (ArenaModule mod : player.getArena().getMods()) {
-                if (mod.getName().equals("RespawnRelay")) {
+            for (final ArenaModule mod : player.getArena().getMods()) {
+                if ("RespawnRelay".equals(mod.getName())) {
                     module = (RespawnRelay) mod;
                     break;
                 }
@@ -47,15 +47,15 @@ public class RespawnRelay extends ArenaModule {
 
             event.setCancelled(true);
 
-            Set<PASpawn> map = SpawnManager.getPASpawnsStartingWith(player.getArena(), event.getMessage());
+            final Set<PASpawn> map = SpawnManager.getPASpawnsStartingWith(player.getArena(), event.getMessage());
 
             if (map.size() < 1) {
                 return;
             }
 
-            int pos = (new Random()).nextInt(map.size());
+            int pos = new Random().nextInt(map.size());
 
-            for (PASpawn s : map) {
+            for (final PASpawn s : map) {
                 if (--pos < 0) {
                     overrideMap.put(player.getName(), s.getName());
                     return;
@@ -66,9 +66,9 @@ public class RespawnRelay extends ArenaModule {
         }
     }
 
-    protected Map<String, BukkitRunnable> runnerMap;
-    protected Map<String, String> overrideMap = new HashMap<String, String>();
-    private static Listener listener = null;
+    private Map<String, BukkitRunnable> runnerMap;
+    final Map<String, String> overrideMap = new HashMap<String, String>();
+    private static Listener listener;
 
     public RespawnRelay() {
         super("RespawnRelay");
@@ -76,11 +76,11 @@ public class RespawnRelay extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public String checkForMissingSpawns(Set<String> list) {
+    public String checkForMissingSpawns(final Set<String> list) {
         if (listener == null) {
             listener = new RelayListener();
             Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
@@ -90,11 +90,11 @@ public class RespawnRelay extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender sender) {
+    public void displayInfo(final CommandSender sender) {
         sender.sendMessage("seconds: " + arena.getArenaConfig().getInt(CFG.MODULES_RESPAWNRELAY_INTERVAL));
     }
 
-    protected Map<String, BukkitRunnable> getRunnerMap() {
+    Map<String, BukkitRunnable> getRunnerMap() {
         if (runnerMap == null) {
             runnerMap = new HashMap<String, BukkitRunnable>();
         }
@@ -102,20 +102,20 @@ public class RespawnRelay extends ArenaModule {
     }
 
     @Override
-    public boolean hasSpawn(String s) {
-        return s.equals("relay");
+    public boolean hasSpawn(final String s) {
+        return "relay".equals(s);
     }
 
     @Override
-    public void reset(boolean force) {
-        for (BukkitRunnable br : getRunnerMap().values()) {
+    public void reset(final boolean force) {
+        for (final BukkitRunnable br : getRunnerMap().values()) {
             br.cancel();
         }
         getRunnerMap().clear();
     }
 
     @Override
-    public boolean tryDeathOverride(ArenaPlayer ap, List<ItemStack> drops) {
+    public boolean tryDeathOverride(final ArenaPlayer ap, List<ItemStack> drops) {
         ap.setStatus(Status.DEAD);
 
         if (drops == null) {

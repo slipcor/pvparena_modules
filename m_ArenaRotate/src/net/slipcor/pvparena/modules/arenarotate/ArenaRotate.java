@@ -22,9 +22,9 @@ import java.util.Random;
 import java.util.Set;
 
 public class ArenaRotate extends ArenaModule {
-    private static Arena a = null;
+    private static Arena a;
 
-    private static ArenaRotateRunnable vote = null;
+    private static ArenaRotateRunnable vote;
 
     public ArenaRotate() {
         super("ArenaRotate");
@@ -32,12 +32,12 @@ public class ArenaRotate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public PACheck checkJoin(CommandSender sender,
-                             PACheck res, boolean b) {
+    public PACheck checkJoin(final CommandSender sender,
+                             final PACheck res, final boolean b) {
         if (res.hasError() || !b) {
             return res;
         }
@@ -52,10 +52,10 @@ public class ArenaRotate extends ArenaModule {
             return res;
         }
 
-        Player p = (Player) sender;
+        final Player p = (Player) sender;
 
-        for (Team team : p.getScoreboard().getTeams()) {
-            for (OfflinePlayer player : team.getPlayers()) {
+        for (final Team team : p.getScoreboard().getTeams()) {
+            for (final OfflinePlayer player : team.getPlayers()) {
                 if (player.getName().equals(p.getName())) {
                     res.setError(this, Language.parse(MSG.ERROR_COMMAND_BLOCKED, "You already have a scoreboard!"));
                     return res;
@@ -67,11 +67,11 @@ public class ArenaRotate extends ArenaModule {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         a = null;
 
         if (vote == null) {
-            vote = new ArenaRotateRunnable(arena,
+            vote = new ArenaRotateRunnable(
                     arena.getArenaConfig().getInt(CFG.MODULES_ARENAVOTE_SECONDS));
         }
     }
@@ -83,9 +83,9 @@ public class ArenaRotate extends ArenaModule {
 
         if (a == null) {
 
-            int pos = ((new Random()).nextInt(ArenaManager.getArenas().size()));
+            int pos = new Random().nextInt(ArenaManager.getArenas().size());
 
-            for (Arena arena : ArenaManager.getArenas()) {
+            for (final Arena arena : ArenaManager.getArenas()) {
                 if (--pos < 0) {
                     a = arena;
                     break;
@@ -103,7 +103,7 @@ public class ArenaRotate extends ArenaModule {
 
         final Set<String> toTeleport = new HashSet<String>();
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (final Player p : Bukkit.getOnlinePlayers()) {
             toTeleport.add(p.getName());
         }
 
@@ -113,8 +113,8 @@ public class ArenaRotate extends ArenaModule {
 
             @Override
             public void run() {
-                for (String pName : toTeleport) {
-                    Player p = Bukkit.getPlayerExact(pName);
+                for (final String pName : toTeleport) {
+                    final Player p = Bukkit.getPlayerExact(pName);
                     toTeleport.remove(pName);
                     if (p == null) {
                         return;
@@ -135,7 +135,7 @@ public class ArenaRotate extends ArenaModule {
 
                 }
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
-                this.cancel();
+                cancel();
             }
 
         }
@@ -152,9 +152,9 @@ public class ArenaRotate extends ArenaModule {
             public void run() {
                 boolean active = false;
                 ArenaModule commitMod = null;
-                for (Arena arena : ArenaManager.getArenas()) {
-                    for (ArenaModule mod : arena.getMods()) {
-                        if (mod.getName().equals(ArenaRotate.this.getName())
+                for (final Arena arena : ArenaManager.getArenas()) {
+                    for (final ArenaModule mod : arena.getMods()) {
+                        if (mod.getName().equals(getName())
                                 && arena.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_AUTOSTART)) {
 
                             active = true;

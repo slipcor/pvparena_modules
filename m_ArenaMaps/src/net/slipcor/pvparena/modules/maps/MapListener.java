@@ -6,18 +6,18 @@ import org.bukkit.event.server.MapInitializeEvent;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-public class MapListener implements Listener {
-    Maps maps;
+class MapListener implements Listener {
+    private final Maps maps;
 
-    public MapListener(Maps m) {
+    public MapListener(final Maps m) {
         maps = m;
     }
 
     @EventHandler
-    public void onMapInit(MapInitializeEvent event) {
-        MapView map = event.getMap();
+    public void onMapInit(final MapInitializeEvent event) {
+        final MapView map = event.getMap();
 
-        MapRenderer mr = new MyRenderer(maps);
+        final MapRenderer mr = new MyRenderer(maps);
         map.addRenderer(mr);
     }
 }

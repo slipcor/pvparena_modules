@@ -20,12 +20,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
 public class EventActions extends ArenaModule {
-    private boolean setup = false;
+    private boolean setup;
 
     public EventActions() {
         super("EventActions");
@@ -33,22 +33,22 @@ public class EventActions extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.toLowerCase().equals("setpower");
+    public boolean checkCommand(final String s) {
+        return "setpower".equals(s.toLowerCase());
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("setpower");
+        return Collections.singletonList("setpower");
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
-        Arena a = PAA_Edit.activeEdits.get(sender.getName() + "_power");
+    public void commitCommand(final CommandSender sender, final String[] args) {
+        final Arena a = PAA_Edit.activeEdits.get(sender.getName() + "_power");
 
         if (a == null) {
             PAA_Edit.activeEdits.put(sender.getName() + "_power", arena);
@@ -61,14 +61,15 @@ public class EventActions extends ArenaModule {
 
 
     @Override
-    public void configParse(YamlConfiguration config) {
-        if (setup)
+    public void configParse(final YamlConfiguration config) {
+        if (setup) {
             return;
+        }
         Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
         setup = true;
     }
 
-    protected void catchEvent(final String string, final Player p, Arena a) {
+    void catchEvent(final String string, final Player p, final Arena a) {
 
         if (a == null || !a.equals(arena)) {
             return;
@@ -78,13 +79,13 @@ public class EventActions extends ArenaModule {
             return;
         }
 
-        List<String> items = a.getArenaConfig().getStringList("event." + string, new ArrayList<String>());
+        final List<String> items = a.getArenaConfig().getStringList("event." + string, new ArrayList<String>());
 
         for (String item : items) {
 
             if (p != null) {
                 item = item.replace("%player%", p.getName());
-                ArenaPlayer aplayer = ArenaPlayer.parsePlayer(p.getName());
+                final ArenaPlayer aplayer = ArenaPlayer.parsePlayer(p.getName());
                 if (aplayer.getArenaTeam() != null) {
                     item = item.replace("%team%", aplayer.getArenaTeam().getName());
                     item = item.replace("%color%", aplayer.getArenaTeam().getColor().toString());
@@ -92,11 +93,11 @@ public class EventActions extends ArenaModule {
             }
 
             if (item.contains("%players%")) {
-                String[] players = new String[arena.getFighters().size()];
+                final String[] players = new String[arena.getFighters().size()];
                 int pos = 0;
 
-                for (ArenaTeam team : arena.getTeams()) {
-                    for (ArenaPlayer player : team.getTeamMembers()) {
+                for (final ArenaTeam team : arena.getTeams()) {
+                    for (final ArenaPlayer player : team.getTeamMembers()) {
                         players[pos++] = team.colorizePlayer(player.get());
                     }
                 }
@@ -134,9 +135,9 @@ public class EventActions extends ArenaModule {
                 }
             }
 
-            if (split[0].equalsIgnoreCase("cmd")) {
+            if ("cmd".equalsIgnoreCase(split[0])) {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), split[1]);
-            } else if (split[0].equalsIgnoreCase("pcmd")) {
+            } else if ("pcmd".equalsIgnoreCase(split[0])) {
                 class RunLater implements Runnable {
 
                     @Override
@@ -150,28 +151,28 @@ public class EventActions extends ArenaModule {
 
                 }
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
-            } else if (split[0].equalsIgnoreCase("brc")) {
+            } else if ("brc".equalsIgnoreCase(split[0])) {
                 Bukkit.broadcastMessage(split[1]);
-            } else if (split[0].equalsIgnoreCase("abrc")) {
+            } else if ("abrc".equalsIgnoreCase(split[0])) {
                 arena.broadcast(split[1]);
-            } else if (split[0].equalsIgnoreCase("clear")) {
-                ArenaRegion ars = arena.getRegion(split[1]);
+            } else if ("clear".equalsIgnoreCase(split[0])) {
+                final ArenaRegion ars = arena.getRegion(split[1]);
                 if (ars == null && "all".equals(split[1])) {
-                    for (ArenaRegion region : arena.getRegions()) {
+                    for (final ArenaRegion region : arena.getRegions()) {
                         region.removeEntities();
                     }
                 } else if (ars != null) {
                     ars.removeEntities();
                 }
-            } else if (split[0].equalsIgnoreCase("power")) {
-                for (PABlock loc : SpawnManager.getPABlocksContaining(a, split[1])) {
+            } else if ("power".equalsIgnoreCase(split[0])) {
+                for (final PABlock loc : SpawnManager.getPABlocksContaining(a, split[1])) {
                     if (loc.getName().contains("powerup")) {
                         continue;
                     }
                     Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new EADelay(loc.getLocation()), 1L);
                 }
 
-            } else if (split[0].equalsIgnoreCase("msg") && p != null) {
+            } else if ("msg".equalsIgnoreCase(split[0]) && p != null) {
                 p.sendMessage(split[1]);
             }
         }

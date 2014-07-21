@@ -24,26 +24,27 @@ public class FlySpectate extends ArenaModule {
         super("FlySpectate");
     }
 
-    RealSpectateListener listener = null;
+    private RealSpectateListener listener;
 
-    int priority = 3;
+    private static final int priority = 3;
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public PACheck checkJoin(CommandSender sender,
-                             PACheck res, boolean join) {
-        if (join && (arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE) || !arena.isFightInProgress()))
+    public PACheck checkJoin(final CommandSender sender,
+                             final PACheck res, final boolean join) {
+        if (join && (arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE) || !arena.isFightInProgress())) {
             return res;
+        }
 
         if (arena.getFighters().size() < 1) {
             res.setError(this, Language.parse(MSG.ERROR_NOPLAYERFOUND));
         }
 
-        if (res.getPriority() < priority || (join && res.hasError())) {
+        if (res.getPriority() < priority || join && res.hasError()) {
             res.setPriority(this, priority);
         }
         return res;
@@ -76,7 +77,7 @@ public class FlySpectate extends ArenaModule {
 
         final PAJoinEvent event = new PAJoinEvent(arena, player, true);
         Bukkit.getPluginManager().callEvent(event);
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         if (event.isCancelled() || arena.equals(ap.getArena())) {
             if (arena.equals(ap.getArena())) {
                 arena.msg(player, Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, arena.getName()));
@@ -106,7 +107,7 @@ public class FlySpectate extends ArenaModule {
 
             if (ap.getArenaTeam() != null && ap.getArenaClass() == null) {
                 final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
-                if (autoClass != null && !autoClass.equals("none") && arena.getClass(autoClass) != null) {
+                if (autoClass != null && !"none".equals(autoClass) && arena.getClass(autoClass) != null) {
                     arena.chooseClass(player, null, autoClass);
                 }
                 if (autoClass == null) {
@@ -120,7 +121,7 @@ public class FlySpectate extends ArenaModule {
         }
 
 
-        long delay = arena.getArenaConfig().getBoolean(CFG.PERMS_FLY) ? 6L : 5L;
+        final long delay = arena.getArenaConfig().getBoolean(CFG.PERMS_FLY) ? 6L : 5L;
         class RunLater implements Runnable {
 
             @Override
@@ -136,19 +137,20 @@ public class FlySpectate extends ArenaModule {
     }
 
     @Override
-    public void parseJoin(CommandSender sender, ArenaTeam team) {
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         getListener().hideAllSpectatorsLater();
     }
 
     @Override
-    public void reset(boolean force) {
-        if (listener != null)
+    public void reset(final boolean force) {
+        if (listener != null) {
             listener.stop();
+        }
     }
 
     @Override
-    public void unload(Player player) {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+    public void unload(final Player player) {
+        for (final Player p : Bukkit.getOnlinePlayers()) {
             p.showPlayer(player);
         }
 

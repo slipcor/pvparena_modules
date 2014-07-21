@@ -7,7 +7,7 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 
 public class WallsRunner extends ArenaRunnable {
 
-    final Walls module;
+    private final Walls module;
 
     public WallsRunner(final Walls module, final Arena arena, final int seconds) {
         super(MSG.TIMER_WALLS.getNode(), seconds, null, arena, false);

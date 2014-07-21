@@ -7,20 +7,17 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 
 public class ArenaBoardColumn {
-    protected ArenaBoard board;
-    private PABlockLocation location;
-    private Debug debug = new Debug(11);
+    private final PABlockLocation location;
+    private final Debug debug = new Debug(11);
 
-    private ArenaBoardSign[] signs = new ArenaBoardSign[5];
+    private final ArenaBoardSign[] signs = new ArenaBoardSign[5];
 
     /**
      * create an arena board column instance
      *
-     * @param ab the arena board to hook to
      * @param l  the location of the column header
      */
-    public ArenaBoardColumn(ArenaBoard ab, PABlockLocation l) {
-        board = ab;
+    public ArenaBoardColumn(final PABlockLocation l) {
         location = l;
 
         debug.i("fetching sign column");
@@ -33,19 +30,19 @@ public class ArenaBoardColumn {
     private void fetchSigns() {
         Location l = location.toLocation().getBlock().getRelative(BlockFace.DOWN)
                 .getLocation();
-        int i = 0;
         try {
+            int i = 0;
             do {
-                Sign s = (Sign) l.getBlock().getState();
+                final Sign s = (Sign) l.getBlock().getState();
                 s.setLine(0, "");
                 s.setLine(1, "");
                 s.setLine(2, "");
                 s.setLine(3, "");
                 s.update();
-                signs[i] = (new ArenaBoardSign(this, l));
+                signs[i] = (new ArenaBoardSign(l));
                 l = l.getBlock().getRelative(BlockFace.DOWN).getLocation();
             } while (++i < 5);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // no more signs, out!
         }
     }
@@ -55,10 +52,10 @@ public class ArenaBoardColumn {
      *
      * @param s the string array to save
      */
-    public void write(String[] s) {
-        int i = 0;
+    public void write(final String[] s) {
         debug.i("writing to column at location " + location.toString());
-        for (ArenaBoardSign abs : signs) {
+        int i = 0;
+        for (final ArenaBoardSign abs : signs) {
             if (abs == null) {
                 return;
             }

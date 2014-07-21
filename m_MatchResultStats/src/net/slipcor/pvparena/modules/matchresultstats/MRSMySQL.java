@@ -10,37 +10,20 @@ import java.sql.SQLException;
  * @version v0.1.0
  */
 
-public final class MRSMySQL {
+final class MRSMySQL {
 
     private MRSMySQL() {
 
     }
 
-    private static MatchResultStats plugin = null;
+    private static MatchResultStats plugin;
 
-    public static void mysqlQuery(final String query) {
+    private static void mysqlQuery(final String query) {
         try {
             plugin.sqlHandler.executeQuery(query, true);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean mysqlExists(final String query) {
-        ResultSet result = null;
-        try {
-            result = plugin.sqlHandler.executeQuery(query, false);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            while (result != null && result.next()) {
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
 
@@ -63,11 +46,11 @@ public final class MRSMySQL {
             }
         }
     */
-    public static void save(int id, String arenaName, String playerName, boolean winning,
-                            String team, long time) {
+    public static void save(final int id, final String arenaName, final String playerName, final boolean winning,
+                            final String team, final long time) {
 
         mysqlQuery("INSERT INTO `" + MatchResultStats.dbTable + "` (`mid`,`arena`,`playername`,`winning`,`team`,`timespent`) VALUES ('"
-                + id + "', '" + arenaName + "', '" + playerName + "', " + (winning ? "1" : "0") + ", '" + team + "', " + time + ")");
+                + id + "', '" + arenaName + "', '" + playerName + "', " + (winning ? "1" : "0") + ", '" + team + "', " + time + ')');
     }
 
     public static Integer getNextID() {
@@ -78,17 +61,17 @@ public final class MRSMySQL {
             try {
                 result = plugin.sqlHandler
                         .executeQuery("SELECT `mid` FROM `" + MatchResultStats.dbTable + "` WHERE 1;", false);
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 e.printStackTrace();
             }
             try {
                 while (result != null && result.next()) {
                     number = result.getInt("mid");
                 }
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 e.printStackTrace();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
         }
         return ++number;

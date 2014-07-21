@@ -20,18 +20,20 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class MyRenderer extends MapRenderer {
-    static HashMap<ChatColor, Byte> colors = new HashMap<ChatColor, Byte>();
+class MyRenderer extends MapRenderer {
+    private static final HashMap<ChatColor, Byte> colors = new HashMap<ChatColor, Byte>();
     private String playerName;
     private Arena arena;
-    private static YamlConfiguration playerMaps;
+    private static final YamlConfiguration playerMaps;
     private boolean showPlayers;
     private boolean showSpawns;
     private boolean showLives;
-    private Maps maps;
+    private final Maps maps;
 
-    public MyRenderer(Maps m) {
+    public MyRenderer(final Maps m) {
         playerName = null;
         arena = null;
         maps = m;
@@ -58,11 +60,11 @@ public class MyRenderer extends MapRenderer {
         PVPArena.instance.getDataFolder().mkdir();
 
 
-        File configFile = new File(PVPArena.instance.getDataFolder(), "maps.yml");
+        final File configFile = new File(PVPArena.instance.getDataFolder(), "maps.yml");
         if (!(configFile.exists())) {
             try {
                 configFile.createNewFile();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 PVPArena.instance.getLogger().severe(
                         "Error when creating map file.");
             }
@@ -71,11 +73,11 @@ public class MyRenderer extends MapRenderer {
         playerMaps = new YamlConfiguration();
         try {
             playerMaps.load(configFile);
-        } catch (FileNotFoundException e1) {
+        } catch (final FileNotFoundException e1) {
             e1.printStackTrace();
-        } catch (IOException e1) {
+        } catch (final IOException e1) {
             e1.printStackTrace();
-        } catch (InvalidConfigurationException e1) {
+        } catch (final InvalidConfigurationException e1) {
             e1.printStackTrace();
         }
     }
@@ -83,15 +85,15 @@ public class MyRenderer extends MapRenderer {
     private static void savePlayers() {
         try {
             playerMaps.save(new File(PVPArena.instance.getDataFolder(), "maps.yml"));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }
 
-    static HashSet<Short> done = new HashSet<Short>();
+    private static final Set<Short> done = new HashSet<Short>();
 
     @Override
-    public void render(MapView map, MapCanvas canvas, Player player) {
+    public void render(final MapView map, final MapCanvas canvas, final Player player) {
         if (playerName == null) {
             // map.removeRenderer(this);
             // eventual first initialisation
@@ -127,14 +129,14 @@ public class MyRenderer extends MapRenderer {
             map.setCenterX(player.getLocation().getBlockX());
             map.setCenterZ(player.getLocation().getBlockZ());
         } else if (arena != null) {
-            PABlockLocation loc = SpawnManager.getRegionCenter(arena);
+            final PABlockLocation loc = SpawnManager.getRegionCenter(arena);
             map.setCenterX(loc.getX());
             map.setCenterZ(loc.getZ());
         } else {
             PVPArena.instance.getLogger().severe("arena null");
         }
-        int mapcenterx = map.getCenterX();
-        int mapcenterz = map.getCenterZ();
+        final int mapcenterx = map.getCenterX();
+        final int mapcenterz = map.getCenterZ();
 
         for (int x = 0; x < 128; x++) {
             for (int z = 0; z < 128; z++) {
@@ -142,25 +144,23 @@ public class MyRenderer extends MapRenderer {
             }
         }
 
-        HashSet<MapItem> items = maps.getItems();
+        final Iterable<MapItem> items = maps.getItems();
 
         if (showSpawns) {
 
-            for (MapItem item : items) {
+            for (final MapItem item : items) {
                 if (item.isPlayer()) {
                     continue;
                 }
 
                 // JUST SPAWNS
 
-                byte color = colors.get(item.getColor());
+                final byte color = colors.get(item.getColor());
 
-                byte outline;
+                final byte outline = color;
 
-                outline = color;
-
-                int mapX = ((item.getX() - mapcenterx) / 2) + 64;
-                int mapZ = ((item.getZ() - mapcenterz) / 2) + 64;
+                final int mapX = ((item.getX() - mapcenterx) / 2) + 64;
+                final int mapZ = ((item.getZ() - mapcenterz) / 2) + 64;
 
                 if ((mapX >= 1) && (mapX < 127) && (mapZ >= 1) && (mapZ < 127)) {
                     canvas.setPixel(mapX, mapZ, color);
@@ -178,21 +178,19 @@ public class MyRenderer extends MapRenderer {
         }
 
         if (showPlayers) {
-            for (MapItem item : items) {
+            for (final MapItem item : items) {
                 if (!item.isPlayer()) {
                     continue;
                 }
 
                 // JUST PLAYERS
 
-                byte color = colors.get(item.getColor());
+                final byte color = colors.get(item.getColor());
 
-                byte outline;
+                final byte outline = MapPalette.matchColor(0, 0, 0);
 
-                outline = MapPalette.matchColor(0, 0, 0);
-
-                int mapX = ((item.getX() - mapcenterx) / 2) + 64;
-                int mapZ = ((item.getZ() - mapcenterz) / 2) + 64;
+                final int mapX = ((item.getX() - mapcenterx) / 2) + 64;
+                final int mapZ = ((item.getZ() - mapcenterz) / 2) + 64;
 
                 if ((mapX >= 1) && (mapX < 127) && (mapZ >= 1) && (mapZ < 127)) {
                     canvas.setPixel(mapX, mapZ, color);
@@ -216,13 +214,13 @@ public class MyRenderer extends MapRenderer {
             return;
         }
 
-        HashMap<String, Integer> lives = new HashMap<String, Integer>();
+        final Map<String, Integer> lives = new HashMap<String, Integer>();
 
-        for (ArenaTeam team : arena.getTeams()) {
-            if (team.getName().equals("free")) {
+        for (final ArenaTeam team : arena.getTeams()) {
+            if ("free".equals(team.getName())) {
                 continue;
             }
-            for (ArenaPlayer ap : team.getTeamMembers()) {
+            for (final ArenaPlayer ap : team.getTeamMembers()) {
                 lives.put(team.getName(), PACheck.handleGetLives(ap.getArena(), ap));
                 break;
             }
@@ -230,20 +228,20 @@ public class MyRenderer extends MapRenderer {
 
         String string = "";
 
-        for (String s : lives.keySet()) {
-            if (!string.equals("")) {
+        for (final Map.Entry<String, Integer> stringIntegerEntry : lives.entrySet()) {
+            if (string != null && !string.isEmpty()) {
                 string += " | ";
             }
-            string += calculate(s, lives.get(s));
+            string += calculate(stringIntegerEntry.getKey(), stringIntegerEntry.getValue());
         }
         try {
             canvas.drawText(0, 10, MinecraftFont.Font, string);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             canvas.drawText(0, 10, MinecraftFont.Font, "invalid team name");
         }
     }
 
-    private String calculate(String s, Integer i) {
+    private String calculate(final String s, final Integer i) {
         return s + ": " + binaryToRoman(i);
     }
 
@@ -267,7 +265,7 @@ public class MyRenderer extends MapRenderer {
         return roman;
     }
 
-    public static Short getId(String sPlayer) {
+    public static Short getId(final String sPlayer) {
         if (playerMaps.get(sPlayer) == null) {
             return Short.MIN_VALUE;
         }

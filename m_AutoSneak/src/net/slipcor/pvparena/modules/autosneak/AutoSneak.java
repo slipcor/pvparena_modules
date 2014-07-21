@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,10 +26,10 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.497";
+        return "v1.3.0.515";
     }
 
-    private final ArrayList<String> sneaker = new ArrayList<String>();
+    private final List<String> sneaker = new ArrayList<String>();
 
     @Override
     public void configParse(final YamlConfiguration config) {
@@ -46,7 +47,7 @@ public class AutoSneak extends ArenaModule implements Listener {
             return;
         }
         final Set<String> players = e.getArena().getPlayedPlayers();
-        for (String player : players) {
+        for (final String player : players) {
             doSneak(player);
         }
     }
@@ -82,19 +83,19 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @EventHandler
     public void OnEnd(final PAEndEvent e) {
-        for (String p : e.getArena().getPlayedPlayers()) {
+        for (final String p : e.getArena().getPlayedPlayers()) {
             if (sneaker.contains(p)) {
                 stopSneak(p);
             }
         }
     }
 
-    protected void doSneak(final String player) {
+    void doSneak(final String player) {
         Bukkit.getPlayer(player).setSneaking(true);
         sneaker.add(player);
     }
 
-    protected void stopSneak(final String player) {
+    void stopSneak(final String player) {
         Bukkit.getPlayer(player).setSneaking(false);
         sneaker.remove(player);
     }

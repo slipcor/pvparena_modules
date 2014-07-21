@@ -5,19 +5,16 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
-public class ArenaBoardSign {
-    protected ArenaBoardColumn column;
-    private BlockState state;
-    private Debug debug = new Debug(12);
+class ArenaBoardSign {
+    private final BlockState state;
+    private final Debug debug = new Debug(12);
 
     /**
      * create an arena board sign instance
      *
-     * @param abc the arena board column to hook to
      * @param loc the location where the sign resides
      */
-    public ArenaBoardSign(ArenaBoardColumn abc, Location loc) {
-        column = abc;
+    public ArenaBoardSign(final Location loc) {
         state = loc.getBlock().getState();
         debug.i("adding sign at location " + loc.toString());
     }
@@ -28,7 +25,7 @@ public class ArenaBoardSign {
      * @param i      the line to set
      * @param string the string to set
      */
-    public void set(int i, String string) {
+    public void set(final int i, final String string) {
         ((Sign) state).setLine(i, string);
     }
 

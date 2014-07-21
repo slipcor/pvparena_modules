@@ -6,22 +6,22 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Powerups {
-    private Debug debug = new Debug(47);
+    private final Debug debug = new Debug(47);
 
-    public HashMap<Player, Powerup> puActive = new HashMap<Player, Powerup>();
-    public List<Powerup> puTotal = new ArrayList<Powerup>();
+    public final Map<Player, Powerup> puActive = new HashMap<Player, Powerup>();
+    public final List<Powerup> puTotal = new ArrayList<Powerup>();
 
     @SuppressWarnings("unchecked")
-    public Powerups(HashMap<String, Object> powerUps) {
+    public Powerups(final Map<String, Object> powerUps) {
 
         debug.i("initialising powerupmanager");
-        Powerup p;
-        for (String pName : powerUps.keySet()) {
+        for (final Map.Entry<String, Object> stringObjectEntry : powerUps.entrySet()) {
             debug.i("reading powerUps");
-            p = new Powerup(pName,
-                    (HashMap<String, Object>) powerUps.get(pName));
+            Powerup p = new Powerup(stringObjectEntry.getKey(),
+                    (HashMap<String, Object>) stringObjectEntry.getValue());
             puTotal.add(p);
         }
     }
@@ -30,7 +30,7 @@ public class Powerups {
      * trigger all powerups
      */
     public void tick() {
-        for (Powerup p : puActive.values()) {
+        for (final Powerup p : puActive.values()) {
             if (p.canBeTriggered()) {
                 p.tick();
             }

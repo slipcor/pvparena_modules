@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class SinglePlayerSupport extends ArenaModule {
 
-    private final static int PRIORITY = 1666;
+    private static final int PRIORITY = 1666;
 
     public SinglePlayerSupport() {
         super("SinglePlayerSupport");
@@ -32,7 +32,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SinglePlayerSupport extends ArenaModule {
         final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(sender.getName());
 
         if (aPlayer.getArena() != null) {
-            aPlayer.getArena().getDebugger().i(this.getName(), sender);
+            aPlayer.getArena().getDebugger().i(getName(), sender);
             result.setError(this, Language.parse(arena,
                     MSG.ERROR_ARENA_ALREADY_PART_OF, aPlayer.getArena().getName()));
             return result;
@@ -89,10 +89,10 @@ public class SinglePlayerSupport extends ArenaModule {
         team.add(player);
         final Set<PASpawn> spawns = new HashSet<PASpawn>();
         if (arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
-            String arenaClass = player.getArenaClass().getName();
+            final String arenaClass = player.getArenaClass().getName();
             spawns.addAll(SpawnManager.getPASpawnsStartingWith(arena, team.getName() + arenaClass + "spawn"));
         } else if (arena.isFreeForAll()) {
-            if (team.getName().equals("free")) {
+            if ("free".equals(team.getName())) {
                 spawns.addAll(SpawnManager.getPASpawnsStartingWith(arena, "spawn"));
             } else {
                 spawns.addAll(SpawnManager.getPASpawnsStartingWith(arena, team.getName()));
@@ -103,7 +103,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
         int pos = new Random().nextInt(spawns.size());
 
-        for (PASpawn spawn : spawns) {
+        for (final PASpawn spawn : spawns) {
             if (--pos < 0) {
                 arena.tpPlayerToCoordName(player.get(), spawn.getName());
                 break;
@@ -122,7 +122,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
             if (player.getArenaTeam() != null && player.getArenaClass() == null) {
                 final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
-                if (autoClass != null && !autoClass.equals("none") && arena.getClass(autoClass) != null) {
+                if (autoClass != null && !"none".equals(autoClass) && arena.getClass(autoClass) != null) {
                     arena.chooseClass(player.get(), null, autoClass);
                 }
                 if (autoClass == null) {
@@ -138,7 +138,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
             @Override
             public void run() {
-                if (true != PACheck.handleStart(arena, sender, true)) {
+                if (!PACheck.handleStart(arena, sender, true)) {
                     Bukkit.getScheduler().runTaskLater(PVPArena.instance, this, 10L);
                 }
             }

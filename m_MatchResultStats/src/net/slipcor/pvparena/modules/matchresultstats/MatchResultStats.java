@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MatchResultStats extends ArenaModule {
@@ -23,64 +23,63 @@ public class MatchResultStats extends ArenaModule {
         super("MatchResultStats");
     }
 
-    protected MySQLConnection sqlHandler; // MySQL handler
+    MySQLConnection sqlHandler; // MySQL handler
 
     // Settings Variables
-    protected static String dbHost = null;
-    protected static String dbUser = null;
-    protected static String dbPass = null;
-    protected static String dbDatabase = null;
-    protected static String dbTable = null;
-    protected static int dbPort = 3306;
+    private static String dbHost;
+    private static String dbUser;
+    private static String dbPass;
+    private static String dbDatabase;
+    static String dbTable;
+    private static int dbPort = 3306;
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return (s.equals("sqlstats") || s.equals("!ss"));
+    public boolean checkCommand(final String s) {
+        return "sqlstats".equals(s) || "!ss".equals(s);
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("sqlstats");
+        return Collections.singletonList("sqlstats");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!ss");
+        return Collections.singletonList("!ss");
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"reset", "{Player}"});
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !ss reset
         // !ss reset [player]
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             Arena.pmsg(sender,
                     Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
         }
 
         if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{1, 2})) {
-            return;
         }
 
         // TODO: do something
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
+    public void configParse(final YamlConfiguration config) {
         if (dbTable == null) {
 
             PVPArena.instance.getConfig().options().copyDefaults(true);
@@ -101,13 +100,13 @@ public class MatchResultStats extends ArenaModule {
 
             if (sqlHandler == null) {
                 try {
-                    sqlHandler = new MySQLConnection(dbTable, dbHost, dbPort, dbDatabase, dbUser,
+                    sqlHandler = new MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
                             dbPass);
-                } catch (InstantiationException e1) {
+                } catch (final InstantiationException e1) {
                     e1.printStackTrace();
-                } catch (IllegalAccessException e1) {
+                } catch (final IllegalAccessException e1) {
                     e1.printStackTrace();
-                } catch (ClassNotFoundException e1) {
+                } catch (final ClassNotFoundException e1) {
                     e1.printStackTrace();
                 }
 
@@ -139,7 +138,7 @@ public class MatchResultStats extends ArenaModule {
 							 */
                         try {
                             sqlHandler.executeQuery(query, true);
-                        } catch (SQLException e) {
+                        } catch (final SQLException e) {
                             e.printStackTrace();
                         }
                     }
@@ -151,7 +150,7 @@ public class MatchResultStats extends ArenaModule {
         }
     }
 
-    private PVPData data = null;
+    private PVPData data;
 
     @Override
     public void giveRewards(final Player player) {
@@ -177,7 +176,7 @@ public class MatchResultStats extends ArenaModule {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         data.reset(force);
     }
 }

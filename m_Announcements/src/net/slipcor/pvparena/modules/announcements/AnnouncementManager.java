@@ -19,7 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AnnouncementManager extends ArenaModule {
@@ -31,44 +31,44 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     @Override
-    public void announce(String message, String type) {
+    public void announce(final String message, final String type) {
         Announcement.announce(arena, Announcement.type.valueOf(type), message);
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!aa") || s.startsWith("announce");
+    public boolean checkCommand(final String s) {
+        return "!aa".equals(s) || s.startsWith("announce");
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("announce");
+        return Collections.singletonList("announce");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!aa");
+        return Collections.singletonList("!aa");
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
-        for (Announcement.type t : Announcement.type.values()) {
+        final CommandTree<String> result = new CommandTree<String>(null);
+        for (final Announcement.type t : Announcement.type.values()) {
             result.define(new String[]{t.name()});
         }
         return result;
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !aa [type]
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -81,11 +81,11 @@ public class AnnouncementManager extends ArenaModule {
             return;
         }
 
-        if (args[0].equals("!aa") || args[0].startsWith("announce")) {
+        if ("!aa".equals(args[0]) || args[0].startsWith("announce")) {
 
-            for (Announcement.type t : Announcement.type.values()) {
+            for (final Announcement.type t : Announcement.type.values()) {
                 if (t.name().equalsIgnoreCase(args[1])) {
-                    boolean b = arena.getArenaConfig().getBoolean(
+                    final boolean b = arena.getArenaConfig().getBoolean(
                             CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()));
                     arena.getArenaConfig().set(
                             CFG.valueOf("MODULES_ANNOUNCEMENTS_" + t.name()),
@@ -100,14 +100,14 @@ public class AnnouncementManager extends ArenaModule {
                 }
             }
 
-            String list = StringParser.joinArray(Announcement.type.values(),
+            final String list = StringParser.joinArray(Announcement.type.values(),
                     ", ");
             arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], list));
         }
     }
 
     @Override
-    public void parsePlayerDeath(Player player, EntityDamageEvent cause) {
+    public void parsePlayerDeath(final Player player, final EntityDamageEvent cause) {
         Announcement.announce(arena, Announcement.type.LOSER, Language.parse(
                 MSG.FIGHT_KILLED_BY,
                 player.getName(),
@@ -116,7 +116,7 @@ public class AnnouncementManager extends ArenaModule {
     }
 
     @Override
-    public void displayInfo(CommandSender player) {
+    public void displayInfo(final CommandSender player) {
         player.sendMessage("");
         player.sendMessage("radius: "
                 + StringParser.colorVar(arena.getArenaConfig().getInt(
@@ -150,24 +150,17 @@ public class AnnouncementManager extends ArenaModule {
     }
 
     @Override
-    public void parseJoin(CommandSender sender, ArenaTeam team) {
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
 
         debug.i("parseJoin ... ", sender);
 
         if (TeamManager.countPlayersInTeams(arena) < 2) {
-            String arenaname =
+            final String arenaname =
                     PVPArena.hasOverridePerms(sender) ? arena.getName() : ArenaManager.getIndirectArenaName(arena);
-            if (PVPArena.instance.getConfig().getBoolean("only_shortcuts")) {
-                Announcement.announce(arena, Announcement.type.ADVERT, Language
-                        .parse(arena, CFG.MSG_STARTING, arenaname +
-                                ChatColor.valueOf(arena.getArenaConfig().getString(
-                                        CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-            } else {
-                Announcement.announce(arena, Announcement.type.ADVERT, Language
-                        .parse(arena, CFG.MSG_STARTING, arenaname +
-                                ChatColor.valueOf(arena.getArenaConfig().getString(
-                                        CFG.MODULES_ANNOUNCEMENTS_COLOR))));
-            }
+            Announcement.announce(arena, Announcement.type.ADVERT, Language
+                    .parse(arena, CFG.MSG_STARTING, arenaname +
+                            ChatColor.valueOf(arena.getArenaConfig().getString(
+                                    CFG.MODULES_ANNOUNCEMENTS_COLOR))));
         }
 
         if (arena.isFreeForAll()) {
@@ -191,7 +184,7 @@ public class AnnouncementManager extends ArenaModule {
     }
 
     @Override
-    public void parsePlayerLeave(Player player, ArenaTeam team) {
+    public void parsePlayerLeave(final Player player, final ArenaTeam team) {
         if (team == null) {
             Announcement.announce(arena, Announcement.type.LOSER,
                     Language.parse(MSG.FIGHT_PLAYER_LEFT, player.getName() +

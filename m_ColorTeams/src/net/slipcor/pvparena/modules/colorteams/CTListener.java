@@ -10,21 +10,22 @@ import org.bukkit.event.Listener;
 import org.kitteh.tag.AsyncPlayerReceiveNameTagEvent;
 
 import java.util.HashSet;
+import java.util.Set;
 
-public class CTListener implements Listener {
-    HashSet<String> removals = new HashSet<String>();
+class CTListener implements Listener {
+    private final Set<String> removals = new HashSet<String>();
 
     @EventHandler
-    public void onNameReceive(AsyncPlayerReceiveNameTagEvent event) {
-        Player p = event.getNamedPlayer();
+    public void onNameReceive(final AsyncPlayerReceiveNameTagEvent event) {
+        final Player p = event.getNamedPlayer();
 
         if (p == null) {
             return;
         }
 
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
 
-        if (ap == null || ap.getArena() == null) {
+        if (ap.getArena() == null) {
             if (removals.contains(ap.getName())) {
                 event.setTag(ap.getName());
             }
@@ -37,8 +38,8 @@ public class CTListener implements Listener {
 
         boolean found = false;
 
-        for (ArenaModule mod : ap.getArena().getMods()) {
-            if (mod.getName().equals("ColorTeams")) {
+        for (final ArenaModule mod : ap.getArena().getMods()) {
+            if ("ColorTeams".equals(mod.getName())) {
                 found = true;
                 break;
             }
@@ -53,7 +54,7 @@ public class CTListener implements Listener {
             return;
         }
 
-        for (ArenaTeam at : ap.getArena().getTeams()) {
+        for (final ArenaTeam at : ap.getArena().getTeams()) {
             if (at.getTeamMembers().contains(ap)) {
                 event.setTag(at.colorizePlayer(p));
                 removals.add(ap.getName());

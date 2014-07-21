@@ -18,13 +18,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public class AfterMatch extends ArenaModule implements Cloneable {
-    protected ArenaRunnable afterTask = null;
-    private boolean aftermatch = false;
+public class AfterMatch extends ArenaModule {
+    private ArenaRunnable afterTask;
+    private boolean aftermatch;
 
     public AfterMatch() {
         super("AfterMatch");
@@ -33,16 +33,16 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
     @Override
     public String version() {
-        return "v1.3.0.495";
+        return "v1.3.0.515";
     }
 
     public void afterMatch() {
-        for (ArenaTeam t : arena.getTeams()) {
-            for (ArenaPlayer p : t.getTeamMembers()) {
-                if (!p.getStatus().equals(Status.FIGHT)) {
+        for (final ArenaTeam t : arena.getTeams()) {
+            for (final ArenaPlayer p : t.getTeamMembers()) {
+                if (p.getStatus() != Status.FIGHT) {
                     continue;
                 }
-                Player player = p.get();
+                final Player player = p.get();
                 if (player != null) {
                     arena.tpPlayerToCoordName(player, "after");
                 }
@@ -53,30 +53,30 @@ public class AfterMatch extends ArenaModule implements Cloneable {
         aftermatch = true;
         try {
             afterTask.cancel();
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
         }
         afterTask = null;
     }
 
     @Override
-    public boolean checkCommand(String s) {
-        return s.equals("!am") || s.equals("aftermatch");
+    public boolean checkCommand(final String s) {
+        return "!am".equals(s) || "aftermatch".equals(s);
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("aftermatch");
+        return Collections.singletonList("aftermatch");
     }
 
     @Override
     public List<String> getShort() {
-        return Arrays.asList("!am");
+        return Collections.singletonList("!am");
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<String>(null);
         result.define(new String[]{"off"});
         result.define(new String[]{"time"});
         result.define(new String[]{"death"});
@@ -84,8 +84,8 @@ public class AfterMatch extends ArenaModule implements Cloneable {
     }
 
     @Override
-    public String checkForMissingSpawns(Set<String> list) {
-        for (String s : list) {
+    public String checkForMissingSpawns(final Set<String> list) {
+        for (final String s : list) {
             if (s.startsWith("after")) {
                 return null;
             }
@@ -94,12 +94,12 @@ public class AfterMatch extends ArenaModule implements Cloneable {
     }
 
     @Override
-    public void commitCommand(CommandSender sender, String[] args) {
+    public void commitCommand(final CommandSender sender, final String[] args) {
         // !am time 6
         // !am death 4
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !(PVPArena.hasCreatePerms(sender, arena))) {
+                && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
@@ -111,9 +111,9 @@ public class AfterMatch extends ArenaModule implements Cloneable {
             return;
         }
 
-        if (args[0].equals("!am") || args[0].equals("aftermatch")) {
+        if ("!am".equals(args[0]) || "aftermatch".equals(args[0])) {
             if (args.length == 2) {
-                if (args[1].equals("off")) {
+                if ("off".equals(args[1])) {
                     arena.getArenaConfig().set(CFG.MODULES_AFTERMATCH_AFTERMATCH, args[1]);
                     arena.getArenaConfig().save();
                     arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), args[1]));
@@ -122,18 +122,18 @@ public class AfterMatch extends ArenaModule implements Cloneable {
                 arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "off"));
                 return;
             }
-            int i;
+            final int i;
             try {
                 i = Integer.parseInt(args[2]);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 arena.msg(sender,
                         Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
                 return;
             }
-            if (args[1].equals("time") || args[1].equals("death")) {
-                arena.getArenaConfig().set(CFG.MODULES_AFTERMATCH_AFTERMATCH, args[1] + ":" + i);
+            if ("time".equals(args[1]) || "death".equals(args[1])) {
+                arena.getArenaConfig().set(CFG.MODULES_AFTERMATCH_AFTERMATCH, args[1] + ':' + i);
                 arena.getArenaConfig().save();
-                arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), args[1] + ":" + i));
+                arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), args[1] + ':' + i));
                 return;
             }
 
@@ -142,8 +142,8 @@ public class AfterMatch extends ArenaModule implements Cloneable {
     }
 
     @Override
-    public void configParse(YamlConfiguration config) {
-        String pu = config.getString(CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), "off");
+    public void configParse(final YamlConfiguration config) {
+        final String pu = config.getString(CFG.MODULES_AFTERMATCH_AFTERMATCH.getNode(), "off");
 
         if (!pu.startsWith("death") && !pu.startsWith("time")) {
             PVPArena.instance.getLogger().warning("error activating aftermatch module");
@@ -151,38 +151,38 @@ public class AfterMatch extends ArenaModule implements Cloneable {
     }
 
     @Override
-    public void displayInfo(CommandSender player) {
+    public void displayInfo(final CommandSender player) {
         player.sendMessage("active: "
-                + StringParser.colorVar(!arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH).equals("off"))
-                + "("
+                + StringParser.colorVar(!"off".equals(arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)))
+                + '('
                 + StringParser.colorVar(arena.getArenaConfig()
-                .getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)) + ")");
+                .getString(CFG.MODULES_AFTERMATCH_AFTERMATCH)) + ')');
     }
 
     @Override
-    public boolean hasSpawn(String string) {
-        return string.equals("after");
+    public boolean hasSpawn(final String string) {
+        return "after".equals(string);
     }
 
     @Override
-    public void parsePlayerDeath(Player player,
-                                 EntityDamageEvent cause) {
-        String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
+    public void parsePlayerDeath(final Player player,
+                                 final EntityDamageEvent cause) {
+        final String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
-        if (pu.equals("off") || aftermatch) {
+        if ("off".equals(pu) || aftermatch) {
             return;
         }
 
-        String[] ss = pu.split(":");
+        final String[] ss = pu.split(":");
         if (pu.startsWith("time") || afterTask != null) {
             return;
         }
 
         int i = Integer.parseInt(ss[1]);
 
-        for (ArenaTeam t : arena.getTeams()) {
-            for (ArenaPlayer p : t.getTeamMembers()) {
-                if (!p.getStatus().equals(Status.FIGHT)) {
+        for (final ArenaTeam t : arena.getTeams()) {
+            for (final ArenaPlayer p : t.getTeamMembers()) {
+                if (p.getStatus() != Status.FIGHT) {
                     continue;
                 }
                 if (--i < 0) {
@@ -197,7 +197,7 @@ public class AfterMatch extends ArenaModule implements Cloneable {
     }
 
     @Override
-    public void reset(boolean force) {
+    public void reset(final boolean force) {
         if (afterTask != null) {
             afterTask.cancel();
             afterTask = null;
@@ -207,15 +207,15 @@ public class AfterMatch extends ArenaModule implements Cloneable {
 
     @Override
     public void parseStart() {
-        String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
+        final String pu = arena.getArenaConfig().getString(CFG.MODULES_AFTERMATCH_AFTERMATCH);
 
         if (afterTask != null) {
             afterTask.cancel();
             afterTask = null;
         }
 
-        int i;
-        String[] ss = pu.split(":");
+        final int i;
+        final String[] ss = pu.split(":");
         if (pu.startsWith("time")) {
             // arena.powerupTrigger = "time";
             i = Integer.parseInt(ss[1]);

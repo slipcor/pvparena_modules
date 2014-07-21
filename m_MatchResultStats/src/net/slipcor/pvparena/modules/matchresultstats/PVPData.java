@@ -11,16 +11,16 @@ import java.util.Set;
 /**
  * class for full access to player statistics
  */
-public final class PVPData {
+final class PVPData {
 
-    private Map<String, Long> startTimes = new HashMap<String, Long>(); // player -> currentMillis
-    private Map<String, String> teams = new HashMap<String, String>(); // player -> teamname
+    private final Map<String, Long> startTimes = new HashMap<String, Long>(); // player -> currentMillis
+    private final Map<String, String> teams = new HashMap<String, String>(); // player -> teamname
 
     private final Arena arena;
 
-    private Integer id = null;
+    private Integer id;
 
-    protected PVPData(final Arena arena) {
+    PVPData(final Arena arena) {
         this.arena = arena;
     }
 
@@ -32,25 +32,25 @@ public final class PVPData {
     public void start() {
         final Set<String> names = new HashSet<String>();
 
-        for (String name : startTimes.keySet()) {
+        for (final String name : startTimes.keySet()) {
             names.add(name);
         }
 
         final long time = System.currentTimeMillis();
 
-        for (String name : names) {
+        for (final String name : names) {
             startTimes.put(name, time);
         }
     }
 
-    public void reset(boolean force) {
-        for (ArenaPlayer player : arena.getFighters()) {
+    public void reset(final boolean force) {
+        for (final ArenaPlayer player : arena.getFighters()) {
             if (startTimes.containsKey(player.getName())) {
                 remove(player.getName(), !force);
             }
         }
 
-        for (String playerName : arena.getPlayedPlayers()) {
+        for (final String playerName : arena.getPlayedPlayers()) {
             if (startTimes.containsKey(playerName)) {
                 remove(playerName, force);
             }
@@ -58,15 +58,15 @@ public final class PVPData {
         id = null;
     }
 
-    public void winning(String name) {
+    public void winning(final String name) {
         remove(name, true);
     }
 
-    public void losing(String name) {
+    public void losing(final String name) {
         remove(name, false);
     }
 
-    private void remove(String playerName, boolean winning) {
+    private void remove(final String playerName, final boolean winning) {
         if (!startTimes.containsKey(playerName)) {
             return;
         }
@@ -76,7 +76,7 @@ public final class PVPData {
             id = MRSMySQL.getNextID();
         }
 
-        String team = teams.get(playerName);
+        final String team = teams.get(playerName);
 
         // id         --> matchId
         // playerName --> userName

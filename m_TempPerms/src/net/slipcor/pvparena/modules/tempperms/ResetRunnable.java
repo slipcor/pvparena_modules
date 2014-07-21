@@ -2,12 +2,12 @@ package net.slipcor.pvparena.modules.tempperms;
 
 import org.bukkit.entity.Player;
 
-public class ResetRunnable implements Runnable {
+class ResetRunnable implements Runnable {
 
-    Player p;
-    TempPerms tp;
+    private final Player p;
+    private final TempPerms tp;
 
-    public ResetRunnable(TempPerms tempPerms, Player player) {
+    public ResetRunnable(final TempPerms tempPerms, final Player player) {
         p = player;
         tp = tempPerms;
     }

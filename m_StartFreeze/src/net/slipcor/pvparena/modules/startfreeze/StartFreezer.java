@@ -2,11 +2,11 @@ package net.slipcor.pvparena.modules.startfreeze;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class StartFreezer extends BukkitRunnable {
+class StartFreezer extends BukkitRunnable {
 
-    final StartFreeze module;
+    private final StartFreeze module;
 
-    StartFreezer(StartFreeze mod) {
+    StartFreezer(final StartFreeze mod) {
         module = mod;
     }
 

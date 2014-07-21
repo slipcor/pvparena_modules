@@ -22,48 +22,49 @@ import org.bukkit.event.player.*;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class RealSpectateListener implements Listener {
+class RealSpectateListener implements Listener {
     final RealSpectate rs;
-    HashMap<Player, SpectateWrapper> spectated_players = new HashMap<Player, SpectateWrapper>();
-    Debug debug = new Debug(456);
+    final Map<Player, SpectateWrapper> spectated_players = new HashMap<Player, SpectateWrapper>();
+    private final Debug debug = new Debug(456);
 
-    public RealSpectateListener(RealSpectate realSpectate) {
+    public RealSpectateListener(final RealSpectate realSpectate) {
         rs = realSpectate;
     }
 
-    void initiate(ArenaPlayer ap) {
-        for (ArenaPlayer a : rs.getArena().getEveryone()) {
+    void initiate(final ArenaPlayer ap) {
+        for (final ArenaPlayer a : rs.getArena().getEveryone()) {
             update(ap, a);
 
             break;
         }
     }
 
-    void update(ArenaPlayer spectator, ArenaPlayer fighter) {
-        Player s = spectator.get();
-        Player f = fighter.get();
+    void update(final ArenaPlayer spectator, final ArenaPlayer fighter) {
+        final Player s = spectator.get();
+        final Player f = fighter.get();
 
         createSpectateWrapper(s, f);
     }
 
-    SpectateWrapper createSpectateWrapper(Player s,
-                                          Player f) {
+    SpectateWrapper createSpectateWrapper(final Player s,
+                                          final Player f) {
         //debug.i("createSwapper", s);
-        debug.i("create wrapper: " + s.getName() + "+" + String.valueOf(f), s);
+        debug.i("create wrapper: " + s.getName() + '+' + f, s);
         if (!spectated_players.containsKey(f)) {
             spectated_players.put(f, new SpectateWrapper(s, f, this));
         }
-        for (SpectateWrapper sw : spectated_players.values()) {
+        for (final SpectateWrapper sw : spectated_players.values()) {
             sw.update(s);
             sw.update();
         }
         return spectated_players.get(f);
     }
 
-    private Player getSpectatedSuspect(Player p) {
+    private Player getSpectatedSuspect(final Player p) {
         rs.getArena().getDebugger().i("getSpecated: " + p.getName());
-        for (SpectateWrapper sw : spectated_players.values()) {
+        for (final SpectateWrapper sw : spectated_players.values()) {
             rs.getArena().getDebugger().i("found wrapper: " + sw.getSuspect().getName());
             sw.debug(rs.getArena().getDebugger());
             if (sw.hasSpectator(p)) {
@@ -75,13 +76,13 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onEntityEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void onEntityEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
             return;
         }
 
-        Player player = (Player) event.getEntity();
-        ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+        final Player player = (Player) event.getEntity();
+        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
 
         if (rs.getArena() == null || !rs.getArena().equals(aPlayer.getArena())) {
             return;
@@ -101,7 +102,7 @@ public class RealSpectateListener implements Listener {
                 // Damage is a Projectile that should have hit the subject
                 // --> relay damage to subject
 
-                EntityDamageByEntityEvent projectileEvent = new EntityDamageByEntityEvent(
+                final EntityDamageByEntityEvent projectileEvent = new EntityDamageByEntityEvent(
                         event.getDamager(), subject, event.getCause(), event.getDamage());
 
                 subject.setLastDamageCause(projectileEvent);
@@ -117,7 +118,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getEntity());
+        subject = (Player) event.getEntity();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -128,7 +129,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onEntityDeath(EntityDeathEvent event) {
+    public void onEntityDeath(final EntityDeathEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
             return;
         }
@@ -138,7 +139,7 @@ public class RealSpectateListener implements Listener {
         if (subject != null) {
             // subject is being spectated
 
-            Player spectator = (Player) event.getEntity();
+            final Player spectator = (Player) event.getEntity();
             // player is spectating and has died. wait, what?
             // --> hack reset!
             spectator.setHealth(1);
@@ -146,7 +147,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getEntity());
+        subject = (Player) event.getEntity();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -158,7 +159,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+    public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
             return;
         }
@@ -174,7 +175,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getEntity());
+        subject = (Player) event.getEntity();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -185,12 +186,12 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onEntityTarget(EntityTargetEvent event) {
+    public void onEntityTarget(final EntityTargetEvent event) {
         if (event.getTarget() == null || event.getTarget().getType() != EntityType.PLAYER) {
             return;
         }
 
-        Player subject = ((Player) event.getTarget());
+        final Player subject = (Player) event.getTarget();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -202,7 +203,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(final InventoryClickEvent event) {
         Player subject = getSpectatedSuspect((Player) event.getWhoClicked());
 
         if (subject != null) {
@@ -215,7 +216,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getWhoClicked());
+        subject = (Player) event.getWhoClicked();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -226,7 +227,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryClose(InventoryCloseEvent event) {
+    public void onInventoryClose(final InventoryCloseEvent event) {
         Player subject = getSpectatedSuspect((Player) event.getPlayer());
 
         if (subject != null) {
@@ -237,7 +238,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = (Player) event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -250,7 +251,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryOpen(InventoryOpenEvent event) {
+    public void onInventoryOpen(final InventoryOpenEvent event) {
         Player subject = getSpectatedSuspect((Player) event.getPlayer());
 
         if (subject != null) {
@@ -262,7 +263,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = (Player) event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -273,8 +274,8 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerDropItem(PlayerDropItemEvent event) {
-        Player subject = getSpectatedSuspect(event.getPlayer());
+    public void onPlayerDropItem(final PlayerDropItemEvent event) {
+        final Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
             // subject is being spectated
@@ -286,16 +287,16 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Player subject = getSpectatedSuspect(event.getPlayer());
+    public void onPlayerInteract(final PlayerInteractEvent event) {
+        final Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
             // subject is being spectated
 
-            Player spectator = event.getPlayer();
+            final Player spectator = event.getPlayer();
             // player is spectating
             // --> cancel and switch
-            String actionName = event.getAction().name();
+            final String actionName = event.getAction().name();
 
             event.setCancelled(true);
 
@@ -308,23 +309,22 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player subject = getSpectatedSuspect(event.getPlayer());
+    public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
+        final Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
             // subject is being spectated
 
-            Player spectator = event.getPlayer();
+            final Player spectator = event.getPlayer();
             // player is spectating
             // --> no clicking!!!
             event.setCancelled(true);
             switchPlayer(spectator, subject, event.getRightClicked() != null);
-            return;
         }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+    public void onPlayerItemHeld(final PlayerItemHeldEvent event) {
         Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
@@ -335,7 +335,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -347,7 +347,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(final PlayerMoveEvent event) {
         Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
@@ -359,7 +359,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -370,7 +370,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
@@ -382,7 +382,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -393,20 +393,20 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(final PlayerQuitEvent event) {
         Player subject = getSpectatedSuspect(event.getPlayer());
 
         if (subject != null) {
             // subject is being spectated
 
-            Player spectator = event.getPlayer();
+            final Player spectator = event.getPlayer();
             // player is spectating
             // --> remove from spectators
             spectated_players.get(subject).removeSpectator(spectator);
             return;
         }
 
-        subject = ((Player) event.getPlayer());
+        subject = event.getPlayer();
 
         if (!spectated_players.containsKey(subject)) {
             return;
@@ -418,7 +418,7 @@ public class RealSpectateListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+    public void onProjectileLaunch(final ProjectileLaunchEvent event) {
         debug.i("ProjectileLaunch!");
         if (event == null ||
                 event.getEntity() == null ||
@@ -438,7 +438,7 @@ public class RealSpectateListener implements Listener {
             return;
         }
 
-        subject = ((Player) event.getEntity().getShooter());
+        subject = (Player) event.getEntity().getShooter();
 
         if (!spectated_players.containsKey(subject)) {
             debug.i("not being spectated", subject);
@@ -447,11 +447,11 @@ public class RealSpectateListener implements Listener {
 
         debug.i("subject is being spectated", subject);
 
-        Projectile projectile = event.getEntity();
-        Location location = subject.getLocation();
+        final Projectile projectile = event.getEntity();
+        final Location location = subject.getLocation();
 
         debug.i(String.valueOf(new PABlockLocation(location)), subject);
-        Vector direction = location.getDirection();
+        final Vector direction = location.getDirection();
 
         location.add(direction.normalize().multiply(1));
         //location.setY(subject.getEyeLocation().getY());
@@ -475,20 +475,20 @@ public class RealSpectateListener implements Listener {
                     @Override
                     public void run() {
                         if (event.getArena().isFightInProgress()) {
-                            PAG_Spectate spec = new PAG_Spectate();
+                            final PAG_Spectate spec = new PAG_Spectate();
                             spec.commit(event.getArena(), event.getPlayer(), new String[0]);
                         }
                     }
 
                 }
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
-            } catch (Exception e) {
+            } catch (final Exception e) {
 
             }
         }
     }
 
-    void switchPlayer(Player spectator, Player subject, boolean forward) {
+    void switchPlayer(final Player spectator, final Player subject, final boolean forward) {
         if (subject != null) {
             spectator.showPlayer(subject);
         }
@@ -499,10 +499,9 @@ public class RealSpectateListener implements Listener {
         }
 
         Player nextPlayer = null;
-        boolean next = false;
-        for (ArenaPlayer ap : rs.getArena().getFighters()) {
+        for (final ArenaPlayer ap : rs.getArena().getFighters()) {
             debug.i("checking " + ap.getName(), spectator);
-            Player p = ap.get();
+            final Player p = ap.get();
 
             if (ap.getName().equals(spectator.getName())) {
                 debug.i("we are still in -.-", spectator);
@@ -516,13 +515,9 @@ public class RealSpectateListener implements Listener {
             }
 
 
-            if (!p.equals(subject) || next) {
+            if (!p.equals(subject)) {
                 debug.i("||", spectator);
                 nextPlayer = p;
-                if (next) { //TODO: next is always false!
-                    debug.i("next", spectator);
-                    break;
-                }
                 continue;
             }
 
@@ -532,18 +527,20 @@ public class RealSpectateListener implements Listener {
                 debug.i("step back", spectator);
                 if (nextPlayer == null) {
                     debug.i("get last element", spectator);
-                    for (ArenaPlayer ap2 : rs.getArena().getFighters()) {
+                    for (final ArenaPlayer ap2 : rs.getArena().getFighters()) {
                         debug.i(ap2.getName(), spectator);
                         nextPlayer = ap2.get();
                     }
+                    continue;
                 } // else: nextPlayer has content. yay!
 
                 debug.i("==>" + nextPlayer.getName(), spectator);
                 break;
             }
         }
-        if (subject != null)
+        if (subject != null) {
             spectated_players.get(subject).removeSpectator(spectator);
+        }
         createSpectateWrapper(spectator, nextPlayer);
     }
 }
