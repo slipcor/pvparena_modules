@@ -15,6 +15,7 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class ArenaRotateRunnable extends ArenaRunnable {
@@ -48,7 +49,7 @@ public class ArenaRotateRunnable extends ArenaRunnable {
         }
         final String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), ArenaManager.getNames()) : MESSAGES.get(seconds);
         if (global) {
-            final Player[] players = Bukkit.getOnlinePlayers();
+            final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
             playerssss:
             for (final Player p : players) {
