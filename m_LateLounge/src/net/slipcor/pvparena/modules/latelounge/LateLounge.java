@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class LateLounge extends ArenaModule {
             // not enough players
             getPlayerList().add(player.getName());
             final int pos = getPlayerList().size();
-            final Player[] aPlayers = Bukkit.getOnlinePlayers();
+            final Collection<? extends Player> aPlayers = Bukkit.getOnlinePlayers();
 
             for (final Player p : aPlayers) {
                 if (p.equals(player)) {
