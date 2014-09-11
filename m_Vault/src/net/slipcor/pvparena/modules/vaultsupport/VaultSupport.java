@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.525";
+        return "v1.3.0.515";
     }
 
     @Override
@@ -215,7 +215,7 @@ public class VaultSupport extends ArenaModule implements Listener {
             economy.withdrawPlayer(player.getName(), amount);
             arena.msg(player, Language.parse(MSG.MODULE_VAULT_JOINPAY, args[0]));
             getPlayerJoinMap().put(player.getName(), amount);
-            commitCommand(player, new String[]{""});
+            commitCommand(player, null);
         }
     }
 
