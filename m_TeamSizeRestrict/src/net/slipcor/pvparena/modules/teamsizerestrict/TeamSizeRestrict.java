@@ -30,7 +30,7 @@ public class TeamSizeRestrict extends ArenaModule {
 
                     @Override
                     public void run() {
-                        arena.msg(sender, ChatColor.RED + Language.parse(MSG.ERROR_JOIN_TEAM_FULL));
+                        arena.msg(sender, ChatColor.RED + Language.parse(MSG.ERROR_JOIN_TEAM_FULL, team.getName()));
                         new PAG_Leave().commit(arena, sender, new String[0]);
                     }
 
