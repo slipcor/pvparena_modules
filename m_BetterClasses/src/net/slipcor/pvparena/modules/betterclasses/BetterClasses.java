@@ -31,7 +31,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.0.550";
     }
 
     private static final int DURATION = 2400; // 60000 => 2400
@@ -57,7 +57,7 @@ public class BetterClasses extends ArenaModule {
             return false;
         }
 
-        if (max < 1 || globalmax < 1) {
+        if (max < 1 && globalmax < 1) {
             return false;
         }
 
