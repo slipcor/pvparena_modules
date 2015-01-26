@@ -31,7 +31,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.550";
+        return "v1.3.0.551";
     }
 
     private static final int DURATION = 2400; // 60000 => 2400
@@ -83,7 +83,7 @@ public class BetterClasses extends ArenaModule {
             }
         }
 
-        if (sum >= max || globalsum > globalmax) {
+        if ((max > 0 && sum >= max) || (globalmax > 0 && globalsum > globalmax)) {
             if (sum >= max) {
                 arena.getDebugger().i(sum + ">="+max, player);
             }   else {
