@@ -64,6 +64,7 @@ public class BetterClasses extends ArenaModule {
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team == null) {
+            arena.getDebugger().i("arenaTeam NULL: "+player.getName(), player);
             return true;
         }
         int globalsum = 0;
@@ -83,6 +84,11 @@ public class BetterClasses extends ArenaModule {
         }
 
         if (sum >= max || globalsum > globalmax) {
+            if (sum >= max) {
+                arena.getDebugger().i(sum + ">="+max, player);
+            }   else {
+                arena.getDebugger().i(globalsum + ">"+globalmax, player);
+            }
             arena.msg(player, Language.parse(MSG.ERROR_CLASS_FULL, className));
             return true;
         }
