@@ -31,7 +31,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.0.551";
     }
 
     private static final int DURATION = 2400; // 60000 => 2400
@@ -57,13 +57,14 @@ public class BetterClasses extends ArenaModule {
             return false;
         }
 
-        if (max < 1 || globalmax < 1) {
+        if (max < 1 && globalmax < 1) {
             return false;
         }
 
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team == null) {
+            arena.getDebugger().i("arenaTeam NULL: "+player.getName(), player);
             return true;
         }
         int globalsum = 0;
@@ -82,7 +83,12 @@ public class BetterClasses extends ArenaModule {
             }
         }
 
-        if (sum >= max || globalsum > globalmax) {
+        if ((max > 0 && sum >= max) || (globalmax > 0 && globalsum > globalmax)) {
+            if (sum >= max) {
+                arena.getDebugger().i(sum + ">="+max, player);
+            }   else {
+                arena.getDebugger().i(globalsum + ">"+globalmax, player);
+            }
             arena.msg(player, Language.parse(MSG.ERROR_CLASS_FULL, className));
             return true;
         }
