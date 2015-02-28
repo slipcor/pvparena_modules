@@ -62,9 +62,7 @@ public class LateLounge extends ArenaModule {
             // not enough players
             getPlayerList().add(player.getName());
             final int pos = getPlayerList().size();
-            final Collection<? extends Player> aPlayers = Bukkit.getOnlinePlayers();
-
-            for (final Player p : aPlayers) {
+            for (final Player p : Bukkit.getOnlinePlayers()) {
                 if (p.equals(player)) {
                     continue;
                 }

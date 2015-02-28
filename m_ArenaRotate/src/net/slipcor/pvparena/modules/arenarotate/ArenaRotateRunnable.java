@@ -49,10 +49,9 @@ public class ArenaRotateRunnable extends ArenaRunnable {
         }
         final String message = seconds > 5 ? Language.parse(msg, MESSAGES.get(seconds), ArenaManager.getNames()) : MESSAGES.get(seconds);
         if (global) {
-            final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
             playerssss:
-            for (final Player p : players) {
+            for (final Player p : Bukkit.getOnlinePlayers()) {
                 for (final Arena aaa : ArenaManager.getArenas()) {
                     if (!aaa.getArenaConfig().getBoolean(CFG.MODULES_ARENAVOTE_ONLYSPAMTOJOIN)) {
                         Arena.pmsg(p, message);
