@@ -138,7 +138,8 @@ public class SinglePlayerSupport extends ArenaModule {
 
             @Override
             public void run() {
-                if (!PACheck.handleStart(arena, sender, true)) {
+                Boolean check = PACheck.handleStart(arena, sender, true);
+                if (check == null || check == false) {
                     Bukkit.getScheduler().runTaskLater(PVPArena.instance, this, 10L);
                 }
             }

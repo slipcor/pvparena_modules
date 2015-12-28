@@ -46,9 +46,17 @@ public class RelayRunnable extends ArenaRunnable {
             maybePlayer = ap.get();
         }
 
+        if (ap.getArena() == null) {
+            return;
+        }
+
         new InventoryRefillRunnable(ap.getArena(), maybePlayer, drops);
         final String spawn = mod.overrideMap.get(ap.getName());
         SpawnManager.respawn(ap.getArena(), ap, spawn);
+
+        if (ap.getArena() == null) {
+            return;
+        }
         ap.getArena().unKillPlayer(ap.get(), maybePlayer.getLastDamageCause() == null ? null : ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
         ap.setStatus(Status.FIGHT);
         mod.getRunnerMap().remove(ap.getName());

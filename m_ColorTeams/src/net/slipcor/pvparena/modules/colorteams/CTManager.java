@@ -33,6 +33,7 @@ public class CTManager extends ArenaModule implements Listener {
     private static boolean tagAPIenabled;
     private Scoreboard board;
     private final Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
+    private final Map<String, Team> backupTeams = new HashMap<String, Team>();
 
     public CTManager() {
         super("ColorTeams");
@@ -40,7 +41,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.0.557";
     }
 
     @Override
@@ -180,6 +181,8 @@ public class CTManager extends ArenaModule implements Listener {
             return;
         }
         final Scoreboard board = getScoreboard();
+        backup.put(sender.getName(), ((Player) sender).getScoreboard());
+        backupTeams.put(sender.getName(), ((Player) sender).getScoreboard().getPlayerTeam((Player) sender));
         ((Player) sender).setScoreboard(board);
         for (final Team sTeam : board.getTeams()) {
             if (sTeam.getName().equals(team.getName())) {
@@ -200,6 +203,10 @@ public class CTManager extends ArenaModule implements Listener {
         getScoreboard().getTeam(team.getName()).removePlayer(player);
         if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
             player.setScoreboard(backup.get(player.getName()));
+            if (backupTeams.containsKey(player.getName()) && backupTeams.get(player.getName()) != null) {
+                // TODO: fix
+                backupTeams.get(player.getName()).addPlayer(player);
+            }
         } else {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
@@ -217,6 +224,10 @@ public class CTManager extends ArenaModule implements Listener {
         }
         if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
             player.setScoreboard(backup.get(player.getName()));
+            if (backupTeams.containsKey(player.getName()) && backupTeams.get(player.getName()) != null) {
+                // TODO: fix
+                backupTeams.get(player.getName()).addPlayer(player);
+            }
         } else {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
@@ -240,12 +251,14 @@ public class CTManager extends ArenaModule implements Listener {
     public void reset(final boolean force) {
         if (force) {
             backup.clear();
+            backupTeams.clear();
         } else {
             class RunLater implements Runnable {
 
                 @Override
                 public void run() {
                     backup.clear();
+                    backupTeams.clear();
                 }
 
             }
