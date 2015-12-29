@@ -17,11 +17,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StartFreeze extends ArenaModule implements Listener {
     StartFreezer runnable;
     private boolean setup;
+    private Map<String, Float> speeds = new HashMap<String, Float>();
 
 
     public StartFreeze() {
@@ -30,7 +33,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.0.558";
     }
 
     @Override
@@ -92,14 +95,19 @@ public class StartFreeze extends ArenaModule implements Listener {
             runnable.cancel();
         }
         runnable = null;
+        speeds.clear();
+    }
+
+    @Override
+    public void resetPlayer(Player p, boolean force) {
+        if (speeds.containsKey(p.getName())) {
+            p.setWalkSpeed(speeds.get(p.getName()));
+        }
     }
 
     @Override
     public void parseStart() {
         runnable = new StartFreezer(this);
-        runnable.runTaskLater(PVPArena.instance, arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER) * 20L);
-        arena.broadcast(Language.parse(MSG.MODULE_STARTFREEZE_ANNOUNCE,
-                String.valueOf(arena.getArenaConfig().getInt(CFG.MODULES_STARTFREEZE_TIMER))));
     }
 
 
@@ -127,5 +135,9 @@ public class StartFreeze extends ArenaModule implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    public void speed(Map<String, Float> speeds) {
+        this.speeds = speeds;
     }
 }
