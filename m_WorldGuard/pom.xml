@@ -22,8 +22,8 @@
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
         <repository>
-            <id>slipcor-repo</id>
-            <url>http://mc-praxis.com:8080/plugin/repository/everything/</url>
+            <id>craftyn-repo</id>
+            <url>https://repo2.craftyn.com/repository/internal/</url>
         </repository>
     </repositories>
 
@@ -60,7 +60,7 @@
     <url>http://pa.slipcor.net</url>
     <ciManagement>
         <system>jenkins</system>
-        <url>http://www.mc-praxis.com:8080</url>
+        <url>https://ci2.craftyn.com</url>
     </ciManagement>
 
     <build>

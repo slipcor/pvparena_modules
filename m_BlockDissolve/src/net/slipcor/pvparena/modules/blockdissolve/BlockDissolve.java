@@ -16,7 +16,7 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.1.10";
     }
 
     @Override
@@ -39,11 +39,17 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public void parseStart() {
+        if (checker == null) {
+            checker = new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
+                    arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
+        }
         checker.start();
     }
 
     @Override
     public void reset(final boolean force) {
-        checker.clear();
+        if (checker != null) {
+            checker.clear();
+        }
     }
 }
