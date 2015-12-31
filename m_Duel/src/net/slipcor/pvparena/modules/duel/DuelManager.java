@@ -2,6 +2,7 @@ package net.slipcor.pvparena.modules.duel;
 
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
+import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -23,19 +24,19 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.1.21";
+        return "v1.3.1.25";
     }
 
     private String duel = null;
 
     @Override
     public boolean checkCommand(final String s) {
-        return "duel".equals(s.toLowerCase()) || "accept".equals(s.toLowerCase());
+        return "duel".equals(s.toLowerCase()) || "accept".equals(s.toLowerCase()) || "decline".equals(s.toLowerCase());
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("duel", "accept");
+        return Arrays.asList("duel", "accept", "decline");
     }
 
     @Override
@@ -87,6 +88,7 @@ public class DuelManager extends ArenaModule {
                     return;
                 }
                 arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE, sender.getName(), arenaName));
+                arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE2, sender.getName(), arenaName));
                 arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUESTED, p.getName()));
                 duel = sender.getName();
                 class LaterRunner implements Runnable {
@@ -117,6 +119,13 @@ public class DuelManager extends ArenaModule {
                 arena.msg(sender,
                         Language.parse(MSG.ERROR_FIGHT_IN_PROGRESS));
             }
+        } else if ("decline".equals(args[0].toLowerCase()) && duel != null) {
+            ArenaPlayer p = ArenaPlayer.parsePlayer(duel);
+            if (p != null && p.get() != null){
+                arena.msg(p.get(), Language.parse(MSG.MODULE_DUEL_DECLINED_SENDER));
+            }
+            arena.msg(sender, Language.parse(MSG.MODULE_DUEL_DECLINED_RECEIVER));
+            duel = null;
         }
     }
 
