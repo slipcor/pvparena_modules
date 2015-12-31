@@ -77,7 +77,7 @@ public class DuelManager extends ArenaModule {
         } else {
             arenaName = arena.getName();
         }
-        if ("duel".equals(args[0].toLowerCase())) {
+        if ("duel".equals(args[0].toLowerCase()) && args.length > 1) {
             if (sender.getName().equals(duel)) {
                 arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUESTED_ALREADY));
             } else {
@@ -110,7 +110,7 @@ public class DuelManager extends ArenaModule {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DuelRunnable(this, duel, sender.getName()), 500L);
                 final Player p = Bukkit.getPlayer(duel);
                 if (p != null) {
-                    p.sendMessage(Language.parse(MSG.MODULE_DUEL_ACCEPTED, sender.getName()));
+                    arena.msg(p, Language.parse(MSG.MODULE_DUEL_ACCEPTED, sender.getName()));
                 }
                 duel = null;
             } else if (arena.isFightInProgress()) {

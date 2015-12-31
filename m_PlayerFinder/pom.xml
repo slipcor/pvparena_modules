@@ -19,7 +19,7 @@
         </repository>
         <repository>
             <id>craftyn-repo</id>
-            <url>https://repo2.craftyn.com/repository/internal/</url>
+            <url>https://repo2.craftyn.com/repository/snapshots/</url>
         </repository>
     </repositories>
 
