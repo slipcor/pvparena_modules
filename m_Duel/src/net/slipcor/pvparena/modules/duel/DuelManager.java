@@ -6,6 +6,7 @@ import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class DuelManager extends ArenaModule {
     public DuelManager() {
@@ -21,10 +23,10 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.1.21";
     }
 
-    private String duel;
+    private String duel = null;
 
     @Override
     public boolean checkCommand(final String s) {
@@ -60,23 +62,62 @@ public class DuelManager extends ArenaModule {
                     Language.parse(MSG.ERROR_FIGHT_IN_PROGRESS));
             return;
         }
-        if ("duel".equals(args[0].toLowerCase())) {
-            final Player p = Bukkit.getPlayer(args[1]);
-            if (p == null) {
-                arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[1]));
-                return;
+        String arenaName = null;
+
+        if (!PVPArena.hasOverridePerms(sender) && ArenaManager.isUsingShortcuts()) {
+            Map<String, List<String>> vals = ArenaManager.getShortcutDefinitions();
+            for (String key : vals.keySet()) {
+                if (vals.get(key).contains(arena.getName())) {
+                    arenaName = key;
+                }
             }
-            arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE, sender.getName(), arena.getName()));
-            arena.msg(p, Language.parse(MSG.MODULE_DUEL_REQUESTED, sender.getName()));
-            duel = sender.getName();
+            if (arenaName == null) {
+                arenaName = arena.getName();
+            }
+        } else {
+            arenaName = arena.getName();
+        }
+        if ("duel".equals(args[0].toLowerCase())) {
+            if (sender.getName().equals(duel)) {
+                arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUESTED_ALREADY));
+            } else {
+                final Player p = Bukkit.getPlayer(args[1]);
+                if (p == null) {
+                    arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[1]));
+                    return;
+                }
+                arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE, sender.getName(), arenaName));
+                arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUESTED, p.getName()));
+                duel = sender.getName();
+                class LaterRunner implements Runnable {
+                    @Override
+                    public void run() {
+                        if (duel != null) {
+                            if (p != null) {
+                                arena.msg(p, Language.parse(MSG.MODULE_DUEL_REQUEST_EXPIRED_RECEIVER));
+                            }
+                            if (sender != null) {
+                                arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUEST_EXPIRED_SENDER));
+                            }
+                            duel = null;
+                        }
+                    }
+                }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new LaterRunner(), 1200L);
+            }
         } else if ("accept".equals(args[0].toLowerCase())) {
-            if (duel != null) {
+            if (duel != null && !arena.isFightInProgress()) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DuelRunnable(this, duel, sender.getName()), 500L);
                 final Player p = Bukkit.getPlayer(duel);
                 if (p != null) {
                     p.sendMessage(Language.parse(MSG.MODULE_DUEL_ACCEPTED, sender.getName()));
                 }
+                duel = null;
+            } else if (arena.isFightInProgress()) {
+                arena.msg(sender,
+                        Language.parse(MSG.ERROR_FIGHT_IN_PROGRESS));
             }
         }
     }
+
 }
