@@ -16,6 +16,7 @@ public class CountdownRunner extends ArenaRunnable {
     @Override
     protected void commit() {
         checker.active = true;
+        checker.startTask();
     }
 
     @Override

@@ -98,6 +98,7 @@ class MoveChecker implements Listener {
     private synchronized void access(final Block block, final boolean remove) {
         if (block == null && remove) {
             map.clear();
+            active = false;
             return;
         }
 
@@ -109,6 +110,22 @@ class MoveChecker implements Listener {
         } else {
             map.put(block, new RunLater(block));
         }
+    }
+
+    public void startTask() {
+        class RunLater2 implements Runnable {
+            @Override
+            public void run() {
+                if (active) {
+                    for (ArenaPlayer ap : arena.getFighters()) {
+                        access(ap.get().getLocation().clone().subtract(0, 1, 0).getBlock(), true);
+                    }
+                }
+            }
+
+        }
+
+        Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new RunLater2(), 20L, 20L);
     }
 
     class RunLater implements Runnable {
