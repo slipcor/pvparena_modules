@@ -25,7 +25,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.1.40";
+        return "v1.3.1.41";
     }
 
     private String duelSender = null;
@@ -62,7 +62,8 @@ public class DuelManager extends ArenaModule {
     public PACheck checkJoin(CommandSender sender, PACheck res, boolean spectate) {
         if (!spectate) {
             if (!sender.getName().equals(this.duelReceiver) && !sender.getName().equals(this.duelSender)) {
-                res.setError(this, Language.parse(arena, MSG.MODULE_DUEL_NODIRECTJOIN));
+                res.setError(this, Language.parse(arena, MSG.MODULE_DUEL_NODIRECTJOIN, arena.getName()));
+                arena.msg(sender, Language.parse(arena, MSG.MODULE_DUEL_NODIRECTJOIN, arena.getName()));
             }
         }
         return null;
