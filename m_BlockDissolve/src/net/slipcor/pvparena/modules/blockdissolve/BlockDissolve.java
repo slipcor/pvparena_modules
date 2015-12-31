@@ -16,7 +16,7 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.1.37";
+        return "v1.3.1.38";
     }
 
     @Override

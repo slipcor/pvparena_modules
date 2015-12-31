@@ -118,7 +118,7 @@ class MoveChecker implements Listener {
             public void run() {
                 if (active) {
                     for (ArenaPlayer ap : arena.getFighters()) {
-                        access(ap.get().getLocation().clone().subtract(0, 1, 0).getBlock(), true);
+                        access(ap.get().getLocation().clone().subtract(0, 1, 0).getBlock(), false);
                     }
                 }
             }
