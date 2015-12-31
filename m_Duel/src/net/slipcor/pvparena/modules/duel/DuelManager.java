@@ -25,7 +25,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.1.41";
+        return "v1.3.1.42";
     }
 
     private String duelSender = null;
@@ -66,7 +66,7 @@ public class DuelManager extends ArenaModule {
                 arena.msg(sender, Language.parse(arena, MSG.MODULE_DUEL_NODIRECTJOIN, arena.getName()));
             }
         }
-        return null;
+        return res;
     }
 
     @Override
