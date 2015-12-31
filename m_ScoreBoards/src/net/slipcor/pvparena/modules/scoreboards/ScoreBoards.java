@@ -34,7 +34,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.1.23";
     }
 
 
@@ -51,15 +51,14 @@ public class ScoreBoards extends ArenaModule {
             return;
         }
         if (arena.isFreeForAll()) {
-            final Score score = obj.getScore(player);
+            final Score score = obj.getScore(player.getName());
             score.setScore(PACheck.handleGetLives(arena, ArenaPlayer.parsePlayer(player.getName())));
         } else {
             final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
             if (ap.getArenaTeam() == null) {
                 return;
             }
-            final OfflinePlayer op = Bukkit.getServer().getOfflinePlayer(ap.getArenaTeam().getName());
-            obj.getScore(op).setScore(PACheck.handleGetLives(arena, ap));
+            obj.getScore(ap.getArenaTeam().getName()).setScore(PACheck.handleGetLives(arena, ap));
         }
         player.setScoreboard(board);
 
@@ -96,7 +95,7 @@ public class ScoreBoards extends ArenaModule {
         if (board == null) {
             return;
         }
-        for (final OfflinePlayer player : board.getPlayers()) {
+        for (final String player : board.getEntries()) {
             if (player != null) {
                 board.resetScores(player);
             }
@@ -122,12 +121,12 @@ public class ScoreBoards extends ArenaModule {
             for (final Team team : board.getTeams()) {
                 if (team.hasPlayer(player)) {
                     team.removePlayer(player);
-                    board.resetScores(player);
+                    board.resetScores(player.getName());
                     found = true;
                 }
             }
             if (!found) {
-                board.resetScores(player);
+                board.resetScores(player.getName());
             }
         } catch (final Exception e) {
 
@@ -273,7 +272,9 @@ public class ScoreBoards extends ArenaModule {
 
         }
 
-        updateTask = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new UpdateTask(this), 50, 50);
+        int interval = arena.getArenaConfig().getInt(CFG.MODULES_SCOREBOARDS_UPDATEINTERVAL, 50);
+
+        updateTask = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new UpdateTask(this), interval, interval);
     }
 
 
