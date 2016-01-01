@@ -34,8 +34,8 @@ public class LateLounge extends ArenaModule {
 
     @Override
     public PACheck checkJoin(final CommandSender sender,
-                             final PACheck res, final boolean b) {
-        if (!b || res.hasError() || res.getPriority() > priority) {
+                             final PACheck res, final boolean join) {
+        if (!join || res.hasError() || res.getPriority() > priority) {
             return res;
         }
 

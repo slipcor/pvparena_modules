@@ -36,7 +36,6 @@ public class VaultSupport extends ArenaModule implements Listener {
     private static Economy economy;
     private static Permission permission;
     private Map<String, Double> playerBetMap;
-    private Map<String, Double> playerJoinMap;
     private double pot;
     private Map<String, Double> list;
 
@@ -46,19 +45,12 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.525";
+        return "v1.3.1.43";
     }
 
     @Override
     public boolean checkCommand(final String cmd) {
-        try {
-            final double amount = Double.parseDouble(cmd);
-            arena.getDebugger().i("parsing join bet amount: " + amount);
-            return true;
-        } catch (final Exception e) {
-            return "bet".equalsIgnoreCase(cmd);
-        }
-
+        return "bet".equalsIgnoreCase(cmd);
     }
 
     @Override
@@ -185,37 +177,6 @@ public class VaultSupport extends ArenaModule implements Listener {
             economy.withdrawPlayer(player.getName(), amount);
             arena.msg(player, Language.parse(MSG.MODULE_VAULT_BETPLACED, args[1]));
             getPlayerBetMap().put(player.getName() + ':' + args[1], amount);
-        } else {
-
-            final double amount;
-
-            try {
-                amount = Double.parseDouble(args[0]);
-            } catch (final Exception e) {
-                return;
-            }
-            if (!economy.hasAccount(player.getName())) {
-                arena.getDebugger().i("Account not found: " + player.getName(), sender);
-                return;
-            }
-            if (!economy.has(player.getName(), amount)) {
-                // no money, no entry!
-                arena.msg(player,
-                        Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy.format(amount)));
-                return;
-            }
-            final PACheck res = new PACheck();
-            checkJoin(sender, res, true);
-
-            if (res.hasError()) {
-                arena.msg(sender, res.getError());
-                return;
-            }
-
-            economy.withdrawPlayer(player.getName(), amount);
-            arena.msg(player, Language.parse(MSG.MODULE_VAULT_JOINPAY, args[0]));
-            getPlayerJoinMap().put(player.getName(), amount);
-            commitCommand(player, new String[]{""});
         }
     }
 
@@ -311,16 +272,6 @@ public class VaultSupport extends ArenaModule implements Listener {
             playerBetMap = new HashMap<String, Double>();
         }
         return playerBetMap;
-    }
-
-    /**
-     * bettingPlayerName => joinBetAmount
-     */
-    private Map<String, Double> getPlayerJoinMap() {
-        if (playerJoinMap == null) {
-            playerJoinMap = new HashMap<String, Double>();
-        }
-        return playerJoinMap;
     }
 
     @Override
@@ -459,41 +410,6 @@ public class VaultSupport extends ArenaModule implements Listener {
                     economy.depositPlayer(player.getName(), amount);
                     arena.msg(player, Language.parse(MSG.NOTICE_AWARDED,
                             economy.format(amount)));
-                }
-            }
-
-            for (final String nKey : getPlayerJoinMap().keySet()) {
-
-                if (nKey.equalsIgnoreCase(player.getName())) {
-                    final double playerFactor = arena.getArenaConfig().getDouble(CFG.MODULES_VAULT_WINFACTOR);
-
-                    double amount = getPlayerJoinMap().get(nKey) * playerFactor;
-
-
-                    double factor = 1.0d;
-                    for (final String node : getPermList().keySet()) {
-                        if (player.hasPermission(node)) {
-                            factor = Math.max(factor, getPermList().get(node));
-                        }
-                    }
-
-                    amount *= factor;
-
-                    arena.getDebugger().i("5 depositing " + amount + " to " + player.getName());
-                    if (amount > 0) {
-                        economy.depositPlayer(nKey, amount);
-                        try {
-
-                            ArenaModuleManager.announce(
-                                    arena,
-                                    Language.parse(MSG.NOTICE_PLAYERAWARDED,
-                                            economy.format(amount)), "PRIZE");
-                            arena.msg(Bukkit.getPlayer(nKey), Language
-                                    .parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
-                        } catch (final Exception e) {
-                            // nothing
-                        }
-                    }
                 }
             }
         }
@@ -693,7 +609,6 @@ public class VaultSupport extends ArenaModule implements Listener {
     @Override
     public void reset(final boolean force) {
         getPlayerBetMap().clear();
-        getPlayerJoinMap().clear();
         pot = 0;
     }
 

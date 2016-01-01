@@ -55,7 +55,7 @@ public class InventoryLoss extends ArenaModule {
 
     @Override
     public PACheck checkJoin(final CommandSender sender,
-                             final PACheck res, final boolean b) {
+                             final PACheck res, final boolean join) {
         final Player player = (Player) sender;
         final int priority = 5;
 

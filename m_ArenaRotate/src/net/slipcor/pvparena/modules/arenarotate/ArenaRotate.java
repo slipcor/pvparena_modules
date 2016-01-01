@@ -37,8 +37,8 @@ public class ArenaRotate extends ArenaModule {
 
     @Override
     public PACheck checkJoin(final CommandSender sender,
-                             final PACheck res, final boolean b) {
-        if (res.hasError() || !b) {
+                             final PACheck res, final boolean join) {
+        if (res.hasError() || !join) {
             return res;
         }
 
