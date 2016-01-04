@@ -9,6 +9,7 @@ import net.slipcor.pvparena.runnables.ArenaRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +64,7 @@ class StartFreezer extends ArenaRunnable {
         }
         final String message = seconds > 5 ? Language.parse(arena, msg, String.valueOf(seconds)) : MESSAGES.get(seconds);
         if (global) {
-            final Player[] players = Bukkit.getOnlinePlayers();
+            final Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
             for (final Player p : players) {
                 try {
