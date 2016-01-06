@@ -41,7 +41,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.557";
+        return "v1.3.2.51";
     }
 
     @Override

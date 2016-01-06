@@ -54,7 +54,7 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.2.51";
     }
 
     /**

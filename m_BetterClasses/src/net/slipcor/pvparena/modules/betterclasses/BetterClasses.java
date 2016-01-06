@@ -31,7 +31,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.551";
+        return "v1.3.2.51";
     }
 
     private static final int DURATION = 2400; // 60000 => 2400

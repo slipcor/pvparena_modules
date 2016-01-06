@@ -38,7 +38,7 @@ public class Squads extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.0.515";
+        return "v1.3.2.51";
     }
 
     @Override
