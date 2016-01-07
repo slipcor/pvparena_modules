@@ -73,11 +73,7 @@ class MyRenderer extends MapRenderer {
         playerMaps = new YamlConfiguration();
         try {
             playerMaps.load(configFile);
-        } catch (final FileNotFoundException e1) {
-            e1.printStackTrace();
-        } catch (final IOException e1) {
-            e1.printStackTrace();
-        } catch (final InvalidConfigurationException e1) {
+        } catch (final InvalidConfigurationException | IOException e1) {
             e1.printStackTrace();
         }
     }

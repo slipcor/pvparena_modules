@@ -297,18 +297,9 @@ public class VaultSupport extends ArenaModule implements Listener {
                 arena.getDebugger().i("no rewards, not enough players!");
                 return;
             }
-        } catch (final NoSuchFieldException e1) {
+        } catch (final NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-        } catch (final SecurityException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
         arena.getDebugger().i("giving rewards to player " + player.getName(), player);
