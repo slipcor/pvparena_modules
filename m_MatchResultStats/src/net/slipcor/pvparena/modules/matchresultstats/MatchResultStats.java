@@ -55,7 +55,7 @@ public class MatchResultStats extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"reset", "{Player}"});
         return result;
     }
@@ -102,11 +102,7 @@ public class MatchResultStats extends ArenaModule {
                 try {
                     sqlHandler = new MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
                             dbPass);
-                } catch (final InstantiationException e1) {
-                    e1.printStackTrace();
-                } catch (final IllegalAccessException e1) {
-                    e1.printStackTrace();
-                } catch (final ClassNotFoundException e1) {
+                } catch (final InstantiationException | ClassNotFoundException | IllegalAccessException e1) {
                     e1.printStackTrace();
                 }
 

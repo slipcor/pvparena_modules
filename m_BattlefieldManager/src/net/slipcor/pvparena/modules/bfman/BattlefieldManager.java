@@ -52,7 +52,7 @@ public class BattlefieldManager extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"clear"});
         result.define(new String[]{"update"});
         result.define(new String[]{"save"});

@@ -65,7 +65,7 @@ public class AutoVoteRunnable extends ArenaRunnable {
         if (definition == null) {
             arenastring = ArenaManager.getNames();
         } else {
-            final Set<String> arenas = new HashSet<String>();
+            final Set<String> arenas = new HashSet<>();
             for (final String string : ArenaManager.getShortcutDefinitions().get(definition)) {
                 arenas.add(string);
             }

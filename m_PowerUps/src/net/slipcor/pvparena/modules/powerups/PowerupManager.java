@@ -102,7 +102,7 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"time"});
         result.define(new String[]{"death"});
         result.define(new String[]{"off"});
@@ -214,18 +214,18 @@ public class PowerupManager extends ArenaModule implements Listener {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
             setup = true;
         }
-        final HashMap<String, Object> powerups = new HashMap<String, Object>();
+        final HashMap<String, Object> powerups = new HashMap<>();
         if (config.getConfigurationSection("powerups") != null) {
             final Map<String, Object> map = (HashMap<String, Object>) config
                     .getConfigurationSection("powerups").getValues(false);
-            Map<String, Object> map3 = new HashMap<String, Object>();
+            Map<String, Object> map3 = new HashMap<>();
             debug.i("parsing powerups");
             for (final String key : map.keySet()) {
                 // key e.g. "OneUp"
                 Map<String, Object> map2 = (HashMap<String, Object>) config
                         .getConfigurationSection("powerups." + key).getValues(
                                 false);
-                final Map<String, Object> temp_map = new HashMap<String, Object>();
+                final Map<String, Object> temp_map = new HashMap<>();
                 for (final Map.Entry<String, Object> stringObjectEntry : map2.entrySet()) {
                     // kkey e.g. "dmg_receive"
                     if ("item".equals(stringObjectEntry.getKey())) {

@@ -20,7 +20,7 @@ import java.util.Set;
 
 class RealSpectateListener implements Listener {
     private final FlySpectate rs;
-    private final Set<Player> spectators = new HashSet<Player>();
+    private final Set<Player> spectators = new HashSet<>();
 
     public RealSpectateListener(final FlySpectate realSpectate) {
         rs = realSpectate;
@@ -190,7 +190,7 @@ class RealSpectateListener implements Listener {
     }
 
     public void stop() {
-        final Collection<Player> removals = new HashSet<Player>();
+        final Collection<Player> removals = new HashSet<>();
         removals.addAll(spectators);
         for (final Player p : removals) {
             Bukkit.getServer().dispatchCommand(p, "pa leave");

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 public class BanKick extends ArenaModule {
-    private static final List<String> commands = new ArrayList<String>();
+    private static final List<String> commands = new ArrayList<>();
 
     static {
         commands.add("ban");
@@ -53,12 +53,12 @@ public class BanKick extends ArenaModule {
 
     @Override
     public List<String> getShort() {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"kick", "{Player}"});
         result.define(new String[]{"tempban", "{Player}"});
         result.define(new String[]{"ban", "{Player}"});
@@ -148,7 +148,7 @@ public class BanKick extends ArenaModule {
     public void configParse(final YamlConfiguration config) {
         final List<String> lBans = config.getStringList("bans");
 
-        final Set<String> hsBans = new HashSet<String>();
+        final Set<String> hsBans = new HashSet<>();
 
 
         for (final String s : lBans) {
@@ -163,7 +163,7 @@ public class BanKick extends ArenaModule {
 
     private List<String> getBans() {
         if (banList == null) {
-            banList = new ArrayList<String>();
+            banList = new ArrayList<>();
         }
         return banList;
     }

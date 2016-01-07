@@ -13,7 +13,7 @@ import java.util.Set;
 
 class SpectateWrapper {
     private final Player suspect;
-    private final Set<Player> spectators = new HashSet<Player>();
+    private final Set<Player> spectators = new HashSet<>();
     private final RealSpectateListener listener;
 
     public SpectateWrapper(final Player spectator, final Player fighter, final RealSpectateListener listener) {

@@ -57,7 +57,7 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"messages"});
         result.define(new String[]{"items"});
         result.define(new String[]{"reset"});
@@ -186,7 +186,7 @@ public class BetterFight extends ArenaModule {
 
     private Map<String, Integer> getKills() {
         if (killMap == null) {
-            killMap = new HashMap<String, Integer>();
+            killMap = new HashMap<>();
         }
         return killMap;
     }

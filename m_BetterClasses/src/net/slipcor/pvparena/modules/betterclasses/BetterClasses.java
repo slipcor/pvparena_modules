@@ -23,7 +23,7 @@ import java.util.*;
 
 public class BetterClasses extends ArenaModule {
 
-    private final Map<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>> superMap = new HashMap<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>>();
+    private final Map<Arena, HashMap<ArenaClass, HashSet<PotionEffect>>> superMap = new HashMap<>();
 
     public BetterClasses() {
         super("BetterClasses");
@@ -113,7 +113,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         if (arena == null) {
             return result;
         }
@@ -181,7 +181,7 @@ public class BetterClasses extends ArenaModule {
         }
 
 
-        HashSet<PotionEffect> ape = new HashSet<PotionEffect>();
+        HashSet<PotionEffect> ape = new HashSet<>();
 
         final String s = (String) arena.getArenaConfig().getUnsafe("modules.betterclasses.permEffects." + c.getName());
         if (s != null) {
@@ -308,7 +308,7 @@ public class BetterClasses extends ArenaModule {
         final Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
 
         for (final Map.Entry<ArenaClass, HashSet<PotionEffect>> arenaClassHashSetEntry : map.entrySet()) {
-            final Set<String> set = new HashSet<String>();
+            final Set<String> set = new HashSet<>();
             for (final PotionEffect pef : arenaClassHashSetEntry.getValue()) {
                 set.add(pef.getType().getName() + 'x' + pef.getAmplifier() + 1);
             }
@@ -344,7 +344,7 @@ public class BetterClasses extends ArenaModule {
     }
 
     private void init_map() {
-        final HashMap<ArenaClass, HashSet<PotionEffect>> map = new HashMap<ArenaClass, HashSet<PotionEffect>>();
+        final HashMap<ArenaClass, HashSet<PotionEffect>> map = new HashMap<>();
 
         superMap.put(arena, map);
 
@@ -390,7 +390,7 @@ public class BetterClasses extends ArenaModule {
     }
 
     private String parsePotionEffectsToString(final Iterable<PotionEffect> ape) {
-        final Set<String> result = new HashSet<String>();
+        final Set<String> result = new HashSet<>();
         for (final PotionEffect pe : ape) {
             result.add(pe.getType().getName() + ':' + pe.getAmplifier());
         }
@@ -464,7 +464,7 @@ public class BetterClasses extends ArenaModule {
     }
 
     private HashSet<PotionEffect> parseStringToPotionEffects(final String s) {
-        final HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
+        final HashSet<PotionEffect> spe = new HashSet<>();
 
         if (s == null || "none".equals(s) || s != null && s.isEmpty()) {
             return spe;

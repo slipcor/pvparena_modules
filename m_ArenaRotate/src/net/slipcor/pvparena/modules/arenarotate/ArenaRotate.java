@@ -101,7 +101,7 @@ public class ArenaRotate extends ArenaModule {
 
         final PAG_Join pj = new PAG_Join();
 
-        final Set<String> toTeleport = new HashSet<String>();
+        final Set<String> toTeleport = new HashSet<>();
 
         for (final Player p : Bukkit.getOnlinePlayers()) {
             toTeleport.add(p.getName());

@@ -52,7 +52,7 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"add"});
         result.define(new String[]{"rem"});
         if (arena == null) {
@@ -173,7 +173,7 @@ public class TempPerms extends ArenaModule implements Listener {
      * @return the temporary permissions map
      */
     private Map<String, Boolean> getTempPerms(final Arena arena, final String node) {
-        final Map<String, Boolean> result = new HashMap<String, Boolean>();
+        final Map<String, Boolean> result = new HashMap<>();
 
         if (arena.getArenaConfig().getYamlConfiguration().contains("perms." + node)) {
             final List<String> list = arena.getArenaConfig().getStringList("perms." + node,
@@ -188,7 +188,7 @@ public class TempPerms extends ArenaModule implements Listener {
     }
 
     private void setTempPerms(final Arena arena, final Map<String, Boolean> map, final String node) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
             result.add((stringBooleanEntry.getValue() ? "" : "^") + stringBooleanEntry.getKey());
         }
@@ -201,12 +201,12 @@ public class TempPerms extends ArenaModule implements Listener {
         final Map<String, Boolean> mClass;
 
         if (ap.getArenaClass() == null) {
-            mClass = new HashMap<String, Boolean>();
+            mClass = new HashMap<>();
         } else {
             mClass = getTempPerms(arena, ap.getArenaClass().getName());
         }
 
-        final Map<String, Boolean> total = new HashMap<String, Boolean>();
+        final Map<String, Boolean> total = new HashMap<>();
         for (final Map.Entry<String, Boolean> stringBooleanEntry3 : mGlobal.entrySet()) {
             total.put(stringBooleanEntry3.getKey(), stringBooleanEntry3.getValue());
         }

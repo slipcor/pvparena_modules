@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 class CTListener implements Listener {
-    private final Set<String> removals = new HashSet<String>();
+    private final Set<String> removals = new HashSet<>();
 
     @EventHandler
     public void onNameReceive(final AsyncPlayerReceiveNameTagEvent event) {

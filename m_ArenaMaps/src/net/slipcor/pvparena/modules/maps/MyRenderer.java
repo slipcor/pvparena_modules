@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 class MyRenderer extends MapRenderer {
-    private static final HashMap<ChatColor, Byte> colors = new HashMap<ChatColor, Byte>();
+    private static final HashMap<ChatColor, Byte> colors = new HashMap<>();
     private String playerName;
     private Arena arena;
     private static final YamlConfiguration playerMaps;
@@ -73,11 +73,7 @@ class MyRenderer extends MapRenderer {
         playerMaps = new YamlConfiguration();
         try {
             playerMaps.load(configFile);
-        } catch (final FileNotFoundException e1) {
-            e1.printStackTrace();
-        } catch (final IOException e1) {
-            e1.printStackTrace();
-        } catch (final InvalidConfigurationException e1) {
+        } catch (final InvalidConfigurationException | IOException e1) {
             e1.printStackTrace();
         }
     }
@@ -90,7 +86,7 @@ class MyRenderer extends MapRenderer {
         }
     }
 
-    private static final Set<Short> done = new HashSet<Short>();
+    private static final Set<Short> done = new HashSet<>();
 
     @Override
     public void render(final MapView map, final MapCanvas canvas, final Player player) {
@@ -214,7 +210,7 @@ class MyRenderer extends MapRenderer {
             return;
         }
 
-        final Map<String, Integer> lives = new HashMap<String, Integer>();
+        final Map<String, Integer> lives = new HashMap<>();
 
         for (final ArenaTeam team : arena.getTeams()) {
             if ("free".equals(team.getName())) {

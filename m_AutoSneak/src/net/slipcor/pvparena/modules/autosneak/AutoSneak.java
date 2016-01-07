@@ -29,7 +29,7 @@ public class AutoSneak extends ArenaModule implements Listener {
         return "v1.3.2.51";
     }
 
-    private final List<String> sneaker = new ArrayList<String>();
+    private final List<String> sneaker = new ArrayList<>();
 
     @Override
     public void configParse(final YamlConfiguration config) {

@@ -43,12 +43,12 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public List<String> getShort() {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"{Player}"});
         return result;
     }

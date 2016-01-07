@@ -36,7 +36,7 @@ class PowerupEffect {
     private double factor = 1.0;
     private double chance = 1.0;
     private int diff;
-    private final List<String> items = new ArrayList<String>();
+    private final List<String> items = new ArrayList<>();
     private static final Debug debug = new Debug(17);
     private PotionEffect potEff;
 

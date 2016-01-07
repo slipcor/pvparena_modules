@@ -60,7 +60,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"bet", "{Player}"});
         if (arena == null) {
             return result;
@@ -232,7 +232,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     private Map<String, Double> getPermList() {
         if (list == null) {
-            list = new HashMap<String, Double>();
+            list = new HashMap<>();
 
             if (arena.getArenaConfig().getYamlConfiguration().contains("modules.vault.permfactors")) {
                 List<String> cs = arena.getArenaConfig().getYamlConfiguration().
@@ -251,7 +251,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                 list.put("pa.vault.supervip", 3.0d);
                 list.put("pa.vault.vip", 2.0d);
 
-                List<String> stringList = new ArrayList<String>();
+                List<String> stringList = new ArrayList<>();
 
                 for (Map.Entry<String, Double> stringDoubleEntry : list.entrySet()) {
                     stringList.add(stringDoubleEntry.getKey() + ':' + stringDoubleEntry.getValue());
@@ -269,7 +269,7 @@ public class VaultSupport extends ArenaModule implements Listener {
      */
     private Map<String, Double> getPlayerBetMap() {
         if (playerBetMap == null) {
-            playerBetMap = new HashMap<String, Double>();
+            playerBetMap = new HashMap<>();
         }
         return playerBetMap;
     }
@@ -297,18 +297,9 @@ public class VaultSupport extends ArenaModule implements Listener {
                 arena.getDebugger().i("no rewards, not enough players!");
                 return;
             }
-        } catch (final NoSuchFieldException e1) {
+        } catch (final NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-        } catch (final SecurityException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (final IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
         arena.getDebugger().i("giving rewards to player " + player.getName(), player);

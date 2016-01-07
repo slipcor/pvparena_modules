@@ -44,7 +44,7 @@ class BlockRestoreRunnable implements Runnable {
      * @return a map of location=>block to reset
      */
     private HashMap<Location, ArenaBlock> getBlocks() {
-        final HashMap<Location, ArenaBlock> result = new HashMap<Location, ArenaBlock>();
+        final HashMap<Location, ArenaBlock> result = new HashMap<>();
 
         debug.i("reading all arenablocks");
         for (final Location l : Blocks.blocks.keySet()) {

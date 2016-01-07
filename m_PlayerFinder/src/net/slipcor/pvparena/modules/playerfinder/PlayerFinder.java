@@ -62,7 +62,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
         final int maxRadius = arena.getArenaConfig().getInt(CFG.MODULES_PLAYERFINDER_MAXRADIUS, 100);
 
         final List<Entity> list = player.getNearbyEntities(maxRadius, maxRadius, maxRadius);
-        final Map<Double, Player> sortMap = new HashMap<Double, Player>();
+        final Map<Double, Player> sortMap = new HashMap<>();
 
         debug.i("ok!", player);
 
@@ -90,7 +90,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
             //TODO tell "noone there";
         }
 
-        final SortedMap<Double, Player> sortedMap = new TreeMap<Double, Player>(sortMap);
+        final SortedMap<Double, Player> sortedMap = new TreeMap<>(sortMap);
 
         if (event.getAction() == Action.LEFT_CLICK_AIR) {
             debug.i("left");

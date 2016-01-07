@@ -48,10 +48,10 @@ public class Blocks extends ArenaModule implements Listener {
 
     private boolean listening;
 
-    public static final Map<Location, ArenaBlock> blocks = new HashMap<Location, ArenaBlock>();
+    public static final Map<Location, ArenaBlock> blocks = new HashMap<>();
     //public static HashMap<Location, String[]> signs = new HashMap<Location, String[]>();
 
-    private static final Map<ArenaRegion, RestoreContainer> containers = new HashMap<ArenaRegion, RestoreContainer>();
+    private static final Map<ArenaRegion, RestoreContainer> containers = new HashMap<>();
 
     private static final Debug debug = new Debug(24);
 
@@ -86,7 +86,7 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"hard"});
         result.define(new String[]{"restorechests"});
         result.define(new String[]{"clearinv"});

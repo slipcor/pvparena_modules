@@ -26,7 +26,7 @@ import java.util.Map;
 
 class RealSpectateListener implements Listener {
     final RealSpectate rs;
-    final Map<Player, SpectateWrapper> spectated_players = new HashMap<Player, SpectateWrapper>();
+    final Map<Player, SpectateWrapper> spectated_players = new HashMap<>();
     private final Debug debug = new Debug(456);
 
     public RealSpectateListener(final RealSpectate realSpectate) {

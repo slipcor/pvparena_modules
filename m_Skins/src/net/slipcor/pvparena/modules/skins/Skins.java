@@ -37,7 +37,7 @@ public class Skins extends ArenaModule {
     private static boolean enabled;
     private DisguiseCraftAPI dapi;
 
-    private final Set<String> disguised = new HashSet<String>();
+    private final Set<String> disguised = new HashSet<>();
 
     public Skins() {
         super("Skins");
@@ -65,7 +65,7 @@ public class Skins extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         if (arena == null) {
             return result;
         }

@@ -11,8 +11,8 @@ import java.util.Map;
 public class Powerups {
     private final Debug debug = new Debug(47);
 
-    public final Map<Player, Powerup> puActive = new HashMap<Player, Powerup>();
-    public final List<Powerup> puTotal = new ArrayList<Powerup>();
+    public final Map<Player, Powerup> puActive = new HashMap<>();
+    public final List<Powerup> puTotal = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     public Powerups(final Map<String, Object> powerUps) {

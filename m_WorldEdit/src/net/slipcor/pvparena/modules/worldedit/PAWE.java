@@ -64,7 +64,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         if (arena == null) {
             return result;
         }
@@ -195,11 +195,7 @@ public class PAWE extends ArenaModule {
                     getEditSession(new BukkitWorld(Bukkit.getWorld(ars.getWorldName())), size);
             final PABlockLocation loc = ars.getShape().getMinimumLocation();
             cc.place(es, new Vector(loc.getX() - 1, loc.getY() - 1, loc.getZ() - 1), false);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        } catch (final DataException e) {
-            e.printStackTrace();
-        } catch (final MaxChangedBlocksException e) {
+        } catch (final IOException | MaxChangedBlocksException | DataException e) {
             e.printStackTrace();
         }
     }
@@ -263,9 +259,7 @@ public class PAWE extends ArenaModule {
         try {
             SchematicFormat.MCEDIT.save(cc, new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
 
-        } catch (final IOException e) {
-            e.printStackTrace();
-        } catch (final DataException e) {
+        } catch (final IOException | DataException e) {
             e.printStackTrace();
         }
     }

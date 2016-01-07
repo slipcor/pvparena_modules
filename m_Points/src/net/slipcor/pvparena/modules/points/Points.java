@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Points extends ArenaModule implements Listener {
-    private static final Map<String, Double> globalpoints = new HashMap<String, Double>();
-    private final Map<String, Double> points = new HashMap<String, Double>();
+    private static final Map<String, Double> globalpoints = new HashMap<>();
+    private final Map<String, Double> points = new HashMap<>();
     private static YamlConfiguration globalconfig;
     private static File gcf;
 

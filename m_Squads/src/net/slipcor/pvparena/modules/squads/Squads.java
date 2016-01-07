@@ -27,7 +27,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.*;
 
 public class Squads extends ArenaModule {
-    private final Set<ArenaSquad> squads = new HashSet<ArenaSquad>();
+    private final Set<ArenaSquad> squads = new HashSet<>();
     private ArenaSquad auto;
     private boolean ingame;
 
@@ -77,7 +77,7 @@ public class Squads extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"add"});
         for (final ArenaSquad squad : squads) {
             result.define(new String[]{"remove", squad.getName()});
@@ -261,7 +261,7 @@ public class Squads extends ArenaModule {
         }
     }
 
-    private final Map<Sign, ArenaSquad> signs = new HashMap<Sign, ArenaSquad>();
+    private final Map<Sign, ArenaSquad> signs = new HashMap<>();
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {

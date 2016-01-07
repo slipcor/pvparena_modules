@@ -26,10 +26,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class AutoVote extends ArenaModule implements Listener {
-    static final Map<String, String> votes = new HashMap<String, String>();
+    static final Map<String, String> votes = new HashMap<>();
 
     AutoVoteRunnable vote;
-    final Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+    final Set<ArenaPlayer> players = new HashSet<>();
 
     public AutoVote() {
         super("AutoVote");
@@ -62,7 +62,7 @@ public class AutoVote extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"everyone"});
         result.define(new String[]{"readyup"});
         result.define(new String[]{"seconds"});
@@ -263,7 +263,7 @@ public class AutoVote extends ArenaModule implements Listener {
     }
 
     public static void commit(final String definition, final Set<ArenaPlayer> players) {
-        final Map<String, String> tempVotes = new HashMap<String, String>();
+        final Map<String, String> tempVotes = new HashMap<>();
 
         debug.i("committing definition " + definition + " for " + players.size());
 
@@ -283,7 +283,7 @@ public class AutoVote extends ArenaModule implements Listener {
             tempVotes.put(stringStringEntry.getKey(), stringStringEntry.getValue());
         }
 
-        final HashMap<String, Integer> counts = new HashMap<String, Integer>();
+        final HashMap<String, Integer> counts = new HashMap<>();
         int max = 0;
 
         String voted = null;
