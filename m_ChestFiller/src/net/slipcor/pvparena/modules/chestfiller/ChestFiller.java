@@ -56,7 +56,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"clear"});
         return result;
     }
@@ -160,7 +160,7 @@ public class ChestFiller extends ArenaModule {
         }
         debug.i("NO inventories");
 
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
 
         for (final ArenaRegion bfRegion : arena.getRegionsByType(RegionType.BATTLE)) {
             final PABlockLocation min = bfRegion.getShape().getMinimumLocation();
@@ -240,7 +240,7 @@ public class ChestFiller extends ArenaModule {
             c.getBlockInventory().clear();
         }
 
-        final List<ItemStack> adding = new ArrayList<ItemStack>();
+        final List<ItemStack> adding = new ArrayList<>();
 
         final Random r = new Random();
 

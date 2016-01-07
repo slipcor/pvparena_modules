@@ -55,7 +55,7 @@ public class MatchResultStats extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"reset", "{Player}"});
         return result;
     }

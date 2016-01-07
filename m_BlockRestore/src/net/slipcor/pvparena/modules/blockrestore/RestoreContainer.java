@@ -26,9 +26,9 @@ class RestoreContainer {
     private final Blocks blocks;
     private final ArenaRegion bfRegion;
 
-    private final HashMap<Location, ItemStack[]> chests = new HashMap<Location, ItemStack[]>();
-    private final HashMap<Location, ItemStack[]> furnaces = new HashMap<Location, ItemStack[]>();
-    private final HashMap<Location, ItemStack[]> dispensers = new HashMap<Location, ItemStack[]>();
+    private final HashMap<Location, ItemStack[]> chests = new HashMap<>();
+    private final HashMap<Location, ItemStack[]> furnaces = new HashMap<>();
+    private final HashMap<Location, ItemStack[]> dispensers = new HashMap<>();
 
     public RestoreContainer(final Blocks b, final ArenaRegion r) {
         blocks = b;
@@ -96,7 +96,7 @@ class RestoreContainer {
 
         final World world = Bukkit.getWorld(max.getWorldName());
 
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
 
         int z;
         int y;

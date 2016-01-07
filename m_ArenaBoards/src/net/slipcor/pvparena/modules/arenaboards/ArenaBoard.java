@@ -28,7 +28,7 @@ public class ArenaBoard {
 
     private StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
 
-    private final Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<StatisticsManager.type, ArenaBoardColumn>();
+    private final Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<>();
 
     /**
      * create an arena board instance

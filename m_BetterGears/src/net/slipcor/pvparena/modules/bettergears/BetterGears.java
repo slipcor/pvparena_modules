@@ -61,7 +61,7 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         if (arena == null) {
             return result;
         }
@@ -283,14 +283,14 @@ public class BetterGears extends ArenaModule {
 
     private Map<ArenaTeam, Short[]> getColorMap() {
         if (colorMap == null) {
-            colorMap = new HashMap<ArenaTeam, Short[]>();
+            colorMap = new HashMap<>();
         }
         return colorMap;
     }
 
     private Map<ArenaClass, Short> getLevelMap() {
         if (levelMap == null) {
-            levelMap = new HashMap<ArenaClass, Short>();
+            levelMap = new HashMap<>();
         }
         return levelMap;
     }
@@ -383,7 +383,7 @@ public class BetterGears extends ArenaModule {
 
     private String parseTeamColorStringToRGB(final String name) {
         if (defaultColors == null) {
-            defaultColors = new HashMap<String, String>();
+            defaultColors = new HashMap<>();
 
             defaultColors.put("BLACK", "0,0,0");
             defaultColors.put("DARK_BLUE", "0,0,153");

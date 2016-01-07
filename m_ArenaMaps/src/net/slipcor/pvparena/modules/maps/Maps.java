@@ -28,8 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public class Maps extends ArenaModule {
-    private HashSet<String> mappings = new HashSet<String>();
-    private HashSet<MapItem> items = new HashSet<MapItem>();
+    private HashSet<String> mappings = new HashSet<>();
+    private HashSet<MapItem> items = new HashSet<>();
     private boolean setup;
 
     public Maps() {
@@ -58,7 +58,7 @@ public class Maps extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"align", "true"});
         result.define(new String[]{"align", "false"});
         result.define(new String[]{"lives", "true"});
@@ -152,7 +152,7 @@ public class Maps extends ArenaModule {
         final Player player = (Player) sender;
         final HashSet<String> maps;
         if (mappings.isEmpty()) {
-            maps = new HashSet<String>();
+            maps = new HashSet<>();
             prepareSpawnLocations();
         } else {
             maps = mappings;
@@ -170,7 +170,7 @@ public class Maps extends ArenaModule {
             // recalculate, in case admin added stuff
         }
 
-        final HashSet<MapItem> locations = new HashSet<MapItem>();
+        final HashSet<MapItem> locations = new HashSet<>();
 
         for (final ArenaTeam team : arena.getTeams()) {
             for (final PASpawn spawn : arena.getSpawns()) {

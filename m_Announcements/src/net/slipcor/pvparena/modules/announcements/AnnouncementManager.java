@@ -56,7 +56,7 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         for (final Announcement.type t : Announcement.type.values()) {
             result.define(new String[]{t.name()});
         }

@@ -9,7 +9,7 @@ import java.util.Map;
 class Turret {
     private final double yaw;
     private final double offset;
-    private static final Map<String, Class<? extends Projectile>> types = new HashMap<String, Class<? extends Projectile>>();
+    private static final Map<String, Class<? extends Projectile>> types = new HashMap<>();
     private final Class<? extends Projectile> type;
 
     static {

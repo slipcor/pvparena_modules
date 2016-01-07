@@ -28,7 +28,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         super("BetterKillstreaks");
     }
 
-    private final Map<String, Integer> streaks = new HashMap<String, Integer>();
+    private final Map<String, Integer> streaks = new HashMap<>();
 
     private boolean setup;
 
@@ -54,7 +54,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"{int}", "potion"});
         result.define(new String[]{"{int}", "clear"});
         result.define(new String[]{"{int}", "items"});
@@ -125,7 +125,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
         // !bk [level] potion [def]| add potioneffect definition
 
-        final HashSet<PotionEffect> ape = new HashSet<PotionEffect>();
+        final HashSet<PotionEffect> ape = new HashSet<>();
 
 
         // 0   1           2      3     4    5
@@ -216,7 +216,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     }
 
     private String parsePotionEffectsToString(final Iterable<PotionEffect> ape) {
-        final Set<String> result = new HashSet<String>();
+        final Set<String> result = new HashSet<>();
         for (final PotionEffect pe : ape) {
             result.add(pe.getType().getName() + ':' + pe.getAmplifier());
         }
@@ -224,7 +224,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
     }
 
     private Iterable<PotionEffect> parseStringToPotionEffects(final String s) {
-        final HashSet<PotionEffect> spe = new HashSet<PotionEffect>();
+        final HashSet<PotionEffect> spe = new HashSet<>();
 
         if (s == null || "none".equals(s) || s != null && s.isEmpty()) {
             return spe;

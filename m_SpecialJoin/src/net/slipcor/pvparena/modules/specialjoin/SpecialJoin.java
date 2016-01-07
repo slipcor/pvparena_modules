@@ -34,8 +34,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
         super("SpecialJoin");
     }
 
-    private static final Map<PABlockLocation, Arena> places = new HashMap<PABlockLocation, Arena>();
-    private static final Map<String, Arena> selections = new HashMap<String, Arena>();
+    private static final Map<PABlockLocation, Arena> places = new HashMap<>();
+    private static final Map<String, Arena> selections = new HashMap<>();
     private boolean setup;
 
     @Override
@@ -231,7 +231,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
     }
 
     private static void update(final Arena a) {
-        final List<String> locs = new ArrayList<String>();
+        final List<String> locs = new ArrayList<>();
         for (final Map.Entry<PABlockLocation, Arena> paBlockLocationArenaEntry : places.entrySet()) {
             if (a.getName().equals(paBlockLocationArenaEntry.getValue().getName())) {
                 locs.add(Config.parseToString(paBlockLocationArenaEntry.getKey()));

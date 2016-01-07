@@ -13,8 +13,8 @@ import java.util.Set;
  */
 final class PVPData {
 
-    private final Map<String, Long> startTimes = new HashMap<String, Long>(); // player -> currentMillis
-    private final Map<String, String> teams = new HashMap<String, String>(); // player -> teamname
+    private final Map<String, Long> startTimes = new HashMap<>(); // player -> currentMillis
+    private final Map<String, String> teams = new HashMap<>(); // player -> teamname
 
     private final Arena arena;
 
@@ -30,7 +30,7 @@ final class PVPData {
     }
 
     public void start() {
-        final Set<String> names = new HashSet<String>();
+        final Set<String> names = new HashSet<>();
 
         for (final String name : startTimes.keySet()) {
             names.add(name);

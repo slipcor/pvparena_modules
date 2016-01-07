@@ -23,7 +23,7 @@ class MoveChecker implements Listener {
     private final Debug debug = new Debug(42);
     private final ItemStack[] materials;
     private final Arena arena;
-    private final Map<Block, Runnable> map = new HashMap<Block, Runnable>();
+    private final Map<Block, Runnable> map = new HashMap<>();
     private final int delay;
     private final int startSeconds;
     boolean active;

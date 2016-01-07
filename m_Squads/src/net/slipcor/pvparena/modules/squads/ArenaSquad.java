@@ -8,7 +8,7 @@ import java.util.Set;
 class ArenaSquad {
     private final String name;
     private final int max;
-    private final Set<ArenaPlayer> players = new HashSet<ArenaPlayer>();
+    private final Set<ArenaPlayer> players = new HashSet<>();
 
     public ArenaSquad(final String sName, final int iMax) {
         name = sName;
@@ -44,7 +44,7 @@ class ArenaSquad {
     }
 
     public Set<ArenaPlayer> getPlayers() {
-        final Set<ArenaPlayer> result = new HashSet<ArenaPlayer>();
+        final Set<ArenaPlayer> result = new HashSet<>();
         for (final ArenaPlayer ap : players) {
             result.add(ap);
         }

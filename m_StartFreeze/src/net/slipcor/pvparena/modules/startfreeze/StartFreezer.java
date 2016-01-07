@@ -17,7 +17,7 @@ import java.util.Set;
 class StartFreezer extends ArenaRunnable {
 
     private final StartFreeze module;
-    private final Map<String, Float> speeds = new HashMap<String, Float>();
+    private final Map<String, Float> speeds = new HashMap<>();
 
     StartFreezer(final StartFreeze mod) {
         super(Language.MSG.MODULE_STARTFREEZE_ANNOUNCE.getNode(),

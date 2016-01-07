@@ -104,7 +104,7 @@ public class RealSpectate extends ArenaModule {
     @Override
     public void reset(final boolean force) {
         getListener();
-        final Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
+        final Set<SpectateWrapper> list = new HashSet<>();
         for (final SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }
@@ -118,7 +118,7 @@ public class RealSpectate extends ArenaModule {
 
     @Override
     public void unload(final Player player) {
-        final Set<SpectateWrapper> list = new HashSet<SpectateWrapper>();
+        final Set<SpectateWrapper> list = new HashSet<>();
         for (final SpectateWrapper sw : getListener().spectated_players.values()) {
             list.add(sw);
         }
@@ -136,7 +136,7 @@ public class RealSpectate extends ArenaModule {
         }
 
         if (arena.getFighters().size() < 1) {
-            final Set<SpectateWrapper> list2 = new HashSet<SpectateWrapper>();
+            final Set<SpectateWrapper> list2 = new HashSet<>();
             for (final SpectateWrapper sw : getListener().spectated_players.values()) {
                 list2.add(sw);
             }

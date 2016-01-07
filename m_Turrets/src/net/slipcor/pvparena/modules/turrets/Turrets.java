@@ -30,8 +30,8 @@ public class Turrets extends ArenaModule implements Listener {
     }
 
     private boolean setup;
-    private final Map<String, Long> shootingPlayers = new HashMap<String, Long>();
-    private final Map<PABlockLocation, Turret> turretMap = new HashMap<PABlockLocation, Turret>();
+    private final Map<String, Long> shootingPlayers = new HashMap<>();
+    private final Map<PABlockLocation, Turret> turretMap = new HashMap<>();
 
     private int minInterval;
 
@@ -61,7 +61,7 @@ public class Turrets extends ArenaModule implements Listener {
             public void run() {
 
 
-                final Set<PASpawn> spawns = new HashSet<PASpawn>();
+                final Set<PASpawn> spawns = new HashSet<>();
                 for (final PASpawn spawn : arena.getSpawns()) {
                     if (spawn.getName().contains("turret")) {
                         spawns.add(spawn);

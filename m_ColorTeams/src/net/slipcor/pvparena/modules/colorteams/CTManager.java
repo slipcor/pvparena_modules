@@ -32,8 +32,8 @@ import java.util.Map;
 public class CTManager extends ArenaModule implements Listener {
     private static boolean tagAPIenabled;
     private Scoreboard board;
-    private final Map<String, Scoreboard> backup = new HashMap<String, Scoreboard>();
-    private final Map<String, Team> backupTeams = new HashMap<String, Team>();
+    private final Map<String, Scoreboard> backup = new HashMap<>();
+    private final Map<String, Team> backupTeams = new HashMap<>();
 
     public CTManager() {
         super("ColorTeams");
@@ -61,7 +61,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
-        final CommandTree<String> result = new CommandTree<String>(null);
+        final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"hidename"});
         return result;
     }

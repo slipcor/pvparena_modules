@@ -81,7 +81,7 @@ public class LateLounge extends ArenaModule {
             // not enough players
             getPlayerList().add(player.getName());
 
-            Set<String> removals = new HashSet<String>();
+            Set<String> removals = new HashSet<>();
 
             for (String s : getPlayerList()) {
                 Player p = Bukkit.getPlayerExact(s);
@@ -131,7 +131,7 @@ public class LateLounge extends ArenaModule {
 
     private List<String> getPlayerList() {
         if (playerList == null) {
-            playerList = new ArrayList<String>();
+            playerList = new ArrayList<>();
         }
         return playerList;
     }

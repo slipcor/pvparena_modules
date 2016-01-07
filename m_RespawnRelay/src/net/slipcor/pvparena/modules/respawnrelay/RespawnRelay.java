@@ -67,7 +67,7 @@ public class RespawnRelay extends ArenaModule {
     }
 
     private Map<String, BukkitRunnable> runnerMap;
-    final Map<String, String> overrideMap = new HashMap<String, String>();
+    final Map<String, String> overrideMap = new HashMap<>();
     private static Listener listener;
 
     public RespawnRelay() {
@@ -96,7 +96,7 @@ public class RespawnRelay extends ArenaModule {
 
     Map<String, BukkitRunnable> getRunnerMap() {
         if (runnerMap == null) {
-            runnerMap = new HashMap<String, BukkitRunnable>();
+            runnerMap = new HashMap<>();
         }
         return runnerMap;
     }
@@ -119,7 +119,7 @@ public class RespawnRelay extends ArenaModule {
         ap.setStatus(Status.DEAD);
 
         if (drops == null) {
-            drops = new ArrayList<ItemStack>();
+            drops = new ArrayList<>();
         }
 
         SpawnManager.respawn(arena, ap, "relay");

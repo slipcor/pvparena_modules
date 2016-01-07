@@ -87,7 +87,7 @@ public class SinglePlayerSupport extends ArenaModule {
         player.setArena(arena);
         player.setStatus(Status.FIGHT);
         team.add(player);
-        final Set<PASpawn> spawns = new HashSet<PASpawn>();
+        final Set<PASpawn> spawns = new HashSet<>();
         if (arena.getArenaConfig().getBoolean(CFG.GENERAL_CLASSSPAWN)) {
             final String arenaClass = player.getArenaClass().getName();
             spawns.addAll(SpawnManager.getPASpawnsStartingWith(arena, team.getName() + arenaClass + "spawn"));

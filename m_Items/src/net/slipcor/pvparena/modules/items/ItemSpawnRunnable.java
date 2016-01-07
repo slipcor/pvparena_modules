@@ -24,7 +24,7 @@ class ItemSpawnRunnable implements Runnable {
 
         if ("none".equals(sItems)) {
             items = new ItemStack[0];
-            spawns = new HashSet<PASpawn>();
+            spawns = new HashSet<>();
             return;
         }
         items = StringParser.getItemStacksFromString(sItems);

@@ -24,7 +24,7 @@ import java.util.Map;
 public class StartFreeze extends ArenaModule implements Listener {
     StartFreezer runnable;
     private boolean setup;
-    private Map<String, Float> speeds = new HashMap<String, Float>();
+    private Map<String, Float> speeds = new HashMap<>();
 
 
     public StartFreeze() {

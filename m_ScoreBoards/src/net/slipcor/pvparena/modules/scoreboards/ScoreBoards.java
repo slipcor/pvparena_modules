@@ -26,7 +26,7 @@ public class ScoreBoards extends ArenaModule {
     private Objective oTB;
     private BukkitTask updateTask;
 
-    private final Map<String, Scoreboard> playerBoards = new HashMap<String, Scoreboard>();
+    private final Map<String, Scoreboard> playerBoards = new HashMap<>();
 
     public ScoreBoards() {
         super("ScoreBoards");
