@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.kitteh</groupId>
             <artifactId>tagapi</artifactId>
-            <version>3.0</version>
+            <version>3.0.6</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>

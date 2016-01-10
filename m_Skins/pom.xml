@@ -44,17 +44,9 @@
         <dependency>
             <groupId>pgDev</groupId>
             <artifactId>DisguiseCraft</artifactId>
-            <version>5.1</version>
+            <version>5.2</version>
             <type>jar</type>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.desmin88</groupId>
-            <artifactId>mobdisguise</artifactId>
-            <version>1.81</version>
-            <type>jar</type>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/MobDisguise.jar</systemPath>
         </dependency>
     </dependencies>
 

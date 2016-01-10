@@ -30,7 +30,7 @@ public class PAWG extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.55";
     }
 
     @Override
@@ -86,7 +86,7 @@ public class PAWG extends ArenaModule {
 
     private void create(final Player p, final Arena arena, final String regionName, final String wgRegion) {
 
-        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExact(wgRegion);
+        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegion(wgRegion);
 
         if (region == null) {
             arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));
@@ -114,7 +114,7 @@ public class PAWG extends ArenaModule {
 
     private void update(final Player p, final Arena arena, final ArenaRegion ars,
                         final String wgRegion) {
-        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegionExact(wgRegion);
+        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegion(wgRegion);
 
         if (region == null) {
             arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));

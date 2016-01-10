@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.modules.skins;
 
-import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Skins extends ArenaModule {
-    private static boolean mdHandler;
     private static boolean dcHandler;
     private static boolean enabled;
     private DisguiseCraftAPI dapi;
@@ -176,9 +174,6 @@ public class Skins extends ArenaModule {
             m = MSG.MODULE_SKINS_DISGUISECRAFT;
 
             dapi = DisguiseCraft.getAPI();
-        } else if (Bukkit.getServer().getPluginManager().getPlugin("MobDisguise") != null) {
-            mdHandler = true;
-            m = MSG.MODULE_SKINS_MOBDISGUISE;
         }
 
         enabled = true;
@@ -199,7 +194,7 @@ public class Skins extends ArenaModule {
             dapi = DisguiseCraft.getAPI();
         }
 
-        if (!dcHandler && !mdHandler) {
+        if (!dcHandler) {
             final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
             if (team != null) {
                 final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
@@ -265,12 +260,6 @@ public class Skins extends ArenaModule {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DisguiseRunnable(player, d), 3L);
 
-        } else if (mdHandler) {
-            if (!MobDisguiseAPI.disguisePlayer(player, disguise)) {
-                if (!MobDisguiseAPI.disguisePlayerAsPlayer(player, disguise)) {
-                    PVPArena.instance.getLogger().warning("Unable to disguise " + player.getName() + " as " + disguise);
-                }
-            }
         }
 
         disguised.add(player.getName());
@@ -280,8 +269,6 @@ public class Skins extends ArenaModule {
     public void unload(final Player player) {
         if (dcHandler) {
             dapi.undisguisePlayer(player);
-        } else if (mdHandler) {
-            MobDisguiseAPI.undisguisePlayer(player);
         }
         disguised.remove(player.getName());
     }

@@ -42,9 +42,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldedit</artifactId>
-            <version>5.5.8-SNAPSHOT</version>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>6.1</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
