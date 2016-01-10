@@ -244,6 +244,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_Spectate/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_Squads/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
