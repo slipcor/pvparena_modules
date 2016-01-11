@@ -27,6 +27,7 @@ class MoveChecker implements Listener {
     private final int delay;
     private final int startSeconds;
     boolean active;
+    double offset;
 
     public MoveChecker(final Arena arena, final String definition, final int delay) {
         materials = StringParser.getItemStacksFromString(definition);
@@ -35,6 +36,7 @@ class MoveChecker implements Listener {
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
         this.delay = delay;
         startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
+        offset = arena.getArenaConfig().getDouble(CFG.MODULES_BLOCKDISSOLVE_CALCOFFSET);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -59,25 +61,25 @@ class MoveChecker implements Listener {
         final double x = location.getX() * 10 % 10 / 10;
         final double z = location.getZ() * 10 % 10 / 10;
 
-        if (x < 0.333) {
+        if (x < offset) {
             checkBlock(location.clone().add(-1, 0, 0).getBlock());
-        } else if (x > 0.666) {
+        } else if (x > (1-offset)) {
             checkBlock(location.clone().add(1, 0, 0).getBlock());
         }
 
-        if (z < 0.333) {
+        if (z < offset) {
             checkBlock(location.clone().add(0, 0, -1).getBlock());
         } else if (z > 0.666) {
             checkBlock(location.clone().add(0, 0, 1).getBlock());
         }
 
-        if (x < 0.333 && z < 0.333) {
+        if (x < offset && z < offset) {
             checkBlock(location.clone().add(-1, 0, -1).getBlock());
-        } else if (x < 0.333 && z > 0.666) {
+        } else if (x <offset && z > (1-offset)) {
             checkBlock(location.clone().add(-1, 0, 1).getBlock());
-        } else if (x > 0.666 && z < 0.333) {
+        } else if (x > (1-offset) && z < offset) {
             checkBlock(location.clone().add(1, 0, -1).getBlock());
-        } else if (x > 0.666 && z > 0.666) {
+        } else if (x > (1-offset) && z > (1-offset)) {
             checkBlock(location.clone().add(1, 0, 1).getBlock());
         }
 
