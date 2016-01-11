@@ -25,7 +25,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.57";
     }
 
     private String duelSender = null;
@@ -99,6 +99,13 @@ public class DuelManager extends ArenaModule {
                     arena.msg(sender, Language.parse(MSG.ERROR_PLAYER_NOTFOUND, args[1]));
                     return;
                 }
+
+                ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
+                if (ap.getArena() != null) {
+                    arena.msg(sender, Language.parse(MSG.MODULE_DUEL_BUSY, args[1]));
+                    return;
+                }
+
                 arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE, sender.getName(), arenaName));
                 arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE2, sender.getName(), arenaName));
                 arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUESTED, p.getName()));
