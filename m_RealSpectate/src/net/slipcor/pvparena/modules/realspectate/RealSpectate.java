@@ -31,7 +31,7 @@ public class RealSpectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.58";
     }
 
     @Override
@@ -57,6 +57,8 @@ public class RealSpectate extends ArenaModule {
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         ap.setLocation(new PALocation(ap.get().getLocation()));
 
+        ap.setArena(arena);
+        ap.setStatus(Status.WATCH);
 
         if (ap.getState() == null) {
 
@@ -82,8 +84,6 @@ public class RealSpectate extends ArenaModule {
             }
         }
 
-        ap.setArena(arena);
-        ap.setStatus(Status.WATCH);
         debug.i("switching:", player);
         getListener().switchPlayer(player, null, true);
     }
