@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.startfreeze;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
+import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -15,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +36,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.58";
     }
 
     @Override
@@ -102,6 +105,15 @@ public class StartFreeze extends ArenaModule implements Listener {
     public void resetPlayer(Player p, boolean force) {
         if (speeds.containsKey(p.getName())) {
             p.setWalkSpeed(speeds.get(p.getName()));
+        }
+        int ticks = arena.getArenaConfig().getInt(Config.CFG.MODULES_STARTFREEZE_TIMER) * 20;
+
+        for (ArenaPlayer ap : arena.getFighters()) {
+            try {
+                if (ap.get().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, ticks, -7, true, true), true));
+            } catch (Exception e) {
+
+            }
         }
     }
 
