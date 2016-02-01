@@ -1,5 +1,9 @@
 package net.slipcor.pvparena.modules.skins;
 
+import me.libraryaddict.disguise.DisguiseAPI;
+import me.libraryaddict.disguise.disguisetypes.MiscDisguise;
+import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaClass;
@@ -16,6 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +37,7 @@ import java.util.Set;
 
 public class Skins extends ArenaModule {
     private static boolean dcHandler;
+    private static boolean ldHandler;
     private static boolean enabled;
     private DisguiseCraftAPI dapi;
 
@@ -43,7 +49,7 @@ public class Skins extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.61";
     }
 
     @Override
@@ -152,7 +158,11 @@ public class Skins extends ArenaModule {
 
     @Override
     public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause lastDamageCause, final Entity damager) {
-        if (dcHandler) {
+        if (ldHandler) {
+            if (DisguiseAPI.isDisguised(player)) {
+                DisguiseAPI.undisguiseToAll(player);
+            }
+        } else if (dcHandler) {
             if (dapi.isDisguised(player)) {
                 dapi.undisguisePlayer(player);
             }
@@ -169,7 +179,10 @@ public class Skins extends ArenaModule {
             return;
         }
         MSG m = MSG.MODULE_SKINS_NOMOD;
-        if (Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft") != null) {
+        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
+            ldHandler = true;
+            m = MSG.MODULE_SKINS_LIBSDISGUISE;
+        } else if (Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft") != null) {
             dcHandler = true;
             m = MSG.MODULE_SKINS_DISGUISECRAFT;
 
@@ -194,7 +207,7 @@ public class Skins extends ArenaModule {
             dapi = DisguiseCraft.getAPI();
         }
 
-        if (!dcHandler) {
+        if (!dcHandler && !ldHandler) {
             final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
             if (team != null) {
                 final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
@@ -251,7 +264,24 @@ public class Skins extends ArenaModule {
             return;
         }
 
-        if (dcHandler) {
+        if (ldHandler) {
+            try {
+                me.libraryaddict.disguise.disguisetypes.DisguiseType type =
+                        me.libraryaddict.disguise.disguisetypes.DisguiseType.getType(EntityType.fromName(disguise));
+                try {
+                    MobDisguise md = new MobDisguise(type, false);
+                } catch (Exception e) {
+                    MiscDisguise md = new MiscDisguise(type);
+                }
+            } catch (Exception e) {
+                PlayerDisguise pd = new PlayerDisguise(disguise);
+                if (DisguiseAPI.isDisguised(player)) {
+                    DisguiseAPI.undisguiseToAll(player);
+                }
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new LibsDisguiseRunnable(player, pd), 3L);
+            }
+        } else if (dcHandler) {
             final DisguiseType t = DisguiseType.fromString(disguise);
             final Disguise d = new Disguise(dapi.newEntityID(), disguise, t == null ? DisguiseType.Player : t);
             if (dapi.isDisguised(player)) {
@@ -267,7 +297,9 @@ public class Skins extends ArenaModule {
 
     @Override
     public void unload(final Player player) {
-        if (dcHandler) {
+        if (ldHandler) {
+            DisguiseAPI.undisguiseToAll(player);
+        } else if (dcHandler) {
             dapi.undisguisePlayer(player);
         }
         disguised.remove(player.getName());

@@ -25,6 +25,10 @@
             <id>craftyn-repo</id>
             <url>https://repo2.craftyn.com/repository/snapshots/</url>
         </repository>
+        <repository>
+            <id>libsdisguises-repo</id>
+            <url>http://server.o2gaming.com/repo/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -45,6 +49,13 @@
             <groupId>pgDev</groupId>
             <artifactId>DisguiseCraft</artifactId>
             <version>5.2</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>LibsDisguises</groupId>
+            <artifactId>LibsDisguises</artifactId>
+            <version>8.6.8-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
