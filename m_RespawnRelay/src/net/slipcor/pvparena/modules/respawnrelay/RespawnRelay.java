@@ -76,7 +76,7 @@ public class RespawnRelay extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.60";
     }
 
     @Override
@@ -86,7 +86,16 @@ public class RespawnRelay extends ArenaModule {
             Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
         }
 
-        return list.contains("relay") ? null : "relay not set";
+        boolean allTeams = true;
+
+        for (String team : arena.getTeamNames()) {
+            if (!list.contains(team.toLowerCase()+"relay")) {
+                allTeams = false;
+                break;
+            }
+        }
+
+        return (allTeams || list.contains("relay")) ? null : "relay(s) not set";
     }
 
     @Override
@@ -103,6 +112,11 @@ public class RespawnRelay extends ArenaModule {
 
     @Override
     public boolean hasSpawn(final String s) {
+        for (String team : arena.getTeamNames()) {
+            if ((team.toLowerCase()+"relay").equals(s)) {
+                return true;
+            }
+        }
         return "relay".equals(s);
     }
 
@@ -121,8 +135,11 @@ public class RespawnRelay extends ArenaModule {
         if (drops == null) {
             drops = new ArrayList<>();
         }
-
-        SpawnManager.respawn(arena, ap, "relay");
+        if (SpawnManager.getSpawnByExactName(arena, ap.getArenaTeam().getName()+"relay") == null) {
+            SpawnManager.respawn(arena, ap, "relay");
+        } else {
+            SpawnManager.respawn(arena, ap, ap.getArenaTeam().getName()+"relay");
+        }
         arena.unKillPlayer(ap.get(), ap.get().getLastDamageCause() == null ? null : ap.get().getLastDamageCause().getCause(), ap.get().getKiller());
 
         if (getRunnerMap().containsKey(ap.getName())) {
