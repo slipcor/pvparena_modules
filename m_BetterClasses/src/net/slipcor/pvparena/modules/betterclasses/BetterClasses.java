@@ -31,12 +31,14 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.61";
     }
 
     private static final int DURATION = 2400; // 60000 => 2400
 
     private BukkitTask potionRunner;
+    private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
+    private Map<ArenaPlayer, Integer> playerSwitches = new HashMap<>();
 
     @Override
     public boolean cannotSelectClass(final Player player,
@@ -91,6 +93,27 @@ public class BetterClasses extends ArenaModule {
             }
             arena.msg(player, Language.parse(MSG.ERROR_CLASS_FULL, className));
             return true;
+        }
+
+        for (ArenaTeam at : teamSwitches.keySet()) {
+            if (!at.hasPlayer(player)) {
+                continue;
+            }
+            if (at.getName().equals(className)) {
+                if (teamSwitches.get(at) == 0) {
+                    arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXTEAM));
+                    return true;
+                }
+            }
+        }
+
+        for (ArenaPlayer ap : playerSwitches.keySet()) {
+            if (ap.getName().equals(player.getName())) {
+                if (playerSwitches.get(ap) == 0) {
+                    arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXPLAYER));
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -297,6 +320,10 @@ public class BetterClasses extends ArenaModule {
             cfg.addDefault("modules.betterclasses.maxGlobalPlayers." + c.getName(), 0);
             cfg.addDefault("modules.betterclasses.neededEXPLevel." + c.getName(), 0);
         }
+        for (final String team : arena.getTeamNames()) {
+            cfg.addDefault("modules.betterclasses.maxTeamSwitches." + team, -1);
+        }
+        cfg.addDefault("modules.betterclasses.maxPlayerSwitches", -1);
     }
 
     @Override
@@ -403,6 +430,8 @@ public class BetterClasses extends ArenaModule {
             potionRunner.cancel();
             potionRunner = null;
         }
+        playerSwitches.clear();
+        teamSwitches.clear();
     }
 
     @Override
@@ -442,13 +471,41 @@ public class BetterClasses extends ArenaModule {
     }
 
     @Override
+    public void parseClassChange(Player player, ArenaClass aClass) {
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        if (playerSwitches.containsKey(ap)) {
+            int value = playerSwitches.get(ap);
+            if (value-- > 0) {
+                playerSwitches.put(ap, value);
+            }
+        }
+        ArenaTeam at = ap.getArenaTeam();
+        if (teamSwitches.containsKey(at)) {
+            int value = teamSwitches.get(at);
+            if (value-- > 0) {
+                teamSwitches.put(at, value);
+            }
+        }
+    }
+
+    @Override
     public void parseStart() {
         if (!superMap.containsKey(arena)) {
             init_map();
         }
         for (final ArenaPlayer ap : arena.getFighters()) {
             parseRespawn(ap.get(), null, null, null);
+            playerSwitches.put(ap,
+                    (Integer) arena.getArenaConfig()
+                            .getUnsafe("modules.betterclasses.maxPlayerSwitches"));
         }
+
+        for (ArenaTeam at : arena.getTeams()) {
+            teamSwitches.put(at,
+                    (Integer) arena.getArenaConfig()
+                            .getUnsafe("modules.betterclasses.maxTeamSwitches."+at.getName()));
+        }
+
         class RunLater implements Runnable {
 
             @Override
