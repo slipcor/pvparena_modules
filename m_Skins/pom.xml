@@ -29,6 +29,10 @@
             <id>libsdisguises-repo</id>
             <url>http://server.o2gaming.com/repo/</url>
         </repository>
+        <repository>
+            <id>protocollib-repo</id>
+            <url>http://repo.dmulloy2.net/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -44,6 +48,13 @@
             <artifactId>pvparena</artifactId>
             <version>1.3.2-SNAPSHOT</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>3.6.5</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>pgDev</groupId>
