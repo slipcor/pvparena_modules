@@ -10,7 +10,7 @@
     <artifactId>m_powerups</artifactId>
     <packaging>jar</packaging>
 
-    <name>PVP Arena Modules - PowerUps</name>
+    <name>PVP Arena Modules - Powerups</name>
 
     <repositories>
         <repository>

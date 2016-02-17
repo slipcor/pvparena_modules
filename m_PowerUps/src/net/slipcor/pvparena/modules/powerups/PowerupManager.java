@@ -48,13 +48,13 @@ public class PowerupManager extends ArenaModule implements Listener {
     private boolean setup;
 
     public PowerupManager() {
-        super("PowerUps");
+        super("Powerups");
         debug = new Debug(402);
     }
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.59";
     }
 
     /**
@@ -185,11 +185,18 @@ public class PowerupManager extends ArenaModule implements Listener {
      */
     void commitPowerupItemSpawn(final Material item) {
         debug.i("dropping item?");
-        if (arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
+
+        final Set<ArenaRegion> regions = arena.getRegionsByType(RegionType.BATTLE);
+
+
+        if (regions.size() < 1 || arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
+            if (!arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
+                PVPArena.instance.getLogger().warning("You have deactivated 'dropspawn' but have no BATTLE region. Attempting to find powerup drop spawns!");
+            }
             dropItemOnSpawn(item);
+
         } else {
-            final Set<ArenaRegion> ars = arena.getRegionsByType(RegionType.BATTLE);
-            for (final ArenaRegion ar : ars) {
+            for (final ArenaRegion ar : regions) {
 
                 final PABlockLocation min = ar.getShape().getMinimumLocation();
                 final PABlockLocation max = ar.getShape().getMaximumLocation();
