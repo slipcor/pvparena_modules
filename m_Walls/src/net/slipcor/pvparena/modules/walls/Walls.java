@@ -7,11 +7,14 @@ import net.slipcor.pvparena.commands.CommandTree;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
+import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegion;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +29,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.70";
     }
 
     @Override
@@ -53,11 +56,14 @@ public class Walls extends ArenaModule {
 
     private void createWalls() {
         Material mat;
+        byte data;
         try {
-            final Material newMat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-            mat = Material.getMaterial(newMat.name());
+            ItemStack itemStack = StringParser.getItemStackFromString(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
+            mat = itemStack.getType();
+            data = itemStack.getData().getData();
         } catch (final Exception e) {
             mat = Material.SAND;
+            data = 0;
         }
 
         for (final ArenaRegion region : arena.getRegions()) {
@@ -74,7 +80,10 @@ public class Walls extends ArenaModule {
                 for (int a = x1; a <= x2; a++) {
                     for (int b = y1; b <= y2; b++) {
                         for (int c = z1; c <= z2; c++) {
-                            world.getBlockAt(a, b, c).setType(mat);
+                            Block block = world.getBlockAt(a, b, c);
+                            if (block.getType() == Material.AIR) {
+                                block.setTypeIdAndData(mat.getId(), data, true);
+                            }
                         }
                     }
                 }
@@ -152,6 +161,16 @@ public class Walls extends ArenaModule {
     }
 
     public void removeWalls() {
+        Material mat;
+        byte data;
+        try {
+            ItemStack itemStack = StringParser.getItemStackFromString(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
+            mat = itemStack.getType();
+            data = itemStack.getData().getData();
+        } catch (final Exception e) {
+            mat = Material.SAND;
+            data = 0;
+        }
         for (final ArenaRegion region : arena.getRegions()) {
 
             if (region.getRegionName().toLowerCase().contains("wall")) {
@@ -167,7 +186,10 @@ public class Walls extends ArenaModule {
                 for (int a = x1; a <= x2; a++) {
                     for (int b = y1; b <= y2; b++) {
                         for (int c = z1; c <= z2; c++) {
-                            world.getBlockAt(a, b, c).setType(Material.AIR);
+                            Block block = world.getBlockAt(a, b, c);
+                            if (block.getType() == mat && block.getData() == data) {
+                                block.setTypeIdAndData(0, (byte)1, true);
+                            }
                         }
                     }
                 }
