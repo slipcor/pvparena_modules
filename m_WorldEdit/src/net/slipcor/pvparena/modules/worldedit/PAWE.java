@@ -30,6 +30,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,18 +44,18 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.71";
     }
 
     @Override
     public boolean checkCommand(final String s) {
         return "regload".equals(s) || "regsave".equals(s) || "regcreate".equals(s)
-                || "!we".equals(s) || "worldedit".equals(s);
+                || "!we".equals(s) || "worldedit".equals(s) || "region".equals(s);
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("regload", "regsave", "regcreate", "worldedit");
+        return Arrays.asList("regload", "regsave", "regcreate", "worldedit", "region");
     }
 
     @Override
@@ -105,6 +106,30 @@ public class PAWE extends ArenaModule {
             if (args[0].endsWith("create")) {
                 create((Player) sender, arena, args[1]);
                 arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_CREATED, args[1]));
+                return;
+            }
+            if (args[0].endsWith("region")) {
+                if (ars == null) {
+                    arena.msg(sender, Language.parse(MSG.ERROR_REGION_NOTFOUND, args[1]));
+                    return;
+                }
+                final List<String> regions = arena.getArenaConfig().getStringList(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), new ArrayList<String>());
+                if (args.length < 2) {
+                    arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LIST_SHOW, StringParser.joinList(regions, ", ")));
+                    return;
+                }
+
+                if (!regions.contains(ars.getRegionName()) || args.length > 2 && StringParser.positive.contains(args[2])) {
+                    regions.add(ars.getRegionName());
+                    arena.getArenaConfig().setManually(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), regions);
+                    arena.getArenaConfig().save();
+                    arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LIST_ADDED, ars.getRegionName()));
+                    return;
+                }
+                regions.remove(ars.getRegionName());
+                arena.getArenaConfig().setManually(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), regions);
+                arena.getArenaConfig().save();
+                arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LIST_REMOVED, ars.getRegionName()));
                 return;
             }
             if (args[0].equals("!we") || args[0].equals("!we")) {
@@ -216,6 +241,16 @@ public class PAWE extends ArenaModule {
     @Override
     public void parseStart() {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE)) {
+            List<String> regions = arena.getArenaConfig().getStringList(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), new ArrayList<String>());
+            if (regions.size() > 0) {
+                for (String regionName : regions) {
+                    ArenaRegion region = arena.getRegion(regionName);
+                    if (region != null) {
+                        save(region);
+                    }
+                }
+                return;
+            }
             for (final ArenaRegion ars : arena.getRegionsByType(RegionType.BATTLE)) {
                 save(ars);
             }
@@ -225,6 +260,16 @@ public class PAWE extends ArenaModule {
     @Override
     public void reset(final boolean force) {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) {
+            List<String> regions = arena.getArenaConfig().getStringList(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), new ArrayList<String>());
+            if (regions.size() > 0) {
+                for (String regionName : regions) {
+                    ArenaRegion region = arena.getRegion(regionName);
+                    if (region != null) {
+                        load(region);
+                    }
+                }
+                return;
+            }
             for (final ArenaRegion ars : arena.getRegionsByType(RegionType.BATTLE)) {
                 load(ars);
             }
