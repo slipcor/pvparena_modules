@@ -29,7 +29,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.70";
+        return "v1.3.2.73";
     }
 
     @Override
@@ -65,9 +65,12 @@ public class Walls extends ArenaModule {
             mat = Material.SAND;
             data = 0;
         }
+        debug.i("material: "+mat.name() + " - data: " + data);
+        debug.i("replacing the wall for the following regions:");
 
         for (final ArenaRegion region : arena.getRegions()) {
             if (region.getRegionName().toLowerCase().contains("wall")) {
+                debug.i(region.getRegionName());
                 final World world = region.getWorld();
                 final int x1 = region.getShape().getMinimumLocation().getX();
                 final int y1 = region.getShape().getMinimumLocation().getY();
@@ -153,6 +156,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
+        debug.i("resetting WALLS");
         if (runnable != null) {
             runnable.cancel();
         }
