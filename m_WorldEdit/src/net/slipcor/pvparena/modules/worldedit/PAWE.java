@@ -44,18 +44,18 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.71";
+        return "v1.3.2.72";
     }
 
     @Override
     public boolean checkCommand(final String s) {
         return "regload".equals(s) || "regsave".equals(s) || "regcreate".equals(s)
-                || "!we".equals(s) || "worldedit".equals(s) || "region".equals(s);
+                || "!we".equals(s) || "worldedit".equals(s) || "regionlist".equals(s);
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("regload", "regsave", "regcreate", "worldedit", "region");
+        return Arrays.asList("regload", "regsave", "regcreate", "worldedit", "regionlist");
     }
 
     @Override
@@ -108,7 +108,7 @@ public class PAWE extends ArenaModule {
                 arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_CREATED, args[1]));
                 return;
             }
-            if (args[0].endsWith("region")) {
+            if (args[0].endsWith("regionlist    ")) {
                 if (ars == null) {
                     arena.msg(sender, Language.parse(MSG.ERROR_REGION_NOTFOUND, args[1]));
                     return;
