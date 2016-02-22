@@ -1,7 +1,6 @@
 package net.slipcor.pvparena.modules.playerfinder;
 
 import net.slipcor.pvparena.PVPArena;
-import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -29,7 +28,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.78";
+        return "v1.3.2.81";
     }
 
     @Override
@@ -99,17 +98,17 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
         final SortedMap<Double, Player> sortedMap = new TreeMap<>(sortMap);
 
-        if (event.getAction() == Action.LEFT_CLICK_AIR) {
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             debug.i("left");
             for (final Player otherPlayer : sortedMap.values()) {
                 player.setCompassTarget(otherPlayer.getLocation());
-                Arena.pmsg(player, Language.parse(MSG.MODULE_PLAYERFINDER_POINT, otherPlayer.getName()));
+                arena.msg(player, Language.parse(MSG.MODULE_PLAYERFINDER_POINT, otherPlayer.getName()));
                 break;
             }
-        } else if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+        } else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             debug.i("right");
             for (final double d : sortedMap.keySet()) {
-                Arena.pmsg(player, Language.parse(MSG.MODULE_PLAYERFINDER_NEAR, String.valueOf((int) d)));
+                arena.msg(player, Language.parse(MSG.MODULE_PLAYERFINDER_NEAR, String.valueOf((int) d)));
                 break;
             }
         }
