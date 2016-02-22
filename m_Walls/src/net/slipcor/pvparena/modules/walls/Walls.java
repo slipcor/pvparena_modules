@@ -29,17 +29,17 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.73";
+        return "v1.3.2.78";
     }
 
     @Override
     public boolean checkCommand(final String s) {
-        return "walls".equals(s) || "wallmaterial".equals(s) || "!ww".equals(s) || "!wm".equals(s);
+        return "wallseconds".equals(s) || "wallmaterial".equals(s) || "!ww".equals(s) || "!wm".equals(s);
     }
 
     @Override
     public List<String> getMain() {
-        return Arrays.asList("walls", "wallmaterial");
+        return Arrays.asList("wallseconds", "wallmaterial");
     }
 
     @Override
@@ -111,7 +111,7 @@ public class Walls extends ArenaModule {
             return;
         }
 
-        if ("!ww".equals(args[0]) || "walls".equals(args[0])) {
+        if ("!ww".equals(args[0]) || "wallseconds".equals(args[0])) {
             // setting walls seconds
             final int i;
             try {

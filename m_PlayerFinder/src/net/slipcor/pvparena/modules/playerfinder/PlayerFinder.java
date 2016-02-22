@@ -29,7 +29,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.78";
     }
 
     @Override
@@ -44,12 +44,14 @@ public class PlayerFinder extends ArenaModule implements Listener {
     public void onPlayerFind(final PlayerInteractEvent event) {
         final Player player = event.getPlayer();
 
-        if (ArenaPlayer.parsePlayer(player.getName()).getArena() == null) {
+        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+
+        if (aPlayer.getArena() == null) {
             debug.i("No arena!", player);
             return;
         }
 
-        if (!ArenaPlayer.parsePlayer(player.getName()).getArena().equals(arena)) {
+        if (!aPlayer.getArena().equals(arena)) {
             debug.i("Wrong arena!", player);
             return;
         }
@@ -66,6 +68,8 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
         debug.i("ok!", player);
 
+        final boolean teams = !arena.isFreeForAll();
+
         for (final Entity e : list) {
             if (e instanceof Player) {
                 if (e == player) {
@@ -73,8 +77,13 @@ public class PlayerFinder extends ArenaModule implements Listener {
                 }
 
                 final Player innerPlayer = (Player) e;
+                final ArenaPlayer ap = ArenaPlayer.parsePlayer(innerPlayer.getName());
 
-                if (ArenaPlayer.parsePlayer(innerPlayer.getName()).getStatus() != Status.FIGHT) {
+                if (ap.getStatus() != Status.FIGHT) {
+                    continue;
+                }
+
+                if (teams && ap.getArenaTeam().equals(aPlayer.getArenaTeam())) {
                     continue;
                 }
 
@@ -85,9 +94,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
         }
 
         if (sortMap.isEmpty()) {
-
             debug.i("noone there!", player);
-            //TODO tell "noone there";
         }
 
         final SortedMap<Double, Player> sortedMap = new TreeMap<>(sortMap);
