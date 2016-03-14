@@ -43,7 +43,7 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.87";
     }
 
     private boolean listening;
@@ -323,7 +323,9 @@ public class Blocks extends ArenaModule implements Listener {
         }
 
         for (final ArenaRegion bfRegion : bfs) {
-            containers.get(bfRegion).saveChests();
+            if (containers.containsKey(bfRegion)) {
+                containers.get(bfRegion).saveChests();
+            }
         }
     }
 
