@@ -37,6 +37,7 @@ import java.util.List;
 
 public class PAWE extends ArenaModule {
     private static WorldEditPlugin worldEdit;
+    private boolean needsLoading = false;
 
     public PAWE() {
         super("WorldEdit");
@@ -44,7 +45,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.74";
+        return "v1.3.2.90";
     }
 
     @Override
@@ -255,11 +256,12 @@ public class PAWE extends ArenaModule {
                 save(ars);
             }
         }
+        needsLoading = true;
     }
 
     @Override
     public void reset(final boolean force) {
-        if (arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) {
+        if (needsLoading && arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOLOAD)) {
             List<String> regions = arena.getArenaConfig().getStringList(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), new ArrayList<String>());
             if (regions.size() > 0) {
                 for (String regionName : regions) {
@@ -274,6 +276,7 @@ public class PAWE extends ArenaModule {
                 load(ars);
             }
         }
+        needsLoading = false;
     }
 
     void save(final ArenaRegion ars) {
