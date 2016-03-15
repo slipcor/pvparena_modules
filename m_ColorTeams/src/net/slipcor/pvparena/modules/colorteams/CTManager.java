@@ -19,10 +19,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-import org.kitteh.tag.TagAPI;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 public class CTManager extends ArenaModule implements Listener {
-    private static boolean tagAPIenabled;
     private Scoreboard board;
     private final Map<String, Scoreboard> backup = new HashMap<>();
     private final Map<String, Team> backupTeams = new HashMap<>();
@@ -41,7 +38,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.90";
     }
 
     @Override
@@ -113,21 +110,18 @@ public class CTManager extends ArenaModule implements Listener {
     @Override
     public void configParse(final YamlConfiguration config) {
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
-        if (tagAPIenabled) {
-            return;
-        }
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("TagAPI") != null) {
-            Bukkit.getPluginManager().registerEvents(new CTListener(), PVPArena.instance);
-            Arena.pmsg(Bukkit.getConsoleSender(), Language.parse(MSG.MODULE_COLORTEAMS_TAGAPI));
-            tagAPIenabled = true;
-        }
     }
 
     @Override
     public void tpPlayerToCoordName(final Player player, final String place) {
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
-        if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
+        if (arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
+            try {
+                player.setDisplayName("");
+            } catch (Exception e) {
+                player.setDisplayName(" ");
+            }
+        } else if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             String n;
             if (team == null) {
                 n = player.getName();
@@ -139,39 +133,12 @@ public class CTManager extends ArenaModule implements Listener {
             player.setDisplayName(n);
 
         }
-        updateName(player);
     }
 
     @Override
     public void unload(final Player player) {
         if (arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK)) {
             player.setDisplayName(player.getName());
-        }
-        if (tagAPIenabled) {
-            class TempRunner implements Runnable {
-
-                @Override
-                public void run() {
-                    updateName(player);
-                }
-            }
-            try {
-                Bukkit.getScheduler().runTaskLater(PVPArena.instance, new TempRunner()
-                        , 20 * 3L);
-            } catch (final IllegalPluginAccessException e) {
-
-            }
-        }
-    }
-
-    void updateName(final Player player) {
-        if (tagAPIenabled &&
-                !arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
-            try {
-                TagAPI.refreshPlayer(player);
-            } catch (final Exception e) {
-
-            }
         }
     }
 
