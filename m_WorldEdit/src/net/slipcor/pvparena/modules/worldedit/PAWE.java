@@ -30,10 +30,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PAWE extends ArenaModule {
     private static WorldEditPlugin worldEdit;
@@ -45,7 +42,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.90";
+        return "v1.3.2.91";
     }
 
     @Override
@@ -73,6 +70,7 @@ public class PAWE extends ArenaModule {
         for (final ArenaRegion region : arena.getRegions()) {
             result.define(new String[]{region.getRegionName()});
         }
+        result.define(new String[]{"all"});
         return result;
     }
 
@@ -95,11 +93,33 @@ public class PAWE extends ArenaModule {
         if (args.length < 3) {
 
             if (args[0].endsWith("load")) {
+                if (ars == null && !args[1].equalsIgnoreCase("all")) {
+                    arena.msg(sender, Language.parse(MSG.ERROR_REGION_NOTFOUND, args[1]));
+                    return;
+                } else if (ars == null) {
+                    Set<ArenaRegion> regions = arena.getRegionsByType(RegionType.BATTLE);
+                    for (ArenaRegion region : regions) {
+                        load(region);
+                        arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LOADED, region.getRegionName()));
+                    }
+                    return;
+                }
                 load(ars);
                 arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LOADED, args[1]));
                 return;
             }
             if (args[0].endsWith("save")) {
+                if (ars == null && !args[1].equalsIgnoreCase("all")) {
+                    arena.msg(sender, Language.parse(MSG.ERROR_REGION_NOTFOUND, args[1]));
+                    return;
+                } else if (ars == null) {
+                    Set<ArenaRegion> regions = arena.getRegionsByType(RegionType.BATTLE);
+                    for (ArenaRegion region : regions) {
+                        save(region);
+                        arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_SAVED, region.getRegionName()));
+                    }
+                    return;
+                }
                 save(ars);
                 arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_SAVED, args[1]));
                 return;
