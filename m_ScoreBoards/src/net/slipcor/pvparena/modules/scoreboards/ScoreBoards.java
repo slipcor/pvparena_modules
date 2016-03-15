@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ScoreBoards extends ArenaModule {
-    private static ScoreboardManager sbm;
+    private static ScoreboardManager man;
 
     private Scoreboard board;
     private Objective obj;
@@ -34,15 +34,18 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.91";
     }
 
+    private static ScoreboardManager getScoreboardManager() {
+        if (man == null) {
+            man = Bukkit.getScoreboardManager();
+        }
+        return man;
+    }
 
     @Override
     public void configParse(final YamlConfiguration config) {
-        if (sbm == null) {
-            sbm = Bukkit.getScoreboardManager();
-        }
         Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
     }
 
@@ -134,7 +137,7 @@ public class ScoreBoards extends ArenaModule {
         if (playerBoards.containsKey(player.getName())) {
             player.setScoreboard(playerBoards.get(player.getName()));
         } else {
-            player.setScoreboard(sbm.getMainScoreboard());
+            player.setScoreboard(getScoreboardManager().getMainScoreboard());
         }
     }
 
@@ -151,16 +154,16 @@ public class ScoreBoards extends ArenaModule {
 
                 if (board == null) {
 
-                    board = sbm.getNewScoreboard();
+                    board = getScoreboardManager().getNewScoreboard();
 
-                    oBM = sbm.getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME);
+                    oBM = getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.BELOW_NAME);
                     if (oBM != null) {
                         oBM = board.registerNewObjective(oBM.getCriteria(), oBM.getDisplayName());
                         oBM.setDisplaySlot(DisplaySlot.BELOW_NAME);
 
                     }
 
-                    oTB = sbm.getMainScoreboard().getObjective(DisplaySlot.PLAYER_LIST);
+                    oTB = getScoreboardManager().getMainScoreboard().getObjective(DisplaySlot.PLAYER_LIST);
                     if (oTB != null) {
                         oTB = board.registerNewObjective(oTB.getCriteria(), oTB.getDisplayName());
                         oTB.setDisplaySlot(DisplaySlot.PLAYER_LIST);
