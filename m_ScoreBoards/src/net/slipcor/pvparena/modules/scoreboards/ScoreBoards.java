@@ -34,7 +34,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.91";
+        return "v1.3.2.92";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -133,6 +133,14 @@ public class ScoreBoards extends ArenaModule {
             }
         } catch (final Exception e) {
 
+        }
+        boolean skip = false;
+        if (playerBoards == null) {
+            PVPArena.instance.getLogger().severe("final Map 'playerBoards' is null. Please check the server startup for errors!");
+            skip = true;
+        } else if (player == null) {
+            PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");
+            return;
         }
         if (playerBoards.containsKey(player.getName())) {
             player.setScoreboard(playerBoards.get(player.getName()));
