@@ -36,6 +36,7 @@
         <module>m_Duel</module>
         <module>m_EventActions</module>
         <module>m_Factions</module>
+        <module>m_FallingAnvils</module>
         <module>m_FixInventoryLoss</module>
         <module>m_FlySpectate</module>
         <module>m_Items</module>

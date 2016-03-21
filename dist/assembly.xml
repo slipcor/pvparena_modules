@@ -153,6 +153,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_FallingAnvils/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_FixInventoryLoss/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
