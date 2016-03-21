@@ -38,7 +38,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.90";
+        return "v1.3.2.94";
     }
 
     @Override
@@ -161,7 +161,7 @@ public class CTManager extends ArenaModule implements Listener {
         sTeam.setPrefix(team.getColor().toString());
         sTeam.addPlayer((Player) sender);
     }
-
+/*
     @Override
     public void parsePlayerLeave(final Player player, final ArenaTeam team) {
         if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
@@ -178,7 +178,7 @@ public class CTManager extends ArenaModule implements Listener {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
-
+*/
     @Override
     public void resetPlayer(final Player player, final boolean force) {
         if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
