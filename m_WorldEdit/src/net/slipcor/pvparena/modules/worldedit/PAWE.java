@@ -25,6 +25,7 @@ import net.slipcor.pvparena.loadables.ArenaRegion;
 import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -40,9 +41,11 @@ public class PAWE extends ArenaModule {
         super("WorldEdit");
     }
 
+    String loadPath = "";
+
     @Override
     public String version() {
-        return "v1.3.2.91";
+        return "v1.3.2.94";
     }
 
     @Override
@@ -205,6 +208,14 @@ public class PAWE extends ArenaModule {
         cmd.commit(arena, p, args);
     }
 
+    @Override
+    public void configParse(YamlConfiguration config) {
+        loadPath = config.getString(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), PVPArena.instance.getDataFolder().getAbsolutePath());
+        if (loadPath.equals("")) {
+            loadPath = PVPArena.instance.getDataFolder().getAbsolutePath();
+        }
+    }
+
     private void create(final Player p, final Arena arena, final String regionName) {
         create(p, arena, regionName, "CUBOID");
     }
@@ -231,7 +242,7 @@ public class PAWE extends ArenaModule {
     void load(final ArenaRegion ars, final String regionName) {
 
         try {
-            final CuboidClipboard cc = SchematicFormat.MCEDIT.load(new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
+            final CuboidClipboard cc = SchematicFormat.MCEDIT.load(new File(loadPath, regionName + ".schematic"));
             final PABlockLocation min = ars.getShape().getMinimumLocation();
             final PABlockLocation max = ars.getShape().getMaximumLocation();
             final int size = (max.getX() + 2 - min.getX()) *
@@ -325,7 +336,7 @@ public class PAWE extends ArenaModule {
         cc.copy(es);
 
         try {
-            SchematicFormat.MCEDIT.save(cc, new File(PVPArena.instance.getDataFolder(), regionName + ".schematic"));
+            SchematicFormat.MCEDIT.save(cc, new File(loadPath, regionName + ".schematic"));
 
         } catch (final IOException | DataException e) {
             e.printStackTrace();
