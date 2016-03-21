@@ -9,6 +9,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.managers.ArenaManager;
+import net.slipcor.pvparena.modules.vaultsupport.VaultSupport;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,11 +26,12 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.57";
+        return "v1.3.2.94";
     }
 
     private String duelSender = null;
     private String duelReceiver = null;
+    private int amount = 0;
 
     @Override
     public boolean checkCommand(final String s) {
@@ -106,7 +108,36 @@ public class DuelManager extends ArenaModule {
                     return;
                 }
 
+                String message = "";
+
+                if (args.length > 2) {
+                    try {
+                        int iAmount = Integer.parseInt(args[2]);
+                        for (ArenaModule mod : arena.getMods()) {
+                            if (mod instanceof VaultSupport) {
+                                VaultSupport sup = (VaultSupport) mod;
+                                if (!sup.checkForBalance(this, sender, iAmount, true)) {
+                                    return;
+                                }
+                                if (!sup.checkForBalance(this, p, iAmount, false)) {
+                                    arena.msg(sender, Language.parse(MSG.MODULE_VAULT_THEYNOTENOUGH, p.getName()));
+                                    return;
+                                }
+                                message = sup.tryFormat(this, iAmount);
+                                amount = iAmount;
+                            }
+                        }
+
+                    } catch( Exception e) {
+                        arena.msg(sender, Language.parse(MSG.ERROR_NOT_NUMERIC, args[2]));
+                        return;
+                    }
+                }
+
                 arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE, sender.getName(), arenaName));
+                if (!message.equals("")) {
+                    arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCEMONEY, message));
+                }
                 arena.msg(p, Language.parse(MSG.MODULE_DUEL_ANNOUNCE2, sender.getName(), arenaName));
                 arena.msg(sender, Language.parse(MSG.MODULE_DUEL_REQUESTED, p.getName()));
                 duelSender = sender.getName();
@@ -130,9 +161,23 @@ public class DuelManager extends ArenaModule {
             }
         } else if ("accept".equals(args[0].toLowerCase())) {
             if (duelSender != null && !arena.isFightInProgress()) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DuelRunnable(this, duelSender, sender.getName()), 500L);
+
                 final Player p = Bukkit.getPlayer(duelSender);
                 if (p != null) {
+                    for (ArenaModule mod : arena.getMods()) {
+                        if (mod instanceof VaultSupport) {
+                            VaultSupport sup = (VaultSupport) mod;
+                            if (!sup.checkForBalance(this, sender, amount, true)) {
+                                break;
+                            }
+                            if (!sup.checkForBalance(this, p, amount, true)) {
+                                break;
+                            }
+                            sup.tryWithdraw(this, sender, amount, true);
+                            sup.tryWithdraw(this, p, amount, true);
+                        }
+                    }
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DuelRunnable(this, duelSender, sender.getName()), 500L);
                     arena.msg(p, Language.parse(MSG.MODULE_DUEL_ACCEPTED, sender.getName()));
                 }
                 duelSender = null;
@@ -151,5 +196,22 @@ public class DuelManager extends ArenaModule {
             duelReceiver = null;
         }
     }
+    @Override
+    public void resetPlayer(Player player, boolean force) {
+        for (ArenaPlayer ap : arena.getFighters()) {
+            if (ap == null || player == null || ap.getName().equals(player.getName())) {
+                continue;
+            }
+            if (amount > 0) {
+                for (ArenaModule mod : arena.getMods()) {
+                    if (mod instanceof VaultSupport) {
+                        VaultSupport sup = (VaultSupport) mod;
 
+                        sup.tryDeposit(this, ap.get(), amount*2, true);
+                        amount = 0;
+                    }
+                }
+            }
+        }
+    }
 }
