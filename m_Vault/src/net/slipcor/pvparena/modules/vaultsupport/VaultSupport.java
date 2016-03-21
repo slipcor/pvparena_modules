@@ -1,6 +1,7 @@
 package net.slipcor.pvparena.modules.vaultsupport;
 
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import net.milkbowl.vault.permission.Permission;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
@@ -45,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.93";
     }
 
     @Override
@@ -69,6 +70,76 @@ public class VaultSupport extends ArenaModule implements Listener {
             result.define(new String[]{"bet", team});
         }
         return result;
+    }
+
+    public boolean checkForBalance(ArenaModule module, CommandSender sender, int amount, boolean notify) {
+        debug.i("module "+module+" tries to check account "+sender.getName(), sender);
+        if (economy == null) {
+            return false;
+        }
+        if (!economy.hasAccount(sender.getName())) {
+            arena.getDebugger().i("Account not found: " + sender.getName(), sender);
+            return false;
+        }
+        if (!economy.has(sender.getName(),
+                amount)) {
+            // no money, no entry!
+            if (notify) {
+                sender.sendMessage(Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
+                        .format(amount)));
+            } else {
+                debug.i("Not enough cash!", sender);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public boolean tryWithdraw(ArenaModule module, CommandSender sender, int amount, boolean notify) {
+        debug.i("module "+module+" tries to withdraw "+amount+" from "+sender.getName(), sender);
+        if (economy == null) {
+            return false;
+        }
+        if (!economy.hasAccount(sender.getName())) {
+            arena.getDebugger().i("Account not found: " + sender.getName(), sender);
+            return false;
+        }
+        if (!economy.has(sender.getName(),
+                amount)) {
+            // no money, no entry!
+            if (notify) {
+                sender.sendMessage(Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
+                        .format(amount)));
+            } else {
+                debug.i("Not enough cash!", sender);
+            }
+            return false;
+        }
+        EconomyResponse res = economy.withdrawPlayer(sender.getName(), amount);
+        if (res.transactionSuccess() && notify) {
+            arena.msg(Bukkit.getPlayer(sender.getName()), Language
+                    .parse(MSG.MODULE_VAULT_JOINPAY, economy.format(amount)));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean tryDeposit(ArenaModule module, CommandSender sender, int amount, boolean notify) {
+        debug.i("module "+module+" tries to deposit "+amount+" to "+sender.getName(), sender);
+        if (economy == null) {
+            return false;
+        }
+        if (!economy.hasAccount(sender.getName())) {
+            arena.getDebugger().i("Account not found: " + sender.getName(), sender);
+            return false;
+        }
+        EconomyResponse res = economy.depositPlayer(sender.getName(), amount);
+        if (res.transactionSuccess() && notify) {
+            arena.msg(Bukkit.getPlayer(sender.getName()), Language
+                    .parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+            return true;
+        }
+        return false;
     }
 
     @Override
