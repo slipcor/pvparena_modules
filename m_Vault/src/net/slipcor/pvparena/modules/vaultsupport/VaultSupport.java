@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.93";
+        return "v1.3.2.94";
     }
 
     @Override
@@ -93,6 +93,14 @@ public class VaultSupport extends ArenaModule implements Listener {
             return false;
         }
         return true;
+    }
+
+    public String tryFormat(ArenaModule module, int amount) {
+        debug.i("module "+module+" tries to format: "+amount);
+        if (economy == null) {
+            return String.valueOf(amount);
+        }
+        return economy.format(amount);
     }
 
     public boolean tryWithdraw(ArenaModule module, CommandSender sender, int amount, boolean notify) {
