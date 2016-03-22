@@ -8,7 +8,6 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -16,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -31,12 +29,10 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.61";
+        return "v1.3.2.94";
     }
 
-    private static final int DURATION = 2400; // 60000 => 2400
-
-    private BukkitTask potionRunner;
+    //private BukkitTask potionRunner;
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
     private Map<ArenaPlayer, Integer> playerSwitches = new HashMap<>();
 
@@ -268,7 +264,7 @@ public class BetterClasses extends ArenaModule {
                 }
             }
 
-            ape.add(new PotionEffect(pet, DURATION, amp));
+            ape.add(new PotionEffect(pet, Integer.MAX_VALUE, amp));
             arena.getArenaConfig().setManually("modules.betterclasses.permEffects." + c.getName(), parsePotionEffectsToString(ape));
             arena.getArenaConfig().save();
             arena.msg(sender, Language.parse(MSG.MODULE_BETTERCLASSES_ADD, c.getName(), pet.getName()));
@@ -426,10 +422,11 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
+        /*
         if (potionRunner != null) {
             potionRunner.cancel();
             potionRunner = null;
-        }
+        }*/
         playerSwitches.clear();
         teamSwitches.clear();
     }
@@ -516,7 +513,7 @@ public class BetterClasses extends ArenaModule {
             }
 
         }
-        potionRunner = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new RunLater(), DURATION / 2, DURATION / 2);
+        //potionRunner = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new RunLater(), DURATION / 2, DURATION / 2);
 
     }
 
@@ -540,7 +537,7 @@ public class BetterClasses extends ArenaModule {
 
                 final int amp = values.length < 2 ? 1 : Integer.parseInt(values[1]);
 
-                final PotionEffect pe = new PotionEffect(type, DURATION, amp - 1);
+                final PotionEffect pe = new PotionEffect(type, Integer.MAX_VALUE, amp - 1);
                 spe.add(pe);
             }
         } catch (final Exception e) {
