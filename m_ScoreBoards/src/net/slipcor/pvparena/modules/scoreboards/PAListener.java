@@ -50,7 +50,7 @@ class PAListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PATeamChangeEvent event) {
+    public void onTeamChange(PATeamChangeEvent event) {
         if (module.getArena() == null || !module.getArena().isFightInProgress()) {
             return;
         }
