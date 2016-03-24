@@ -15,7 +15,6 @@ import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -88,8 +87,8 @@ public class AutoVote extends ArenaModule implements Listener {
         final Player p = (Player) sender;
 
         for (final Team team : p.getScoreboard().getTeams()) {
-            for (final OfflinePlayer player : team.getPlayers()) {
-                if (player.getName().equals(p.getName())) {
+            for (final String playerName : team.getEntries()) {
+                if (playerName.equals(p.getName())) {
                     res.setError(this, Language.parse(MSG.ERROR_COMMAND_BLOCKED, "You already have a scoreboard!"));
                     return res;
                 }
@@ -108,8 +107,8 @@ public class AutoVote extends ArenaModule implements Listener {
                 final Player p = (Player) sender;
 
                 for (final Team team : p.getScoreboard().getTeams()) {
-                    for (final OfflinePlayer player : team.getPlayers()) {
-                        if (player.getName().equals(p.getName())) {
+                    for (final String playerName : team.getEntries()) {
+                        if (playerName.equals(p.getName())) {
                             return;
                         }
                     }

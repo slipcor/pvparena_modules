@@ -55,7 +55,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
             return;
         }
 
-        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.COMPASS) {
+        if (player.getInventory().getItemInHand() == null || player.getInventory().getItemInHand().getType() != Material.COMPASS) {
             debug.i("No compass!", player);
             return;
         }

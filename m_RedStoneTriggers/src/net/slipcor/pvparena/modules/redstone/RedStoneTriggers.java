@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.redstone;
 
+import com.google.common.collect.ImmutableMap;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -19,6 +20,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.EnumMap;
 
 public class RedStoneTriggers extends ArenaModule implements Listener {
     public RedStoneTriggers() {
@@ -66,7 +69,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (ap.getStatus() == Status.FIGHT) {
                         event.getBlock().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10);
+                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf((double) 10))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, -0.0D)));
                         PlayerListener.finallyKillPlayer(arena, ap.get(), e);
                     }
                 }
@@ -80,7 +83,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (ap.getStatus() == Status.FIGHT) {
                         event.getBlock().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10);
+                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf((double) 10))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, -0.0D)));
                         PlayerListener.finallyKillPlayer(arena, ap.get(), e);
                     }
                 }

@@ -261,7 +261,7 @@ class PowerupEffect {
                     } else if (i.contains("BOOTS")) {
                         is = player.getInventory().getBoots();
                     } else if (i.contains("SWORD")) {
-                        is = player.getItemInHand();
+                        is = player.getInventory().getItemInHand();
                     }
                     if (is == null) {
                         continue;
