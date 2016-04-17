@@ -8,7 +8,6 @@ import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.classes.PALocation;
-import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.events.PAJoinEvent;
@@ -31,7 +30,7 @@ public class RealSpectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.58";
+        return "v1.3.2.103";
     }
 
     @Override
@@ -70,18 +69,6 @@ public class RealSpectate extends ArenaModule {
             ap.createState(player);
             ArenaPlayer.backupAndClearInventory(arena, player);
             ap.dump();
-
-
-            if (ap.getArenaTeam() != null && ap.getArenaClass() == null) {
-                final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
-                if (autoClass != null && !"none".equals(autoClass) && arena.getClass(autoClass) != null) {
-                    arena.chooseClass(player, null, autoClass);
-                }
-                if (autoClass == null) {
-                    arena.msg(player, Language.parse(MSG.ERROR_CLASS_NOT_FOUND, "autoClass"));
-                    return;
-                }
-            }
         }
 
         debug.i("switching:", player);

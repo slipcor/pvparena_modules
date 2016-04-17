@@ -30,7 +30,7 @@ public class FlySpectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.103";
     }
 
     @Override
@@ -93,6 +93,7 @@ public class FlySpectate extends ArenaModule {
 
         ap.setArena(arena);
         ap.setStatus(Status.WATCH);
+        ap.setTeleporting(true);
         debug.i("switching:", player);
         getListener().hidePlayerLater(player);
 
@@ -104,17 +105,6 @@ public class FlySpectate extends ArenaModule {
             ArenaPlayer.backupAndClearInventory(arena, player);
             ap.dump();
 
-
-            if (ap.getArenaTeam() != null && ap.getArenaClass() == null) {
-                final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
-                if (autoClass != null && !"none".equals(autoClass) && arena.getClass(autoClass) != null) {
-                    arena.chooseClass(player, null, autoClass);
-                }
-                if (autoClass == null) {
-                    arena.msg(player, Language.parse(MSG.ERROR_CLASS_NOT_FOUND, "autoClass"));
-                    return;
-                }
-            }
         } else {
             new PAG_Leave().commit(arena, player, new String[0]);
             return;
@@ -131,6 +121,7 @@ public class FlySpectate extends ArenaModule {
                 player.setAllowFlight(true);
                 player.setFlying(true);
                 arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
+                ap.setTeleporting(false);
             }
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(), delay);
