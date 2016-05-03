@@ -38,7 +38,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.94";
+        return "v1.3.2.105";
     }
 
     @Override
@@ -102,8 +102,6 @@ public class CTManager extends ArenaModule implements Listener {
     public void displayInfo(final CommandSender player) {
         player.sendMessage(StringParser.colorVar("enabled", arena.getArenaConfig().getBoolean(CFG.CHAT_COLORNICK))
                 + " | "
-                + StringParser.colorVar("scoreboard", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD))
-                + " | "
                 + StringParser.colorVar("hidename", arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)));
     }
 
@@ -144,9 +142,6 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
-        if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
-            return;
-        }
         final Scoreboard board = getScoreboard();
         backup.put(sender.getName(), ((Player) sender).getScoreboard());
         backupTeams.put(sender.getName(), ((Player) sender).getScoreboard().getPlayerTeam((Player) sender));
@@ -164,9 +159,6 @@ public class CTManager extends ArenaModule implements Listener {
 /*
     @Override
     public void parsePlayerLeave(final Player player, final ArenaTeam team) {
-        if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
-            return;
-        }
         getScoreboard().getTeam(team.getName()).removePlayer(player);
         if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
             player.setScoreboard(backup.get(player.getName()));
@@ -181,9 +173,6 @@ public class CTManager extends ArenaModule implements Listener {
 */
     @Override
     public void resetPlayer(final Player player, final boolean force) {
-        if (!arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_SCOREBOARD)) {
-            return;
-        }
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (team != null) {
