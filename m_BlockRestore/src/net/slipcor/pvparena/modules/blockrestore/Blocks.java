@@ -29,6 +29,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.material.Attachable;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.util.BlockIterator;
@@ -43,7 +45,7 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.87";
+        return "v1.3.2.105";
     }
 
     private boolean listening;
@@ -413,6 +415,32 @@ public class Blocks extends ArenaModule implements Listener {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBucketEmpty(final PlayerBucketEmptyEvent event) {
+        if (event.getBucket() != Material.LAVA_BUCKET && event.getBucket() != Material.WATER_BUCKET) {
+            return;
+        }
+        Block toCheck = event.getBlockClicked().getRelative(event.getBlockFace());
+        for (final ArenaRegion shape : arena.getRegionsByType(RegionType.BATTLE)) {
+            if (shape.getShape().contains(new PABlockLocation(toCheck.getLocation()))) {
+                saveBlock(toCheck, Material.AIR);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBucketFill(final PlayerBucketFillEvent event) {
+        if (event.getBucket() != Material.BUCKET) {
+            return;
+        }
+        Block toCheck = event.getBlockClicked().getRelative(event.getBlockFace());
+        for (final ArenaRegion shape : arena.getRegionsByType(RegionType.BATTLE)) {
+            if (shape.getShape().contains(new PABlockLocation(toCheck.getLocation()))) {
+                saveBlock(toCheck);
             }
         }
     }
