@@ -30,7 +30,7 @@ public class FlySpectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.103";
+        return "v1.3.2.105";
     }
 
     @Override
@@ -39,11 +39,11 @@ public class FlySpectate extends ArenaModule {
         if (join && (arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE) || !arena.isFightInProgress())) {
             return res;
         }
-
+/*
         if (arena.getFighters().size() < 1) {
             res.setError(this, Language.parse(MSG.ERROR_NOPLAYERFOUND));
         }
-
+*/
         if (res.getPriority() < priority || join && res.hasError()) {
             res.setPriority(this, priority);
         }
