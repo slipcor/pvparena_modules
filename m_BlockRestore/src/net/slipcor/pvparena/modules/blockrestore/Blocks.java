@@ -45,7 +45,7 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.105";
+        return "v1.3.2.106";
     }
 
     private boolean listening;
@@ -427,7 +427,7 @@ public class Blocks extends ArenaModule implements Listener {
         Block toCheck = event.getBlockClicked().getRelative(event.getBlockFace());
         for (final ArenaRegion shape : arena.getRegionsByType(RegionType.BATTLE)) {
             if (shape.getShape().contains(new PABlockLocation(toCheck.getLocation()))) {
-                saveBlock(toCheck, Material.AIR);
+                saveBlock(toCheck);
             }
         }
     }
