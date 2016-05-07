@@ -37,7 +37,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.94";
+        return "v1.3.2.106";
     }
 
     private static ScoreboardManager getScoreboardManager() {
