@@ -45,7 +45,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.94";
+        return "v1.3.2.95";
     }
 
     @Override
@@ -210,7 +210,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public void configParse(YamlConfiguration config) {
-        loadPath = config.getString(CFG.MODULES_WORLDEDIT_REGIONS.getNode(), PVPArena.instance.getDataFolder().getAbsolutePath());
+        loadPath = config.getString(CFG.MODULES_WORLDEDIT_SCHEMATICPATH.getNode(), PVPArena.instance.getDataFolder().getAbsolutePath());
         if (loadPath.equals("")) {
             loadPath = PVPArena.instance.getDataFolder().getAbsolutePath();
         }
