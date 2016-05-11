@@ -45,7 +45,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.95";
+        return "v1.3.2.110";
     }
 
     @Override
@@ -156,7 +156,7 @@ public class PAWE extends ArenaModule {
                 arena.msg(sender, Language.parse(MSG.MODULE_WORLDEDIT_LIST_REMOVED, ars.getRegionName()));
                 return;
             }
-            if (args[0].equals("!we") || args[0].equals("!we")) {
+            if (args[0].equals("!we")) {
 
                 if (args[1].endsWith("save")) {
                     boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_AUTOSAVE);
@@ -232,7 +232,7 @@ public class PAWE extends ArenaModule {
         arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa regcreate [regionname]"));
         arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autoload"));
         arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we autosave"));
-        arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we create"));
+        arena.msg(sender, Language.parse(MSG.ERROR_ERROR, "/pa !we create [regionname]"));
     }
 
     void load(final ArenaRegion ars) {
