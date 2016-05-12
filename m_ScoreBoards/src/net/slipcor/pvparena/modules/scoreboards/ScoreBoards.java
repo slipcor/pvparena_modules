@@ -14,9 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ScoreBoards extends ArenaModule {
     private static ScoreboardManager man;
 
@@ -29,15 +26,13 @@ public class ScoreBoards extends ArenaModule {
 
     private boolean block;
 
-    private final Map<String, Scoreboard> playerBoards = new HashMap<>();
-
     public ScoreBoards() {
         super("ScoreBoards");
     }
 
     @Override
     public String version() {
-        return "v1.3.2.106";
+        return "v1.3.2.112";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -54,8 +49,11 @@ public class ScoreBoards extends ArenaModule {
 
     public void add(final Player player) {
         // after runnable: add player to scoreboard, resend all scoreboards
-
-        playerBoards.put(player.getName(), player.getScoreboard());
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        if (!ap.hasBackupScoreboard() && player.getScoreboard() != null) {
+            ap.setBackupScoreboard(player.getScoreboard());
+            ap.setBackupScoreboardTeam(player.getScoreboard().getEntryTeam(ap.getName()));
+        }
 
         // first, check if the scoreboard exists
         class RunLater implements Runnable {
@@ -250,17 +248,18 @@ public class ScoreBoards extends ArenaModule {
 
         }
         boolean skip = false;
-        if (playerBoards == null) {
-            PVPArena.instance.getLogger().severe("final Map 'playerBoards' is null. Please check the server startup for errors!");
-            skip = true;
-        } else if (player == null) {
+        if (player == null) {
             PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");
             return;
         }
-        if (playerBoards.containsKey(player.getName())) {
-            player.setScoreboard(playerBoards.get(player.getName()));
-        } else {
-            player.setScoreboard(getScoreboardManager().getMainScoreboard());
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getDisplayName());
+
+        if (ap.hasBackupScoreboard()) {
+            player.setScoreboard(ap.getBackupScoreboard());
+            ap.getBackupScoreboardTeam().addEntry(ap.getName());
+
+            ap.setBackupScoreboardTeam(null);
+            ap.setBackupScoreboard(null);
         }
     }
 

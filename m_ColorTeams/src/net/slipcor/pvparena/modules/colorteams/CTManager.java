@@ -23,14 +23,10 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CTManager extends ArenaModule implements Listener {
     private Scoreboard board;
-    private final Map<String, Scoreboard> backup = new HashMap<>();
-    private final Map<String, Team> backupTeams = new HashMap<>();
 
     public CTManager() {
         super("ColorTeams");
@@ -38,7 +34,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.105";
+        return "v1.3.2.112";
     }
 
     @Override
@@ -143,8 +139,13 @@ public class CTManager extends ArenaModule implements Listener {
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
         final Scoreboard board = getScoreboard();
-        backup.put(sender.getName(), ((Player) sender).getScoreboard());
-        backupTeams.put(sender.getName(), ((Player) sender).getScoreboard().getPlayerTeam((Player) sender));
+        Player player = ((Player) sender);
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        if (!ap.hasBackupScoreboard() && player.getScoreboard() != null) {
+            ap.setBackupScoreboard(player.getScoreboard());
+            ap.setBackupScoreboardTeam(player.getScoreboard().getEntryTeam(ap.getName()));
+        }
+
         ((Player) sender).setScoreboard(board);
         for (final Team sTeam : board.getTeams()) {
             if (sTeam.getName().equals(team.getName())) {
@@ -178,14 +179,14 @@ public class CTManager extends ArenaModule implements Listener {
         if (team != null) {
             getScoreboard().getTeam(team.getName()).removePlayer(player);
         }
-        if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
-            player.setScoreboard(backup.get(player.getName()));
-            if (backupTeams.containsKey(player.getName()) && backupTeams.get(player.getName()) != null) {
-                // TODO: fix
-                backupTeams.get(player.getName()).addPlayer(player);
-            }
-        } else {
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getDisplayName());
+
+        if (ap.hasBackupScoreboard()) {
+            player.setScoreboard(ap.getBackupScoreboard());
+            ap.getBackupScoreboardTeam().addEntry(ap.getName());
+
+            ap.setBackupScoreboardTeam(null);
+            ap.setBackupScoreboard(null);
         }
     }
 
@@ -201,25 +202,6 @@ public class CTManager extends ArenaModule implements Listener {
             }
         }
         return board;
-    }
-
-    @Override
-    public void reset(final boolean force) {
-        if (force) {
-            backup.clear();
-            backupTeams.clear();
-        } else {
-            class RunLater implements Runnable {
-
-                @Override
-                public void run() {
-                    backup.clear();
-                    backupTeams.clear();
-                }
-
-            }
-            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 5L);
-        }
     }
 
     @EventHandler
