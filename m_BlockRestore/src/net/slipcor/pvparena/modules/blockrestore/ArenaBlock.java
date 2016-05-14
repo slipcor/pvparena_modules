@@ -71,13 +71,10 @@ class ArenaBlock {
      */
     public void reset() {
         final Block b = location.toLocation().getBlock();
-        if (material == Material.LAVA || material == Material.STATIONARY_LAVA ||
-                material == Material.WATER || material == Material.STATIONARY_WATER) {
-            b.setType(Material.AIR);
-        } else {
-            b.setType(material);
-        }
+
+        b.setType(material);
         b.setData(data);
+
         if (lines != null) {
             int i = 0;
             for (final String s : lines) {

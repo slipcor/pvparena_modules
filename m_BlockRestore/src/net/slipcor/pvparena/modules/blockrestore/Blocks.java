@@ -26,6 +26,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -45,7 +46,7 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.106";
+        return "v1.3.2.113";
     }
 
     private boolean listening;
@@ -442,6 +443,20 @@ public class Blocks extends ArenaModule implements Listener {
             if (shape.getShape().contains(new PABlockLocation(toCheck.getLocation()))) {
                 saveBlock(toCheck);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockFromTo(BlockFromToEvent event) {
+        Block blk = event.getToBlock();
+        if (blk.getType() == Material.WATER || blk.getType() == Material.LAVA) {
+            Location loc = blk.getLocation();
+            for (final ArenaRegion shape : arena.getRegionsByType(RegionType.BATTLE)) {
+                if (shape.getShape().contains(new PABlockLocation(loc))) {
+                    saveBlock(loc.getBlock());
+                }
+            }
+
         }
     }
 }
