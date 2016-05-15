@@ -34,7 +34,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.112";
+        return "v1.3.2.113";
     }
 
     @Override
@@ -174,20 +174,26 @@ public class CTManager extends ArenaModule implements Listener {
 */
     @Override
     public void resetPlayer(final Player player, final boolean force) {
-        final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
+        final ArenaTeam ateam = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
-        if (team != null) {
-            getScoreboard().getTeam(team.getName()).removePlayer(player);
+        if (ateam != null) {
+            getScoreboard().getTeam(ateam.getName()).removePlayer(player);
         }
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getDisplayName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
 
-        if (ap.hasBackupScoreboard()) {
-            player.setScoreboard(ap.getBackupScoreboard());
-            ap.getBackupScoreboardTeam().addEntry(ap.getName());
+        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
+            @Override
+            public void run() {
 
-            ap.setBackupScoreboardTeam(null);
-            ap.setBackupScoreboard(null);
-        }
+                if (ap.hasBackupScoreboard()) {
+                    player.setScoreboard(ap.getBackupScoreboard());
+                    ap.getBackupScoreboardTeam().addEntry(ap.getName());
+                    ap.setBackupScoreboardTeam(null);
+                    ap.setBackupScoreboard(null);
+                }
+            }
+        }, 3L);
+
     }
 
     private Scoreboard getScoreboard() {

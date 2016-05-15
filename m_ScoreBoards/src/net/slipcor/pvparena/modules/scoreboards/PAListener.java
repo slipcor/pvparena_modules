@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.modules.scoreboards;
 
-import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.events.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -64,15 +63,11 @@ class PAListener implements Listener {
 
     @EventHandler
     public void onLeave(PALeaveEvent event) {
-        if (module.getArena() == null) {
-            Debug lala = new Debug(111);
-            lala.i("PALeaveEvent");
-        } else {
-            module.getArena().getDebugger().i("PALeaveEvent");
+        if (module.getArena() == null || !module.getArena().equals(event.getArena())) {
+            return;
         }
-        if (module.getArena() != null && module.getArena().equals(event.getArena())) {
-            module.remove(event.getPlayer());
-        }
+        module.getArena().getDebugger().i("PALeaveEvent");
+        module.remove(event.getPlayer());
     }
 
     @EventHandler

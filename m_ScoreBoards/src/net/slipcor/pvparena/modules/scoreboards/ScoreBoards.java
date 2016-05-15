@@ -32,7 +32,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.112";
+        return "v1.3.2.113";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -252,15 +252,19 @@ public class ScoreBoards extends ArenaModule {
             PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");
             return;
         }
-        ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getDisplayName());
+        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
+            @Override
+            public void run() {
 
-        if (ap.hasBackupScoreboard()) {
-            player.setScoreboard(ap.getBackupScoreboard());
-            ap.getBackupScoreboardTeam().addEntry(ap.getName());
-
-            ap.setBackupScoreboardTeam(null);
-            ap.setBackupScoreboard(null);
-        }
+                if (ap.hasBackupScoreboard()) {
+                    player.setScoreboard(ap.getBackupScoreboard());
+                    ap.getBackupScoreboardTeam().addEntry(ap.getName());
+                    ap.setBackupScoreboardTeam(null);
+                    ap.setBackupScoreboard(null);
+                }
+            }
+        }, 3L);
     }
 
     public boolean removeCustom(final ArenaModule module, final String string, final Integer position) {
