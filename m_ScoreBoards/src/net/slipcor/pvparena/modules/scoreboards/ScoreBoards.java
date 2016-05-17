@@ -244,29 +244,28 @@ public class ScoreBoards extends ArenaModule {
             if (!found) {
                 board.resetScores(player.getName());
             }
+            if (player == null) {
+                PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");
+                return;
+            }
+            final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
+                @Override
+                public void run() {
+
+                    if (ap.hasBackupScoreboard()) {
+                        player.setScoreboard(ap.getBackupScoreboard());
+                        if (ap.getBackupScoreboard() != null) {
+                            ap.getBackupScoreboardTeam().addEntry(ap.getName());
+                        }
+                        ap.setBackupScoreboardTeam(null);
+                        ap.setBackupScoreboard(null);
+                    }
+                }
+            }, 3L);
         } catch (final Exception e) {
 
         }
-        boolean skip = false;
-        if (player == null) {
-            PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");
-            return;
-        }
-        final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
-            @Override
-            public void run() {
-
-                if (ap.hasBackupScoreboard()) {
-                    player.setScoreboard(ap.getBackupScoreboard());
-                    if (ap.getBackupScoreboard() != null) {
-                        ap.getBackupScoreboardTeam().addEntry(ap.getName());
-                    }
-                    ap.setBackupScoreboardTeam(null);
-                    ap.setBackupScoreboard(null);
-                }
-            }
-        }, 3L);
     }
 
     public boolean removeCustom(final ArenaModule module, final String string, final Integer position) {

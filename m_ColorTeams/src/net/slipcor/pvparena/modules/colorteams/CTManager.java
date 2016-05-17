@@ -19,6 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -180,22 +181,24 @@ public class CTManager extends ArenaModule implements Listener {
             getScoreboard().getTeam(ateam.getName()).removePlayer(player);
         }
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        try {
+            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
+                @Override
+                public void run() {
 
-        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
-            @Override
-            public void run() {
-
-                if (ap.hasBackupScoreboard()) {
-                    player.setScoreboard(ap.getBackupScoreboard());
-                    if (ap.getBackupScoreboard() != null) {
-                        ap.getBackupScoreboardTeam().addEntry(ap.getName());
+                    if (ap.hasBackupScoreboard()) {
+                        player.setScoreboard(ap.getBackupScoreboard());
+                        if (ap.getBackupScoreboard() != null) {
+                            ap.getBackupScoreboardTeam().addEntry(ap.getName());
+                        }
+                        ap.setBackupScoreboardTeam(null);
+                        ap.setBackupScoreboard(null);
                     }
-                    ap.setBackupScoreboardTeam(null);
-                    ap.setBackupScoreboard(null);
                 }
-            }
-        }, 3L);
+            }, 3L);
+        } catch (IllegalPluginAccessException e) {
 
+        }
     }
 
     private Scoreboard getScoreboard() {
