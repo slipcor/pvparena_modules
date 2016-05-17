@@ -1,3 +1,4 @@
+v1.3.2.114 - [ColorTeams,Scoreboards] fix NPE when restoring an empty scoreboard
 v1.3.2.113 - [BlockRestore] - properly restore LAVA and WATER - Thanks to @BerndiVader
 v1.3.2.113 - [ColorTeams,Scoreboards] fix Arena Player instances being created improperly
 v1.3.2.112 - [ColorTeams,Scoreboards] fix Scoreboards being double reset in modules
