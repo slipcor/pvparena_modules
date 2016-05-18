@@ -35,7 +35,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.114";
+        return "v1.3.2.116";
     }
 
     @Override
@@ -188,7 +188,7 @@ public class CTManager extends ArenaModule implements Listener {
 
                     if (ap.hasBackupScoreboard()) {
                         player.setScoreboard(ap.getBackupScoreboard());
-                        if (ap.getBackupScoreboard() != null) {
+                        if (ap.getBackupScoreboardTeam() != null) {
                             ap.getBackupScoreboardTeam().addEntry(ap.getName());
                         }
                         ap.setBackupScoreboardTeam(null);

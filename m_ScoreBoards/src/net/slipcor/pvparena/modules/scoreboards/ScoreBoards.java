@@ -32,7 +32,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.114";
+        return "v1.3.2.116";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -255,7 +255,7 @@ public class ScoreBoards extends ArenaModule {
 
                     if (ap.hasBackupScoreboard()) {
                         player.setScoreboard(ap.getBackupScoreboard());
-                        if (ap.getBackupScoreboard() != null) {
+                        if (ap.getBackupScoreboardTeam() != null) {
                             ap.getBackupScoreboardTeam().addEntry(ap.getName());
                         }
                         ap.setBackupScoreboardTeam(null);
