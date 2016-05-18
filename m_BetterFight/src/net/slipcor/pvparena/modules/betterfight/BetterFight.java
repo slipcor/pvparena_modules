@@ -37,7 +37,7 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.117";
     }
 
     @Override
@@ -62,6 +62,7 @@ public class BetterFight extends ArenaModule {
         result.define(new String[]{"items"});
         result.define(new String[]{"reset"});
         result.define(new String[]{"explode"});
+        result.define(new String[]{"explodeonlyononehit"});
         return result;
     }
 
@@ -71,6 +72,7 @@ public class BetterFight extends ArenaModule {
         // !bf items [items]
         // !bf reset
         // !bf explode
+        // !bf explodeonlyononehit
 
         if (!PVPArena.hasAdminPerms(sender)
                 && !PVPArena.hasCreatePerms(sender, arena)) {
@@ -99,7 +101,15 @@ public class BetterFight extends ArenaModule {
                     arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH.getNode(), String.valueOf(!b)));
                     return;
                 }
-                arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | explode"));
+                if (args[1].equals("explodeonlyononehit")) {
+                    boolean b = arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT);
+
+                    arena.getArenaConfig().set(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT, !b);
+                    arena.getArenaConfig().save();
+                    arena.msg(sender, Language.parse(MSG.SET_DONE, CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT.getNode(), String.valueOf(!b)));
+                    return;
+                }
+                arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | explode | explodeonlyononehit"));
                 return;
             }
             if ("items".equals(args[1])) {
@@ -130,7 +140,7 @@ public class BetterFight extends ArenaModule {
                 return;
             }
 
-            arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | items | messages | explode"));
+            arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "reset | items | messages | explode | explodeonlyononehit"));
         }
     }
 
@@ -175,6 +185,9 @@ public class BetterFight extends ArenaModule {
         sender.sendMessage(StringParser.colorVar("explode",
                 arena.getArenaConfig().getBoolean(
                         CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) + " | " +
+                StringParser.colorVar("explodeonlyononehit",
+                arena.getArenaConfig().getBoolean(
+                        CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT)) + " | " +
                 StringParser.colorVar("messages",
                         arena.getArenaConfig().getBoolean(
                                 CFG.MODULES_BETTERFIGHT_MESSAGES)) + " | " +
@@ -267,21 +280,23 @@ public class BetterFight extends ArenaModule {
         }
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
+            if (cause.getDamage() != 1000 || !arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT)) {
 
-            class RunLater implements Runnable {
-                final Location l;
+                class RunLater implements Runnable {
+                    final Location l;
 
-                public RunLater(final Location loc) {
-                    l = loc;
+                    public RunLater(final Location loc) {
+                        l = loc;
+                    }
+
+                    @Override
+                    public void run() {
+                        l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.0f, false, false);
+                    }
+
                 }
-
-                @Override
-                public void run() {
-                    l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.0f, false, false);
-                }
-
+                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().clone()), 2L);
             }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().clone()), 2L);
         }
 
         if (p == null || getKills().get(p.getName()) == null) {
