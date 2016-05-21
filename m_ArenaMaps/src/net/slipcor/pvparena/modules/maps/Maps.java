@@ -242,8 +242,12 @@ public class Maps extends ArenaModule {
             player.getInventory().addItem(new ItemStack(Material.MAP, 1, value));
             mappings.add(player.getName());
             if (value != Short.MIN_VALUE) {
-                final MapView map = Bukkit.getMap(value);
-
+                final MapView map = Bukkit.getServer().getMap(value);
+                if (map == null) {
+                    PVPArena.instance.getLogger().severe("Map #"+value+" seems to be corrupted, please check the PVP Arena config for this value!");
+                    PVPArena.instance.getLogger().severe("Affected player: "+player.getName());
+                    continue;
+                }
                 final MapRenderer mr = new MyRenderer(this);
                 map.addRenderer(mr);
             }
