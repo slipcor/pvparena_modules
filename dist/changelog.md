@@ -1,3 +1,4 @@
+v1.3.2.119 - [BetterFight] use proper logic to determine whether we should explode
 v1.3.2.118 - [ArenaMaps] fix a startup error due to broken Map linking that breaks everything
 v1.3.2.117 - [BetterFight] add config setting to restrict explosions only to one-hit deaths
 v1.3.2.116 - [ColorTeams,Scoreboards] prevent IllegalPluginAccessException (for real)

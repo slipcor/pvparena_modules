@@ -37,7 +37,7 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.117";
+        return "v1.3.2.119";
     }
 
     @Override
@@ -280,7 +280,7 @@ public class BetterFight extends ArenaModule {
         }
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
-            if (cause.getDamage() != 1000 || !arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT)) {
+            if (cause.getDamage() == 1000 || !arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT)) {
 
                 class RunLater implements Runnable {
                     final Location l;
