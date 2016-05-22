@@ -1,3 +1,4 @@
+v1.3.2.119 - [Titles] fix jar export (was overridden by TempPerms!
 v1.3.2.119 - [SpecialJoin] fix plugin loading, broken on March 24th - sorry!
 v1.3.2.119 - [BetterFight] use proper logic to determine whether we should explode
 v1.3.2.118 - [ArenaMaps] fix a startup error due to broken Map linking that breaks everything
