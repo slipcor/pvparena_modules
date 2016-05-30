@@ -32,7 +32,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.116";
+        return "v1.3.2.120";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -92,7 +92,7 @@ public class ScoreBoards extends ArenaModule {
                                     !arena.isFreeForAll()
                             );
                         } catch (final Exception e) {
-
+                            e.printStackTrace();
                         }
 
                         if (team == ArenaPlayer.parsePlayer(player.getName()).getArenaTeam()) {
@@ -162,7 +162,7 @@ public class ScoreBoards extends ArenaModule {
                             !arena.isFreeForAll()
                     );
                 } catch (final Exception e) {
-
+                    e.printStackTrace();
                 }
             }
             try {
@@ -264,7 +264,7 @@ public class ScoreBoards extends ArenaModule {
                 }
             }, 3L);
         } catch (final Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -282,7 +282,7 @@ public class ScoreBoards extends ArenaModule {
             team.removeEntry(string);
             return true;
         } catch (final Exception e) {
-
+            e.printStackTrace();
         }
         try {
             for (String entry : board.getEntries()) {
@@ -293,7 +293,7 @@ public class ScoreBoards extends ArenaModule {
                 }
             }
         } catch (final Exception e) {
-
+            e.printStackTrace();
         }
         return false;
     }

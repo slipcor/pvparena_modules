@@ -14,6 +14,7 @@ class PAListener implements Listener {
     @EventHandler
     public void onDeath(final PADeathEvent event) {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PADeathEvent");
             module.update(event.getPlayer());
         }
     }
@@ -21,6 +22,7 @@ class PAListener implements Listener {
     @EventHandler
     public void onEnd(PAEndEvent event) {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PAEndEvent");
             module.stop();
         }
     }
@@ -30,7 +32,7 @@ class PAListener implements Listener {
         if (module.getArena() == null || !module.getArena().equals(event.getArena())) {
             return;
         }
-        module.getArena().getDebugger().i("PAExitEvent");
+        module.getArena().getDebugger().i("ScoreBoards: PAExitEvent");
         module.remove(event.getPlayer());
     }
 
@@ -40,6 +42,7 @@ class PAListener implements Listener {
             return;
         }
         if (module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PAJoinEvent");
             module.add(event.getPlayer());
         }
     }
@@ -50,6 +53,7 @@ class PAListener implements Listener {
             return;
         }
         if (module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PATeamChangeEvent");
             module.change(event.getPlayer(), event.getFrom(), event.getTo());
         }
     }
@@ -57,6 +61,7 @@ class PAListener implements Listener {
     @EventHandler
     public void onKill(PAKillEvent event) {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PAKillEvent");
             module.update(event.getPlayer());
         }
     }
@@ -66,13 +71,14 @@ class PAListener implements Listener {
         if (module.getArena() == null || !module.getArena().equals(event.getArena())) {
             return;
         }
-        module.getArena().getDebugger().i("PALeaveEvent");
+        module.getArena().getDebugger().i("ScoreBoards: PALeaveEvent");
         module.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onLose(PALoseEvent event) {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PALoseEvent");
             module.remove(event.getPlayer());
         }
     }
@@ -80,6 +86,7 @@ class PAListener implements Listener {
     @EventHandler
     public void onStart(PAStartEvent event) {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PAStartEvent");
             module.start();
         }
     }
