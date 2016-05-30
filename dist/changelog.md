@@ -1,3 +1,4 @@
+v1.3.2.120 - [Duel, Vault] address github issue #99
 v1.3.2.119 - [Titles] fix jar export (was overridden by TempPerms!
 v1.3.2.119 - [SpecialJoin] fix plugin loading, broken on March 24th - sorry!
 v1.3.2.119 - [BetterFight] use proper logic to determine whether we should explode

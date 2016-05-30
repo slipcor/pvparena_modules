@@ -5,6 +5,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.CommandTree;
+import net.slipcor.pvparena.commands.PAG_Leave;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
@@ -26,7 +27,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.94";
+        return "v1.3.2.120";
     }
 
     private String duelSender = null;
@@ -207,8 +208,15 @@ public class DuelManager extends ArenaModule {
                     if (mod instanceof VaultSupport) {
                         VaultSupport sup = (VaultSupport) mod;
 
-                        sup.tryDeposit(this, ap.get(), amount*2, true);
-                        amount = 0;
+                        if (ArenaPlayer.parsePlayer(player.getName()).getStatus() == ArenaPlayer.Status.LOUNGE) {
+                            sup.tryDeposit(this, ap.get(), amount, true);
+                            sup.tryDeposit(this, player, amount, true);
+                            amount = 0;
+                            new PAG_Leave().commit(this.getArena(), ap.get(), new String[]{});
+                        } else {
+                            sup.tryDeposit(this, ap.get(), amount*2, true);
+                            amount = 0;
+                        }
                     }
                 }
             }

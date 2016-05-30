@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.94";
+        return "v1.3.2.120";
     }
 
     @Override
@@ -85,7 +85,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                 amount)) {
             // no money, no entry!
             if (notify) {
-                sender.sendMessage(Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
+                module.getArena().msg(sender, Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
                         .format(amount)));
             } else {
                 debug.i("Not enough cash!", sender);
@@ -116,7 +116,7 @@ public class VaultSupport extends ArenaModule implements Listener {
                 amount)) {
             // no money, no entry!
             if (notify) {
-                sender.sendMessage(Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
+                module.getArena().msg(sender, Language.parse(MSG.MODULE_VAULT_NOTENOUGH, economy
                         .format(amount)));
             } else {
                 debug.i("Not enough cash!", sender);
