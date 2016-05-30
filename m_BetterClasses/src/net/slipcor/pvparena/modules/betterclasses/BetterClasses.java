@@ -29,10 +29,9 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.94";
+        return "v1.3.2.120";
     }
 
-    //private BukkitTask potionRunner;
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
     private Map<ArenaPlayer, Integer> playerSwitches = new HashMap<>();
 
@@ -95,7 +94,7 @@ public class BetterClasses extends ArenaModule {
             if (!at.hasPlayer(player)) {
                 continue;
             }
-            if (at.getName().equals(className)) {
+            if (teamSwitches.containsKey(at)) {
                 if (teamSwitches.get(at) == 0) {
                     arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXTEAM));
                     return true;
@@ -422,11 +421,6 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
-        /*
-        if (potionRunner != null) {
-            potionRunner.cancel();
-            potionRunner = null;
-        }*/
         playerSwitches.clear();
         teamSwitches.clear();
     }
@@ -502,19 +496,6 @@ public class BetterClasses extends ArenaModule {
                     (Integer) arena.getArenaConfig()
                             .getUnsafe("modules.betterclasses.maxTeamSwitches."+at.getName()));
         }
-
-        class RunLater implements Runnable {
-
-            @Override
-            public void run() {
-                for (final ArenaPlayer ap : arena.getFighters()) {
-                    parseRespawn(ap.get(), null, null, null);
-                }
-            }
-
-        }
-        //potionRunner = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new RunLater(), DURATION / 2, DURATION / 2);
-
     }
 
     private HashSet<PotionEffect> parseStringToPotionEffects(final String s) {
