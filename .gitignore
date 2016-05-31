@@ -1,4 +1,9 @@
-/target/
+# Idea
 *.iml
+.idea/
+
+# Maven
+*/target/
+
 /bin/
 /.settings/
