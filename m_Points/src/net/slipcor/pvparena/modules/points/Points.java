@@ -141,7 +141,7 @@ public class Points extends ArenaModule implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassChange(final PAPlayerClassChangeEvent event) {
-        if (event.getArenaClass() == null) {
+        if (event.getArenaClass() == null || event.getArena() == null || !event.getArena().equals(arena)) {
             return;
         }
         final Object o = arena.getArenaConfig().getUnsafe("modules.points.classes." + event.getArenaClass().getName());

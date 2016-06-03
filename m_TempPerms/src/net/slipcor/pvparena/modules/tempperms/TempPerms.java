@@ -149,11 +149,13 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onClassChange(final PAPlayerClassChangeEvent event) {
-        final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(event.getPlayer().getName());
-        if (arena != null && arena.getEveryone().contains(aPlayer)) {
-            removePermissions(event.getPlayer());
+        if (event.getArena() != null && event.getArena().equals(arena)) {
+            final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(event.getPlayer().getName());
+            if (arena != null && arena.getEveryone().contains(aPlayer)) {
+                removePermissions(event.getPlayer());
 
-            setPermissions(arena, aPlayer, getTempPerms(arena, "default"), getTempPerms(arena, aPlayer.getArenaTeam().getName()));
+                setPermissions(arena, aPlayer, getTempPerms(arena, "default"), getTempPerms(arena, aPlayer.getArenaTeam().getName()));
+            }
         }
     }
 
