@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.120";
+        return "v1.3.2.129";
     }
 
     @Override
@@ -740,7 +740,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @EventHandler
     public void onClassChange(final PAPlayerClassChangeEvent event) {
-        if (event.getArena().equals(arena)) {
+        if (event.getArena() != null && event.getArena().equals(arena)) {
 
             final String autoClass = arena.getArenaConfig().getString(CFG.READY_AUTOCLASS);
 
