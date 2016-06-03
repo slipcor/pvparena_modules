@@ -1,3 +1,4 @@
+v1.3.2.129 - [ScoreBoards] address github issue #210, IllegalPluginAccessException
 v1.3.2.120 - [ScoreBoards] add debug and explicit Exceptions - use with caution :P
 v1.3.2.120 - [BetterClasses] address github issue #120
 v1.3.2.120 - [Duel, Vault] address github issue #99

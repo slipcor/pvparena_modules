@@ -32,7 +32,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.120";
+        return "v1.3.2.129";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -227,7 +227,7 @@ public class ScoreBoards extends ArenaModule {
         Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 1L);
     }
 
-    public void remove(final Player player) {
+    public void remove(final Player player, boolean force) {
         // after runnable: remove player's scoreboard, remove player from scoreboard
         // and update all players' scoreboards
         arena.getDebugger().i("ScoreBoards: remove: " + player.getName(), player);
@@ -249,10 +249,9 @@ public class ScoreBoards extends ArenaModule {
                 return;
             }
             final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new Runnable() {
+            class RunLater implements Runnable {
                 @Override
                 public void run() {
-
                     if (ap.hasBackupScoreboard()) {
                         player.setScoreboard(ap.getBackupScoreboard());
                         if (ap.getBackupScoreboardTeam() != null) {
@@ -262,7 +261,13 @@ public class ScoreBoards extends ArenaModule {
                         ap.setBackupScoreboard(null);
                     }
                 }
-            }, 3L);
+            }
+            if (force) {
+                new RunLater().run();
+            } else {
+                Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
+            }
+
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -300,7 +305,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public void resetPlayer(final Player player, final boolean force) {
-        remove(player);
+        remove(player, force);
     }
 
     public void start() {
