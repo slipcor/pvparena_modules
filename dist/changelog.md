@@ -1,5 +1,4 @@
-v1.3.2.129 - [Points, TempPerms] furthermore fix issues related to the bug causing issue #208
-v1.3.2.129 - [Vault] address github issue #208
+v1.3.2.129 - [Vault,Points,TempPerms] address github issue #208, fix issues related to this bug
 v1.3.2.129 - [ScoreBoards] address github issue #210, IllegalPluginAccessException
 v1.3.2.120 - [ScoreBoards] add debug and explicit Exceptions - use with caution :P
 v1.3.2.120 - [BetterClasses] address github issue #120
