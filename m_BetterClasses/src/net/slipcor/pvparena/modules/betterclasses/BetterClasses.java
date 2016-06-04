@@ -29,7 +29,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.120";
+        return "v1.3.2.130";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -51,10 +51,12 @@ public class BetterClasses extends ArenaModule {
             max = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxPlayers." + className);
             globalmax = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxGlobalPlayers." + className);
         } catch (final Exception e) {
+            arena.getDebugger().i("Exception at BetterClasses.class:"+e.getStackTrace()[1].getLineNumber());
             return false;
         }
 
         if (max < 1 && globalmax < 1) {
+            arena.getDebugger().i("OUT - max: "+max + "; global:" + globalmax);
             return false;
         }
 
@@ -94,11 +96,9 @@ public class BetterClasses extends ArenaModule {
             if (!at.hasPlayer(player)) {
                 continue;
             }
-            if (teamSwitches.containsKey(at)) {
-                if (teamSwitches.get(at) == 0) {
-                    arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXTEAM));
-                    return true;
-                }
+            if (teamSwitches.get(at) == 0) {
+                arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXTEAM));
+                return true;
             }
         }
 
@@ -463,11 +463,13 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public void parseClassChange(Player player, ArenaClass aClass) {
+        arena.getDebugger().i("BetterClass handling class change!");
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         if (playerSwitches.containsKey(ap)) {
             int value = playerSwitches.get(ap);
             if (value-- > 0) {
                 playerSwitches.put(ap, value);
+                arena.getDebugger().i("player " + ap.getName() + ": " + value);
             }
         }
         ArenaTeam at = ap.getArenaTeam();
@@ -475,6 +477,7 @@ public class BetterClasses extends ArenaModule {
             int value = teamSwitches.get(at);
             if (value-- > 0) {
                 teamSwitches.put(at, value);
+                arena.getDebugger().i("team " + at.getName() + ": " + value);
             }
         }
     }
