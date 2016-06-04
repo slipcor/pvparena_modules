@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.129";
+        return "v1.3.2.130";
     }
 
     @Override
@@ -95,12 +95,48 @@ public class VaultSupport extends ArenaModule implements Listener {
         return true;
     }
 
+    public boolean tryDeposit(ArenaModule module, CommandSender sender, int amount, boolean notify) {
+        debug.i("module "+module+" tries to deposit "+amount+" to "+sender.getName(), sender);
+        if (economy == null) {
+            return false;
+        }
+        if (!economy.hasAccount(sender.getName())) {
+            arena.getDebugger().i("Account not found: " + sender.getName(), sender);
+            return false;
+        }
+        EconomyResponse res = economy.depositPlayer(sender.getName(), amount);
+        if (res.transactionSuccess() && notify) {
+            arena.msg(Bukkit.getPlayer(sender.getName()), Language
+                    .parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
+            return true;
+        }
+        return false;
+    }
+
     public String tryFormat(ArenaModule module, int amount) {
         debug.i("module "+module+" tries to format: "+amount);
         if (economy == null) {
             return String.valueOf(amount);
         }
         return economy.format(amount);
+    }
+
+    public boolean tryRefund(ArenaModule module, CommandSender sender, int amount, boolean notify) {
+        debug.i("module "+module+" tries to refund "+amount+" to "+sender.getName(), sender);
+        if (economy == null) {
+            return false;
+        }
+        if (!economy.hasAccount(sender.getName())) {
+            arena.getDebugger().i("Account not found: " + sender.getName(), sender);
+            return false;
+        }
+        EconomyResponse res = economy.depositPlayer(sender.getName(), amount);
+        if (res.transactionSuccess() && notify) {
+            arena.msg(Bukkit.getPlayer(sender.getName()), Language
+                    .parse(MSG.MODULE_VAULT_REFUNDING, economy.format(amount)));
+            return true;
+        }
+        return false;
     }
 
     public boolean tryWithdraw(ArenaModule module, CommandSender sender, int amount, boolean notify) {
@@ -127,24 +163,6 @@ public class VaultSupport extends ArenaModule implements Listener {
         if (res.transactionSuccess() && notify) {
             arena.msg(Bukkit.getPlayer(sender.getName()), Language
                     .parse(MSG.MODULE_VAULT_JOINPAY, economy.format(amount)));
-            return true;
-        }
-        return false;
-    }
-
-    public boolean tryDeposit(ArenaModule module, CommandSender sender, int amount, boolean notify) {
-        debug.i("module "+module+" tries to deposit "+amount+" to "+sender.getName(), sender);
-        if (economy == null) {
-            return false;
-        }
-        if (!economy.hasAccount(sender.getName())) {
-            arena.getDebugger().i("Account not found: " + sender.getName(), sender);
-            return false;
-        }
-        EconomyResponse res = economy.depositPlayer(sender.getName(), amount);
-        if (res.transactionSuccess() && notify) {
-            arena.msg(Bukkit.getPlayer(sender.getName()), Language
-                    .parse(MSG.MODULE_VAULT_YOUWON, economy.format(amount)));
             return true;
         }
         return false;
