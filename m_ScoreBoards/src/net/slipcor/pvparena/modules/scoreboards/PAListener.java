@@ -33,7 +33,7 @@ class PAListener implements Listener {
             return;
         }
         module.getArena().getDebugger().i("ScoreBoards: PAExitEvent");
-        module.remove(event.getPlayer(), force);
+        module.remove(event.getPlayer(), false);
     }
 
     @EventHandler
@@ -72,14 +72,14 @@ class PAListener implements Listener {
             return;
         }
         module.getArena().getDebugger().i("ScoreBoards: PALeaveEvent");
-        module.remove(event.getPlayer(), force);
+        module.remove(event.getPlayer(), false);
     }
 
     @EventHandler
     public void onLose(PALoseEvent event) {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
             module.getArena().getDebugger().i("ScoreBoards: PALoseEvent");
-            module.remove(event.getPlayer(), force);
+            module.remove(event.getPlayer(), false);
         }
     }
 

@@ -1,3 +1,4 @@
+v1.3.2.130 - oups
 v1.3.2.130 - [Vault,Duel] address github issue #99 - properly display "refunding" text when quitting from the lounge
 v1.3.2.129 - [Vault,Points,TempPerms] address github issue #208, fix issues related to this bug
 v1.3.2.129 - [ScoreBoards] address github issue #210, IllegalPluginAccessException
