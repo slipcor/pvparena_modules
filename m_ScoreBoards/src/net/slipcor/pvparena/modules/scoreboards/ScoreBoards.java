@@ -234,15 +234,17 @@ public class ScoreBoards extends ArenaModule {
 
         try {
             boolean found = false;
-            for (final Team team : board.getTeams()) {
-                if (team.hasPlayer(player)) {
-                    team.removePlayer(player);
-                    board.resetScores(player.getName());
-                    found = true;
+            if (board != null) {
+                for (final Team team : board.getTeams()) {
+                    if (team.hasPlayer(player)) {
+                        team.removePlayer(player);
+                        board.resetScores(player.getName());
+                        found = true;
+                    }
                 }
-            }
-            if (!found) {
-                board.resetScores(player.getName());
+                if (!found) {
+                    board.resetScores(player.getName());
+                }
             }
             if (player == null) {
                 PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");

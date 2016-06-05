@@ -1,3 +1,4 @@
+v1.3.2.133 - [ChestFiller] add github issue #200, a configurable chest to set items
 v1.3.2.130 - [BetterClasses] enhance debug for github issue #120
 v1.3.2.130 - oups
 v1.3.2.130 - [Vault,Duel] address github issue #99 - properly display "refunding" text when quitting from the lounge

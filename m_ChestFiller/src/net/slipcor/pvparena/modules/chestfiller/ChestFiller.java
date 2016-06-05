@@ -5,6 +5,7 @@ import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.CommandTree;
+import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
@@ -20,12 +21,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ChestFiller extends ArenaModule {
     public ChestFiller() {
@@ -36,7 +35,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.133";
     }
 
     @Override
@@ -57,6 +56,7 @@ public class ChestFiller extends ArenaModule {
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
+        result.define(new String[]{"chest"});
         result.define(new String[]{"clear"});
         return result;
     }
@@ -64,6 +64,7 @@ public class ChestFiller extends ArenaModule {
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
         // !cf clear | clear inventory definitions
+        // !cf chest | set chestfiller chest
         if (!PVPArena.hasAdminPerms(sender)
                 && !PVPArena.hasCreatePerms(sender, arena)) {
             arena.msg(
@@ -78,6 +79,26 @@ public class ChestFiller extends ArenaModule {
         }
 
         if (!"clear".equals(args[1])) {
+            if (!"chest".equals(args[1])) {
+                return;
+            }
+            if (!(sender instanceof Player)) {
+                Arena.pmsg(sender, Language.parse(arena, MSG.ERROR_ONLY_PLAYERS));
+                return;
+            }
+            Player player = (Player) sender;
+
+            Block b = player.getTargetBlock((Set<Material>)null, 10);
+            if (b.getType() != Material.CHEST && b.getType() != Material.TRAPPED_CHEST) {
+                arena.msg(sender,
+                        Language.parse(arena, MSG.ERROR_NO_CHEST));
+                return;
+            }
+            PABlockLocation loc = new PABlockLocation(b.getLocation());
+
+            arena.getArenaConfig().set(Config.CFG.MODULES_CHESTFILLER_CHESTLOCATION, loc.toString());
+            arena.getArenaConfig().save();
+            sender.sendMessage(Language.parse(arena, MSG.MODULE_CHESTFILLER_CHEST, loc.toString()));
             return;
         }
 
@@ -89,7 +110,8 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        sender.sendMessage("items: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems"));
+        String content = arena.getArenaConfig().getString(Config.CFG.MODULES_CHESTFILLER_CHESTLOCATION);
+        sender.sendMessage("items: " + (content.equals("none")?arena.getArenaConfig().getUnsafe("modules.chestfiller.cfitems"):content));
         sender.sendMessage("max: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")
                 + " | " +
                 "min: " + arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems"));
@@ -134,7 +156,25 @@ public class ChestFiller extends ArenaModule {
         final int cmax = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfmaxitems")));
         final int cmin = Integer.parseInt(String.valueOf(arena.getArenaConfig().getUnsafe("modules.chestfiller.cfminitems")));
 
-        final ItemStack[] stacks = StringParser.getItemStacksFromString(items);
+        String chest = arena.getArenaConfig().getString(Config.CFG.MODULES_CHESTFILLER_CHESTLOCATION);
+        ItemStack[] contents = new ItemStack[0];
+        if (!"none".equals(chest)) {
+            try {
+                PABlockLocation loc = new PABlockLocation(chest);
+                Chest c = (Chest) loc.toLocation().getBlock().getState();
+                List<ItemStack> list = new ArrayList<>();
+                for (ItemStack item : c.getInventory().getContents()) {
+                    if (item != null) {
+                        list.add(item.clone());
+                    }
+                }
+                contents = list.toArray(contents);
+            } catch (Exception e) {
+
+            }
+        }
+
+        final ItemStack[] stacks = contents.length>0?contents:StringParser.getItemStacksFromString(items);
 
         if (stacks.length < 1) {
             return;
@@ -187,6 +227,7 @@ public class ChestFiller extends ArenaModule {
                             }
                             debug.i("loc not null: " + loc);
                             result.add(parseLocationToString(loc));
+                            fill(loc, clear, cmin, cmax, stacks);
                         }
                     }
                 }
@@ -201,6 +242,7 @@ public class ChestFiller extends ArenaModule {
                             }
                             debug.i("loc not null: " + loc);
                             result.add(parseLocationToString(loc));
+                            fill(loc, clear, cmin, cmax, stacks);
                         }
                     }
                 }
