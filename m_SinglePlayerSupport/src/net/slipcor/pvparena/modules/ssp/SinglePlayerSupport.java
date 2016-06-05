@@ -11,7 +11,6 @@ import net.slipcor.pvparena.classes.PASpawn;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
@@ -32,7 +31,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.134";
     }
 
     @Override
@@ -74,12 +73,6 @@ public class SinglePlayerSupport extends ArenaModule {
 
     @Override
     public void commitJoin(final Player sender, final ArenaTeam team) {
-        final PAJoinEvent event = new PAJoinEvent(arena, sender, false);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return;
-        }
-
         // standard join --> fight!
         final ArenaPlayer player = ArenaPlayer.parsePlayer(sender.getName());
         player.setLocation(new PALocation(player.get().getLocation()));

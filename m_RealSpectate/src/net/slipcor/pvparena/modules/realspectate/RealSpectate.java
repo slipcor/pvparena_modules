@@ -10,7 +10,6 @@ import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -30,7 +29,7 @@ public class RealSpectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.103";
+        return "v1.3.2.134";
     }
 
     @Override
@@ -62,10 +61,6 @@ public class RealSpectate extends ArenaModule {
         if (ap.getState() == null) {
 
             final Arena arena = ap.getArena();
-
-            final PAJoinEvent event = new PAJoinEvent(arena, player, false);
-            Bukkit.getPluginManager().callEvent(event);
-
             ap.createState(player);
             ArenaPlayer.backupAndClearInventory(arena, player);
             ap.dump();

@@ -12,7 +12,6 @@ import net.slipcor.pvparena.commands.PAG_Leave;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
-import net.slipcor.pvparena.events.PAJoinEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -30,7 +29,7 @@ public class FlySpectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.105";
+        return "v1.3.2.134";
     }
 
     @Override
@@ -74,16 +73,9 @@ public class FlySpectate extends ArenaModule {
     @Override
     public void commitSpectate(final Player player) {
         debug.i("committing FLY spectate", player);
-
-        final PAJoinEvent event = new PAJoinEvent(arena, player, true);
-        Bukkit.getPluginManager().callEvent(event);
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        if (event.isCancelled() || arena.equals(ap.getArena())) {
-            if (arena.equals(ap.getArena())) {
-                arena.msg(player, Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, arena.getName()));
-            } else {
-                debug.i("joining spectate cancelled by eventhandler");
-            }
+        if (arena.equals(ap.getArena())) {
+            arena.msg(player, Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, arena.getName()));
             return;
         }
 
