@@ -7,6 +7,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.CommandTree;
+import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -38,26 +39,21 @@ public class Squads extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.2.134";
     }
 
     @Override
     public void configParse(final YamlConfiguration cfg) {
-        if (cfg.get("modules.squads.limits") == null) {
-            cfg.addDefault("modules.squads.autoSquad", "none");
-            cfg.addDefault("modules.squads.ingameSquadSwitch", false);
-            return;
-        }
         final ConfigurationSection cs = cfg.getConfigurationSection("modules.squads");
         final ConfigurationSection sqs = cs.getConfigurationSection("limits");
         for (final String name : sqs.getKeys(false)) {
             final ArenaSquad squad = new ArenaSquad(name, sqs.getInt(name));
-            if (name.equals(cs.getString("autoSquad"))) {
+            if (name.equals(arena.getArenaConfig().getString(Config.CFG.MODULES_SQUADS_AUTOSQUAD))) {
                 auto = squad;
             }
             squads.add(squad);
         }
-        ingame = cs.getBoolean("ingameSquadSwitch");
+        ingame = arena.getArenaConfig().getBoolean(Config.CFG.MODULES_SQUADS_INGAMESWITCH);
     }
 
     @Override
@@ -171,8 +167,8 @@ public class Squads extends ArenaModule {
             return false;
         }
 
-        if (arena.isFightInProgress() && !((Boolean) arena.getArenaConfig().getUnsafe(
-                "modules.squads.ingameSquadSwitch"))) {
+        if (arena.isFightInProgress() && !((Boolean) arena.getArenaConfig().getBoolean(
+                Config.CFG.MODULES_SQUADS_INGAMESWITCH))) {
             return false;
         }
 
