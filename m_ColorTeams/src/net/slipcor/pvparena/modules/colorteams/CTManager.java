@@ -35,7 +35,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.116";
+        return "v1.3.2.136";
     }
 
     @Override
@@ -109,6 +109,11 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public void tpPlayerToCoordName(final Player player, final String place) {
+        for (ArenaModule mod : arena.getMods()) {
+            if (mod.getName().equals("ScoreBoards")) {
+                return;
+            }
+        }
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
             try {
@@ -139,6 +144,11 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
+        for (ArenaModule mod : arena.getMods()) {
+            if (mod.getName().equals("ScoreBoards")) {
+                return;
+            }
+        }
         final Scoreboard board = getScoreboard();
         Player player = ((Player) sender);
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
@@ -175,6 +185,11 @@ public class CTManager extends ArenaModule implements Listener {
 */
     @Override
     public void resetPlayer(final Player player, final boolean force) {
+        for (ArenaModule mod : arena.getMods()) {
+            if (mod.getName().equals("ScoreBoards")) {
+                return;
+            }
+        }
         final ArenaTeam ateam = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
         if (ateam != null) {
@@ -219,6 +234,11 @@ public class CTManager extends ArenaModule implements Listener {
     public void onChange(final PATeamChangeEvent event) {
         if (event.getArena() != arena) {
             return;
+        }
+        for (ArenaModule mod : arena.getMods()) {
+            if (mod.getName().equals("ScoreBoards")) {
+                return;
+            }
         }
 
         board.getTeam(event.getFrom().getName()).removePlayer(event.getPlayer());
