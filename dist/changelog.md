@@ -1,3 +1,4 @@
+v1.3.2.136 - [Duel] properly inform refunding
 v1.3.2.136 - [ColorTeams] prevent clash with ScoreBoards module
 v1.3.2.136 - [ChestFiller,Squads] update config node access and add CF "fillchest" command
 v1.3.2.134 - [FlySpecate,RealSpecate,SinglePlayerSupport,Spectate] address github issue #201 - properly call PAJoinEvent, this never was implemented correctly. Sorry!

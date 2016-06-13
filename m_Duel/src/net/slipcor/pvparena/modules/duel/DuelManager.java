@@ -27,7 +27,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.130";
+        return "v1.3.2.136";
     }
 
     private String duelSender = null;
@@ -209,8 +209,8 @@ public class DuelManager extends ArenaModule {
                         VaultSupport sup = (VaultSupport) mod;
 
                         if (ArenaPlayer.parsePlayer(player.getName()).getStatus() == ArenaPlayer.Status.LOUNGE) {
-                            sup.tryRefund(this, ap.get(), amount, false);
-                            sup.tryRefund(this, player, amount, false);
+                            sup.tryRefund(this, ap.get(), amount, true);
+                            sup.tryRefund(this, player, amount, true);
                             amount = 0;
                             new PAG_Leave().commit(this.getArena(), ap.get(), new String[]{});
                         } else {
