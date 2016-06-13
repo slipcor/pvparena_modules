@@ -1,3 +1,4 @@
+v1.3.2.137 - [ScoreBoards] remove double setting of ScoreBoards, add debug
 v1.3.2.136 - [Duel] properly inform refunding
 v1.3.2.136 - [ColorTeams] prevent clash with ScoreBoards module
 v1.3.2.136 - [ChestFiller,Squads] update config node access and add CF "fillchest" command

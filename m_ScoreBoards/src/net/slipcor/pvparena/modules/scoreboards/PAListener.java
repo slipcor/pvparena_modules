@@ -28,21 +28,12 @@ class PAListener implements Listener {
     }
 
     @EventHandler
-    public void onExit(PAExitEvent event) {
-        if (module.getArena() == null || !module.getArena().equals(event.getArena())) {
-            return;
-        }
-        module.getArena().getDebugger().i("ScoreBoards: PAExitEvent");
-        module.remove(event.getPlayer(), false);
-    }
-
-    @EventHandler
     public void onJoin(PAJoinEvent event) {
         if (module.getArena() == null || !module.getArena().isFightInProgress()) {
             return;
         }
         if (module.getArena().equals(event.getArena())) {
-            module.getArena().getDebugger().i("ScoreBoards: PAJoinEvent");
+            module.getArena().getDebugger().i("ScoreBoards: PAJoinEvent (ingame)");
             module.add(event.getPlayer());
         }
     }
@@ -63,23 +54,6 @@ class PAListener implements Listener {
         if (module.getArena() != null && module.getArena().equals(event.getArena())) {
             module.getArena().getDebugger().i("ScoreBoards: PAKillEvent");
             module.update(event.getPlayer());
-        }
-    }
-
-    @EventHandler
-    public void onLeave(PALeaveEvent event) {
-        if (module.getArena() == null || !module.getArena().equals(event.getArena())) {
-            return;
-        }
-        module.getArena().getDebugger().i("ScoreBoards: PALeaveEvent");
-        module.remove(event.getPlayer(), false);
-    }
-
-    @EventHandler
-    public void onLose(PALoseEvent event) {
-        if (module.getArena() != null && module.getArena().equals(event.getArena())) {
-            module.getArena().getDebugger().i("ScoreBoards: PALoseEvent");
-            module.remove(event.getPlayer(), false);
         }
     }
 

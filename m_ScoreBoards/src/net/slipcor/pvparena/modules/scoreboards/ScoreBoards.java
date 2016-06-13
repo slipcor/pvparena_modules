@@ -32,7 +32,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.129";
+        return "v1.3.2.137";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -50,9 +50,33 @@ public class ScoreBoards extends ArenaModule {
     public void add(final Player player) {
         // after runnable: add player to scoreboard, resend all scoreboards
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
+        arena.getDebugger().i("ScoreBoards: Initiating scoreboard for player " + player.getName());
         if (!ap.hasBackupScoreboard() && player.getScoreboard() != null) {
+            /*
+            arena.getDebugger().i("Before: "+System.identityHashCode(ap.get().getScoreboard()));
+            for (Team team : ap.get().getScoreboard().getTeams()) {
+                arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
+                for (String entry : team.getEntries()) {
+                    arena.getDebugger().i("- >"+entry);
+                }
+            }*/
             ap.setBackupScoreboard(player.getScoreboard());
             ap.setBackupScoreboardTeam(player.getScoreboard().getEntryTeam(ap.getName()));
+        } else if (ap.hasBackupScoreboard()) {
+            arena.getDebugger().i("ScoreBoards: has backup: " + ap.hasBackupScoreboard());
+            /*
+            arena.getDebugger().i("Before (BACKUP!): "+System.identityHashCode(ap.getBackupScoreboard()));
+            for (Team team : ap.getBackupScoreboard().getTeams()) {
+                arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
+                for (String entry : team.getEntries()) {
+                    arena.getDebugger().i("- >"+entry);
+                }
+            }*/
+
+            arena.getDebugger().i("ScoreBoards: player.getScoreboard == null: " + (player.getScoreboard() == null));
+        } else {
+            arena.getDebugger().i("ScoreBoards: has backup: false");
+            arena.getDebugger().i("ScoreBoards: player.getScoreboard == null: " + (player.getScoreboard() == null));
         }
 
         // first, check if the scoreboard exists
@@ -243,8 +267,10 @@ public class ScoreBoards extends ArenaModule {
                     }
                 }
                 if (!found) {
-                    board.resetScores(player.getName());
+                    return;
                 }
+            } else {
+                return;
             }
             if (player == null) {
                 PVPArena.instance.getLogger().severe("Player is null, but if they were, there should have been a NPE in this method already.");
@@ -255,7 +281,24 @@ public class ScoreBoards extends ArenaModule {
                 @Override
                 public void run() {
                     if (ap.hasBackupScoreboard()) {
+                        /*
+                        arena.getDebugger().i("ScoreBoards: committing scoreboard restore of " + ap.get());
+                        arena.getDebugger().i("Before: ");
+                        for (Team team : ap.get().getScoreboard().getTeams()) {
+                            arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
+                            for (String entry : team.getEntries()) {
+                                arena.getDebugger().i("- >"+entry);
+                            }
+                        }*/
                         player.setScoreboard(ap.getBackupScoreboard());
+                        /*
+                        arena.getDebugger().i("After: "+System.identityHashCode(ap.get().getScoreboard()));
+                        for (Team team : ap.get().getScoreboard().getTeams()) {
+                            arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
+                            for (String entry : team.getEntries()) {
+                                arena.getDebugger().i("- >"+entry);
+                            }
+                        }*/
                         if (ap.getBackupScoreboardTeam() != null) {
                             ap.getBackupScoreboardTeam().addEntry(ap.getName());
                         }
@@ -264,10 +307,11 @@ public class ScoreBoards extends ArenaModule {
                     }
                 }
             }
+            arena.getDebugger().i("ScoreBoards: maybe restoring " + ap.get());
             if (force) {
                 new RunLater().run();
             } else {
-                Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
+                Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 2L);
             }
 
         } catch (final Exception e) {
@@ -349,19 +393,31 @@ public class ScoreBoards extends ArenaModule {
         if (board == null) {
             return;
         }
-        for (final String player : board.getEntries()) {
-            if (player != null) {
-                board.resetScores(player);
+
+        class RunLater implements Runnable {
+
+            @Override
+            public void run() {
+                for (final String player : board.getEntries()) {
+                    if (player != null) {
+                        board.resetScores(player);
+                    }
+                }
+                obj.unregister();
+                obj = null;
+                board.clearSlot(DisplaySlot.SIDEBAR);
+                board = null;
+
+                if (updateTask != null) {
+                    updateTask.cancel();
+                    updateTask = null;
+                }
             }
         }
-        obj.unregister();
-        obj = null;
-        board.clearSlot(DisplaySlot.SIDEBAR);
-        board = null;
-
-        if (updateTask != null) {
-            updateTask.cancel();
-            updateTask = null;
+        try {
+            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
+        } catch (Exception e) {
+            new RunLater().run();
         }
     }
 
@@ -387,7 +443,18 @@ public class ScoreBoards extends ArenaModule {
             }
             obj.getScore(ap.getArenaTeam().getName()).setScore(PACheck.handleGetLives(arena, ap));
         }
-        player.setScoreboard(board);
+        if (player.getScoreboard() == null || !player.getScoreboard().equals(board)) {
+            player.setScoreboard(board);
+            /*
+            arena.getDebugger().i("After: ");
+            for (Team team : player.getScoreboard().getTeams()) {
+                arena.getDebugger().i("- Team: " + team.getName()+" > "+team.getPrefix());
+                for (String entry : team.getEntries()) {
+                    arena.getDebugger().i("- >" + entry);
+                }
+            }*/
+        }
+
 
         if (!block) {
             class RunLater implements Runnable {
