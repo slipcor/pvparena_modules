@@ -39,7 +39,6 @@ class SpectateWrapper {
                     s.setHealth(suspect.getHealth() > 0 ? suspect.getHealth() : 1);
 
                     InventoryManager.clearInventory(s);
-                    s.getInventory().setArmorContents(suspect.getInventory().getArmorContents());
                     s.getInventory().setContents(suspect.getInventory().getContents());
                     s.updateInventory();
 
@@ -70,7 +69,6 @@ class SpectateWrapper {
                     s.setHealth(suspect.getHealth() > 0 ? suspect.getHealth() : 1);
 
                     InventoryManager.clearInventory(s);
-                    s.getInventory().setArmorContents(suspect.getInventory().getArmorContents());
                     s.getInventory().setContents(suspect.getInventory().getContents());
                     s.updateInventory();
 
@@ -156,7 +154,6 @@ class SpectateWrapper {
             public void run() {
                 for (final Player p : spectators) {
                     InventoryManager.clearInventory(p);
-                    p.getInventory().setArmorContents(suspect.getInventory().getArmorContents());
                     p.getInventory().setContents(suspect.getInventory().getContents());
                     p.updateInventory();
                 }

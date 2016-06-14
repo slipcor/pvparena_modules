@@ -27,7 +27,7 @@ public class InventoryLoss extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.3.139";
     }
 
     @Override
@@ -71,12 +71,6 @@ public class InventoryLoss extends ArenaModule {
         }
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_FIXINVENTORYLOSS_INVENTORY)) {
             for (final ItemStack item : player.getInventory().getContents()) {
-                if (item != null && item.getType() != Material.AIR) {
-                    res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
-                    return res;
-                }
-            }
-            for (final ItemStack item : player.getInventory().getArmorContents()) {
                 if (item != null && item.getType() != Material.AIR) {
                     res.setError(this, Language.parse(MSG.MODULE_FIXINVENTORYLOSS_INVENTORY));
                     return res;
