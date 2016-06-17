@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.136";
+        return "v1.3.3.148";
     }
 
     @Override
@@ -204,7 +204,10 @@ public class ChestFiller extends ArenaModule {
 
             for (final String s : tempList) {
                 final Location loc = parseStringToLocation(s);
-
+                if (loc == null) {
+                    PVPArena.instance.getLogger().warning("Invalid inventory in "+arena.getName()+": "+s);
+                    continue;
+                }
                 fill(loc, clear, cmin, cmax, stacks);
             }
 
@@ -270,13 +273,19 @@ public class ChestFiller extends ArenaModule {
     }
 
     private Location parseStringToLocation(final String loc) {
-        // world,x,y,z
-        final String[] args = loc.split(",");
+        // world:x,y,z
+        final String[] first = loc.split(":");
 
-        final World world = Bukkit.getWorld(args[0]);
-        final int x = Integer.parseInt(args[1]);
-        final int y = Integer.parseInt(args[2]);
-        final int z = Integer.parseInt(args[3]);
+        final String[] args = first[1].split(",");
+
+        if (args.length < 3) {
+            return null;
+        }
+
+        final World world = Bukkit.getWorld(first[0]);
+        final int x = Integer.parseInt(args[0]);
+        final int y = Integer.parseInt(args[1]);
+        final int z = Integer.parseInt(args[2]);
 
         return new Location(world, x, y, z);
     }
@@ -323,7 +332,7 @@ public class ChestFiller extends ArenaModule {
     }
 
     private String parseLocationToString(final Location loc) {
-        return loc.getWorld().getName() + ',' + loc.getBlockX() + ','
+        return loc.getWorld().getName() + ':' + loc.getBlockX() + ','
                 + loc.getBlockY() + ',' + loc.getBlockZ();
     }
 }
