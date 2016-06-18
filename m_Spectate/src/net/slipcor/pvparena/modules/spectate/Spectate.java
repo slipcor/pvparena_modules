@@ -13,6 +13,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,7 @@ public class Spectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.134";
+        return "v1.3.3.149";
     }
 
     @Override
@@ -76,7 +77,7 @@ public class Spectate extends ArenaModule {
 
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         if (arena.equals(ap.getArena())) {
-            arena.msg(player, Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, arena.getName()));
+            arena.msg(player, Language.parse(MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(arena)));
             return;
         }
 

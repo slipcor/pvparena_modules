@@ -12,6 +12,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -31,7 +32,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.134";
+        return "v1.3.3.149";
     }
 
     @Override
@@ -63,7 +64,7 @@ public class SinglePlayerSupport extends ArenaModule {
         if (aPlayer.getArena() != null) {
             aPlayer.getArena().getDebugger().i(getName(), sender);
             result.setError(this, Language.parse(arena,
-                    MSG.ERROR_ARENA_ALREADY_PART_OF, aPlayer.getArena().getName()));
+                    MSG.ERROR_ARENA_ALREADY_PART_OF, ArenaManager.getIndirectArenaName(aPlayer.getArena())));
             return result;
         }
 
