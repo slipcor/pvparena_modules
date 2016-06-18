@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.duel;
 
+import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.commands.PAG_Join;
 import net.slipcor.pvparena.commands.PAI_Ready;
 import net.slipcor.pvparena.core.Config.CFG;
@@ -35,9 +36,20 @@ class DuelRunnable implements Runnable {
         if (!"none".equals(dm.getArena().getArenaConfig().getString(CFG.READY_AUTOCLASS))
                 && dm.getArena().getArenaConfig().getBoolean(CFG.MODULES_DUEL_FORCESTART)) {
             final PAI_Ready cmd = new PAI_Ready();
-            cmd.commit(dm.getArena(), Bukkit.getPlayer(hoster), new String[0]);
-            cmd.commit(dm.getArena(), Bukkit.getPlayer(player), new String[0]);
-            dm.getArena().countDown();
+            try {
+                if (dm.getArena().equals(ArenaPlayer.parsePlayer(hoster).getArena()) &&
+                        dm.getArena().equals(ArenaPlayer.parsePlayer(player).getArena())) {
+                    cmd.commit(dm.getArena(), Bukkit.getPlayer(hoster), new String[0]);
+                    cmd.commit(dm.getArena(), Bukkit.getPlayer(player), new String[0]);
+                    dm.getArena().countDown();
+                } else if (dm.getArena().getFighters().size() > 0){
+                    dm.getArena().reset(false);
+                }
+            } catch (Exception e) {
+                if (dm.getArena().getFighters().size() > 0){
+                    dm.getArena().reset(false);
+                }
+            }
         }
     }
 }

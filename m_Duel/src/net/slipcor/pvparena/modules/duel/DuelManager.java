@@ -27,7 +27,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.136";
+        return "v1.3.3.149";
     }
 
     private String duelSender = null;
@@ -199,7 +199,7 @@ public class DuelManager extends ArenaModule {
     }
     @Override
     public void resetPlayer(Player player, boolean force) {
-        for (ArenaPlayer ap : arena.getFighters()) {
+        for (final ArenaPlayer ap : arena.getFighters()) {
             if (ap == null || player == null || ap.getName().equals(player.getName())) {
                 continue;
             }
@@ -212,7 +212,18 @@ public class DuelManager extends ArenaModule {
                             sup.tryRefund(this, ap.get(), amount, true);
                             sup.tryRefund(this, player, amount, true);
                             amount = 0;
-                            new PAG_Leave().commit(this.getArena(), ap.get(), new String[]{});
+                            class RunLater implements Runnable {
+
+                                @Override
+                                public void run() {
+                                    new PAG_Leave().commit(getArena(), ap.get(), new String[]{});
+                                }
+                            }
+                            if (force) {
+                                new RunLater().run();
+                            } else {
+                                Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
+                            }
                         } else {
                             sup.tryDeposit(this, ap.get(), amount*2, true);
                             amount = 0;
