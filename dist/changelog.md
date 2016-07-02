@@ -1,3 +1,4 @@
+v1.3.3.156 - [BetterClasses] - address github issue #120 by adding more debug
 v1.3.3.149 - [SinglePlayerSupport,Spectate] - return shortcut name in join error message, if available
 v1.3.3.148 - [ChestFiller] - fix an Exception and print warning about messed up inventory settings, fix inventory saving
 v1.3.3.* - move to Spigot 1.9.4

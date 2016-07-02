@@ -29,7 +29,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.130";
+        return "v1.3.3.156";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -38,7 +38,7 @@ public class BetterClasses extends ArenaModule {
     @Override
     public boolean cannotSelectClass(final Player player,
                                      final String className) {
-
+        arena.getDebugger().i("checking if cannotSelectClass", player);
         if (notEnoughEXP(player, className)) {
             arena.msg(player, Language.parse(MSG.ERROR_CLASS_NOTENOUGHEXP, className));
             return true;
@@ -54,6 +54,8 @@ public class BetterClasses extends ArenaModule {
             arena.getDebugger().i("Exception at BetterClasses.class:"+e.getStackTrace()[1].getLineNumber());
             return false;
         }
+        arena.getDebugger().i("max: " +max, player);
+        arena.getDebugger().i("gmax: "+globalmax, player);
 
         if (max < 1 && globalmax < 1) {
             arena.getDebugger().i("OUT - max: "+max + "; global:" + globalmax);
@@ -81,6 +83,7 @@ public class BetterClasses extends ArenaModule {
                 }
             }
         }
+        arena.getDebugger().i("sum: " +sum, player);
 
         if ((max > 0 && sum >= max) || (globalmax > 0 && globalsum > globalmax)) {
             if (sum >= max) {
@@ -99,6 +102,8 @@ public class BetterClasses extends ArenaModule {
             if (teamSwitches.get(at) == 0) {
                 arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXTEAM));
                 return true;
+            } else {
+                arena.getDebugger().i("teamswitches of "+at.getName()+": " +teamSwitches.get(at), player);
             }
         }
 
@@ -107,6 +112,8 @@ public class BetterClasses extends ArenaModule {
                 if (playerSwitches.get(ap) == 0) {
                     arena.msg(player, Language.parse(MSG.MODULE_BETTERCLASSES_CLASSCHANGE_MAXPLAYER));
                     return true;
+                } else {
+                    arena.getDebugger().i("playerswitches: " +playerSwitches.get(ap), player);
                 }
             }
         }
