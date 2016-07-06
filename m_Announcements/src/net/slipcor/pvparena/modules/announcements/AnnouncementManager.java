@@ -19,10 +19,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class AnnouncementManager extends ArenaModule {
+
+    private List<String> announced = new ArrayList<>();
 
     public AnnouncementManager() {
         super("Announcements");
@@ -31,7 +34,7 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.3.162";
     }
 
     @Override
@@ -153,6 +156,11 @@ public class AnnouncementManager extends ArenaModule {
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
 
         debug.i("parseJoin ... ", sender);
+        ArenaPlayer ap = ArenaPlayer.parsePlayer(sender.getName());
+        if (ap.getStatus() == ArenaPlayer.Status.LOUNGE || ap.getStatus() == ArenaPlayer.Status.WARM) {
+            debug.i("skipping because we already did!", sender);
+            return;
+        }
 
         if (TeamManager.countPlayersInTeams(arena) < 2) {
             final String arenaname =
