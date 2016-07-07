@@ -34,7 +34,7 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.162";
+        return "v1.3.3.164";
     }
 
     @Override
@@ -157,7 +157,7 @@ public class AnnouncementManager extends ArenaModule {
 
         debug.i("parseJoin ... ", sender);
         ArenaPlayer ap = ArenaPlayer.parsePlayer(sender.getName());
-        if (ap.getStatus() == ArenaPlayer.Status.LOUNGE || ap.getStatus() == ArenaPlayer.Status.WARM) {
+        if (ap.getStatus() == ArenaPlayer.Status.WARM) {
             debug.i("skipping because we already did!", sender);
             return;
         }
