@@ -1,3 +1,4 @@
+v1.3.3.167 - [ScoreBoards] - revert stuff and address #229
 v1.3.3.165 - [ScoreBoards] - fix
 v1.3.3.164 - [Announcements] - revert part of the last fix - sorry!
 v1.3.3.162 - [Announcements] - address github issue #223

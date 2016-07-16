@@ -33,7 +33,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.165";
+        return "v1.3.3.167";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -315,7 +315,11 @@ public class ScoreBoards extends ArenaModule {
             }
             arena.getDebugger().i("ScoreBoards: maybe restoring " + ap.get());
             if (force) {
-                new RunLater().run();
+                try {
+                    new RunLater().run();
+                } catch (IllegalStateException e) {
+
+                }
             } else {
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 2L);
             }
@@ -434,6 +438,11 @@ public class ScoreBoards extends ArenaModule {
     private void update() {
         block = true;
         for (final ArenaPlayer player : arena.getEveryone()) {
+            if (player.getStatus() == ArenaPlayer.Status.DEAD ||
+                    player.getStatus() == ArenaPlayer.Status.LOST ||
+                    player.getStatus() == ArenaPlayer.Status.NULL) {
+                continue;
+            }
             update(player.get());
         }
         block = false;
