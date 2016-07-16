@@ -9,6 +9,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -32,7 +33,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.137";
+        return "v1.3.3.165";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -45,6 +46,11 @@ public class ScoreBoards extends ArenaModule {
     @Override
     public void configParse(final YamlConfiguration config) {
         Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
+    }
+
+    @Override
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
+        add((Player)sender);
     }
 
     public void add(final Player player) {
@@ -387,6 +393,7 @@ public class ScoreBoards extends ArenaModule {
         int interval = arena.getArenaConfig().getInt(CFG.MODULES_SCOREBOARDS_UPDATEINTERVAL, 50);
 
         updateTask = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new UpdateTask(this), interval, interval);
+
     }
 
     public void stop() {
@@ -398,6 +405,9 @@ public class ScoreBoards extends ArenaModule {
 
             @Override
             public void run() {
+                if (board == null) {
+                    return;
+                }
                 for (final String player : board.getEntries()) {
                     if (player != null) {
                         board.resetScores(player);
