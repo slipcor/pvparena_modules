@@ -1,3 +1,4 @@
+v1.3.3.180 - [ScoreBoards] - only restore when finally restoring!
 v1.3.3.176 - [ColorTeams,ScoreBoards] - stop fighting, you two!
 v1.3.3.167 - [ScoreBoards] - revert stuff and address #229
 v1.3.3.165 - [ScoreBoards] - fix

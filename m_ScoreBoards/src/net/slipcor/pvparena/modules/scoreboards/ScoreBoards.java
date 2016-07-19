@@ -33,7 +33,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.176";
+        return "v1.3.3.180";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -356,8 +356,10 @@ public class ScoreBoards extends ArenaModule {
     }
 
     @Override
-    public void resetPlayer(final Player player, final boolean force) {
-        remove(player, force);
+    public void resetPlayer(final Player player, final boolean soft, final boolean force) {
+        if (!soft) {
+            remove(player, force);
+        }
     }
 
     public void start() {
