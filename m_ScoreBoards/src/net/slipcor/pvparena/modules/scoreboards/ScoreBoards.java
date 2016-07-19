@@ -9,6 +9,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -47,31 +48,36 @@ public class ScoreBoards extends ArenaModule {
         Bukkit.getPluginManager().registerEvents(new PAListener(this), PVPArena.instance);
     }
 
+    @Override
+    public void parseJoin(final CommandSender sender, final ArenaTeam team) {
+        add((Player)sender);
+    }
+
     public void add(final Player player) {
         // after runnable: add player to scoreboard, resend all scoreboards
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         arena.getDebugger().i("ScoreBoards: Initiating scoreboard for player " + player.getName());
         if (!ap.hasBackupScoreboard() && player.getScoreboard() != null) {
-
+            /*
             arena.getDebugger().i("Before: "+System.identityHashCode(ap.get().getScoreboard()));
             for (Team team : ap.get().getScoreboard().getTeams()) {
                 arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
                 for (String entry : team.getEntries()) {
                     arena.getDebugger().i("- >"+entry);
                 }
-            }
+            }*/
             ap.setBackupScoreboard(player.getScoreboard());
             ap.setBackupScoreboardTeam(player.getScoreboard().getEntryTeam(ap.getName()));
         } else if (ap.hasBackupScoreboard()) {
             arena.getDebugger().i("ScoreBoards: has backup: " + ap.hasBackupScoreboard());
-
+            /*
             arena.getDebugger().i("Before (BACKUP!): "+System.identityHashCode(ap.getBackupScoreboard()));
             for (Team team : ap.getBackupScoreboard().getTeams()) {
                 arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
                 for (String entry : team.getEntries()) {
                     arena.getDebugger().i("- >"+entry);
                 }
-            }
+            }*/
 
             arena.getDebugger().i("ScoreBoards: player.getScoreboard == null: " + (player.getScoreboard() == null));
         } else {
@@ -277,42 +283,24 @@ public class ScoreBoards extends ArenaModule {
                 @Override
                 public void run() {
                     if (ap.hasBackupScoreboard()) {
-
+                        /*
                         arena.getDebugger().i("ScoreBoards: committing scoreboard restore of " + ap.get());
-                        arena.getDebugger().i("Before: "+System.identityHashCode(ap.get().getScoreboard()));
+                        arena.getDebugger().i("Before: ");
                         for (Team team : ap.get().getScoreboard().getTeams()) {
                             arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
                             for (String entry : team.getEntries()) {
                                 arena.getDebugger().i("- >"+entry);
                             }
-                        }
+                        }*/
                         player.setScoreboard(ap.getBackupScoreboard());
-
+                        /*
                         arena.getDebugger().i("After: "+System.identityHashCode(ap.get().getScoreboard()));
                         for (Team team : ap.get().getScoreboard().getTeams()) {
                             arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
                             for (String entry : team.getEntries()) {
                                 arena.getDebugger().i("- >"+entry);
                             }
-                        }
-
-                        class RunEvenLater implements Runnable  {
-
-                            @Override
-                            public void run() {
-                                arena.getDebugger().i("After 10s: ");
-                                for (Player p : Bukkit.getOnlinePlayers()) {
-                                    arena.getDebugger().i("Scoreboard of Player "+p.getName()+": "+System.identityHashCode(p.getScoreboard()));
-                                    for (Team team : p.getScoreboard().getTeams()) {
-                                        arena.getDebugger().i("- Team: " + team.getName() + " > " + team.getPrefix());
-                                        for (String entry : team.getEntries()) {
-                                            arena.getDebugger().i("- >" + entry);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunEvenLater(), 200L);
+                        }*/
                         if (ap.getBackupScoreboardTeam() != null) {
                             ap.getBackupScoreboardTeam().addEntry(ap.getName());
                         }
@@ -323,7 +311,11 @@ public class ScoreBoards extends ArenaModule {
             }
             arena.getDebugger().i("ScoreBoards: maybe restoring " + ap.get());
             if (force) {
-                new RunLater().run();
+                try {
+                    new RunLater().run();
+                } catch (IllegalStateException e) {
+
+                }
             } else {
                 Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 2L);
             }
@@ -401,6 +393,7 @@ public class ScoreBoards extends ArenaModule {
         int interval = arena.getArenaConfig().getInt(CFG.MODULES_SCOREBOARDS_UPDATEINTERVAL, 50);
 
         updateTask = Bukkit.getScheduler().runTaskTimer(PVPArena.instance, new UpdateTask(this), interval, interval);
+
     }
 
     public void stop() {
@@ -412,6 +405,9 @@ public class ScoreBoards extends ArenaModule {
 
             @Override
             public void run() {
+                if (board == null) {
+                    return;
+                }
                 for (final String player : board.getEntries()) {
                     if (player != null) {
                         board.resetScores(player);
@@ -438,6 +434,11 @@ public class ScoreBoards extends ArenaModule {
     private void update() {
         block = true;
         for (final ArenaPlayer player : arena.getEveryone()) {
+            if (player.getStatus() == ArenaPlayer.Status.DEAD ||
+                    player.getStatus() == ArenaPlayer.Status.LOST ||
+                    player.getStatus() == ArenaPlayer.Status.NULL) {
+                continue;
+            }
             update(player.get());
         }
         block = false;
@@ -459,32 +460,14 @@ public class ScoreBoards extends ArenaModule {
         }
         if (player.getScoreboard() == null || !player.getScoreboard().equals(board)) {
             player.setScoreboard(board);
-
+            /*
             arena.getDebugger().i("After: ");
             for (Team team : player.getScoreboard().getTeams()) {
                 arena.getDebugger().i("- Team: " + team.getName()+" > "+team.getPrefix());
                 for (String entry : team.getEntries()) {
                     arena.getDebugger().i("- >" + entry);
                 }
-            }
-
-            class RunEvenLater implements Runnable  {
-
-                @Override
-                public void run() {
-                    arena.getDebugger().i("After 10s: ");
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        arena.getDebugger().i("Scoreboard of Player "+p.getName()+": "+System.identityHashCode(p.getScoreboard()));
-                        for (Team team : p.getScoreboard().getTeams()) {
-                            arena.getDebugger().i("- Team: " + team.getName() + " > " + team.getPrefix());
-                            for (String entry : team.getEntries()) {
-                                arena.getDebugger().i("- >" + entry);
-                            }
-                        }
-                    }
-                }
-            }
-            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunEvenLater(), 200L);
+            }*/
         }
 
 

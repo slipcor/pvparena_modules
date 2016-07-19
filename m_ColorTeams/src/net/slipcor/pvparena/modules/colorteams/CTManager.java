@@ -169,21 +169,7 @@ public class CTManager extends ArenaModule implements Listener {
         sTeam.setPrefix(team.getColor().toString());
         sTeam.addPlayer((Player) sender);
     }
-/*
-    @Override
-    public void parsePlayerLeave(final Player player, final ArenaTeam team) {
-        getScoreboard().getTeam(team.getName()).removePlayer(player);
-        if (backup.containsKey(player.getName()) && backup.get(player.getName()) != null) {
-            player.setScoreboard(backup.get(player.getName()));
-            if (backupTeams.containsKey(player.getName()) && backupTeams.get(player.getName()) != null) {
-                // TODO: fix
-                backupTeams.get(player.getName()).addPlayer(player);
-            }
-        } else {
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        }
-    }
-*/
+
     @Override
     public void resetPlayer(final Player player, final boolean force) {
         for (ArenaModule mod : arena.getMods()) {
