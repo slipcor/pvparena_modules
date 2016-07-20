@@ -286,6 +286,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_ThermosFix/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_Titles/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
