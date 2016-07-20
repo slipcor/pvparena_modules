@@ -1,3 +1,4 @@
+v1.3.3.181 - [ScoreBoards] - finish the restoring issue, TODO: colorize player tags in scoreboard; fix coloring in KOTH&DOM
 v1.3.3.180 - [ThermosFix] - fix some plugin's messup :P
 v1.3.3.180 - [ScoreBoards] - only restore when finally restoring!
 v1.3.3.176 - [ColorTeams,ScoreBoards] - stop fighting, you two!

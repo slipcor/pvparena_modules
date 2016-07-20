@@ -33,7 +33,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.180";
+        return "v1.3.3.181";
     }
 
     private static ScoreboardManager getScoreboardManager() {
@@ -50,7 +50,9 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
-        add((Player)sender);
+        if (arena.isFightInProgress()) {
+            add((Player)sender);
+        }
     }
 
     public void add(final Player player) {
@@ -58,27 +60,10 @@ public class ScoreBoards extends ArenaModule {
         ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         arena.getDebugger().i("ScoreBoards: Initiating scoreboard for player " + player.getName());
         if (!ap.hasBackupScoreboard() && player.getScoreboard() != null) {
-            /*
-            arena.getDebugger().i("Before: "+System.identityHashCode(ap.get().getScoreboard()));
-            for (Team team : ap.get().getScoreboard().getTeams()) {
-                arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
-                for (String entry : team.getEntries()) {
-                    arena.getDebugger().i("- >"+entry);
-                }
-            }*/
             ap.setBackupScoreboard(player.getScoreboard());
             ap.setBackupScoreboardTeam(player.getScoreboard().getEntryTeam(ap.getName()));
         } else if (ap.hasBackupScoreboard()) {
             arena.getDebugger().i("ScoreBoards: has backup: " + ap.hasBackupScoreboard());
-            /*
-            arena.getDebugger().i("Before (BACKUP!): "+System.identityHashCode(ap.getBackupScoreboard()));
-            for (Team team : ap.getBackupScoreboard().getTeams()) {
-                arena.getDebugger().i("- Team: "+team.getName()+" > "+team.getPrefix());
-                for (String entry : team.getEntries()) {
-                    arena.getDebugger().i("- >"+entry);
-                }
-            }*/
-
             arena.getDebugger().i("ScoreBoards: player.getScoreboard == null: " + (player.getScoreboard() == null));
         } else {
             arena.getDebugger().i("ScoreBoards: has backup: false");
@@ -258,16 +243,22 @@ public class ScoreBoards extends ArenaModule {
     }
 
     public void remove(final Player player, boolean force) {
+        remove(player, false, force);
+    }
+
+    public void remove(final Player player, boolean soft, boolean force) {
         // after runnable: remove player's scoreboard, remove player from scoreboard
         // and update all players' scoreboards
         arena.getDebugger().i("ScoreBoards: remove: " + player.getName(), player);
-
         try {
             if (board != null) {
                 for (final Team team : board.getTeams()) {
                     if (team.hasPlayer(player)) {
                         team.removePlayer(player);
                         board.resetScores(player.getName());
+                        if (soft) {
+                            return;
+                        }
                     }
                 }
             } else {
@@ -357,9 +348,7 @@ public class ScoreBoards extends ArenaModule {
 
     @Override
     public void resetPlayer(final Player player, final boolean soft, final boolean force) {
-        if (!soft) {
-            remove(player, force);
-        }
+        remove(player, soft, force);
     }
 
     public void start() {
@@ -399,46 +388,16 @@ public class ScoreBoards extends ArenaModule {
     }
 
     public void stop() {
-        if (board == null) {
-            return;
-        }
-
-        class RunLater implements Runnable {
-
-            @Override
-            public void run() {
-                if (board == null) {
-                    return;
-                }
-                for (final String player : board.getEntries()) {
-                    if (player != null) {
-                        board.resetScores(player);
-                    }
-                }
-                obj.unregister();
-                obj = null;
-                board.clearSlot(DisplaySlot.SIDEBAR);
-                board = null;
-
-                if (updateTask != null) {
-                    updateTask.cancel();
-                    updateTask = null;
-                }
-            }
-        }
-        try {
-            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
-        } catch (Exception e) {
-            new RunLater().run();
+        if (updateTask != null) {
+            updateTask.cancel();
+            updateTask = null;
         }
     }
 
     private void update() {
         block = true;
         for (final ArenaPlayer player : arena.getEveryone()) {
-            if (player.getStatus() == ArenaPlayer.Status.DEAD ||
-                    player.getStatus() == ArenaPlayer.Status.LOST ||
-                    player.getStatus() == ArenaPlayer.Status.NULL) {
+            if (player.getStatus() == ArenaPlayer.Status.NULL) {
                 continue;
             }
             update(player.get());
