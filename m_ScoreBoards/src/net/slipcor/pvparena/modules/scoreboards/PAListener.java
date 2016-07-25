@@ -1,9 +1,6 @@
 package net.slipcor.pvparena.modules.scoreboards;
 
-import net.slipcor.pvparena.events.PADeathEvent;
-import net.slipcor.pvparena.events.PAKillEvent;
-import net.slipcor.pvparena.events.PAStartEvent;
-import net.slipcor.pvparena.events.PATeamChangeEvent;
+import net.slipcor.pvparena.events.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -21,15 +18,15 @@ class PAListener implements Listener {
         }
     }
 
-    /*
-        @EventHandler
-        public void onEnd(PAEndEvent event) {
-            if (module.getArena() != null && module.getArena().equals(event.getArena())) {
-                module.getArena().getDebugger().i("ScoreBoards: PAEndEvent");
-                module.stop();
-            }
+    @EventHandler
+    public void onEnd(PAEndEvent event) {
+        if (module.getArena() != null && module.getArena().equals(event.getArena())) {
+            module.getArena().getDebugger().i("ScoreBoards: PAEndEvent");
+            module.stop();
         }
+    }
 
+    /*
         @EventHandler
         public void onJoin(PAJoinEvent event) {
             if (module.getArena() == null || !module.getArena().isFightInProgress()) {

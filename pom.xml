@@ -56,6 +56,7 @@
         <module>m_StartFreeze</module>
         <module>m_TeamSizeRestrict</module>
         <module>m_TempPerms</module>
+        <module>m_ThermosFix</module>
         <module>m_Titles</module>
         <module>m_Turrets</module>
         <module>m_Vault</module>

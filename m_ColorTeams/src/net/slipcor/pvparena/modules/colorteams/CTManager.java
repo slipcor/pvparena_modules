@@ -35,7 +35,7 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.136";
+        return "v1.3.3.176";
     }
 
     @Override
@@ -109,11 +109,12 @@ public class CTManager extends ArenaModule implements Listener {
 
     @Override
     public void tpPlayerToCoordName(final Player player, final String place) {
+        /*
         for (ArenaModule mod : arena.getMods()) {
             if (mod.getName().equals("ScoreBoards")) {
                 return;
             }
-        }
+        }*/
         final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_COLORTEAMS_HIDENAME)) {
             try {

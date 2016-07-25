@@ -1,4 +1,8 @@
-v1.3.3.168 - [Announcements] - implement hackfix of github issue #223
+v1.3.3.185 - [Announcements] - implement hackfix of github issue #223
+v1.3.3.181 - [ScoreBoards] - finish the restoring issue, TODO: colorize player tags in scoreboard; fix coloring in KOTH&DOM
+v1.3.3.180 - [ThermosFix] - fix some plugin's messup :P
+v1.3.3.180 - [ScoreBoards] - only restore when finally restoring!
+v1.3.3.176 - [ColorTeams,ScoreBoards] - stop fighting, you two!
 v1.3.3.167 - [ScoreBoards] - revert stuff and address #229
 v1.3.3.165 - [ScoreBoards] - fix
 v1.3.3.164 - [Announcements] - revert part of the last fix - sorry!
