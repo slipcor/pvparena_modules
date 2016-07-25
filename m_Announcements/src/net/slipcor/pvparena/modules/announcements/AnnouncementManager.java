@@ -14,6 +14,7 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.managers.ArenaManager;
 import net.slipcor.pvparena.managers.TeamManager;
+import net.slipcor.pvparena.modules.WarmupJoin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -162,7 +163,7 @@ public class AnnouncementManager extends ArenaModule {
             return;
         }
 
-        if (TeamManager.countPlayersInTeams(arena) < 2) {
+        if (TeamManager.countPlayersInTeams(arena) < 2 && !WarmupJoin.didNotAnnounceYet(arena)) {
             final String arenaname =
                     PVPArena.hasOverridePerms(sender) ? arena.getName() : ArenaManager.getIndirectArenaName(arena);
             Announcement.announce(arena, Announcement.type.ADVERT, Language
