@@ -54,7 +54,7 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.59";
+        return "v1.3.3.185";
     }
 
     /**
@@ -319,7 +319,7 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     private boolean isPowerup(final ItemStack item) {
-        if (!item.hasItemMeta()) {
+        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
             return false;
         }
         return item.getItemMeta().getDisplayName().equals(POWERUPSTRING);

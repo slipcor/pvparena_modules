@@ -1,3 +1,4 @@
+v1.3.3.185 - [PowerUps] - fix NPE, address github issue #235
 v1.3.3.185 - [Announcements] - implement hackfix of github issue #223
 v1.3.3.181 - [ScoreBoards] - finish the restoring issue, TODO: colorize player tags in scoreboard; fix coloring in KOTH&DOM
 v1.3.3.180 - [ThermosFix] - fix some plugin's messup :P
