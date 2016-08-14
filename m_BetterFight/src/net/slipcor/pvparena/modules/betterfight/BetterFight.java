@@ -37,7 +37,7 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.119";
+        return "v1.3.3.186";
     }
 
     @Override
@@ -281,21 +281,8 @@ public class BetterFight extends ArenaModule {
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
             if (cause.getDamage() == 1000 || !arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT)) {
-
-                class RunLater implements Runnable {
-                    final Location l;
-
-                    public RunLater(final Location loc) {
-                        l = loc;
-                    }
-
-                    @Override
-                    public void run() {
-                        l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.0f, false, false);
-                    }
-
-                }
-                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().clone()), 2L);
+                Location l = player.getLocation();
+                l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.0f, false, false);
             }
         }
 

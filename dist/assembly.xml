@@ -125,13 +125,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${basedir}/../m_ColorTeams/target/</directory>
-            <outputDirectory>/files/</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>${basedir}/../m_Duel/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
@@ -217,13 +210,6 @@
         </fileSet>
         <fileSet>
             <directory>${basedir}/../m_RespawnRelay/target/</directory>
-            <outputDirectory>/files/</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${basedir}/../m_ScoreBoards/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
                 <include>*.jar</include>
