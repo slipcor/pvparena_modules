@@ -1,3 +1,4 @@
+v1.3.3.190 - [BetterClasses] - address github issue #120 - limiting class changes
 v1.3.3.189 - [Duel] - address github issue #99 - tested locally and working!
 v1.3.3.186 - [BetterFight] - create the explosion instantly. What could possibly go wrong?
 v1.3.3.185 - [PowerUps] - fix NPE, address github issue #235

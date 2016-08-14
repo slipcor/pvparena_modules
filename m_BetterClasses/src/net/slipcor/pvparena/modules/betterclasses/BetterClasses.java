@@ -57,42 +57,39 @@ public class BetterClasses extends ArenaModule {
         arena.getDebugger().i("max: " +max, player);
         arena.getDebugger().i("gmax: "+globalmax, player);
 
-        if (max < 1 && globalmax < 1) {
-            arena.getDebugger().i("OUT - max: "+max + "; global:" + globalmax);
-            return false;
-        }
+        if (!(max < 1 && globalmax < 1)) {
+            final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
 
-        final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
-
-        if (team == null) {
-            arena.getDebugger().i("arenaTeam NULL: "+player.getName(), player);
-            return true;
-        }
-        int globalsum = 0;
-        int sum = 0;
-        for (final ArenaTeam ateam : arena.getTeams()) {
-            for (final ArenaPlayer ap : ateam.getTeamMembers()) {
-                if (ap.getArenaClass() == null) {
-                    continue;
-                }
-                if (ap.getArenaClass().getName().equals(className)) {
-                    globalsum++;
-                    if (team.equals(ateam)) {
-                        sum++;
+            if (team == null) {
+                arena.getDebugger().i("arenaTeam NULL: "+player.getName(), player);
+                return true;
+            }
+            int globalsum = 0;
+            int sum = 0;
+            for (final ArenaTeam ateam : arena.getTeams()) {
+                for (final ArenaPlayer ap : ateam.getTeamMembers()) {
+                    if (ap.getArenaClass() == null) {
+                        continue;
+                    }
+                    if (ap.getArenaClass().getName().equals(className)) {
+                        globalsum++;
+                        if (team.equals(ateam)) {
+                            sum++;
+                        }
                     }
                 }
             }
-        }
-        arena.getDebugger().i("sum: " +sum, player);
+            arena.getDebugger().i("sum: " +sum, player);
 
-        if ((max > 0 && sum >= max) || (globalmax > 0 && globalsum > globalmax)) {
-            if (sum >= max) {
-                arena.getDebugger().i(sum + ">="+max, player);
-            }   else {
-                arena.getDebugger().i(globalsum + ">"+globalmax, player);
+            if ((max > 0 && sum >= max) || (globalmax > 0 && globalsum > globalmax)) {
+                if (sum >= max) {
+                    arena.getDebugger().i(sum + ">="+max, player);
+                }   else {
+                    arena.getDebugger().i(globalsum + ">"+globalmax, player);
+                }
+                arena.msg(player, Language.parse(MSG.ERROR_CLASS_FULL, className));
+                return true;
             }
-            arena.msg(player, Language.parse(MSG.ERROR_CLASS_FULL, className));
-            return true;
         }
 
         for (ArenaTeam at : teamSwitches.keySet()) {
