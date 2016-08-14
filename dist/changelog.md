@@ -1,3 +1,4 @@
+v1.3.3.193 - [Announcements] - and this is why you don't do negative method names
 v1.3.3.192 - [WorldEdit] - eventually ignore air blocks when placing
 v1.3.3.190 - [BetterClasses] - address github issue #120 - limiting class changes
 v1.3.3.189 - [Duel] - address github issue #99 - tested locally and working!
@@ -12,6 +13,7 @@ v1.3.3.167 - [ScoreBoards] - revert stuff and address #229
 v1.3.3.165 - [ScoreBoards] - fix
 v1.3.3.164 - [Announcements] - revert part of the last fix - sorry!
 v1.3.3.162 - [Announcements] - address github issue #223
+
 v1.3.3.156 - [BetterClasses] - address github issue #120 by adding more debug
 v1.3.3.149 - [SinglePlayerSupport,Spectate] - return shortcut name in join error message, if available
 v1.3.3.148 - [ChestFiller] - fix an Exception and print warning about messed up inventory settings, fix inventory saving
