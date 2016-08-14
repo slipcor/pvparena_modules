@@ -27,7 +27,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.149";
+        return "v1.3.3.189";
     }
 
     private String duelSender = null;
@@ -198,10 +198,13 @@ public class DuelManager extends ArenaModule {
         }
     }
     @Override
-    public void resetPlayer(Player player, boolean force) {
+    public void resetPlayer(Player player, boolean force, boolean soft) {
         for (final ArenaPlayer ap : arena.getFighters()) {
             if (ap == null || player == null || ap.getName().equals(player.getName())) {
                 continue;
+            }
+            if (ArenaPlayer.parsePlayer(player.getName()).getStatus() == ArenaPlayer.Status.LOUNGE) {
+                arena.msg(ap.get(), Language.parse(MSG.MODULE_DUEL_CANCELLED));
             }
             if (amount > 0) {
                 for (ArenaModule mod : arena.getMods()) {
@@ -229,6 +232,19 @@ public class DuelManager extends ArenaModule {
                             amount = 0;
                         }
                     }
+                }
+            } else {
+                class RunLater implements Runnable {
+
+                    @Override
+                    public void run() {
+                        new PAG_Leave().commit(getArena(), ap.get(), new String[]{});
+                    }
+                }
+                if (force) {
+                    new RunLater().run();
+                } else {
+                    Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 3L);
                 }
             }
         }
