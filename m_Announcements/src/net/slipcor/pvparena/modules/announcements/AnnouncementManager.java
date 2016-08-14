@@ -35,7 +35,7 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.193";
+        return "v1.3.3.194";
     }
 
     @Override
@@ -158,12 +158,12 @@ public class AnnouncementManager extends ArenaModule {
 
         debug.i("parseJoin ... ", sender);
         ArenaPlayer ap = ArenaPlayer.parsePlayer(sender.getName());
-        if (ap.getStatus() == ArenaPlayer.Status.WARM) {
+        if (ap.getStatus() == ArenaPlayer.Status.WARM || !WarmupJoin.didNotAnnounceYet(arena)) {
             debug.i("skipping because we already did!", sender);
             return;
         }
 
-        if (TeamManager.countPlayersInTeams(arena) < 2 && WarmupJoin.didNotAnnounceYet(arena)) {
+        if (TeamManager.countPlayersInTeams(arena) < 2) {
             final String arenaname =
                     PVPArena.hasOverridePerms(sender) ? arena.getName() : ArenaManager.getIndirectArenaName(arena);
             Announcement.announce(arena, Announcement.type.ADVERT, Language
