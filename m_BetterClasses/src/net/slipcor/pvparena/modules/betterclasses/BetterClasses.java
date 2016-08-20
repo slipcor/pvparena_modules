@@ -29,7 +29,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.156";
+        return "v1.3.3.197";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -477,7 +477,7 @@ public class BetterClasses extends ArenaModule {
             }
         }
         ArenaTeam at = ap.getArenaTeam();
-        if (teamSwitches.containsKey(at)) {
+        if (teamSwitches.containsKey(at) && teamSwitches.get(at) != null) {
             int value = teamSwitches.get(at);
             if (value-- > 0) {
                 teamSwitches.put(at, value);
