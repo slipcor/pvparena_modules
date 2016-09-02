@@ -1,3 +1,4 @@
+v1.3.3.199 - [BattleFieldGuard] - check position before admin permission
 v1.3.3.197 - [BetterClasses] - address github issue #236 - catch NPE
 v1.3.3.194 - [Announcements] - address github issue #234 - only announce once
 v1.3.3.193 - [Announcements] - and this is why you don't do negative method names
