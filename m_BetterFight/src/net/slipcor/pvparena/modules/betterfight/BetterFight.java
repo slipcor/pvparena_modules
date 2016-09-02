@@ -13,8 +13,8 @@ import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.events.PAGoalEvent;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -37,7 +37,7 @@ public class BetterFight extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.186";
+        return "v1.3.3.199";
     }
 
     @Override
@@ -281,8 +281,25 @@ public class BetterFight extends ArenaModule {
 
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATH)) {
             if (cause.getDamage() == 1000 || !arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERFIGHT_EXPLODEONDEATHONLYONONEHIT)) {
-                Location l = player.getLocation();
-                l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.0f, false, false);
+                class RunLater implements Runnable {
+                    final World world;
+                    final double x;
+                    final double y;
+                    final double z;
+                    public RunLater(final World world, final double x, final double y, final double z) {
+                        this.world = world;
+                        this.x = x;
+                        this.y = y;
+                        this.z = z;
+                    }
+
+                    @Override
+                    public void run() {
+                        world.createExplosion(x, y, z, 2.0f, false, false);
+                    }
+
+                }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(player.getLocation().getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()), 2L);
             }
         }
 

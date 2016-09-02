@@ -1,3 +1,4 @@
+v1.3.3.199 - [BetterFight] - try fixing it with primitives
 v1.3.3.199 - [BattleFieldGuard] - check position before admin permission
 v1.3.3.197 - [BetterClasses] - address github issue #236 - catch NPE
 v1.3.3.194 - [Announcements] - address github issue #234 - only announce once
