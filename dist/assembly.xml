@@ -188,6 +188,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_Points/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_PowerUps/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>

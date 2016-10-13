@@ -114,7 +114,9 @@ public class Spectate extends ArenaModule {
 
             @Override
             public void run() {
-                player.setGameMode(GameMode.SPECTATOR);
+                if (arena.getArenaConfig().getInt(CFG.GENERAL_GAMEMODE) > -1) {
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
                 player.setFlySpeed(0.2f);
             }
         }
