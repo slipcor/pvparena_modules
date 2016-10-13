@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.battlefieldguard;
 
+import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -35,17 +36,17 @@ class BattleRunnable implements Runnable {
 
                 final String name = PVPArenaAPI.getArenaNameByLocation(p.getLocation());
 
-                if (p.hasPermission("pvparena.admin")) {
+                if (name == null || name.isEmpty()) {
+                    continue; // not physically in an arena
+                }
+
+                if (PVPArena.hasAdminPerms(p)) {
                     continue;
                 }
 
                 if (!Debug.override) {
                     debug.i("arena pos: " + name, p);
                     debug.i("arena IN : " + ap.getArena(), p);
-                }
-
-                if (name == null || name != null && name.isEmpty()) {
-                    continue; // not physically in an arena
                 }
 
                 if (ap.getArena() == null || !ap.getArena().getName().equals(name)) {
