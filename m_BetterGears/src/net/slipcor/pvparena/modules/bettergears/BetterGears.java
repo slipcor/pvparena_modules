@@ -314,6 +314,11 @@ public class BetterGears extends ArenaModule {
     }
 
     @Override
+    public void parseClassChange(Player player, ArenaClass arenaClass) {
+        equip(ArenaPlayer.parsePlayer(player.getName()));
+    }
+
+    @Override
     public void parseStart() {
 
         if (getColorMap().isEmpty()) {

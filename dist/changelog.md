@@ -1,3 +1,4 @@
+v1.3.3.215 - [BetterGears] - address github issue #257
 v1.3.3.214 - [Announcements] - address github issue #223
 v1.3.3.199 - [BetterFight] - try fixing it with primitives
 v1.3.3.199 - [BattleFieldGuard] - check position before admin permission
