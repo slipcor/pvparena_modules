@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.battlefieldguard;
 
+import com.google.common.collect.ImmutableMap;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import net.slipcor.pvparena.arena.Arena;
@@ -11,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.EnumMap;
 
 class BattleRunnable implements Runnable {
     private final Debug debug = new Debug(42);
@@ -50,10 +53,11 @@ class BattleRunnable implements Runnable {
                 }
 
                 if (ap.getArena() == null || !ap.getArena().getName().equals(name)) {
-
                     if (ap.getArena() != null) {
                         if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
-                            ap.get().setLastDamageCause(new EntityDamageEvent(ap.get(), DamageCause.CUSTOM, 1000));
+                            ap.get().setLastDamageCause(
+                                    new EntityDamageEvent(ap.get(), DamageCause.CUSTOM,
+                                            new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf(1000))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, 0))));
                             ap.get().setHealth(0);
                             ap.get().damage(1000);
                         } else {
@@ -64,7 +68,8 @@ class BattleRunnable implements Runnable {
 
                     final Arena a = ArenaManager.getArenaByName(name);
                     if (a.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
-                        p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM, 1000));
+                        p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM,
+                                new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf(1000))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, 0))));
                         p.setHealth(0);
                         p.damage(1000);
                     } else {
