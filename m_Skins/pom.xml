@@ -18,16 +18,12 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <id>disguisecraft-repo</id>
-            <url>http://build.yu8.me:8080/plugin/repository/everything/</url>
-        </repository>
-        <repository>
             <id>craftyn-repo</id>
             <url>https://repo2.craftyn.com/repository/snapshots/</url>
         </repository>
         <repository>
             <id>libsdisguises-repo</id>
-            <url>http://server.o2gaming.com/repo/</url>
+            <url>http://repo.md-5.net/content/groups/public</url>
         </repository>
         <repository>
             <id>protocollib-repo</id>
@@ -57,16 +53,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>pgDev</groupId>
-            <artifactId>DisguiseCraft</artifactId>
-            <version>5.2</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
-            <version>8.6.8-SNAPSHOT</version>
+            <version>9.2.4</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
