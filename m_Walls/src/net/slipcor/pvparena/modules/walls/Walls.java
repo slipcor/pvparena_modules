@@ -21,6 +21,7 @@ import java.util.List;
 
 public class Walls extends ArenaModule {
     WallsRunner runnable;
+    private boolean needsReset = false;
 
 
     public Walls() {
@@ -29,7 +30,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.78";
+        return "v1.3.3.218";
     }
 
     @Override
@@ -157,6 +158,11 @@ public class Walls extends ArenaModule {
     @Override
     public void reset(final boolean force) {
         debug.i("resetting WALLS");
+        if (!needsReset) {
+            debug.i("[WorldEdit] we did not start yet, no reset needed!");
+            return;
+        }
+        needsReset = false;
         if (runnable != null) {
             runnable.cancel();
         }
@@ -197,6 +203,7 @@ public class Walls extends ArenaModule {
                         }
                     }
                 }
+                needsReset = true;
             }
         }
     }
