@@ -20,8 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
-import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,10 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Skins extends ArenaModule {
-    private static boolean dcHandler;
     private static LibsDisguiseHandler ldHandler;
     private static boolean enabled;
-    private DisguiseCraftAPI dapi;
 
     private final Set<String> disguised = new HashSet<>();
 
@@ -42,7 +38,7 @@ public class Skins extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.85";
+        return "v1.3.3.218";
     }
 
     @Override
@@ -153,10 +149,6 @@ public class Skins extends ArenaModule {
     public void parseRespawn(final Player player, final ArenaTeam team, final DamageCause lastDamageCause, final Entity damager) {
         if (ldHandler != null) {
             ldHandler.parseRespawn(player);
-        } else if (dcHandler) {
-            if (dapi.isDisguised(player)) {
-                dapi.undisguisePlayer(player);
-            }
         }
     }
 
@@ -173,11 +165,6 @@ public class Skins extends ArenaModule {
         if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
             ldHandler = new LibsDisguiseHandler();
             m = MSG.MODULE_SKINS_LIBSDISGUISE;
-        } else if (Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft") != null) {
-            dcHandler = true;
-            m = MSG.MODULE_SKINS_DISGUISECRAFT;
-
-            dapi = DisguiseCraft.getAPI();
         }
 
         enabled = true;
@@ -194,11 +181,7 @@ public class Skins extends ArenaModule {
 
     @Override
     public void tpPlayerToCoordName(final Player player, final String place) {
-        if (dcHandler) {
-            dapi = DisguiseCraft.getAPI();
-        }
-
-        if (!dcHandler && ldHandler == null) {
+        if (ldHandler == null) {
             final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
             if (team != null) {
                 final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
@@ -257,15 +240,6 @@ public class Skins extends ArenaModule {
 
         if (ldHandler != null) {
             ldHandler.parseTeleport(player, disguise);
-        } else if (dcHandler) {
-            final pgDev.bukkit.DisguiseCraft.disguise.DisguiseType t = pgDev.bukkit.DisguiseCraft.disguise.DisguiseType.fromString(disguise);
-            final pgDev.bukkit.DisguiseCraft.disguise.Disguise d = new pgDev.bukkit.DisguiseCraft.disguise.Disguise(dapi.newEntityID(), disguise, t == null ? pgDev.bukkit.DisguiseCraft.disguise.DisguiseType.Player : t);
-            if (dapi.isDisguised(player)) {
-                dapi.undisguisePlayer(player);
-            }
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new DisguiseRunnable(player, d), 3L);
-
         }
 
         disguised.add(player.getName());
@@ -275,8 +249,6 @@ public class Skins extends ArenaModule {
     public void unload(final Player player) {
         if (ldHandler != null) {
             ldHandler.unload(player);
-        } else if (dcHandler) {
-            dapi.undisguisePlayer(player);
         }
         disguised.remove(player.getName());
     }

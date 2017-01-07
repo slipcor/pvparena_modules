@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.realspectate;
 
+import com.google.common.collect.ImmutableMap;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -21,6 +22,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.util.Vector;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +105,8 @@ class RealSpectateListener implements Listener {
                 // --> relay damage to subject
 
                 final EntityDamageByEntityEvent projectileEvent = new EntityDamageByEntityEvent(
-                        event.getDamager(), subject, event.getCause(), event.getDamage());
+                        event.getDamager(), subject, event.getCause(),
+                        new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf(event.getDamage()))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, 0)));
 
                 subject.setLastDamageCause(projectileEvent);
                 subject.damage(event.getDamage(), event.getDamager());
