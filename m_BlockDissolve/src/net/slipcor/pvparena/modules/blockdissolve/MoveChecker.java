@@ -62,25 +62,25 @@ class MoveChecker implements Listener {
         final double z = location.getZ() * 10 % 10 / 10;
 
         if (x < offset) {
-            checkBlock(location.clone().add(-1, 0, 0).getBlock());
+            checkBlock(location.clone().add(location.getX()<0?1:-1, 0, 0).getBlock());
         } else if (x > (1-offset)) {
-            checkBlock(location.clone().add(1, 0, 0).getBlock());
+            checkBlock(location.clone().add(location.getX()<0?-1:1, 0, 0).getBlock());
         }
 
         if (z < offset) {
-            checkBlock(location.clone().add(0, 0, -1).getBlock());
+            checkBlock(location.clone().add(0, 0, location.getZ()<0?1:-1).getBlock());
         } else if (z > 0.666) {
-            checkBlock(location.clone().add(0, 0, 1).getBlock());
+            checkBlock(location.clone().add(0, 0, location.getZ()<0?-1:1).getBlock());
         }
 
         if (x < offset && z < offset) {
-            checkBlock(location.clone().add(-1, 0, -1).getBlock());
+            checkBlock(location.clone().add(location.getX()<0?1:-1, 0, location.getZ()<0?1:-1).getBlock());
         } else if (x <offset && z > (1-offset)) {
-            checkBlock(location.clone().add(-1, 0, 1).getBlock());
+            checkBlock(location.clone().add(location.getX()<0?1:-1, 0, location.getZ()<0?-1:1).getBlock());
         } else if (x > (1-offset) && z < offset) {
-            checkBlock(location.clone().add(1, 0, -1).getBlock());
+            checkBlock(location.clone().add(location.getX()<0?-1:1, 0, location.getZ()<0?1:-1).getBlock());
         } else if (x > (1-offset) && z > (1-offset)) {
-            checkBlock(location.clone().add(1, 0, 1).getBlock());
+            checkBlock(location.clone().add(location.getX()<0?-1:1, 0, location.getZ()<0?-1:1).getBlock());
         }
 
         checkBlock(location.getBlock());
