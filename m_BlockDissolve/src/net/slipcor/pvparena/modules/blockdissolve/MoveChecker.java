@@ -121,7 +121,7 @@ class MoveChecker implements Listener {
                 if (active) {
                     for (ArenaPlayer ap : arena.getFighters()) {
                         if (ap.getStatus() == Status.FIGHT) {
-                            checkBlock(ap.get().getLocation());
+                            checkBlock(ap.get().getLocation().clone().subtract(0, 1, 0));
                         }
                     }
                 }
