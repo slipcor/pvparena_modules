@@ -4,6 +4,7 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.CommandTree;
+import net.slipcor.pvparena.core.Config;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
@@ -30,7 +31,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.218";
+        return "v1.3.3.225";
     }
 
     @Override
@@ -165,6 +166,11 @@ public class Walls extends ArenaModule {
         needsReset = false;
         if (runnable != null) {
             runnable.cancel();
+            if (arena.getArenaConfig().getBoolean(Config.CFG.MODULES_WALLS_SCOREBOARDCOUNTDOWN)) {
+                arena.removeCustomScoreBoardEntry(this, 99);
+                arena.removeCustomScoreBoardEntry(this, 98);
+                arena.removeCustomScoreBoardEntry(this, 97);
+            }
         }
         runnable = null;
         createWalls();
@@ -205,6 +211,11 @@ public class Walls extends ArenaModule {
                 }
                 needsReset = true;
             }
+        }
+        if (arena.getArenaConfig().getBoolean(Config.CFG.MODULES_WALLS_SCOREBOARDCOUNTDOWN)) {
+            arena.removeCustomScoreBoardEntry(this, 99);
+            arena.removeCustomScoreBoardEntry(this, 98);
+            arena.removeCustomScoreBoardEntry(this, 97);
         }
     }
 }
