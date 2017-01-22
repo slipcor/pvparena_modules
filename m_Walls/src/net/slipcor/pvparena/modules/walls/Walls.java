@@ -31,7 +31,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.225";
+        return "v1.3.3.226";
     }
 
     @Override
@@ -169,7 +169,6 @@ public class Walls extends ArenaModule {
             if (arena.getArenaConfig().getBoolean(Config.CFG.MODULES_WALLS_SCOREBOARDCOUNTDOWN)) {
                 arena.removeCustomScoreBoardEntry(this, 99);
                 arena.removeCustomScoreBoardEntry(this, 98);
-                arena.removeCustomScoreBoardEntry(this, 97);
             }
         }
         runnable = null;
@@ -215,7 +214,6 @@ public class Walls extends ArenaModule {
         if (arena.getArenaConfig().getBoolean(Config.CFG.MODULES_WALLS_SCOREBOARDCOUNTDOWN)) {
             arena.removeCustomScoreBoardEntry(this, 99);
             arena.removeCustomScoreBoardEntry(this, 98);
-            arena.removeCustomScoreBoardEntry(this, 97);
         }
     }
 }
