@@ -1,3 +1,4 @@
+v1.3.3.227 - [Walls] - use correct argument when setting a wall material
 v1.3.3.226 - [Walls] - better display, using more characters and M:SS countdown
 v1.3.3.225 - [Walls] - add custom scoreboard wall fall countdown
 v1.3.3.223 - [BlockDissolve] - improve force removing of blocks under idle players

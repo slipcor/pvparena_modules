@@ -31,7 +31,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.226";
+        return "v1.3.3.227";
     }
 
     @Override
@@ -131,10 +131,10 @@ public class Walls extends ArenaModule {
             // setting walls material
             final Material mat;
             try {
-                mat = Material.getMaterial(args[0].toUpperCase());
+                mat = Material.getMaterial(args[1].toUpperCase());
                 debug.i("wall material: " + mat.name());
             } catch (final Exception e) {
-                arena.msg(sender, Language.parse(MSG.ERROR_MAT_NOT_FOUND, args[0]));
+                arena.msg(sender, Language.parse(MSG.ERROR_MAT_NOT_FOUND, args[1]));
                 return;
             }
 
