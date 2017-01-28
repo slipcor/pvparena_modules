@@ -61,7 +61,7 @@ class BattleRunnable implements Runnable {
                             ap.get().setHealth(0);
                             ap.get().damage(1000);
                         } else {
-                            ap.getArena().playerLeave(p, CFG.TP_EXIT, false);
+                            ap.getArena().playerLeave(p, CFG.TP_EXIT, false, false);
                         }
                         continue;
                     }

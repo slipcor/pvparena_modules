@@ -36,7 +36,7 @@ public class BanKick extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.3.235";
     }
 
     private List<String> banList;
@@ -235,7 +235,7 @@ public class BanKick extends ArenaModule {
             arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_NOTKICKED, string));
             return;
         }
-        arena.playerLeave(p, CFG.TP_EXIT, true);
+        arena.playerLeave(p, CFG.TP_EXIT, true, true);
         arena.msg(p, Language.parse(MSG.MODULE_BANVOTE_YOUKICKED, arena.getName()));
         arena.msg(sender, Language.parse(MSG.MODULE_BANVOTE_KICKED, string));
     }
