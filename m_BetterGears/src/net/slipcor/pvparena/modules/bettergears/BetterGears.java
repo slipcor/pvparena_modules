@@ -42,7 +42,7 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.238";
+        return "v1.3.3.239";
     }
 
     @Override
@@ -210,6 +210,10 @@ public class BetterGears extends ArenaModule {
     void equip(final ArenaPlayer ap) {
 
         arena.getDebugger().i("equipping better gear!", ap.get());
+
+        if (getColorMap().isEmpty()) {
+            setup();
+        }
 
         final short r;
         final short g;
