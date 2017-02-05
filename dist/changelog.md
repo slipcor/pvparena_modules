@@ -1,3 +1,4 @@
+v1.3.3.238 - [BetterGears] - Properly set initial gear with custom class
 v1.3.3.236 - [BetterGears] - Do not overwrite existing leather enchants when coloring
 v1.3.3.235 - [BanKick,BattleFieldGuard] - adapt to reworking of player leaving
 v1.3.3.227 - [Walls] - use correct argument when setting a wall material

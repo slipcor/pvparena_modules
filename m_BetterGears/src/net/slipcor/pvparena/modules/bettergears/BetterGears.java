@@ -42,7 +42,7 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.236";
+        return "v1.3.3.238";
     }
 
     @Override
@@ -209,6 +209,8 @@ public class BetterGears extends ArenaModule {
 
     void equip(final ArenaPlayer ap) {
 
+        arena.getDebugger().i("equipping better gear!", ap.get());
+
         final short r;
         final short g;
         final short b;
@@ -337,7 +339,7 @@ public class BetterGears extends ArenaModule {
         // debug();
 
         for (final ArenaPlayer ap : arena.getFighters()) {
-            equip(ap);
+            new EquipRunnable(ap, this);
         }
     }
 
