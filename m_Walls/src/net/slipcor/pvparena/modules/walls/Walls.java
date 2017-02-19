@@ -31,7 +31,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.227";
+        return "v1.3.3.245";
     }
 
     @Override
@@ -159,11 +159,6 @@ public class Walls extends ArenaModule {
     @Override
     public void reset(final boolean force) {
         debug.i("resetting WALLS");
-        if (!needsReset) {
-            debug.i("[WorldEdit] we did not start yet, no reset needed!");
-            return;
-        }
-        needsReset = false;
         if (runnable != null) {
             runnable.cancel();
             if (arena.getArenaConfig().getBoolean(Config.CFG.MODULES_WALLS_SCOREBOARDCOUNTDOWN)) {
@@ -171,6 +166,11 @@ public class Walls extends ArenaModule {
                 arena.removeCustomScoreBoardEntry(this, 98);
             }
         }
+        if (!needsReset) {
+            debug.i("[WorldEdit] we did not start yet, no reset needed!");
+            return;
+        }
+        needsReset = false;
         runnable = null;
         createWalls();
     }

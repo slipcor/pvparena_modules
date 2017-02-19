@@ -1,3 +1,4 @@
+v1.3.3.245 - [Walls] - reset the wall countdown timer in case the match ends before that 
 v1.3.3.239 - [BetterGears] - Actually set initial gear with custom class
 v1.3.3.238 - [BetterGears] - Properly set initial gear with custom class
 v1.3.3.236 - [BetterGears] - Do not overwrite existing leather enchants when coloring
