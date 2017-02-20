@@ -26,8 +26,6 @@ import java.util.List;
 
 public class AnnouncementManager extends ArenaModule {
 
-    static List<String> announced = new ArrayList<>();
-
     public AnnouncementManager() {
         super("Announcements");
         debug = new Debug(400);
@@ -35,7 +33,7 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.214";
+        return "v1.3.3.247";
     }
 
     @Override
@@ -158,8 +156,7 @@ public class AnnouncementManager extends ArenaModule {
 
         debug.i("parseJoin ... ", sender);
         ArenaPlayer ap = ArenaPlayer.parsePlayer(sender.getName());
-        if (ap.getStatus() == ArenaPlayer.Status.WARM || !WarmupJoin.didNotAnnounceYet(arena)
-                || announced.contains(arena.getName())) {
+        if (ap.getStatus() == ArenaPlayer.Status.WARM || !WarmupJoin.didNotAnnounceYet(arena)) {
             debug.i("skipping because we already did!", sender);
             return;
         }
@@ -215,10 +212,5 @@ public class AnnouncementManager extends ArenaModule {
     public void parseStart() {
         Announcement.announce(arena, Announcement.type.START,
                 Language.parse(MSG.FIGHT_BEGINS));
-    }
-
-    @Override
-    public void reset(boolean force) {
-        announced.remove(arena.getName());
     }
 }

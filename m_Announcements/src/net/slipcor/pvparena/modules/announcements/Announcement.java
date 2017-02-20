@@ -37,13 +37,6 @@ public final class Announcement {
         debug.i("announce [" + a.getName() + "] type: " + t.name() + " : "
                 + message);
 
-        if (AnnouncementManager.announced.contains(a.getName()) && (t == type.ADVERT)) {
-            debug.i("skip because we did!");
-            return;
-        } else if (t == type.ADVERT) {
-            AnnouncementManager.announced.add(a.getName());
-        }
-
         for (final Player p : Bukkit.getOnlinePlayers()) {
             if (a.hasPlayer(p) || ArenaPlayer.parsePlayer(p.getName()).isIgnoringAnnouncements()) {
                 continue;
