@@ -14,6 +14,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +134,11 @@ public class ArenaBoard {
         debug.i("checking ArenaBoard interact", player);
 
         if (event.getClickedBlock() == null) {
+            return false;
+        }
+
+        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+            debug.i("exiting: offhand", player);
             return false;
         }
 
