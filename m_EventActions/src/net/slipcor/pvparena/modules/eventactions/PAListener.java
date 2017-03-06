@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 class PAListener implements Listener {
     private final EventActions ea;
@@ -98,6 +99,10 @@ class PAListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public boolean playerInteract(final PlayerInteractEvent event) {
         if (!event.hasBlock()) {
+            return false;
+        }
+
+        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
             return false;
         }
 //		debug.i("interact eventactions", event.getPlayer());

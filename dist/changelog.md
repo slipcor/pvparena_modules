@@ -1,3 +1,4 @@
+v1.3.4.251 - [ArenaBoards,PlayerFinder,SpecialJoin,Squads,Turrets] - fix double registration of right click event in 1.11
 v1.3.3.247 - [Announcements] - revert d1ee782 because it was a bad idea
 v1.3.3.245 - [Walls] - reset the wall countdown timer in case the match ends before that 
 v1.3.3.239 - [BetterGears] - Actually set initial gear with custom class

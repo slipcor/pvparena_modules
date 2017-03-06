@@ -25,6 +25,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.IllegalPluginAccessException;
 
 import java.util.*;
@@ -40,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.4.251";
     }
 
     @Override
@@ -105,6 +106,11 @@ public class SpecialJoin extends ArenaModule implements Listener {
         }
         debug.i("PIA!", event.getPlayer());
 
+
+        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+            debug.i("exiting: offhand", event.getPlayer());
+            return;
+        }
 
         if (PAA_Edit.activeEdits.containsKey(event.getPlayer().getName()) ||
                 PAA_Setup.activeSetups.containsKey(event.getPlayer().getName())) {

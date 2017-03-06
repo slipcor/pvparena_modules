@@ -24,6 +24,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.*;
 
@@ -39,7 +40,7 @@ public class Squads extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.134";
+        return "v1.3.4.251";
     }
 
     @Override
@@ -169,6 +170,10 @@ public class Squads extends ArenaModule {
 
         if (arena.isFightInProgress() && !((Boolean) arena.getArenaConfig().getBoolean(
                 Config.CFG.MODULES_SQUADS_INGAMESWITCH))) {
+            return false;
+        }
+
+        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
             return false;
         }
 

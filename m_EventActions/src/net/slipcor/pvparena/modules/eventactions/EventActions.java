@@ -33,7 +33,7 @@ public class EventActions extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.4.251";
     }
 
     @Override
@@ -80,6 +80,18 @@ public class EventActions extends ArenaModule {
         }
 
         final List<String> items = a.getArenaConfig().getStringList("event." + string, new ArrayList<String>());
+
+        final List<String> eachPlayer = new ArrayList<>();
+
+        for (String item : items) {
+            if (item.contains("%allplayers%")) {
+                for (ArenaPlayer arenaPlayer : a.getFighters()) {
+                    eachPlayer.add(item.replace("%allplayers%", arenaPlayer.getName()));
+                }
+            }
+        }
+
+        items.addAll(eachPlayer);
 
         for (String item : items) {
 

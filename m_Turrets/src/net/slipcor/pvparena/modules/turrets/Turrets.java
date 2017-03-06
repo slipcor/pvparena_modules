@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class Turrets extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.3.4.251";
     }
 
     @Override
@@ -117,6 +118,11 @@ public class Turrets extends ArenaModule implements Listener {
         debug.i("click!", event.getPlayer());
 
         if (arena == null || !arena.isFightInProgress() || !shootingPlayers.containsKey(event.getPlayer().getName())) {
+            return;
+        }
+
+        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+            debug.i("exiting: offhand", event.getPlayer());
             return;
         }
         debug.i("ok?", event.getPlayer());

@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.81";
+        return "v1.3.4.251";
     }
 
     @Override
@@ -44,6 +45,11 @@ public class PlayerFinder extends ArenaModule implements Listener {
         final Player player = event.getPlayer();
 
         final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
+
+        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+            debug.i("exiting: offhand", player);
+            return;
+        }
 
         if (aPlayer.getArena() == null) {
             debug.i("No arena!", player);
