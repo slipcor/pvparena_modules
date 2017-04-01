@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.148";
+        return "v1.3.4.259";
     }
 
     @Override
@@ -307,7 +307,10 @@ public class ChestFiller extends ArenaModule {
 
         final Random r = new Random();
 
-        final int count = r.nextInt(max - min) + min;
+        int bound = max-min<0?0:max-min;
+
+        // if min == max or min > max, use max
+        final int count = bound == 0 ? max :r.nextInt(bound) + min;
 
 
         int i = 0;
