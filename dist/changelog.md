@@ -1,3 +1,4 @@
+* v1.3.4.259 - [PlayerFinder] - catch a NPE about player hands not existing
 * v1.3.4.259 - [ChestFiller] - use max item setting if min <= max
 * v1.3.4.251 - [EventActions] - add %allplayers% placeholder to do something for all players
 * v1.3.4.251 - [ArenaBoards,PlayerFinder,SpecialJoin,Squads,Turrets] - fix double registration of right click event in 1.11

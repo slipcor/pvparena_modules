@@ -29,7 +29,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.251";
+        return "v1.3.4.259";
     }
 
     @Override
@@ -46,7 +46,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
         final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(player.getName());
 
-        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+        if (event.getHand() != null && event.getHand().equals(EquipmentSlot.OFF_HAND)) {
             debug.i("exiting: offhand", player);
             return;
         }
