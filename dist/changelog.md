@@ -1,3 +1,4 @@
+* v1.3.4.267 - [TempPerms] - properly clear the ArenaPlayer list of temporary permissions on reset
 * v1.3.4.259 - [PlayerFinder] - catch a NPE about player hands not existing
 * v1.3.4.259 - [ChestFiller] - use max item setting if min <= max
 * v1.3.4.251 - [EventActions] - add %allplayers% placeholder to do something for all players

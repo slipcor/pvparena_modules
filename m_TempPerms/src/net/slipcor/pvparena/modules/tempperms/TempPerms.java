@@ -32,7 +32,7 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.129";
+        return "v1.3.4.267";
     }
 
     @Override
@@ -247,6 +247,7 @@ public class TempPerms extends ArenaModule implements Listener {
                 pa.remove();
             }
         }
+        player.getTempPermissions().clear();
         p.recalculatePermissions();
     }
 
