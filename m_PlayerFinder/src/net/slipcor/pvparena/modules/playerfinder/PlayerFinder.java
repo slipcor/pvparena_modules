@@ -29,7 +29,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.259";
+        return "v1.3.4.270";
     }
 
     @Override
@@ -107,7 +107,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             debug.i("left");
             for (final Player otherPlayer : sortedMap.values()) {
-                player.setCompassTarget(otherPlayer.getLocation());
+                player.setCompassTarget(otherPlayer.getLocation().clone());
                 arena.msg(player, Language.parse(MSG.MODULE_PLAYERFINDER_POINT, otherPlayer.getName()));
                 break;
             }
