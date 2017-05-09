@@ -29,7 +29,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.197";
+        return "v1.3.4.276";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -483,6 +483,9 @@ public class BetterClasses extends ArenaModule {
                 teamSwitches.put(at, value);
                 arena.getDebugger().i("team " + at.getName() + ": " + value);
             }
+        }
+        if (arena.isFightInProgress()) {
+            parseRespawn(ap.get(), at, null, null);
         }
     }
 
