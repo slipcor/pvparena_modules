@@ -1,3 +1,4 @@
+* v1.3.4.281 - [ChestFiller] - prevent NPE because of null item in chest
 * v1.3.4.276 - [BetterClasses] - support ingame class change by updating effects
 * v1.3.4.270 - [PlayerFinder] - update the compass location less frequently (on click)
 * v1.3.4.267 - [TempPerms] - properly clear the ArenaPlayer list of temporary permissions on reset

@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.259";
+        return "v1.3.4.281";
     }
 
     @Override
@@ -317,6 +317,9 @@ public class ChestFiller extends ArenaModule {
 
         while (i++ < count) {
             final int d = r.nextInt(stacks.length);
+            if (stacks[d] == null) {
+                continue;
+            }
             adding.add(stacks[d].clone());
         }
 
