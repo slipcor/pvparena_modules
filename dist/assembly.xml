@@ -160,6 +160,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_Handycap/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_Items/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
