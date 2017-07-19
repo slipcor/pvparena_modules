@@ -8,6 +8,7 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -29,7 +30,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.276";
+        return "v1.3.4.284";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -144,6 +145,7 @@ public class BetterClasses extends ArenaModule {
             result.define(new String[]{aClass.getName(), "clear"});
             result.define(new String[]{aClass.getName(), "set", "exp"});
             result.define(new String[]{aClass.getName(), "set", "max"});
+            result.define(new String[]{aClass.getName(), "respawncommand"});
             result.define(new String[]{aClass.getName(), "remove", "{PotionEffectType}"});
         }
         return result;
@@ -166,7 +168,8 @@ public class BetterClasses extends ArenaModule {
             return;
         }
 
-        if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2, 3, 4, 5})) {
+        if ((!(args.length > 2 && "respawncommand".equals(args[2])) || args.length < 3)  &&
+                !AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{2, 3, 4, 5})) {
             return;
         }
 
@@ -198,7 +201,22 @@ public class BetterClasses extends ArenaModule {
                 final String node = "modules.betterclasses.maxGlobalPlayers." + c.getName();
                 arena.getArenaConfig().setManually(node, value);
                 arena.msg(sender, Language.parse(MSG.SET_DONE, node, String.valueOf(value)));
+            } else {
+                return;
             }
+            arena.getArenaConfig().save();
+            return;
+        } else if (args.length > 2 && "respawncommand".equals(args[2])) {
+            final String node = "modules.betterclasses.respawnCommand." + c.getName();
+            if (args.length == 3) {
+                arena.getArenaConfig().setManually(node, null);
+                arena.msg(sender, Language.parse(MSG.MODULE_BETTERCLASSES_RESPAWNCOMMAND_REMOVED, node, c.getName()));
+            } else {
+                String command = StringParser.joinArray(StringParser.shiftArrayBy(args, 3), " ");
+                arena.getArenaConfig().setManually(node, command);
+                arena.msg(sender, Language.parse(MSG.SET_DONE, node, command));
+            }
+            arena.getArenaConfig().save();
             return;
         }
 
@@ -318,6 +336,7 @@ public class BetterClasses extends ArenaModule {
             cfg.addDefault("modules.betterclasses.maxPlayers." + c.getName(), 0);
             cfg.addDefault("modules.betterclasses.maxGlobalPlayers." + c.getName(), 0);
             cfg.addDefault("modules.betterclasses.neededEXPLevel." + c.getName(), 0);
+            cfg.addDefault("modules.betterclasses.respawnCommand." + c.getName(), "");
         }
         for (final String team : arena.getTeamNames()) {
             cfg.addDefault("modules.betterclasses.maxTeamSwitches." + team, -1);
@@ -436,6 +455,18 @@ public class BetterClasses extends ArenaModule {
         }
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         debug.i("respawning player " + ap, player);
+
+        final ArenaClass c = ap.getArenaClass();
+        if (c != null) {
+            final String node = "modules.betterclasses.respawnCommand." + c.getName();
+            String cmd = arena.getArenaConfig().getYamlConfiguration().getString(node, "");
+            if (cmd.length() > 0) {
+                cmd = cmd.replace("%player%", player.getName());
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+            }
+        }
+
+
         final Map<ArenaClass, HashSet<PotionEffect>> map = superMap.get(arena);
         if (map == null) {
             PVPArena.instance.getLogger().warning("No superMap entry for arena " + arena);
@@ -448,8 +479,6 @@ public class BetterClasses extends ArenaModule {
                 player.removePotionEffect(eff.getType());
             }
         }
-
-        final ArenaClass c = ap.getArenaClass();
 
         final Iterable<PotionEffect> ape = map.get(c);
         if (ape == null) {
@@ -543,5 +572,6 @@ public class BetterClasses extends ArenaModule {
         arena.msg(sender, "/pa [arenaname] !bc [classname] clear | clear potion effects");
         arena.msg(sender, "/pa [arenaname] !bc [classname] add [type] [amp] | add potion effect");
         arena.msg(sender, "/pa [arenaname] !bc [classname] remove [type] | remove potion effect");
+        arena.msg(sender, "/pa [arenaname] !bc [classname] respawncommand [command] | command on respawn");
     }
 }

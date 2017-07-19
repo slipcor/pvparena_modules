@@ -1,3 +1,4 @@
+* v1.3.4.284 - [BetterClasses] - add respawn command
 * v1.3.4.283 - [EventActions] - hook into player changing classes
 * v1.3.4.281 - [Handycap] - untested build - use with caution!
 * v1.3.4.281 - [ChestFiller] - prevent NPE because of null item in chest
