@@ -33,7 +33,7 @@ public class EventActions extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.283";
+        return "v1.3.4.285";
     }
 
     @Override
@@ -70,6 +70,10 @@ public class EventActions extends ArenaModule {
     }
 
     void catchEvent(final String string, final Player p, final Arena a) {
+        catchEvent(string, p, a, new String[0]);
+    }
+
+    void catchEvent(final String string, final Player p, final Arena a, final String... replacements) {
 
         if (a == null || !a.equals(arena)) {
             return;
@@ -94,6 +98,13 @@ public class EventActions extends ArenaModule {
         items.addAll(eachPlayer);
 
         for (String item : items) {
+
+            for (int pos=0; pos<replacements.length/2; pos+=2) {
+                if (replacements[pos] == null || replacements[pos+1] == null) {
+                    continue;
+                }
+                item = item.replace(replacements[pos], replacements[pos+1]);
+            }
 
             if (p != null) {
                 item = item.replace("%player%", p.getName());

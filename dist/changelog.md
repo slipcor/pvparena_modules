@@ -1,3 +1,5 @@
+* v1.3.4.285 - [EventActions] - add custom replacement strings that hooks can use, and add class replacement hook to class change event
+
 * v1.3.4.284 - [BetterClasses] - add respawn command
 * v1.3.4.283 - [EventActions] - hook into player changing classes
 * v1.3.4.281 - [Handycap] - untested build - use with caution!

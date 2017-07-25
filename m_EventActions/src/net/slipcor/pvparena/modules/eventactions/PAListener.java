@@ -94,7 +94,7 @@ class PAListener implements Listener {
     public void onClassChange(final PAPlayerClassChangeEvent event) {
         final Arena a = event.getArena();
         final Player p = event.getPlayer();
-        ea.catchEvent("classchange", p, a);
+        ea.catchEvent("classchange", p, a, "%class%",event.getArenaClass().getName());
     }
 
 
