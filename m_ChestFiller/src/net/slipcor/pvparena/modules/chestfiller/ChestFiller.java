@@ -326,7 +326,6 @@ public class ChestFiller extends ArenaModule {
         for (final ItemStack it : adding) {
             c.getInventory().addItem(it);
         }
-        c.update();
     }
 
     private Location saveBlock(final World world, final int x, final int y, final int z) {
