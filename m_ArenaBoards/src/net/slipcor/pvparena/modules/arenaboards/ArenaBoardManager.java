@@ -36,7 +36,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.251";
+        return "v1.3.4.288";
     }
 
     @Override
@@ -138,8 +138,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
             final Float pitch = loc.getPitch();
 
             final String s = loc.getWorld().getName() + ',' + x + ','
-                    + y + ',' + z + ',' + yaw
-                    + ',' + pitch;
+                    + y + ',' + z;
             PVPArena.instance.getConfig().set("leaderboard", s);
             PVPArena.instance.saveConfig();
 
