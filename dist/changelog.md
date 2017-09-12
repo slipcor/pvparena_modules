@@ -1,3 +1,4 @@
+* v1.3.4.289 - [Duel] - only react to duelists leaving the game
 * v1.3.4.288 - [ArenaBoards] - save board as block location type, not as spawn location type
 * v1.3.4.288 - [ChestFiller] - latest breaking changes in the API - thanks to @mibby for the fix tip
 * v1.3.4.285 - [EventActions] - add custom replacement strings that hooks can use, and add class replacement hook to class change event

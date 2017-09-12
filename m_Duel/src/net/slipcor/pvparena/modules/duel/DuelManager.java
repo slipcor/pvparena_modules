@@ -27,7 +27,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.189";
+        return "v1.3.4.289";
     }
 
     private String duelSender = null;
@@ -199,8 +199,14 @@ public class DuelManager extends ArenaModule {
     }
     @Override
     public void resetPlayer(Player player, boolean force, boolean soft) {
+        if (player == null ||
+                !player.getName().equals(duelReceiver) ||
+                !player.getName().equals(duelSender)) {
+            // player invalid or not a duelling player, ignore!
+            return;
+        }
         for (final ArenaPlayer ap : arena.getFighters()) {
-            if (ap == null || player == null || ap.getName().equals(player.getName())) {
+            if (ap == null || ap.getName().equals(player.getName())) {
                 continue;
             }
             if (ArenaPlayer.parsePlayer(player.getName()).getStatus() == ArenaPlayer.Status.LOUNGE) {
