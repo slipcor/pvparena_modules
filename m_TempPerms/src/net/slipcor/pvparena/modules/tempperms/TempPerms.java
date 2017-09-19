@@ -32,7 +32,7 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.267";
+        return "v1.3.4.291";
     }
 
     @Override
@@ -154,7 +154,19 @@ public class TempPerms extends ArenaModule implements Listener {
             if (arena != null && arena.getEveryone().contains(aPlayer)) {
                 removePermissions(event.getPlayer());
 
-                setPermissions(arena, aPlayer, getTempPerms(arena, "default"), getTempPerms(arena, aPlayer.getArenaTeam().getName()));
+                class RunLater implements Runnable {
+
+                    @Override
+                    public void run() {
+                        setPermissions(arena, aPlayer, getTempPerms(arena, "default"), getTempPerms(arena, aPlayer.getArenaTeam().getName()));
+                    }
+                }
+
+                try {
+                    Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 1L);
+                } catch (IllegalPluginAccessException ex) {
+                    new RunLater().run();
+                }
             }
         }
     }
