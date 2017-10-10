@@ -109,7 +109,7 @@ class PAListener implements Listener {
             return false;
         }
 
-        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+        if (event.getHand() == null || event.getHand().equals(EquipmentSlot.OFF_HAND)) {
             return false;
         }
 //		debug.i("interact eventactions", event.getPlayer());

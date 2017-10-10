@@ -1,3 +1,4 @@
+* v1.3.4.291 - [EventActions] - Prevent NPEs for physical triggers of InteractEvents
 * v1.3.4.291 - [TempPerms] - addresses github issue #19 - wait before reassigning when starting the game
 * v1.3.4.289 - [Duel] - only react to duelists leaving the game
 * v1.3.4.288 - [ArenaBoards] - save board as block location type, not as spawn location type
