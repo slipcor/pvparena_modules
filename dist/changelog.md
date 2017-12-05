@@ -1,10 +1,11 @@
+* v1.3.4.292 - [SpecialJoin] - Prevent NPEs for physical triggers of InteractEvents
+
 * v1.3.4.291 - [EventActions] - Prevent NPEs for physical triggers of InteractEvents
 * v1.3.4.291 - [TempPerms] - addresses github issue #19 - wait before reassigning when starting the game
 * v1.3.4.289 - [Duel] - only react to duelists leaving the game
 * v1.3.4.288 - [ArenaBoards] - save board as block location type, not as spawn location type
 * v1.3.4.288 - [ChestFiller] - latest breaking changes in the API - thanks to @mibby for the fix tip
 * v1.3.4.285 - [EventActions] - add custom replacement strings that hooks can use, and add class replacement hook to class change event
-
 * v1.3.4.284 - [BetterClasses] - add respawn command
 * v1.3.4.283 - [EventActions] - hook into player changing classes
 * v1.3.4.281 - [Handycap] - untested build - use with caution!

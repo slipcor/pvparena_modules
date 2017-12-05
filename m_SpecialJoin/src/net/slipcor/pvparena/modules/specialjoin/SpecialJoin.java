@@ -41,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.251";
+        return "v1.3.4.292";
     }
 
     @Override
@@ -107,8 +107,8 @@ public class SpecialJoin extends ArenaModule implements Listener {
         debug.i("PIA!", event.getPlayer());
 
 
-        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
-            debug.i("exiting: offhand", event.getPlayer());
+        if (event.getHand() == null || event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+            debug.i("exiting: offhand or physical", event.getPlayer());
             return;
         }
 
