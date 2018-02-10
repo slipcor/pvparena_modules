@@ -45,15 +45,16 @@ public class BetterClasses extends ArenaModule {
             return true;
         }
 
-        final int max;
-        final int globalmax;
+        int max;
+        int globalmax;
 
         try {
             max = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxPlayers." + className);
             globalmax = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxGlobalPlayers." + className);
         } catch (final Exception e) {
-            arena.getDebugger().i("Exception at BetterClasses.class:"+e.getStackTrace()[1].getLineNumber());
-            return false;
+            arena.getDebugger().i("Exception at BetterClasses.class getting "+className+" config:"+e.getMessage()+" at line "+e.getStackTrace()[1].getLineNumber());
+            max = 0;
+            globalmax = 0;
         }
         arena.getDebugger().i("max: " +max, player);
         arena.getDebugger().i("gmax: "+globalmax, player);
