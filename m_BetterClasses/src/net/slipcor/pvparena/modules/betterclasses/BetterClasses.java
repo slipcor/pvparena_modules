@@ -30,7 +30,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.284";
+        return "v1.3.4.285";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -485,12 +485,20 @@ public class BetterClasses extends ArenaModule {
             debug.i("no effects for class " + c, player);
             return;
         }
-        for (final PotionEffect pe : ape) {
-            if (team == null && cause == null && damager == null) {
-                player.removePotionEffect(pe.getType());
+        class RunLater implements Runnable {
+            @Override
+            public void run() {
+                for (final PotionEffect pe : ape) {
+                    arena.getDebugger().i("[betterclass] adding " + pe.getType(), player);
+                    player.addPotionEffect(pe);
+                }
             }
-            debug.i("adding " + pe.getType(), player);
-            player.addPotionEffect(pe);
+        }
+
+        try {
+            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
+        } catch (Exception e) {
+            arena.getDebugger().i("[betterclass] exception when adding potions effects: " + e.getMessage(), player);
         }
     }
 
