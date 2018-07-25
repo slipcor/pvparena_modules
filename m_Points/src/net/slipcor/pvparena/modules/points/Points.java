@@ -36,7 +36,7 @@ public class Points extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.129";
+        return "v1.13.0";
     }
 
     @Override

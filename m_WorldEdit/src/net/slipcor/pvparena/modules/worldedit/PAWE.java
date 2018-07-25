@@ -49,7 +49,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.192";
+        return "v1.13.0";
     }
 
     @Override

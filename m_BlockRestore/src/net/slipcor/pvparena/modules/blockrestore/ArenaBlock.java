@@ -14,7 +14,6 @@ class ArenaBlock {
     public String arena;
     private final PABlockLocation location;
     private final Material material;
-    private final byte data;
     private final String[] lines;
 
     /**
@@ -25,11 +24,9 @@ class ArenaBlock {
     public ArenaBlock(final Block block) {
         location = new PABlockLocation(block.getLocation());
         material = block.getType();
-        data = block.getData();
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + material
-                + "; data " + data);
+        debug.i("loc: " + location + "; mat: " + material);
 
         try {
             arena = ArenaManager.getArenaByRegionLocation(location).getName();
@@ -57,12 +54,10 @@ class ArenaBlock {
             arena = "";
         }
         material = type;
-        data = block.getData();
         lines = null;
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + material
-                + "; data " + data);
+        debug.i("loc: " + location + "; mat: " + material);
 
     }
 
@@ -73,7 +68,6 @@ class ArenaBlock {
         final Block b = location.toLocation().getBlock();
 
         b.setType(material);
-        b.setData(data);
 
         if (lines != null) {
             int i = 0;

@@ -76,7 +76,7 @@ public class RespawnRelay extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.60";
+        return "v1.13.0";
     }
 
     @Override

@@ -41,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.292";
+        return "v1.13.1";
     }
 
     @Override
@@ -156,11 +156,11 @@ public class SpecialJoin extends ArenaModule implements Listener {
             final Material mat = event.getClickedBlock().getType();
             final String place;
 
-            if (mat == Material.STONE_PLATE || mat == Material.WOOD_PLATE) {
+            if (mat.name().contains("_PRESSURE_PLATE")) {
                 place = mat.name();
-            } else if (mat == Material.STONE_BUTTON || mat == Material.WOOD_BUTTON || mat == Material.LEVER) {
+            } else if (mat.name().contains("_BUTTON") || mat == Material.LEVER) {
                 place = mat.name();
-            } else if (mat == Material.SIGN || mat == Material.SIGN_POST || mat == Material.WALL_SIGN) {
+            } else if (mat == Material.SIGN || mat == Material.WALL_SIGN) {
                 place = mat.name();
             } else {
                 return;
@@ -198,9 +198,9 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
         final Material mat = event.getClickedBlock().getType();
 
-        if (mat == Material.STONE_BUTTON || mat == Material.WOOD_BUTTON || mat == Material.LEVER) {
+        if (mat.name().contains("_BUTTON") || mat == Material.LEVER) {
             j.commit(places.get(find), event.getPlayer(), new String[0]);
-        } else if (mat == Material.SIGN || mat == Material.SIGN_POST || mat == Material.WALL_SIGN) {
+        } else if (mat == Material.SIGN || mat == Material.WALL_SIGN) {
             final Sign s = (Sign) event.getClickedBlock().getState();
             final String[] arr = new String[1];
             arr[0] = s.getLine(1); // second line

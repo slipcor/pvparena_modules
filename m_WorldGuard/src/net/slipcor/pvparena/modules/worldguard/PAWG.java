@@ -30,7 +30,7 @@ public class PAWG extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.55";
+        return "v1.13.0";
     }
 
     @Override

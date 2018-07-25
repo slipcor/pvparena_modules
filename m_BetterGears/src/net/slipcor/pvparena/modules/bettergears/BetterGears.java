@@ -42,7 +42,7 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.239";
+        return "v1.13.0";
     }
 
     @Override

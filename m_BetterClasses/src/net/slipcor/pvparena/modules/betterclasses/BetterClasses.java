@@ -30,7 +30,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.284";
+        return "v1.13.0";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();

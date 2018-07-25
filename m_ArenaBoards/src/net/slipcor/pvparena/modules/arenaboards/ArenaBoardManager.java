@@ -36,7 +36,7 @@ public class ArenaBoardManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.288";
+        return "v1.13.0";
     }
 
     @Override

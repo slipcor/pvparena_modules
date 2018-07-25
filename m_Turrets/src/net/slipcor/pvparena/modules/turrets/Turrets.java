@@ -38,7 +38,7 @@ public class Turrets extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.251";
+        return "v1.13.0";
     }
 
     @Override

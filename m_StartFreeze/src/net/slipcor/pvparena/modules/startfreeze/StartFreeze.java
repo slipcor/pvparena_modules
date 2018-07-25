@@ -36,7 +36,7 @@ public class StartFreeze extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.58";
+        return "v1.13.0";
     }
 
     @Override

@@ -34,7 +34,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.13.0";
     }
 
     @Override
