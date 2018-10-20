@@ -21,7 +21,7 @@ import java.util.Map;
 
 class MoveChecker implements Listener {
     private final Debug debug = new Debug(42);
-    private final ItemStack[] materials;
+    private final Material[] mats;
     private final Arena arena;
     private final Map<Block, Runnable> map = new HashMap<>();
     private final int delay;
@@ -30,7 +30,13 @@ class MoveChecker implements Listener {
     double offset;
 
     public MoveChecker(final Arena arena, final String definition, final int delay) {
-        materials = StringParser.getItemStacksFromString(definition);
+        String[] materials = definition.split(",");
+        mats = new Material[materials.length];
+
+        for (int pos=0; pos<materials.length; pos++) {
+            mats[pos] = Material.getMaterial(materials[pos]);
+        }
+
         debug.i("BattleRunnable constructor");
         this.arena = arena;
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
@@ -89,8 +95,8 @@ class MoveChecker implements Listener {
     private void checkBlock(final Block block) {
         final Material mat = block.getType();
 
-        for (final ItemStack stack : materials) {
-            if (mat == stack.getType()) {
+        for (final Material testMat : mats) {
+            if (mat == testMat) {
                 access(block, false);
                 return;
             }

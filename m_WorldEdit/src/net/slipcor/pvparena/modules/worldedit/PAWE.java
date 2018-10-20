@@ -2,19 +2,21 @@ package net.slipcor.pvparena.modules.worldedit;
 
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.schematic.SchematicFormat;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.registry.WorldData;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
@@ -29,6 +31,7 @@ import net.slipcor.pvparena.loadables.ArenaModule;
 import net.slipcor.pvparena.loadables.ArenaRegion;
 import net.slipcor.pvparena.loadables.ArenaRegion.RegionType;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -49,7 +52,7 @@ public class PAWE extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return "v1.13.2";
     }
 
     @Override
@@ -195,16 +198,26 @@ public class PAWE extends ArenaModule {
         }
     }
 
+    private Location calculateBukkitLocation(Player p, Vector location) {
+        return new Location(p.getWorld(), location.getX(), location.getY(), location.getZ());
+    }
+
     private void create(final Player p, final Arena arena, final String regionName, final String regionShape) {
-        final Selection s = worldEdit.getSelection(p);
-        if (s == null) {
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(p.getWorld());
+        Region selection = null;
+        try {
+            selection = worldEdit.getSession(p).getSelection(world);
+        } catch (IncompleteRegionException e) {
+            //
+        }
+        if (selection == null) {
             Arena.pmsg(p, Language.parse(MSG.ERROR_REGION_SELECT_2));
             return;
         }
 
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(p.getName());
-        ap.setSelection(s.getMinimumPoint(), false);
-        ap.setSelection(s.getMaximumPoint(), true);
+        ap.setSelection(calculateBukkitLocation(p, selection.getMinimumPoint()), false);
+        ap.setSelection(calculateBukkitLocation(p, selection.getMaximumPoint()), true);
 
         final PAA_Region cmd = new PAA_Region();
         final String[] args = {regionName, regionShape};
@@ -254,18 +267,23 @@ public class PAWE extends ArenaModule {
             final PABlockLocation loc = ars.getShape().getMinimumLocation();
 
             WorldEdit worldEdit = WorldEdit.getInstance();
-            try (InputStream in= new BufferedInputStream(new FileInputStream(new File(loadPath, regionName + ".schematic")))) {
+            File loadFile = new File(loadPath, regionName + ".schematic");
+            try (InputStream in= new BufferedInputStream(new FileInputStream(loadFile))) {
                 BukkitWorld bukkitWorld=new BukkitWorld(ars.getWorld());
-                ClipboardReader reader= ClipboardFormat.SCHEMATIC.getReader(in);
-                WorldData worldData=bukkitWorld.getWorldData();
-                Clipboard clipboard=reader.read(worldData);
-                ClipboardHolder holder=new ClipboardHolder(clipboard,worldData);
+                ClipboardFormat format = ClipboardFormats.findByFile(loadFile);
+                if (format == null) {
+                    PVPArena.instance.getLogger().severe("Unrecognized WE format: " + loadFile.getName());
+                }
+                ClipboardReader reader= format.getReader(in);
+
+                Clipboard clipboard=reader.read();
+                ClipboardHolder holder=new ClipboardHolder(clipboard);
 
                 EditSession editSession=worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, size);
                 editSession.enableQueue();
                 editSession.setFastMode(true);
                 Vector to=new Vector(loc.getX() - 1, loc.getY() - 1, loc.getZ() - 1);
-                Operation operation=holder.createPaste(editSession,worldData).to(to).ignoreAirBlocks(!arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_REPLACEAIR)).build();
+                Operation operation=holder.createPaste(editSession).to(to).ignoreAirBlocks(!arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_REPLACEAIR)).build();
                 Operations.completeLegacy(operation);
                 editSession.flushQueue();
                 editSession.commit();
@@ -332,13 +350,18 @@ public class PAWE extends ArenaModule {
         save(ars, ars.getArena().getName() + '_' + ars.getRegionName());
     }
 
-    private void save(final ArenaRegion ars, final String regionName) {
-        final CuboidSelection cs = new CuboidSelection(Bukkit.getWorld(ars.getWorldName()), ars.getShape().getMinimumLocation().toLocation(), ars.getShape().getMaximumLocation().toLocation());
-        Vector min = cs.getNativeMinimumPoint();
-        Vector max = cs.getNativeMaximumPoint();
+    private Vector getVector(org.bukkit.util.Vector vector) {
+        return new Vector(vector.getX(), vector.getY(), vector.getZ());
+    }
 
-        min = min.subtract(1, 1, 1);
-        max = max.add(1, 1, 1);
+    private void save(final ArenaRegion ars, final String regionName) {
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(ars.getWorld());
+
+        Vector v = getVector(ars.getShape().getMinimumLocation().toLocation().toVector());
+
+        Region sel = new CuboidRegion(world,
+                getVector(ars.getShape().getMinimumLocation().toLocation().toVector()),
+                getVector(ars.getShape().getMaximumLocation().toLocation().toVector()));
 
         final PABlockLocation lmin = ars.getShape().getMinimumLocation();
         final PABlockLocation lmax = ars.getShape().getMaximumLocation();
@@ -346,17 +369,22 @@ public class PAWE extends ArenaModule {
                 (lmax.getY() - lmin.getY()) *
                 (lmax.getZ() - lmin.getZ());
 
-        final CuboidClipboard cc = new CuboidClipboard(max.subtract(min), min);
+        final BlockArrayClipboard cc = new BlockArrayClipboard(sel);
+
 
         final EditSession es = worldEdit.getWorldEdit().getEditSessionFactory().
                 getEditSession(new BukkitWorld(Bukkit.getWorld(ars.getWorldName())), size);
 
-        cc.copy(es);
+        ForwardExtentCopy fec = new ForwardExtentCopy(es, sel, cc, sel.getMinimumPoint());
+        fec.setCopyingEntities(true);
 
         try {
-            SchematicFormat.MCEDIT.save(cc, new File(loadPath, regionName + ".schematic"));
+            Operations.complete(fec);
+            ClipboardFormat format = ClipboardFormats.findByAlias("schematic");
+            ClipboardWriter writer = format.getWriter(new FileOutputStream(new File(loadPath, regionName + ".schematic")));
+            writer.write(cc);
 
-        } catch (final IOException | DataException e) {
+        } catch (WorldEditException | IOException e) {
             e.printStackTrace();
         }
     }

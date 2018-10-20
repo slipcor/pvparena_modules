@@ -64,7 +64,7 @@ class RestoreRunner implements Runnable {
                 inv.clear();
                 int i = 0;
                 for (final ItemStack is : locationEntry1.getValue()) {
-                    debug.i("restoring: " + StringParser.getStringFromItemStack(is));
+                    debug.i("restoring: " + is.toString());
                     inv.setItem(i++, is);
                 }
                 debug.i("success!");

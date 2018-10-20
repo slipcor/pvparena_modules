@@ -31,7 +31,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.1";
+        return "v1.13.2";
     }
 
     @Override
@@ -59,8 +59,7 @@ public class Walls extends ArenaModule {
     private void createWalls() {
         Material mat;
         try {
-            ItemStack itemStack = StringParser.getItemStackFromString(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-            mat = itemStack.getType();
+            mat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
         } catch (final Exception e) {
             mat = Material.SAND;
         }
@@ -175,8 +174,7 @@ public class Walls extends ArenaModule {
     public void removeWalls() {
         Material mat;
         try {
-            ItemStack itemStack = StringParser.getItemStackFromString(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-            mat = itemStack.getType();
+            mat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
         } catch (final Exception e) {
             mat = Material.SAND;
         }

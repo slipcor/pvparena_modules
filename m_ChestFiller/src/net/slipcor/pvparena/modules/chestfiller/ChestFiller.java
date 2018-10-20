@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return "v1.13.2";
     }
 
     @Override
@@ -151,9 +151,9 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public void parseStart() {
-        final String items;
+        final ItemStack[] items;
         try {
-            items = (String) arena.getArenaConfig().getString(Config.CFG.MODULES_CHESTFILLER_ITEMS);
+            items = arena.getArenaConfig().getYamlConfiguration().getList(Config.CFG.MODULES_CHESTFILLER_ITEMS.getNode()).toArray(new ItemStack[0]);
         } catch (final Exception e) {
             return;
         }
@@ -186,7 +186,7 @@ public class ChestFiller extends ArenaModule {
             }
         }
 
-        final ItemStack[] stacks = contents.length>0?contents:StringParser.getItemStacksFromString(items);
+        final ItemStack[] stacks = contents.length>0?contents:items;
 
         if (stacks.length < 1) {
             return;

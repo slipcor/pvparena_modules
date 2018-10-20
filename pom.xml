@@ -32,7 +32,6 @@
         <module>m_BlockDissolve</module>
         <module>m_BlockRestore</module>
         <module>m_ChestFiller</module>
-        <module>m_ColorTeams</module>
         <module>m_Duel</module>
         <module>m_EventActions</module>
         <module>m_Factions</module>
@@ -48,7 +47,6 @@
         <module>m_RealSpectate</module>
         <module>m_RedStoneTriggers</module>
         <module>m_RespawnRelay</module>
-        <module>m_ScoreBoards</module>
         <module>m_SinglePlayerSupport</module>
         <module>m_SpecialJoin</module>
         <module>m_Spectate</module>

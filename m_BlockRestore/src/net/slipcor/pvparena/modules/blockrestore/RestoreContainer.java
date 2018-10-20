@@ -59,7 +59,7 @@ class RestoreContainer {
                         is.getEnchantments().get(ench));
             }
         }
-        debug.i(StringParser.getStringFromItemStacks(result));
+        debug.i(result.toString());
 
         return result;
     }

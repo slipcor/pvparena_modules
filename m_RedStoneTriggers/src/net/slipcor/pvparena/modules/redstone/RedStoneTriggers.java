@@ -33,7 +33,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return "v1.13.2";
     }
 
     @Override
@@ -69,7 +69,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (ap.getStatus() == Status.FIGHT) {
                         event.getBlock().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf((double) 10))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, -0.0D)));
+                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING,10.0);
                         PlayerListener.finallyKillPlayer(arena, ap.get(), e);
                     }
                 }
@@ -83,7 +83,7 @@ public class RedStoneTriggers extends ArenaModule implements Listener {
                 for (final ArenaPlayer ap : team.getTeamMembers()) {
                     if (ap.getStatus() == Status.FIGHT) {
                         event.getBlock().getWorld().strikeLightningEffect(ap.get().getLocation());
-                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf((double) 10))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, -0.0D)));
+                        final EntityDamageEvent e = new EntityDamageEvent(ap.get(), DamageCause.LIGHTNING, 10.0);
                         PlayerListener.finallyKillPlayer(arena, ap.get(), e);
                     }
                 }
