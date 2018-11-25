@@ -6,7 +6,6 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.core.StringParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,12 +28,11 @@ class MoveChecker implements Listener {
     boolean active;
     double offset;
 
-    public MoveChecker(final Arena arena, final String definition, final int delay) {
-        String[] materials = definition.split(",");
-        mats = new Material[materials.length];
+    public MoveChecker(final Arena arena, final ItemStack[] items, final int delay) {
+        mats = new Material[items.length];
 
-        for (int pos=0; pos<materials.length; pos++) {
-            mats[pos] = Material.getMaterial(materials[pos]);
+        for (int pos=0; pos<items.length; pos++) {
+            mats[pos] = items[pos].getType();
         }
 
         debug.i("BattleRunnable constructor");

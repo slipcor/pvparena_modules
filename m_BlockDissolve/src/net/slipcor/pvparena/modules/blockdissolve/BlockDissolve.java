@@ -16,7 +16,7 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.2";
+        return "v1.13.3";
     }
 
     @Override
@@ -25,7 +25,7 @@ public class BlockDissolve extends ArenaModule {
             return;
         }
         if (checker == null) {
-            checker = new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
+            checker = new MoveChecker(arena, arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
                     arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
         }
         setup = true;
@@ -40,7 +40,7 @@ public class BlockDissolve extends ArenaModule {
     @Override
     public void parseStart() {
         if (checker == null) {
-            checker = new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
+            checker = new MoveChecker(arena, arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
                     arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
         }
         checker.start();
