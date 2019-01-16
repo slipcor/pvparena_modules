@@ -30,7 +30,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return "v1.13.1";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -45,15 +45,16 @@ public class BetterClasses extends ArenaModule {
             return true;
         }
 
-        final int max;
-        final int globalmax;
+        int max;
+        int globalmax;
 
         try {
             max = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxPlayers." + className);
             globalmax = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxGlobalPlayers." + className);
         } catch (final Exception e) {
-            arena.getDebugger().i("Exception at BetterClasses.class:"+e.getStackTrace()[1].getLineNumber());
-            return false;
+            arena.getDebugger().i("Exception at BetterClasses.class getting " + className +" config:" + e.getMessage() + " at line "+e.getStackTrace()[1].getLineNumber());
+            max = 0;
+            globalmax = 0;
         }
         arena.getDebugger().i("max: " +max, player);
         arena.getDebugger().i("gmax: "+globalmax, player);
@@ -485,12 +486,21 @@ public class BetterClasses extends ArenaModule {
             debug.i("no effects for class " + c, player);
             return;
         }
-        for (final PotionEffect pe : ape) {
-            if (team == null && cause == null && damager == null) {
-                player.removePotionEffect(pe.getType());
+
+        class RunLater implements Runnable {
+            @Override
+            public void run() {
+                for (final PotionEffect pe : ape) {
+                    debug.i("adding " + pe.getType(), player);
+                    player.addPotionEffect(pe);
+                }
             }
-            debug.i("adding " + pe.getType(), player);
-            player.addPotionEffect(pe);
+        }
+
+        try {
+            Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
+        } catch (Exception e) {
+            arena.getDebugger().i("[betterclass] exception when adding potion effects: " + e.getMessage(), player);
         }
     }
 

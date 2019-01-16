@@ -1,3 +1,5 @@
+* v1.13.2 - [WorldEdit] - adapt to Vector changes
+* v1.13.1 - [BetterClasses] - Set Potion Effects on respawn
 * v1.3.4.292 - [SpecialJoin] - Prevent NPEs for physical triggers of InteractEvents
 
 * v1.3.4.291 - [EventActions] - Prevent NPEs for physical triggers of InteractEvents

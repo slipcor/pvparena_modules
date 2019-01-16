@@ -1,7 +1,7 @@
 package net.slipcor.pvparena.modules.worldedit;
 
 import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -77,6 +77,7 @@ public class PAWE extends ArenaModule {
         if (arena == null) {
             return result;
         }
+
         for (final ArenaRegion region : arena.getRegions()) {
             result.define(new String[]{region.getRegionName()});
         }
@@ -198,7 +199,7 @@ public class PAWE extends ArenaModule {
         }
     }
 
-    private Location calculateBukkitLocation(Player p, Vector location) {
+    private Location calculateBukkitLocation(Player p, BlockVector3 location) {
         return new Location(p.getWorld(), location.getX(), location.getY(), location.getZ());
     }
 
@@ -282,10 +283,10 @@ public class PAWE extends ArenaModule {
                 EditSession editSession=worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, size);
                 editSession.enableQueue();
                 editSession.setFastMode(true);
-                Vector to=new Vector(loc.getX() - 1, loc.getY() - 1, loc.getZ() - 1);
+                BlockVector3 to = BlockVector3.at(loc.getX() - 1, loc.getY() - 1, loc.getZ() - 1);
                 Operation operation=holder.createPaste(editSession).to(to).ignoreAirBlocks(!arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_REPLACEAIR)).build();
                 Operations.completeLegacy(operation);
-                editSession.flushQueue();
+                editSession.flushSession();
                 editSession.commit();
             }
         } catch (final IOException | MaxChangedBlocksException e) {
@@ -350,14 +351,14 @@ public class PAWE extends ArenaModule {
         save(ars, ars.getArena().getName() + '_' + ars.getRegionName());
     }
 
-    private Vector getVector(org.bukkit.util.Vector vector) {
-        return new Vector(vector.getX(), vector.getY(), vector.getZ());
+    private BlockVector3 getVector(org.bukkit.util.Vector vector) {
+        return BlockVector3.at(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
     }
 
     private void save(final ArenaRegion ars, final String regionName) {
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(ars.getWorld());
 
-        Vector v = getVector(ars.getShape().getMinimumLocation().toLocation().toVector());
+        BlockVector3 v = getVector(ars.getShape().getMinimumLocation().toLocation().toVector());
 
         Region sel = new CuboidRegion(world,
                 getVector(ars.getShape().getMinimumLocation().toLocation().toVector()),
