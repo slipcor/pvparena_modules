@@ -32,7 +32,9 @@ class MoveChecker implements Listener {
         mats = new Material[items.length];
 
         for (int pos=0; pos<items.length; pos++) {
-            mats[pos] = items[pos].getType();
+            if (items[pos] != null) {
+                mats[pos] = items[pos].getType();
+            }
         }
 
         debug.i("BattleRunnable constructor");
