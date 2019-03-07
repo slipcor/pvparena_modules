@@ -4,16 +4,18 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
 import net.slipcor.pvparena.managers.ArenaManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 
 class ArenaBlock {
     private final Debug debug = new Debug(9);
 
     public String arena;
     private final PABlockLocation location;
-    private final Material material;
+    private final BlockData blockData;
     private final String[] lines;
 
     /**
@@ -23,10 +25,10 @@ class ArenaBlock {
      */
     public ArenaBlock(final Block block) {
         location = new PABlockLocation(block.getLocation());
-        material = block.getType();
+        blockData = block.getBlockData();
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + material);
+        debug.i("loc: " + location + "; mat: " + blockData.getMaterial());
 
         try {
             arena = ArenaManager.getArenaByRegionLocation(location).getName();
@@ -53,11 +55,11 @@ class ArenaBlock {
         } catch (final Exception e) {
             arena = "";
         }
-        material = type;
+        blockData = Bukkit.createBlockData(type);
         lines = null;
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + material);
+        debug.i("loc: " + location + "; mat: " + blockData.getMaterial());
 
     }
 
@@ -67,7 +69,7 @@ class ArenaBlock {
     public void reset() {
         final Block b = location.toLocation().getBlock();
 
-        b.setType(material);
+        b.setBlockData(blockData);
 
         if (lines != null) {
             int i = 0;
