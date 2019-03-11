@@ -15,7 +15,7 @@ public class Items extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.2";
+        return "v1.13.3";
     }
 
     @Override
