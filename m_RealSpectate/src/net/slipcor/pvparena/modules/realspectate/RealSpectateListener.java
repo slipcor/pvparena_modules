@@ -106,7 +106,7 @@ class RealSpectateListener implements Listener {
 
                 final EntityDamageByEntityEvent projectileEvent = new EntityDamageByEntityEvent(
                         event.getDamager(), subject, event.getCause(),
-                        new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf(event.getDamage()))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, 0)));
+                        event.getDamage());
 
                 subject.setLastDamageCause(projectileEvent);
                 subject.damage(event.getDamage(), event.getDamager());

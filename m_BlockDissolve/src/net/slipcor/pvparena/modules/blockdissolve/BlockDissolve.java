@@ -4,6 +4,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 public class BlockDissolve extends ArenaModule {
 
@@ -16,7 +17,7 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.223";
+        return "v1.13.5";
     }
 
     @Override
@@ -25,7 +26,7 @@ public class BlockDissolve extends ArenaModule {
             return;
         }
         if (checker == null) {
-            checker = new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
+            checker = new MoveChecker(arena, arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
                     arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
         }
         setup = true;
@@ -34,13 +35,18 @@ public class BlockDissolve extends ArenaModule {
     @Override
     public void displayInfo(final CommandSender sender) {
         sender.sendMessage("ticks: " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
-        sender.sendMessage("materials: " + arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS));
+        StringBuilder materials = new StringBuilder("materials: ");
+        ItemStack[] items = arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS);
+        for(ItemStack item : items) {
+            materials.append(item.getType().name());
+        }
+        sender.sendMessage(materials.toString());
     }
 
     @Override
     public void parseStart() {
         if (checker == null) {
-            checker = new MoveChecker(arena, arena.getArenaConfig().getString(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
+            checker = new MoveChecker(arena, arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
                     arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
         }
         checker.start();

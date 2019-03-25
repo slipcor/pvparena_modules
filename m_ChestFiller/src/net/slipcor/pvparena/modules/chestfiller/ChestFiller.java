@@ -33,7 +33,7 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.281";
+        return "v1.13.4";
     }
 
     @Override
@@ -137,7 +137,9 @@ public class ChestFiller extends ArenaModule {
     @Override
     public void displayInfo(final CommandSender sender) {
         String content = arena.getArenaConfig().getString(Config.CFG.MODULES_CHESTFILLER_CHESTLOCATION);
-        sender.sendMessage("items: " + (content.equals("none")?arena.getArenaConfig().getString(Config.CFG.MODULES_CHESTFILLER_ITEMS):content));
+        sender.sendMessage("items: " + (content.equals("none")?
+                StringParser.getItems(arena.getArenaConfig().getItems(Config.CFG.MODULES_CHESTFILLER_ITEMS)) :
+                content));
         sender.sendMessage("max: " + arena.getArenaConfig().getInt(Config.CFG.MODULES_CHESTFILLER_MAXITEMS)
                 + " | " +
                 "min: " + arena.getArenaConfig().getInt(Config.CFG.MODULES_CHESTFILLER_MINITEMS));
@@ -151,17 +153,19 @@ public class ChestFiller extends ArenaModule {
 
     @Override
     public void parseStart() {
-        final String items;
+        final ItemStack[] items;
         try {
-            items = (String) arena.getArenaConfig().getString(Config.CFG.MODULES_CHESTFILLER_ITEMS);
+            items = arena.getArenaConfig().getItems(Config.CFG.MODULES_CHESTFILLER_ITEMS);
         } catch (final Exception e) {
+            e.printStackTrace();
             return;
         }
 
         final boolean clear;
         try {
-            clear = (Boolean) arena.getArenaConfig().getBoolean(Config.CFG.MODULES_CHESTFILLER_CLEAR);
+            clear = arena.getArenaConfig().getBoolean(Config.CFG.MODULES_CHESTFILLER_CLEAR);
         } catch (final Exception e) {
+            e.printStackTrace();
             return;
         }
 
@@ -182,11 +186,11 @@ public class ChestFiller extends ArenaModule {
                 }
                 contents = list.toArray(contents);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
 
-        final ItemStack[] stacks = contents.length>0?contents:StringParser.getItemStacksFromString(items);
+        final ItemStack[] stacks = contents.length>0?contents:items;
 
         if (stacks.length < 1) {
             return;

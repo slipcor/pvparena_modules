@@ -3,7 +3,6 @@ package net.slipcor.pvparena.modules.blockrestore;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaRegion;
 import net.slipcor.pvparena.regions.CuboidRegion;
 import net.slipcor.pvparena.regions.SphericRegion;
@@ -15,7 +14,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.block.Furnace;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -46,20 +44,12 @@ class RestoreContainer {
         final ItemStack[] result = new ItemStack[contents.length];
 
         for (int i = 0; i < result.length; i++) {
-            if (contents[i] == null) {
-                continue;
-            }
-            final ItemStack is = contents[i];
-            result[i] = new ItemStack(is.getType(), is.getAmount(),
-                    is.getDurability());
-            result[i].setData(is.getData());
-
-            for (final Enchantment ench : is.getEnchantments().keySet()) {
-                result[i].addUnsafeEnchantment(ench,
-                        is.getEnchantments().get(ench));
+            if (contents[i] != null) {
+                final ItemStack is = contents[i];
+                result[i] = new ItemStack(is);
             }
         }
-        debug.i(StringParser.getStringFromItemStacks(result));
+        debug.i(result.toString());
 
         return result;
     }

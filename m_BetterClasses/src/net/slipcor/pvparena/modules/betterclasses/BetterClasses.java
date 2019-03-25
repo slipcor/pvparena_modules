@@ -30,7 +30,7 @@ public class BetterClasses extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.4.285";
+        return "v1.13.1";
     }
 
     private Map<ArenaTeam, Integer> teamSwitches = new HashMap<>();
@@ -52,7 +52,7 @@ public class BetterClasses extends ArenaModule {
             max = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxPlayers." + className);
             globalmax = (Integer) arena.getArenaConfig().getUnsafe("modules.betterclasses.maxGlobalPlayers." + className);
         } catch (final Exception e) {
-            arena.getDebugger().i("Exception at BetterClasses.class getting "+className+" config:"+e.getMessage()+" at line "+e.getStackTrace()[1].getLineNumber());
+            arena.getDebugger().i("Exception at BetterClasses.class getting " + className +" config:" + e.getMessage() + " at line "+e.getStackTrace()[1].getLineNumber());
             max = 0;
             globalmax = 0;
         }
@@ -486,11 +486,12 @@ public class BetterClasses extends ArenaModule {
             debug.i("no effects for class " + c, player);
             return;
         }
+
         class RunLater implements Runnable {
             @Override
             public void run() {
                 for (final PotionEffect pe : ape) {
-                    arena.getDebugger().i("[betterclass] adding " + pe.getType(), player);
+                    debug.i("adding " + pe.getType(), player);
                     player.addPotionEffect(pe);
                 }
             }
@@ -499,7 +500,7 @@ public class BetterClasses extends ArenaModule {
         try {
             Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 20L);
         } catch (Exception e) {
-            arena.getDebugger().i("[betterclass] exception when adding potions effects: " + e.getMessage(), player);
+            arena.getDebugger().i("[betterclass] exception when adding potion effects: " + e.getMessage(), player);
         }
     }
 

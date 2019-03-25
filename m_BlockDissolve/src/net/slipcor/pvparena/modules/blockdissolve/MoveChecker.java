@@ -6,7 +6,6 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.core.StringParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +20,7 @@ import java.util.Map;
 
 class MoveChecker implements Listener {
     private final Debug debug = new Debug(42);
-    private final ItemStack[] materials;
+    private final Material[] mats;
     private final Arena arena;
     private final Map<Block, Runnable> map = new HashMap<>();
     private final int delay;
@@ -29,8 +28,15 @@ class MoveChecker implements Listener {
     boolean active;
     double offset;
 
-    public MoveChecker(final Arena arena, final String definition, final int delay) {
-        materials = StringParser.getItemStacksFromString(definition);
+    public MoveChecker(final Arena arena, final ItemStack[] items, final int delay) {
+        mats = new Material[items.length];
+
+        for (int pos=0; pos<items.length; pos++) {
+            if (items[pos] != null) {
+                mats[pos] = items[pos].getType();
+            }
+        }
+
         debug.i("BattleRunnable constructor");
         this.arena = arena;
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
@@ -89,8 +95,8 @@ class MoveChecker implements Listener {
     private void checkBlock(final Block block) {
         final Material mat = block.getType();
 
-        for (final ItemStack stack : materials) {
-            if (mat == stack.getType()) {
+        for (final Material testMat : mats) {
+            if (mat == testMat) {
                 access(block, false);
                 return;
             }

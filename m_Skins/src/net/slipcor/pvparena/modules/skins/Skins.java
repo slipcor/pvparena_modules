@@ -38,7 +38,7 @@ public class Skins extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.218";
+        return "v1.13.1";
     }
 
     @Override
@@ -184,7 +184,7 @@ public class Skins extends ArenaModule {
         if (ldHandler == null) {
             final ArenaTeam team = ArenaPlayer.parsePlayer(player.getName()).getArenaTeam();
             if (team != null) {
-                final ItemStack is = new ItemStack(Material.SKULL_ITEM, 1);
+                final ItemStack is = new ItemStack(Material.PLAYER_HEAD, 1);
                 final String disguise = (String) arena.getArenaConfig().getUnsafe("skins." + team.getName());
                 if (disguise == null) {
                     return;

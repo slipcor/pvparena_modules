@@ -32,7 +32,7 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.291";
+        return "v1.13.0";
     }
 
     @Override

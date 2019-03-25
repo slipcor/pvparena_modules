@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.130";
+        return "v1.13.0";
     }
 
     @Override

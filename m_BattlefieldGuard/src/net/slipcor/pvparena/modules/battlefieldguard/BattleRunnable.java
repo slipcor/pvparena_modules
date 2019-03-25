@@ -57,7 +57,7 @@ class BattleRunnable implements Runnable {
                         if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
                             ap.get().setLastDamageCause(
                                     new EntityDamageEvent(ap.get(), DamageCause.CUSTOM,
-                                            new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf(1000))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, 0))));
+                                            1000.0));
                             ap.get().setHealth(0);
                             ap.get().damage(1000);
                         } else {
@@ -68,8 +68,7 @@ class BattleRunnable implements Runnable {
 
                     final Arena a = ArenaManager.getArenaByName(name);
                     if (a.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
-                        p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM,
-                                new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Double.valueOf(1000))), new EnumMap(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, 0))));
+                        p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM,1000.0));
                         p.setHealth(0);
                         p.damage(1000);
                     } else {

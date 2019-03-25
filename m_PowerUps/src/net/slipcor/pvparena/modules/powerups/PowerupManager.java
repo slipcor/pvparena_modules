@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -54,7 +55,7 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.3.185";
+        return "v1.13.2";
     }
 
     /**
@@ -363,8 +364,11 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     @Override
     @EventHandler
-    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
-        final Player player = event.getPlayer();
+    public void onPlayerPickupItem(final EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof  Player)) {
+            return;
+        }
+        final Player player = (Player) event.getEntity();
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
         if (!arena.equals(ap.getArena())) {
             return;

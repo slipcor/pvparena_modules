@@ -33,7 +33,7 @@ public class AnnouncementManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.247";
+        return "v1.13.0";
     }
 
     @Override

@@ -5,6 +5,7 @@ import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.inventory.ItemStack;
 
 public class Items extends ArenaModule {
     private int id = -1;
@@ -15,13 +16,18 @@ public class Items extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return "v1.13.4";
     }
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        sender.sendMessage("interval: " + arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL) +
-                "items: " + arena.getArenaConfig().getString(CFG.MODULES_ITEMS_ITEMS));
+        sender.sendMessage("interval: " + arena.getArenaConfig().getInt(CFG.MODULES_ITEMS_INTERVAL));
+        ItemStack[] items = arena.getArenaConfig().getItems(CFG.MODULES_ITEMS_ITEMS);
+        StringBuilder itemsString = new StringBuilder("items : ");
+        for(ItemStack item : items) {
+            itemsString.append(item.getType().name());
+        }
+        sender.sendMessage(itemsString.toString());
     }
 
     @Override

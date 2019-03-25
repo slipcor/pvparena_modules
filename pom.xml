@@ -8,7 +8,7 @@
     <name>PVP Arena Modules</name>
     <groupId>net.slipcor.pvpa</groupId>
     <artifactId>modules</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.13-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,7 +32,6 @@
         <module>m_BlockDissolve</module>
         <module>m_BlockRestore</module>
         <module>m_ChestFiller</module>
-        <module>m_ColorTeams</module>
         <module>m_Duel</module>
         <module>m_EventActions</module>
         <module>m_Factions</module>
@@ -48,7 +47,6 @@
         <module>m_RealSpectate</module>
         <module>m_RedStoneTriggers</module>
         <module>m_RespawnRelay</module>
-        <module>m_ScoreBoards</module>
         <module>m_SinglePlayerSupport</module>
         <module>m_SpecialJoin</module>
         <module>m_Spectate</module>

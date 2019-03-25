@@ -31,7 +31,7 @@ public class Titles extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.97";
+        return "v1.13.0";
     }
 
     @Override
