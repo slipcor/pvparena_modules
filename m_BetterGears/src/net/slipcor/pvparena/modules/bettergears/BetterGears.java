@@ -43,7 +43,7 @@ public class BetterGears extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return "v1.13.1";
     }
 
     @Override
@@ -254,7 +254,7 @@ public class BetterGears extends ArenaModule {
             s = getLevelMap().get(ac);
         }
 
-        if(s != null && s >= 0) {
+        if(s != null && s > 0) {
             isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, s);
             isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_EXPLOSIONS, s);
             isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FALL, s);
@@ -470,7 +470,7 @@ public class BetterGears extends ArenaModule {
     private ItemStack getColoredItemStack(ItemStack checkItem, ItemStack setItem) {
         if(!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER)) {
             return setItem;
-        } else if (setItem.getType().equals(checkItem.getType())) {
+        } else if (checkItem != null && setItem != null && setItem.getType().equals(checkItem.getType())) {
             LeatherArmorMeta checkMeta = (LeatherArmorMeta) checkItem.getItemMeta();
             LeatherArmorMeta setMeta = (LeatherArmorMeta) setItem.getItemMeta();
             checkMeta.setColor(setMeta.getColor());
