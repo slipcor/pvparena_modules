@@ -38,13 +38,13 @@
         <dependency>
             <groupId>net.slipcor</groupId>
             <artifactId>pvparena</artifactId>
-            <version>1.13-SNAPSHOT</version>
+            <version>1.14.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
+            <version>7.0.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

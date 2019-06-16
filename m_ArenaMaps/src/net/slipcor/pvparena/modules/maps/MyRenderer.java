@@ -16,7 +16,6 @@ import org.bukkit.map.*;
 import org.bukkit.map.MapView.Scale;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
