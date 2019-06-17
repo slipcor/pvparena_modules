@@ -85,7 +85,7 @@ class MyRenderer extends MapRenderer {
         }
     }
 
-    private static final Set<Short> done = new HashSet<>();
+    private static final Set<Integer> done = new HashSet<>();
 
     @Override
     public void render(final MapView map, final MapCanvas canvas, final Player player) {

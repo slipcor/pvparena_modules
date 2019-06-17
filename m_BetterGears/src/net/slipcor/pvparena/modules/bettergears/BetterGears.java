@@ -477,6 +477,6 @@ public class BetterGears extends ArenaModule {
             checkItem.setItemMeta(checkMeta);
             return checkItem;
         }
-        return new ItemStack(Material.AIR);
+        return checkItem;
     }
 }

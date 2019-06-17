@@ -28,7 +28,7 @@ class ArenaBlock {
         blockData = block.getBlockData();
 
         debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + blockData.getMaterial());
+        debug.i("loc: " + location + "; mat: " + blockData.getMaterial().name());
 
         try {
             arena = ArenaManager.getArenaByRegionLocation(location).getName();

@@ -19,7 +19,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
@@ -32,7 +31,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.material.Attachable;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.util.BlockIterator;
 
@@ -59,18 +57,6 @@ public class Blocks extends ArenaModule implements Listener {
     private static final Debug debug = new Debug(24);
 
     boolean restoring;
-
-    private void checkBlock(final Block b, final BlockFace bf) {
-        if (b.getType() == Material.LADDER ||
-                b.getType() == Material.STONE_BUTTON ||
-                b.getType() == Material.LEVER ||
-                b.getType() == Material.WALL_SIGN) {
-            final Attachable a = (Attachable) b.getState().getData();
-            if (a.getAttachedFace() == bf) {
-                saveBlock(b);
-            }
-        }
-    }
 
     @Override
     public boolean checkCommand(final String s) {
@@ -204,12 +190,6 @@ public class Blocks extends ArenaModule implements Listener {
             return;
         }
         if (!arena.isLocked()) {
-
-            checkBlock(block.getRelative(BlockFace.NORTH), BlockFace.SOUTH);
-            checkBlock(block.getRelative(BlockFace.SOUTH), BlockFace.NORTH);
-            checkBlock(block.getRelative(BlockFace.EAST), BlockFace.WEST);
-            checkBlock(block.getRelative(BlockFace.WEST), BlockFace.EAST);
-
             saveBlock(block);
         }
         debug.i("!arena.isLocked() " + !arena.isLocked());
