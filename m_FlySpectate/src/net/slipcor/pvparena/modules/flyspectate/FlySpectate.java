@@ -4,7 +4,6 @@ package net.slipcor.pvparena.modules.flyspectate;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.classes.PALocation;
@@ -23,7 +22,7 @@ public class FlySpectate extends ArenaModule {
         super("FlySpectate");
     }
 
-    private RealSpectateListener listener;
+    private FlySpectateListener listener;
 
     private static final int priority = 3;
 
@@ -38,20 +37,20 @@ public class FlySpectate extends ArenaModule {
         if (join && (arena.getArenaConfig().getBoolean(CFG.PERMS_JOININBATTLE) || !arena.isFightInProgress())) {
             return res;
         }
-/*
+
         if (arena.getFighters().size() < 1) {
             res.setError(this, Language.parse(MSG.ERROR_NOPLAYERFOUND));
         }
-*/
+
         if (res.getPriority() < priority || join && res.hasError()) {
             res.setPriority(this, priority);
         }
         return res;
     }
 
-    RealSpectateListener getListener() {
+    FlySpectateListener getListener() {
         if (listener == null) {
-            listener = new RealSpectateListener(this);
+            listener = new FlySpectateListener(this);
             Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
         }
         return listener;
@@ -84,7 +83,6 @@ public class FlySpectate extends ArenaModule {
         ap.debugPrint();
 
         ap.setArena(arena);
-        ap.setStatus(Status.WATCH);
         ap.setTeleporting(true);
         debug.i("switching:", player);
         getListener().hidePlayerLater(player);
@@ -114,7 +112,9 @@ public class FlySpectate extends ArenaModule {
                 }
                 player.setAllowFlight(true);
                 player.setFlying(true);
+                player.setCollidable(false);
                 arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
+                ap.setStatus(ArenaPlayer.Status.WATCH);
                 ap.setTeleporting(false);
             }
         }
@@ -136,12 +136,13 @@ public class FlySpectate extends ArenaModule {
     @Override
     public void unload(final Player player) {
         for (final Player p : Bukkit.getOnlinePlayers()) {
-            p.showPlayer(player);
+            p.showPlayer(PVPArena.instance, player);
         }
 
         listener.removeSpectator(player);
 
         player.setAllowFlight(false);
         player.setFlying(false);
+        player.setCollidable(true);
     }
 }

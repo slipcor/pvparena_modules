@@ -18,17 +18,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-class RealSpectateListener implements Listener {
-    private final FlySpectate rs;
+class FlySpectateListener implements Listener {
+    private final FlySpectate flySpectate;
     private final Set<Player> spectators = new HashSet<>();
 
-    public RealSpectateListener(final FlySpectate realSpectate) {
-        rs = realSpectate;
+    public FlySpectateListener(final FlySpectate flySpectate) {
+        this.flySpectate = flySpectate;
     }
 
     void initiate(final ArenaPlayer ap) {
-        for (final ArenaPlayer a : rs.getArena().getEveryone()) {
-            a.get().hidePlayer(ap.get());
+        for (final ArenaPlayer a : flySpectate.getArena().getEveryone()) {
+            a.get().hidePlayer(PVPArena.instance, ap.get());
         }
     }
 
@@ -155,8 +155,8 @@ class RealSpectateListener implements Listener {
                 @Override
                 public void run() {
 
-                    for (final ArenaPlayer ap : rs.getArena().getEveryone()) {
-                        ap.get().hidePlayer(s);
+                    for (final ArenaPlayer ap : flySpectate.getArena().getEveryone()) {
+                        ap.get().hidePlayer(PVPArena.instance, s);
                     }
                 }
             }
@@ -176,8 +176,8 @@ class RealSpectateListener implements Listener {
 
                 @Override
                 public void run() {
-                    for (final ArenaPlayer ap : rs.getArena().getEveryone()) {
-                        ap.get().hidePlayer(s);
+                    for (final ArenaPlayer ap : flySpectate.getArena().getEveryone()) {
+                        ap.get().hidePlayer(PVPArena.instance, s);
                     }
                 }
             }
