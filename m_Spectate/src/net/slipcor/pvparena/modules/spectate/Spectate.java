@@ -52,7 +52,7 @@ public class Spectate extends ArenaModule {
 
     SpectateListener getListener() {
         if (listener == null) {
-            listener = new SpectateListener();
+            listener = new SpectateListener(this);
             Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
         }
         return listener;
@@ -86,7 +86,7 @@ public class Spectate extends ArenaModule {
         ap.debugPrint();
 
         ap.setArena(arena);
-        ap.setStatus(Status.WATCH);
+        getListener().addSpectator(player);
 
         if (ap.getState() == null) {
             final Arena arena = ap.getArena();
@@ -108,6 +108,7 @@ public class Spectate extends ArenaModule {
             public void run() {
                 arena.tpPlayerToCoordName(player, "spectator");
                 arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
+                ap.setStatus(Status.WATCH);
             }
         }
         class RunEvenLater implements Runnable {
@@ -126,12 +127,16 @@ public class Spectate extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
-        getListener().stop();
+        if(this.listener != null) {
+            this.listener.stop();
+        }
     }
 
     @Override
     public void unload(final Player player) {
-        getListener().removeSpectator(player);
+        if(this.listener != null) {
+            this.listener.removeSpectator(player);
+        }
 
         player.setAllowFlight(false);
         player.setFlying(false);
