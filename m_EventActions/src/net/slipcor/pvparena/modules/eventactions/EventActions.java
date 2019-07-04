@@ -33,7 +33,7 @@ public class EventActions extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.1";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override

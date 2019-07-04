@@ -13,7 +13,7 @@ public class ThermosFix extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     int before = 10;

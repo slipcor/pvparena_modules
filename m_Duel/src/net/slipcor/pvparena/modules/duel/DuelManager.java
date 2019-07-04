@@ -27,7 +27,7 @@ public class DuelManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.13.0";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     private String duelSender = null;

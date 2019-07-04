@@ -334,5 +334,12 @@
                 <include>*.jar</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>version.lock</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>

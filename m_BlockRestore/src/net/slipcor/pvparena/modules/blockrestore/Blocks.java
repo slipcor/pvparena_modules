@@ -44,7 +44,7 @@ public class Blocks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.13.3";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     private boolean listening;

@@ -41,7 +41,7 @@ public class SpecialJoin extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.13.1";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
