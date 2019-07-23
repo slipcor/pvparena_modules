@@ -4,6 +4,7 @@
 
 # Maven
 */target/
+*.versionsBackup
 
 /bin/
 /.settings/

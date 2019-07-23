@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -138,7 +137,7 @@ public class LateLounge extends ArenaModule {
 
     @Override
     public boolean hasSpawn(final String name) {
-        return playerList.contains(name);
+        return this.getPlayerList().contains(name);
     }
 
     @Override
