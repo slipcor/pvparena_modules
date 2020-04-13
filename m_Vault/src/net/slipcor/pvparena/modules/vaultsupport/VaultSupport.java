@@ -667,7 +667,6 @@ public class VaultSupport extends ArenaModule implements Listener {
                 final Player player = Bukkit.getPlayer(nSplit[0]);
 
                 if (player == null) {
-                    System.out.print("player null: " + nSplit[0]);
                     arena.getDebugger().i("Player is null!");
                 } else {
                     double factor = 1.0d;

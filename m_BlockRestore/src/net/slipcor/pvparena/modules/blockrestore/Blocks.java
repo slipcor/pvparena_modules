@@ -372,7 +372,6 @@ public class Blocks extends ArenaModule implements Listener {
                 if (shape.getShape().contains(new PABlockLocation(event.getBlock().getLocation()))) {
                     if (event.getBlock().getType() == Material.TNT) {
                         saveBlock(event.getBlock());
-                        System.out.print("got you!");
                     }
                 }
             }
@@ -391,7 +390,6 @@ public class Blocks extends ArenaModule implements Listener {
                             final Block block = bi.next();
                             if (block.getType() == Material.TNT) {
                                 saveBlock(block);
-                                System.out.print("got you!");
                             }
                         }
                     }
