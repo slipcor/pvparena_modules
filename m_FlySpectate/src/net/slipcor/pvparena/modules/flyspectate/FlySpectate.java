@@ -48,14 +48,6 @@ public class FlySpectate extends ArenaModule {
         return res;
     }
 
-    FlySpectateListener getListener() {
-        if (listener == null) {
-            listener = new FlySpectateListener(this);
-            Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
-        }
-        return listener;
-    }
-
     @Override
     public void commitJoin(final Player player, final ArenaTeam team) {
         class RunLater implements Runnable {
@@ -85,7 +77,7 @@ public class FlySpectate extends ArenaModule {
         ap.setArena(arena);
         ap.setTeleporting(true);
         debug.i("switching:", player);
-        getListener().hidePlayerLater(player);
+        this.getListener().hidePlayerLater(player);
 
         if (ap.getState() == null) {
 
@@ -123,7 +115,7 @@ public class FlySpectate extends ArenaModule {
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
-        getListener().hideAllSpectatorsLater();
+        this.getListener().hideAllSpectatorsLater();
     }
 
     @Override
@@ -144,5 +136,13 @@ public class FlySpectate extends ArenaModule {
         player.setAllowFlight(false);
         player.setFlying(false);
         player.setCollidable(true);
+    }
+
+    private FlySpectateListener getListener() {
+        if (listener == null) {
+            listener = new FlySpectateListener(this);
+            Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
+        }
+        return listener;
     }
 }

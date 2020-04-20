@@ -50,14 +50,6 @@ public class Spectate extends ArenaModule {
         return res;
     }
 
-    SpectateListener getListener() {
-        if (listener == null) {
-            listener = new SpectateListener(this);
-            Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
-        }
-        return listener;
-    }
-
     @Override
     public void commitJoin(final Player player, final ArenaTeam team) {
         class RunLater implements Runnable {
@@ -86,7 +78,7 @@ public class Spectate extends ArenaModule {
         ap.debugPrint();
 
         ap.setArena(arena);
-        getListener().addSpectator(player);
+        this.getListener().addSpectator(player);
 
         if (ap.getState() == null) {
             final Arena arena = ap.getArena();
@@ -140,5 +132,13 @@ public class Spectate extends ArenaModule {
 
         player.setAllowFlight(false);
         player.setFlying(false);
+    }
+
+    private SpectateListener getListener() {
+        if (listener == null) {
+            listener = new SpectateListener(this);
+            Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
+        }
+        return listener;
     }
 }

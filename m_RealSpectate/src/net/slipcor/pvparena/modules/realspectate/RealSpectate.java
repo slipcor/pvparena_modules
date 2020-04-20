@@ -67,12 +67,12 @@ public class RealSpectate extends ArenaModule {
         }
 
         debug.i("switching:", player);
-        getListener().switchPlayer(player, null, true);
+        this.getListener().switchPlayer(player, null, true);
     }
 
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
-        for (final SpectateWrapper sw : getListener().spectated_players.values()) {
+        for (final SpectateWrapper sw : this.getListener().spectated_players.values()) {
             sw.update();
         }
     }
@@ -80,28 +80,28 @@ public class RealSpectate extends ArenaModule {
 
     @Override
     public void parseStart() {
-        getListener();
+        this.getListener();
     }
 
     @Override
     public void reset(final boolean force) {
-        getListener();
+        this.getListener();
         final Set<SpectateWrapper> list = new HashSet<>();
-        for (final SpectateWrapper sw : getListener().spectated_players.values()) {
+        for (final SpectateWrapper sw : this.getListener().spectated_players.values()) {
             list.add(sw);
         }
 
         for (final SpectateWrapper sw : list) {
             sw.stopHard();
         }
-        getListener().spectated_players.clear();
+        this.getListener().spectated_players.clear();
 
     }
 
     @Override
     public void unload(final Player player) {
         final Set<SpectateWrapper> list = new HashSet<>();
-        for (final SpectateWrapper sw : getListener().spectated_players.values()) {
+        for (final SpectateWrapper sw : this.getListener().spectated_players.values()) {
             list.add(sw);
         }
 
@@ -119,18 +119,18 @@ public class RealSpectate extends ArenaModule {
 
         if (arena.getFighters().size() < 1) {
             final Set<SpectateWrapper> list2 = new HashSet<>();
-            for (final SpectateWrapper sw : getListener().spectated_players.values()) {
+            for (final SpectateWrapper sw : this.getListener().spectated_players.values()) {
                 list2.add(sw);
             }
 
             for (final SpectateWrapper sw : list2) {
                 sw.stopSpectating();
             }
-            getListener().spectated_players.clear();
+            this.getListener().spectated_players.clear();
         }
     }
 
-    RealSpectateListener getListener() {
+    private RealSpectateListener getListener() {
         if (listener == null) {
             listener = new RealSpectateListener(this);
             Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);

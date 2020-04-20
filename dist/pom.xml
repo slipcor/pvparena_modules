@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.slipcor.pvpa</groupId>
         <artifactId>modules</artifactId>
-        <version>1.14.1-SNAPSHOT</version>
+        <version>1.15.0-SNAPSHOT</version>
     </parent>
 
     <name>PVP Arena Modules - Distribution</name>
@@ -51,7 +51,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>files-${parent.version}</finalName>
+                            <finalName>files-${project.parent.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
