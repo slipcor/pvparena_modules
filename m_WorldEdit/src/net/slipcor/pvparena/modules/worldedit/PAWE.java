@@ -281,7 +281,7 @@ public class PAWE extends ArenaModule {
                 ClipboardHolder holder=new ClipboardHolder(clipboard);
 
                 EditSession editSession=worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, size);
-                editSession.enableQueue();
+                editSession.setReorderMode(EditSession.ReorderMode.FAST);
                 editSession.setFastMode(true);
                 BlockVector3 to = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
                 Operation operation=holder.createPaste(editSession).to(to).ignoreAirBlocks(!arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_REPLACEAIR)).build();
