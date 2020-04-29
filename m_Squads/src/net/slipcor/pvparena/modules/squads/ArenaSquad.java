@@ -3,6 +3,7 @@ package net.slipcor.pvparena.modules.squads;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 class ArenaSquad {
@@ -49,5 +50,18 @@ class ArenaSquad {
             result.add(ap);
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ArenaSquad that = (ArenaSquad) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

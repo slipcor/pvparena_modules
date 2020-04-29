@@ -13,7 +13,6 @@ import net.slipcor.pvparena.core.Language;
 import net.slipcor.pvparena.core.Language.MSG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -27,11 +26,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 public class Squads extends ArenaModule {
-    private final Set<ArenaSquad> squads = new HashSet<>();
-    private ArenaSquad auto;
-    private boolean ingame;
+    private final Map<Arena, Set<ArenaSquad>> squadsMap = new HashMap<>();
+    private final Map<Sign, ArenaSquad> signs = new HashMap<>();
+    private final static String SQUADS_LIMITS = "modules.squads.limits";
 
     public Squads() {
         super("Squads");
@@ -40,21 +42,22 @@ public class Squads extends ArenaModule {
 
     @Override
     public String version() {
-        return getClass().getPackage().getImplementationVersion();
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     @Override
     public void configParse(final YamlConfiguration cfg) {
-        final ConfigurationSection cs = cfg.getConfigurationSection("modules.squads");
-        final ConfigurationSection sqs = cs.getConfigurationSection("limits");
-        for (final String name : sqs.getKeys(false)) {
-            final ArenaSquad squad = new ArenaSquad(name, sqs.getInt(name));
-            if (name.equals(arena.getArenaConfig().getString(Config.CFG.MODULES_SQUADS_AUTOSQUAD))) {
-                auto = squad;
+        final ConfigurationSection squadsCfg = cfg.getConfigurationSection(SQUADS_LIMITS);
+
+        Set<ArenaSquad> arenaSquads = new HashSet<>();
+
+        if(squadsCfg != null) {
+            for (final String name : squadsCfg.getKeys(false)) {
+                final ArenaSquad squad = new ArenaSquad(name, squadsCfg.getInt(name));
+                arenaSquads.add(squad);
             }
-            squads.add(squad);
         }
-        ingame = arena.getArenaConfig().getBoolean(Config.CFG.MODULES_SQUADS_INGAMESWITCH);
+        this.squadsMap.putIfAbsent(this.arena, arenaSquads);
     }
 
     @Override
@@ -76,112 +79,130 @@ public class Squads extends ArenaModule {
     public CommandTree<String> getSubs(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
         result.define(new String[]{"add"});
-        for (final ArenaSquad squad : squads) {
+        for (final ArenaSquad squad : this.getArenaSquads()) {
             result.define(new String[]{"remove", squad.getName()});
             result.define(new String[]{"set", squad.getName()});
         }
         return result;
     }
 
+    /**
+     *  !sq | show the arena squads
+     *  !sq add [name] [limit] | add squad with player limit
+     *  !sq remove [name] | remove squad [name]
+     *  !sq set [name] [limit] | set player limit for squad
+     * @param sender the player committing the command
+     * @param args   the command arguments
+     */
     @Override
     public void commitCommand(final CommandSender sender, final String[] args) {
-        // !sq | show the arena squads
-        // !sq add [name] | add squad [name]
-        // !sq add [name] [limit] | add squad with player limit
-        // !sq remove [name] | remove squad [name]
-        // !sq set [name] [limit] | set player limit for squad
 
-        if (!PVPArena.hasAdminPerms(sender)
-                && !PVPArena.hasCreatePerms(sender, arena)) {
-            arena.msg(
-                    sender,
-                    Language.parse(MSG.ERROR_NOPERM,
-                            Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
+        if (!PVPArena.hasAdminPerms(sender) && !PVPArena.hasCreatePerms(sender, this.arena)) {
+            this.arena.msg(sender,
+                    Language.parse(MSG.ERROR_NOPERM, Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
         }
 
-        if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{0, 2, 3})) {
+        if (!AbstractArenaCommand.argCountValid(sender, this.arena, args, new Integer[]{1, 3, 4})) {
             return;
         }
 
-        if (!ingame && arena.isFightInProgress()) {
+        if (!this.arena.getArenaConfig().getBoolean(Config.CFG.MODULES_SQUADS_INGAMESWITCH) && this.arena.isFightInProgress()) {
             return;
         }
 
-        if (args == null || args.length < 1) {
+        if (args == null || args.length > 4 || asList(0, 2).contains(args.length)) {
+            this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_HELP));
+            return;
+        }
+
+        if (args.length == 1) {
             // !sq | show the arena squads
-
-            if (squads.size() < 1) {
-                arena.msg(sender, "No squads loaded! Add some: /pa [arena] !sq add [name]");
+            if (this.getArenaSquads().size() < 1) {
+                this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_NOSQUAD));
             } else {
-                arena.msg(sender, "Squads for Arena " + ChatColor.AQUA + arena.getName());
-                for (final ArenaSquad squad : squads) {
-                    final String suffix = squad.equals(auto) ? " (auto)" : "";
+                this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_LISTHEAD, this.arena.getName()));
+                for (final ArenaSquad squad : this.getArenaSquads()) {
+                    final String suffix = squad.getName().equalsIgnoreCase(this.arena.getArenaConfig().getString(Config.CFG.MODULES_SQUADS_AUTOSQUAD)) ? " (auto)" : "";
                     final String max = squad.getMax() > 0 ? String.valueOf(squad.getMax()) : "none";
-                    arena.msg(sender, "Squad '" + squad.getName() + "' (max: " + max + ')' + suffix);
-
+                    this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_LISTITEM, squad.getName(), max, suffix));
                 }
             }
-
-            return;
         }
 
-        if (args.length >= 2) {
+        if (args.length == 3 || args.length == 4) {
+            try {
+                if ("add".equalsIgnoreCase(args[1])) {
+                    // !sq add [name] [limit] | add squad with player limit
+                    ArenaSquad newSquad = new ArenaSquad(args[2], Integer.parseInt(args[3]));
+                    this.getArenaSquads().add(newSquad);
+                    this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_ADDED, args[2]));
+                } else if ("remove".equalsIgnoreCase(args[1]) || "set".equalsIgnoreCase(args[1])) {
+                    // !sq remove [name] | remove squad [name]
+                    // /pa !sq set [name] [limit] | set player limit for squad
 
+                    ArenaSquad searchedSquad = this.getArenaSquads().stream()
+                            .filter(sq -> sq.getName().equalsIgnoreCase(args[2]))
+                            .findFirst()
+                            .orElseThrow(IllegalArgumentException::new);
 
-            if ("add".equals(args[0]) || args[0].equals("remove")) {
-                // !sq add [name] | add squad [name]
-                // !sq add [name] [limit] | add squad with player limit
+                    this.getArenaSquads().remove(searchedSquad);
+                    if("set".equalsIgnoreCase(args[1])) {
+                        ArenaSquad newSquad = new ArenaSquad(args[2], Integer.parseInt(args[3]));
+                        this.getArenaSquads().add(newSquad);
+                        this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_SET, args[2]));
+                    } else {
+                        this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_REMOVED, args[2]));
+                    }
+                } else {
+                    throw new IllegalArgumentException();
+                }
 
-                return;
-            } else if ("set".equals(args[0])) {
-                // /pa !sq set [name] [limit] | set player limit for squad
-
-                return;
+                // Saving to configuration
+                Map<String, Integer> squadsMap = this.getArenaSquads().stream().collect(Collectors.toMap(ArenaSquad::getName, ArenaSquad::getMax));
+                this.arena.getArenaConfig().setManually(SQUADS_LIMITS, squadsMap);
+                this.arena.getArenaConfig().save();
+            } catch(IllegalArgumentException e) {
+                this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_NOTEXIST, args[2]));
+            } catch (Exception e) {
+                this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_ERROR));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_SQUADS_HELP));
             }
         }
-        arena.msg(sender, "/pa !sq | show the arena squads");
-        arena.msg(sender, "/pa !sq add [name] | add squad [name]");
-        arena.msg(sender, "/pa !sq add [name] [limit] | add squad with player limit");
-        arena.msg(sender, "/pa !sq set [name] [limit] | set player limit for squad");
-        arena.msg(sender, "/pa !sq remove [name] | remove squad [name]");
     }
 
     @Override
     public void reset(final boolean force) {
-        for (final ArenaSquad squad : squads) {
+        for (final ArenaSquad squad : this.getArenaSquads()) {
             squad.reset();
         }
-        for (final Sign sign : signs.keySet()) {
+        for (final Sign sign : this.signs.keySet()) {
             sign.setLine(1, "----------");
             sign.setLine(2, "");
             sign.setLine(3, "");
         }
-        signs.clear();
+        this.signs.clear();
     }
 
     @Override
     public boolean onPlayerInteract(final PlayerInteractEvent event) {
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(event.getPlayer().getName());
 
-        if (!arena.equals(ap.getArena())) {
+        if (!this.arena.equals(ap.getArena())) {
             return false;
         }
 
-        if (arena.isFightInProgress() && !((Boolean) arena.getArenaConfig().getBoolean(
-                Config.CFG.MODULES_SQUADS_INGAMESWITCH))) {
+        if (this.arena.isFightInProgress() && !this.arena.getArenaConfig().getBoolean(
+                Config.CFG.MODULES_SQUADS_INGAMESWITCH)) {
             return false;
         }
 
-        if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+        if (EquipmentSlot.OFF_HAND.equals(event.getHand())) {
             return false;
         }
 
-        if (ap.getStatus() == Status.DEAD
-                || ap.getStatus() == Status.LOST
-                || ap.getStatus() == Status.NULL
-                || ap.getStatus() == Status.WARM
-                || ap.getStatus() == Status.WATCH) {
+        List<Status> disabledStatusList = asList(Status.DEAD, Status.LOST, Status.NULL, Status.WARM, Status.WATCH);
+        if (disabledStatusList.contains(ap.getStatus())) {
             return false;
         }
 
@@ -191,24 +212,24 @@ public class Squads extends ArenaModule {
 
         final Sign sign = (Sign) event.getClickedBlock().getState();
 
-        for (final ArenaSquad squad : squads) {
+        for (final ArenaSquad squad : this.getArenaSquads()) {
             if (squad.getName().equals(sign.getLine(0))) {
-                if (squad.getCount() >= squad.getMax()) {
-                    arena.msg(ap.get(), "This squad is full!");
+                if (squad.getMax() != 0 && squad.getCount() >= squad.getMax()) {
+                    this.arena.msg(ap.get(), Language.parse(MSG.MODULE_SQUADS_FULL));
                     return false;
                 }
-                for (final ArenaSquad s : squads) {
+                for (final ArenaSquad s : this.getArenaSquads()) {
                     if (s.equals(squad)) {
                         continue;
                     }
                     if (s.contains(ap)) {
                         s.remove(ap);
-                        remove(ap);
+                        this.removePlayerFromSigns(ap);
                         break;
                     }
                 }
                 squad.add(ap);
-                add(sign, ap);
+                this.addPlayerToSigns(sign, ap);
                 return true;
             }
         }
@@ -216,9 +237,13 @@ public class Squads extends ArenaModule {
         return false;
     }
 
-    private void add(final Sign sign, final ArenaPlayer ap) {
+    private Set<ArenaSquad> getArenaSquads() {
+        return this.squadsMap.getOrDefault(this.arena, Collections.emptySet());
+    }
+
+    private void addPlayerToSigns(final Sign sign, final ArenaPlayer ap) {
         for (int i = 2; i < 4; i++) {
-            if (sign.getLine(i) == null || sign.getLine(i) != null && sign.getLine(i).isEmpty()) {
+            if (sign.getLine(i).isEmpty()) {
                 sign.setLine(i, ap.getName());
                 sign.update();
                 return;
@@ -230,7 +255,7 @@ public class Squads extends ArenaModule {
         if (block.getState() instanceof Sign) {
             final Sign sign2 = (Sign) block.getState();
             for (int i = 2; i < 4; i++) {
-                if (sign2.getLine(i) == null || sign2.getLine(i) != null && sign2.getLine(i).isEmpty()) {
+                if (sign2.getLine(i).isEmpty()) {
                     sign2.setLine(i, ap.getName());
                     sign2.update();
                     return;
@@ -239,8 +264,8 @@ public class Squads extends ArenaModule {
         }
     }
 
-    private void remove(final ArenaPlayer ap) {
-        for (final Sign sign : signs.keySet()) {
+    private void removePlayerFromSigns(final ArenaPlayer ap) {
+        for (final Sign sign : this.signs.keySet()) {
             for (int i = 0; i < 4; i++) {
                 if (ap.getName().equals(sign.getLine(i))) {
                     sign.setLine(i, "");
@@ -262,12 +287,17 @@ public class Squads extends ArenaModule {
         }
     }
 
-    private final Map<Sign, ArenaSquad> signs = new HashMap<>();
-
     @Override
     public void parseJoin(final CommandSender sender, final ArenaTeam team) {
-        if (auto != null) {
-            auto.add(ArenaPlayer.parsePlayer(sender.getName()));
+        String autoSquadName = this.arena.getArenaConfig().getString(Config.CFG.MODULES_SQUADS_AUTOSQUAD);
+        try {
+            ArenaSquad autoSquad = this.getArenaSquads().stream()
+                    .filter(sq -> sq.getName().equalsIgnoreCase(autoSquadName))
+                    .findFirst()
+                    .orElseThrow(IllegalArgumentException::new);
+            autoSquad.add(ArenaPlayer.parsePlayer(sender.getName()));
+        } catch (Exception ignored) {
+
         }
     }
 
@@ -276,23 +306,14 @@ public class Squads extends ArenaModule {
                              final DamageCause cause, final Entity damager) {
 
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        for (final ArenaSquad squad : squads) {
+        for (final ArenaSquad squad : this.getArenaSquads()) {
             if (squad.contains(ap) && squad.getCount() > 1) {
                 int pos = new Random().nextInt(squad.getCount() - 1);
                 for (final ArenaPlayer tap : squad.getPlayers()) {
                     if (--pos <= 0) {
-                        class RunLater implements Runnable {
-
-                            @Override
-                            public void run() {
-                                player.teleport(tap.get());
-                            }
-
-                        }
                         try {
-                            Bukkit.getScheduler().runTaskLater(PVPArena.instance,
-                                    new RunLater(), 10L);
-                        } catch (final Exception e) {
+                            Bukkit.getScheduler().runTaskLater(PVPArena.instance, () -> player.teleport(tap.get()), 10);
+                        } catch (final Exception ignored) {
 
                         }
                     }
