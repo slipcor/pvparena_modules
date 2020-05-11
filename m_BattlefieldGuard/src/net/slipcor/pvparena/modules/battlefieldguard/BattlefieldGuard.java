@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.util.Set;
+
 public class BattlefieldGuard extends ArenaModule {
     private boolean setup;
 
@@ -37,6 +39,11 @@ public class BattlefieldGuard extends ArenaModule {
     @Override
     public boolean hasSpawn(final String s) {
         return "exit".equalsIgnoreCase(s);
+    }
+
+    @Override
+    public String checkForMissingSpawns(final Set<String> list) {
+        return list.contains("exit") ? null : "exit not set";
     }
 
     @Override
