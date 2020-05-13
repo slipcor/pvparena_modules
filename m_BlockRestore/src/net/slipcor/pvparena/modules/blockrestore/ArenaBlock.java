@@ -13,7 +13,7 @@ import org.bukkit.block.data.BlockData;
 class ArenaBlock {
     private final Debug debug = new Debug(9);
 
-    public String arena;
+    private String arena;
     private final PABlockLocation location;
     private final BlockData blockData;
     private final String[] lines;
@@ -24,21 +24,21 @@ class ArenaBlock {
      * @param block the block to copy
      */
     public ArenaBlock(final Block block) {
-        location = new PABlockLocation(block.getLocation());
-        blockData = block.getBlockData();
+        this.location = new PABlockLocation(block.getLocation());
+        this.blockData = block.getBlockData();
 
-        debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + blockData.getMaterial().name());
+        this.debug.i("creating arena block:");
+        this.debug.i("loc: " + this.location + "; mat: " + this.blockData.getMaterial().name());
 
         try {
-            arena = ArenaManager.getArenaByRegionLocation(location).getName();
+            this.arena = ArenaManager.getArenaByRegionLocation(this.location).getName();
         } catch (final Exception e) {
-            arena = "";
+            this.arena = "";
         }
         if (block.getState() instanceof Sign) {
-            lines = ((Sign) block.getState()).getLines();
+            this.lines = ((Sign) block.getState()).getLines();
         } else {
-            lines = null;
+            this.lines = null;
         }
     }
 
@@ -49,17 +49,17 @@ class ArenaBlock {
      * @param type  the Material to override (the Material before placing)
      */
     public ArenaBlock(final Block block, final Material type) {
-        location = new PABlockLocation(block.getLocation());
+        this.location = new PABlockLocation(block.getLocation());
         try {
-            arena = ArenaManager.getArenaByRegionLocation(location).getName();
+            this.arena = ArenaManager.getArenaByRegionLocation(this.location).getName();
         } catch (final Exception e) {
-            arena = "";
+            this.arena = "";
         }
-        blockData = Bukkit.createBlockData(type);
-        lines = null;
+        this.blockData = Bukkit.createBlockData(type);
+        this.lines = null;
 
-        debug.i("creating arena block:");
-        debug.i("loc: " + location + "; mat: " + blockData.getMaterial());
+        this.debug.i("creating arena block:");
+        this.debug.i("loc: " + this.location + "; mat: " + this.blockData.getMaterial());
 
     }
 
@@ -67,24 +67,28 @@ class ArenaBlock {
      * reset an arena block
      */
     public void reset() {
-        final Block b = location.toLocation().getBlock();
+        final Block b = this.location.toLocation().getBlock();
 
-        b.setBlockData(blockData);
+        b.setBlockData(this.blockData);
 
-        if (lines != null) {
+        if (this.lines != null) {
             int i = 0;
-            for (final String s : lines) {
+            for (final String s : this.lines) {
                 if (s != null) {
                     try {
                         ((Sign) b.getState()).setLine(i, s);
                     } catch (final Exception e) {
                         PVPArena.instance.getLogger().warning(
                                 "tried to reset sign at location "
-                                        + location);
+                                        + this.location);
                     }
                 }
                 i++;
             }
         }
+    }
+
+    public String getArena() {
+        return this.arena;
     }
 }
