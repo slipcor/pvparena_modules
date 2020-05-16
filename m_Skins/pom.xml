@@ -15,11 +15,11 @@
     <repositories>
         <repository>
             <id>libsdisguises-repo</id>
-            <url>http://repo.md-5.net/content/groups/public</url>
+            <url>https://repo.md-5.net/content/groups/public/</url>
         </repository>
         <repository>
             <id>protocollib-repo</id>
-            <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
     </repositories>
 
