@@ -265,30 +265,35 @@ public class PAWE extends ArenaModule {
             final PABlockLocation loc = ars.getShape().getMinimumLocation();
 
             WorldEdit worldEdit = WorldEdit.getInstance();
-            File loadFile = new File(loadPath, regionName + ".schem");
-            if(!loadFile.exists()) {
-                loadFile = new File(loadPath, regionName + ".schematic");
+            File loadFile = new File(this.loadPath, regionName + ".schem");
+            if (!loadFile.exists()) {
+                loadFile = new File(this.loadPath, regionName + ".schematic");
             }
-            try (InputStream in= new BufferedInputStream(new FileInputStream(loadFile))) {
-                BukkitWorld bukkitWorld=new BukkitWorld(ars.getWorld());
-                ClipboardFormat format = ClipboardFormats.findByFile(loadFile);
-                if (format == null) {
-                    PVPArena.instance.getLogger().severe("Unrecognized WE format: " + loadFile.getName());
-                }
-                ClipboardReader reader= format.getReader(in);
 
-                Clipboard clipboard=reader.read();
-                ClipboardHolder holder=new ClipboardHolder(clipboard);
+            ClipboardFormat format = ClipboardFormats.findByFile(loadFile);
 
-                EditSession editSession=worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, size);
+            if (format == null) {
+                throw new IllegalArgumentException("Unrecognized WE format: " + loadFile.getName());
+            }
+
+            try (ClipboardReader reader = format.getReader(new FileInputStream(loadFile))) {
+                Clipboard clipboard = reader.read();
+                ClipboardHolder holder = new ClipboardHolder(clipboard);
+                BukkitWorld bukkitWorld = new BukkitWorld(ars.getWorld());
+
+                final EditSession editSession = worldEdit.getEditSessionFactory().getEditSession(bukkitWorld, size);
                 editSession.setReorderMode(EditSession.ReorderMode.FAST);
                 editSession.setFastMode(true);
                 BlockVector3 to = BlockVector3.at(loc.getX(), loc.getY(), loc.getZ());
-                Operation operation=holder.createPaste(editSession).to(to).ignoreAirBlocks(!arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_REPLACEAIR)).build();
+                Operation operation=holder.createPaste(editSession)
+                        .to(to)
+                        .ignoreAirBlocks(!this.arena.getArenaConfig().getBoolean(CFG.MODULES_WORLDEDIT_REPLACEAIR))
+                        .build();
                 Operations.completeLegacy(operation);
                 editSession.flushSession();
-                editSession.commit();
             }
+        } catch (IllegalArgumentException e) {
+            PVPArena.instance.getLogger().severe(e.getMessage());
         } catch (final IOException | MaxChangedBlocksException e) {
             e.printStackTrace();
         }
