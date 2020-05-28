@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.latelounge;
 
+import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PACheck;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
 import net.slipcor.pvparena.commands.PAG_Join;
@@ -26,7 +27,7 @@ public class LateLounge extends ArenaModule {
 
     @Override
     public String version() {
-        return getClass().getPackage().getImplementationVersion();
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     private List<String> playerList;
@@ -40,56 +41,56 @@ public class LateLounge extends ArenaModule {
 
         final Player player = (Player) sender;
 
-        if (getPlayerList().contains(player.getName())) {
-            if (getPlayerList().size() < arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
+        if (this.getPlayerList().contains(player.getName())) {
+            if (this.getPlayerList().size() < this.arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS)) {
                 res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
                 int pos = 1;
 
-                for (final String name : getPlayerList()) {
+                for (final String name : this.getPlayerList()) {
                     if (name.equals(player.getName())) {
                         break;
                     }
                     pos++;
                 }
 
-                arena.msg(player, Language.parse(MSG.MODULE_LATELOUNGE_POSITION, String.valueOf(pos)));
+                this.arena.msg(player, Language.parse(MSG.MODULE_LATELOUNGE_POSITION, String.valueOf(pos)));
                 return res;
             }
         }
 
-        if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > getPlayerList().size() + 1) {
+        if (this.arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) > this.getPlayerList().size() + 1) {
             // not enough players
-            getPlayerList().add(player.getName());
-            final int pos = getPlayerList().size();
+            this.getPlayerList().add(player.getName());
+            final int pos = this.getPlayerList().size();
             for (final Player p : Bukkit.getOnlinePlayers()) {
                 if (p.equals(player)) {
                     continue;
                 }
                 try {
-                    arena.msg(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, ArenaManager.getIndirectArenaName(arena), player.getName()));
+                    this.arena.msg(p, Language.parse(MSG.MODULE_LATELOUNGE_ANNOUNCE, ArenaManager.getIndirectArenaName(this.arena), player.getName()));
 
                 } catch (final Exception e) {
                     //
                 }
             }
-            arena.msg(player, Language.parse(MSG.MODULE_LATELOUNGE_POSITION, String.valueOf(pos)));
+            this.arena.msg(player, Language.parse(MSG.MODULE_LATELOUNGE_POSITION, String.valueOf(pos)));
             res.setError(this, Language.parse(MSG.MODULE_LATELOUNGE_WAIT));
             return res;
         }
-        if (arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == getPlayerList().size() + 1) {
+        if (this.arena.getArenaConfig().getInt(CFG.READY_MINPLAYERS) == this.getPlayerList().size() + 1) {
             // not enough players
-            getPlayerList().add(player.getName());
+            this.getPlayerList().add(player.getName());
 
             Set<String> removals = new HashSet<>();
 
-            for (String s : getPlayerList()) {
+            for (String s : this.getPlayerList()) {
                 Player p = Bukkit.getPlayerExact(s);
 
                 boolean removeMe = false;
 
                 if (p != null) {
-                    for (ArenaModule mod : arena.getMods()) {
-                        if (!mod.getName().equals(getName())) {
+                    for (ArenaModule mod : this.arena.getMods()) {
+                        if (!mod.getName().equals(this.getName())) {
                             if (mod.checkJoin(p, new PACheck(), true).hasError()) {
                                 removeMe = true;
                                 break;
@@ -108,17 +109,17 @@ public class LateLounge extends ArenaModule {
 
             if (removals.size() > 0) {
                 for (String s : removals) {
-                    getPlayerList().remove(s);
+                    this.getPlayerList().remove(s);
                 }
             } else {
                 // SUCCESS!
-                for (String s : getPlayerList()) {
+                for (String s : this.getPlayerList()) {
                     if (s.equals(sender.getName())) {
                         continue;
                     }
                     Player p = Bukkit.getPlayerExact(s);
                     AbstractArenaCommand command = new PAG_Join();
-                    command.commit(arena, p, new String[0]);
+                    command.commit(this.arena, p, new String[0]);
                 }
                 return res;
             }
@@ -129,10 +130,10 @@ public class LateLounge extends ArenaModule {
     }
 
     private List<String> getPlayerList() {
-        if (playerList == null) {
-            playerList = new ArrayList<>();
+        if (this.playerList == null) {
+            this.playerList = new ArrayList<>();
         }
-        return playerList;
+        return this.playerList;
     }
 
     @Override
@@ -141,7 +142,17 @@ public class LateLounge extends ArenaModule {
     }
 
     @Override
+    public boolean handleSpecialLeave(final ArenaPlayer player) {
+        if(this.getPlayerList().contains(player.getName())) {
+            this.getPlayerList().remove(player.getName());
+            this.arena.msg(player.get(), Language.parse(MSG.MODULE_LATELOUNGE_LEAVE, this.arena.getName()));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void reset(final boolean force) {
-        getPlayerList().clear();
+        this.getPlayerList().clear();
     }
 }
