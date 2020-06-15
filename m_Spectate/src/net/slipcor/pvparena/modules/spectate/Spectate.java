@@ -98,7 +98,7 @@ public class Spectate extends ArenaModule {
 
             @Override
             public void run() {
-                arena.tpPlayerToCoordName(player, "spectator");
+                arena.tpPlayerToCoordNameForJoin(ap, "spectator", false);
                 arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
                 ap.setStatus(Status.WATCH);
             }

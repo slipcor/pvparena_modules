@@ -44,7 +44,7 @@ public class AfterMatch extends ArenaModule {
                 }
                 final Player player = p.get();
                 if (player != null) {
-                    arena.tpPlayerToCoordName(player, "after");
+                    this.arena.tpPlayerToCoordName(p, "after");
                 }
             }
         }

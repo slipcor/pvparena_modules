@@ -1,6 +1,5 @@
 package net.slipcor.pvparena.modules.battlefieldguard;
 
-import com.google.common.collect.ImmutableMap;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.api.PVPArenaAPI;
 import net.slipcor.pvparena.arena.Arena;
@@ -12,8 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
-import java.util.EnumMap;
 
 class BattleRunnable implements Runnable {
     private final Debug debug = new Debug(42);
@@ -72,7 +69,7 @@ class BattleRunnable implements Runnable {
                         p.setHealth(0);
                         p.damage(1000);
                     } else {
-                        a.tpPlayerToCoordName(p, "exit");
+                        a.tpPlayerToCoordName(ap, "exit");
                     }
                 }
             }

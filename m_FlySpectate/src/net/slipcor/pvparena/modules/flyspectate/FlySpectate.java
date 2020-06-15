@@ -98,7 +98,7 @@ public class FlySpectate extends ArenaModule {
 
             @Override
             public void run() {
-                arena.tpPlayerToCoordName(player, "spectator");
+                arena.tpPlayerToCoordNameForJoin(ap, "spectator", false);
                 if (arena.getArenaConfig().getInt(CFG.GENERAL_GAMEMODE) > -1) {
                     player.setGameMode(GameMode.CREATIVE);
                 }
