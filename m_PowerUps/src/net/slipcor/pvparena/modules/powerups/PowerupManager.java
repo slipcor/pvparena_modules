@@ -3,7 +3,6 @@ package net.slipcor.pvparena.modules.powerups;
 import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
-import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.classes.PABlockLocation;
 import net.slipcor.pvparena.classes.PALocation;
 import net.slipcor.pvparena.commands.AbstractArenaCommand;
@@ -20,25 +19,27 @@ import net.slipcor.pvparena.managers.SpawnManager;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
 public class PowerupManager extends ArenaModule implements Listener {
 
 
+    public static final String POWERUPS_CFG = "modules.powerups.items";
     private Powerups usesPowerups;
 
     private int powerupDiff;
@@ -63,27 +64,20 @@ public class PowerupManager extends ArenaModule implements Listener {
      */
     void calcPowerupSpawn() {
         debug.i("powerups?");
-        if (usesPowerups == null) {
+        if (this.usesPowerups == null) {
             return;
         }
 
-        if (usesPowerups.puTotal.size() <= 0) {
+        if (this.usesPowerups.puTotal.size() <= 0) {
             return;
         }
 
         debug.i("totals are filled");
-        final Random r = new Random();
-        int i = r.nextInt(usesPowerups.puTotal.size());
+        int random = new Random().nextInt(this.usesPowerups.puTotal.size());
 
-        for (final Powerup p : usesPowerups.puTotal) {
-            if (--i > 0) {
-                continue;
-            }
-            commitPowerupItemSpawn(p.item);
-            arena.broadcast(Language.parse(MSG.MODULE_POWERUPS_SERVER, p.name));
-            return;
-        }
-
+        Powerup p = this.usesPowerups.puTotal.get(random);
+        this.commitPowerupItemSpawn(p.item);
+        this.arena.broadcast(Language.parse(MSG.MODULE_POWERUPS_SERVER, p.name));
     }
 
     @Override
@@ -166,17 +160,16 @@ public class PowerupManager extends ArenaModule implements Listener {
     }
 
     @Override
-    public boolean commitEnd(final ArenaTeam arg1) {
-        if (usesPowerups != null) {
-            if (arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE).startsWith("death")) {
+    public void parsePlayerDeath(final Player player, final EntityDamageEvent lastDamageCause) {
+        if (this.usesPowerups != null) {
+            if (this.arena.getArenaConfig().getString(CFG.MODULES_POWERUPS_USAGE).startsWith("death")) {
                 debug.i("calculating powerup trigger death");
-                powerupDiffI = ++powerupDiffI % powerupDiff;
-                if (powerupDiffI == 0) {
-                    calcPowerupSpawn();
+                this.powerupDiffI = ++this.powerupDiffI % this.powerupDiff;
+                if (this.powerupDiffI == 0) {
+                    this.calcPowerupSpawn();
                 }
             }
         }
-        return false;
     }
 
     /**
@@ -184,35 +177,33 @@ public class PowerupManager extends ArenaModule implements Listener {
      *
      * @param item the material to spawn
      */
-    void commitPowerupItemSpawn(final Material item) {
+    private void commitPowerupItemSpawn(final Material item) {
         debug.i("dropping item?");
 
-        final Set<ArenaRegion> regions = arena.getRegionsByType(RegionType.BATTLE);
+        final Set<ArenaRegion> regions = this.arena.getRegionsByType(RegionType.BATTLE);
 
 
-        if (regions.size() < 1 || arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
-            if (!arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
+        if (regions.size() < 1 || this.arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
+            if (!this.arena.getArenaConfig().getBoolean(CFG.MODULES_POWERUPS_DROPSPAWN)) {
                 PVPArena.instance.getLogger().warning("You have deactivated 'dropspawn' but have no BATTLE region. Attempting to find powerup drop spawns!");
             }
-            dropItemOnSpawn(item);
+            this.dropItemOnSpawn(item);
 
         } else {
-            for (final ArenaRegion ar : regions) {
+            ArenaRegion ar = regions.iterator().next();
 
-                final PABlockLocation min = ar.getShape().getMinimumLocation();
-                final PABlockLocation max = ar.getShape().getMaximumLocation();
+            final PABlockLocation min = ar.getShape().getMinimumLocation();
+            final PABlockLocation max = ar.getShape().getMaximumLocation();
 
-                final Random r = new Random();
+            final Random r = new Random();
 
-                final int x = r.nextInt(max.getX() - min.getX());
-                final int z = r.nextInt(max.getZ() - min.getZ());
+            final int x = r.nextInt(max.getX() - min.getX());
+            final int z = r.nextInt(max.getZ() - min.getZ());
 
-                final World w = Bukkit.getWorld(min.getWorldName());
+            final World w = Bukkit.getWorld(min.getWorldName());
+            Location dropLoc = w.getHighestBlockAt(min.getX() + x, min.getZ() + z).getRelative(BlockFace.UP).getLocation();
 
-                mark(w.dropItem(w.getHighestBlockAt(min.getX() + x, min.getZ() + z).getRelative(BlockFace.UP).getLocation(), new ItemStack(item, 1)));
-
-                break;
-            }
+            w.dropItem(dropLoc, this.getTaggedItem(item)).setVelocity(new Vector());
         }
     }
 
@@ -222,39 +213,14 @@ public class PowerupManager extends ArenaModule implements Listener {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
             setup = true;
         }
-        final HashMap<String, Object> powerups = new HashMap<>();
-        if (config.getConfigurationSection("powerups") != null) {
-            final Map<String, Object> map = (HashMap<String, Object>) config
-                    .getConfigurationSection("powerups").getValues(false);
-            Map<String, Object> map3 = new HashMap<>();
-            debug.i("parsing powerups");
-            for (final String key : map.keySet()) {
-                // key e.g. "OneUp"
-                Map<String, Object> map2 = (HashMap<String, Object>) config
-                        .getConfigurationSection("powerups." + key).getValues(
-                                false);
-                final Map<String, Object> temp_map = new HashMap<>();
-                for (final Map.Entry<String, Object> stringObjectEntry : map2.entrySet()) {
-                    // kkey e.g. "dmg_receive"
-                    if ("item".equals(stringObjectEntry.getKey())) {
-                        temp_map.put(stringObjectEntry.getKey(), String.valueOf(stringObjectEntry.getValue()));
-                        debug.i(key + " => " + stringObjectEntry.getKey() + " => "
-                                + stringObjectEntry.getValue());
-                    } else {
-                        debug.i(key + " => " + stringObjectEntry.getKey() + " => "
-                                + parseList(map3.values()));
-                        map3 = (HashMap<String, Object>) config
-                                .getConfigurationSection(
-                                        "powerups." + key + '.' + stringObjectEntry.getKey())
-                                .getValues(false);
-                        temp_map.put(stringObjectEntry.getKey(), map3);
-                    }
-                }
-                powerups.put(key, temp_map);
-            }
+        final Map<String, Object> powerupItems = new HashMap<>();
+        ConfigurationSection powerupsCfgSection = config.getConfigurationSection(POWERUPS_CFG);
+
+        if (powerupsCfgSection != null) {
+            powerupItems.putAll(this.getItemMapFromConfig(powerupsCfgSection));
         }
 
-        if (powerups.size() < 1) {
+        if (powerupItems.size() < 1) {
             return;
         }
 
@@ -263,12 +229,26 @@ public class PowerupManager extends ArenaModule implements Listener {
         final String[] ss = pu.split(":");
         if (pu.startsWith("death") || pu.startsWith("time")) {
             powerupDiff = Integer.parseInt(ss[1]);
-            usesPowerups = new Powerups(powerups);
+            usesPowerups = new Powerups(powerupItems);
         } else {
-            PVPArena.instance.getLogger().warning("error activating powerup module");
+            String errorMsg = String.format("Error activating powerup module : %s has unknown value", CFG.MODULES_POWERUPS_USAGE);
+            PVPArena.instance.getLogger().warning(errorMsg);
         }
 
         config.options().copyDefaults(true);
+    }
+
+    private Map<String, Object> getItemMapFromConfig(ConfigurationSection cfgSection) {
+        Map<String, Object> sectionMap = cfgSection.getValues(false);
+        Map<String, Object> returnedMap = new HashMap<>();
+        sectionMap.forEach((k, v) -> {
+            if(v instanceof ConfigurationSection) {
+                returnedMap.put(k, this.getItemMapFromConfig((ConfigurationSection) v));
+            } else {
+                returnedMap.put(k, v);
+            }
+        });
+        return returnedMap;
     }
 
     @Override
@@ -285,24 +265,19 @@ public class PowerupManager extends ArenaModule implements Listener {
      *
      * @param item the item to drop
      */
-    void dropItemOnSpawn(final Material item) {
+    private void dropItemOnSpawn(final Material item) {
         debug.i("calculating item spawn location");
-        final Set<PALocation> locs = SpawnManager.getSpawnsContaining(arena, "powerup");
-        if (locs.size() < 1) {
+        List<PALocation> allowedLocations = new ArrayList<>(SpawnManager.getSpawnsContaining(arena, "powerup"));
+
+        if (allowedLocations.size() < 1) {
             PVPArena.instance.getLogger().warning("No valid powerup spawns found!");
             return;
         }
-        int pos = new Random().nextInt(locs.size());
-        for (final PALocation loc : locs) {
-            if (--pos > 0) {
-                continue;
-            }
-            final Location aim = loc.toLocation().add(0, 1, 0);
-            debug.i("dropping item on spawn: " + aim);
-            mark(Bukkit.getWorld(arena.getWorld()).dropItem(aim, new ItemStack(item, 1)));
-            break;
-        }
 
+        int random = new Random().nextInt(allowedLocations.size());
+        Location dropLoc = allowedLocations.get(random).toLocation().add(0, 0.5, 0);
+        debug.i("dropping item on spawn: " + dropLoc);
+        dropLoc.getWorld().dropItem(dropLoc, this.getTaggedItem(item)).setVelocity(new Vector());;
     }
 
     @Override
@@ -312,11 +287,13 @@ public class PowerupManager extends ArenaModule implements Listener {
 
     private static final String POWERUPSTRING = ChatColor.RED + "Power\nUp";
 
-    private void mark(final Item drop) {
-        final ItemMeta meta = drop.getItemStack().getItemMeta();
+    private ItemStack getTaggedItem(final Material material) {
+        ItemStack itemStack = new ItemStack(material);
+        final ItemMeta meta = itemStack.getItemMeta();
 
         meta.setDisplayName(POWERUPSTRING);
-        drop.getItemStack().setItemMeta(meta);
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 
     private boolean isPowerup(final ItemStack item) {
@@ -413,29 +390,6 @@ public class PowerupManager extends ArenaModule implements Listener {
                 }
             }
         }
-    }
-
-    /**
-     * turn a collection of objects into a comma separated string
-     *
-     * @param values the collection
-     * @return the comma separated string
-     */
-    String parseList(final Collection<Object> values) {
-        String s = "";
-        for (final Object o : values) {
-            if (s != null && !s.isEmpty()) {
-                s += ",";
-            }
-            try {
-                s += String.valueOf(o);
-                debug.i("a");
-            } catch (final Exception e) {
-                debug.i("b");
-                s += o.toString();
-            }
-        }
-        return s;
     }
 
     @EventHandler
