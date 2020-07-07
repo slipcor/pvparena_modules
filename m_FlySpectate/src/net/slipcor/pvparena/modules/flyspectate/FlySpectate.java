@@ -93,24 +93,20 @@ public class FlySpectate extends ArenaModule {
         }
 
 
-        final long delay = arena.getArenaConfig().getBoolean(CFG.PERMS_FLY) ? 6L : 5L;
-        class RunLater implements Runnable {
+        final long delay = this.arena.getArenaConfig().getBoolean(CFG.PERMS_FLY) ? 6L : 5L;
+        this.arena.tpPlayerToCoordNameForJoin(ap, "spectator", false);
 
-            @Override
-            public void run() {
-                arena.tpPlayerToCoordNameForJoin(ap, "spectator", false);
-                if (arena.getArenaConfig().getInt(CFG.GENERAL_GAMEMODE) > -1) {
-                    player.setGameMode(GameMode.CREATIVE);
-                }
-                player.setAllowFlight(true);
-                player.setFlying(true);
-                player.setCollidable(false);
-                arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
-                ap.setStatus(ArenaPlayer.Status.WATCH);
-                ap.setTeleporting(false);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, () -> {
+            if (this.arena.getArenaConfig().getInt(CFG.GENERAL_GAMEMODE) > -1) {
+                player.setGameMode(GameMode.CREATIVE);
             }
-        }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new RunLater(), delay);
+            player.setAllowFlight(true);
+            player.setFlying(true);
+            player.setCollidable(false);
+            this.arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
+            ap.setStatus(ArenaPlayer.Status.WATCH);
+            ap.setTeleporting(false);
+        }, delay);
     }
 
     @Override
