@@ -11,15 +11,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.scheduler.BukkitRunnable;
 
-class BattleRunnable implements Runnable {
+class BattleRunnable extends BukkitRunnable {
     private final Debug debug = new Debug(42);
 
     /**
      * construct a battle runnable
      */
     public BattleRunnable() {
-        debug.i("BattleRunnable constructor");
+        this.debug.i("BattleRunnable constructor");
     }
 
     /**
@@ -28,7 +29,7 @@ class BattleRunnable implements Runnable {
     @Override
     public void run() {
         if (!Debug.override) {
-            debug.i("BattleRunnable commiting");
+            this.debug.i("BattleRunnable commiting");
         }
         try {
             for (final Player p : Bukkit.getServer().getOnlinePlayers()) {
@@ -45,24 +46,11 @@ class BattleRunnable implements Runnable {
                 }
 
                 if (!Debug.override) {
-                    debug.i("arena pos: " + name, p);
-                    debug.i("arena IN : " + ap.getArena(), p);
+                    this.debug.i("arena pos: " + name, p);
+                    this.debug.i("arena IN : " + ap.getArena(), p);
                 }
 
-                if (ap.getArena() == null || !ap.getArena().getName().equals(name)) {
-                    if (ap.getArena() != null) {
-                        if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
-                            ap.get().setLastDamageCause(
-                                    new EntityDamageEvent(ap.get(), DamageCause.CUSTOM,
-                                            1000.0));
-                            ap.get().setHealth(0);
-                            ap.get().damage(1000);
-                        } else {
-                            ap.getArena().playerLeave(p, CFG.TP_EXIT, false, false, true);
-                        }
-                        continue;
-                    }
-
+                if(ap.getArena() == null) {
                     final Arena a = ArenaManager.getArenaByName(name);
                     if (a.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
                         p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM,1000.0));
@@ -70,6 +58,14 @@ class BattleRunnable implements Runnable {
                         p.damage(1000);
                     } else {
                         a.tpPlayerToCoordName(ap, "exit");
+                    }
+                } else if(!ap.getArena().getName().equals(name)) {
+                    if (ap.getArena().getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)) {
+                        p.setLastDamageCause(new EntityDamageEvent(p, DamageCause.CUSTOM,1000.0));
+                        p.setHealth(0);
+                        p.damage(1000);
+                    } else {
+                        ap.getArena().playerLeave(p, CFG.TP_EXIT, false, false, false);
                     }
                 }
             }
