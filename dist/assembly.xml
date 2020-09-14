@@ -209,6 +209,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_Projectiles/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_RealSpectate/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>

@@ -74,6 +74,7 @@
         <module>m_PlayerFinder</module>
         <module>m_Points</module>
         <module>m_PowerUps</module>
+        <module>m_Projectiles</module>
         <module>m_RealSpectate</module>
         <module>m_RedStoneTriggers</module>
         <module>m_RespawnRelay</module>
