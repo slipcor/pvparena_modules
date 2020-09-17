@@ -6,6 +6,7 @@ import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.arena.ArenaPlayer.Status;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
+import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,12 +16,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 class MoveChecker implements Listener {
     private final Debug debug = new Debug(42);
-    private final Material[] mats;
+    private final List<Material> checkMaterialList;
     private final Arena arena;
     private final Map<Block, Runnable> map = new HashMap<>();
     private final int delay;
@@ -29,35 +33,29 @@ class MoveChecker implements Listener {
     double offset;
 
     public MoveChecker(final Arena arena, final ItemStack[] items, final int delay) {
-        mats = new Material[items.length];
+        this.checkMaterialList = Arrays.stream(items).map(ItemStack::getType).collect(Collectors.toList());
 
-        for (int pos=0; pos<items.length; pos++) {
-            if (items[pos] != null) {
-                mats[pos] = items[pos].getType();
-            }
-        }
-
-        debug.i("BattleRunnable constructor");
+        this.debug.i("BlockDissolve MoveChecker constructor");
         this.arena = arena;
         Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
         this.delay = delay;
-        startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
-        offset = arena.getArenaConfig().getDouble(CFG.MODULES_BLOCKDISSOLVE_CALCOFFSET);
+        this.startSeconds = arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_STARTSECONDS);
+        this.offset = arena.getArenaConfig().getDouble(CFG.MODULES_BLOCKDISSOLVE_CALCOFFSET);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onMove(final PlayerMoveEvent event) {
 
-        if (active && arena.isFightInProgress()) {
+        if (this.active && this.arena.isFightInProgress()) {
             final ArenaPlayer player = ArenaPlayer.parsePlayer(event.getPlayer().getName());
-            if (arena != player.getArena()) {
+            if (this.arena != player.getArena()) {
                 return;
             }
 
-            if (arena.getPlayedSeconds() > startSeconds && player.getStatus() == Status.FIGHT) {
+            if (this.arena.getPlayedSeconds() > this.startSeconds && player.getStatus() == Status.FIGHT) {
 
 
-                checkBlock(event.getPlayer().getLocation().clone().subtract(0, 1, 0));
+                this.checkBlock(event.getPlayer().getLocation().clone().subtract(0, 1, 0));
             }
         }
     }
@@ -67,56 +65,51 @@ class MoveChecker implements Listener {
         final double x = Math.abs(location.getX() * 10 % 10 / 10);
         final double z = Math.abs(location.getZ() * 10 % 10 / 10);
 
-        if (x < offset) {
-            checkBlock(location.clone().add(location.getX()<0?1:-1, 0, 0).getBlock());
-        } else if (x > (1-offset)) {
-            checkBlock(location.clone().add(location.getX()<0?-1:1, 0, 0).getBlock());
+        if (x < this.offset) {
+            this.checkBlock(location.clone().add(location.getX()<0?1:-1, 0, 0).getBlock());
+        } else if (x > (1- this.offset)) {
+            this.checkBlock(location.clone().add(location.getX()<0?-1:1, 0, 0).getBlock());
         }
 
-        if (z < offset) {
-            checkBlock(location.clone().add(0, 0, location.getZ()<0?1:-1).getBlock());
+        if (z < this.offset) {
+            this.checkBlock(location.clone().add(0, 0, location.getZ()<0?1:-1).getBlock());
         } else if (z > 0.666) {
-            checkBlock(location.clone().add(0, 0, location.getZ()<0?-1:1).getBlock());
+            this.checkBlock(location.clone().add(0, 0, location.getZ()<0?-1:1).getBlock());
         }
 
-        if (x < offset && z < offset) {
-            checkBlock(location.clone().add(location.getX()<0?1:-1, 0, location.getZ()<0?1:-1).getBlock());
-        } else if (x <offset && z > (1-offset)) {
-            checkBlock(location.clone().add(location.getX()<0?1:-1, 0, location.getZ()<0?-1:1).getBlock());
-        } else if (x > (1-offset) && z < offset) {
-            checkBlock(location.clone().add(location.getX()<0?-1:1, 0, location.getZ()<0?1:-1).getBlock());
-        } else if (x > (1-offset) && z > (1-offset)) {
-            checkBlock(location.clone().add(location.getX()<0?-1:1, 0, location.getZ()<0?-1:1).getBlock());
+        if (x < this.offset && z < this.offset) {
+            this.checkBlock(location.clone().add(location.getX()<0?1:-1, 0, location.getZ()<0?1:-1).getBlock());
+        } else if (x < this.offset && z > (1- this.offset)) {
+            this.checkBlock(location.clone().add(location.getX()<0?1:-1, 0, location.getZ()<0?-1:1).getBlock());
+        } else if (x > (1- this.offset) && z < this.offset) {
+            this.checkBlock(location.clone().add(location.getX()<0?-1:1, 0, location.getZ()<0?1:-1).getBlock());
+        } else if (x > (1- this.offset) && z > (1- this.offset)) {
+            this.checkBlock(location.clone().add(location.getX()<0?-1:1, 0, location.getZ()<0?-1:1).getBlock());
         }
 
-        checkBlock(location.getBlock());
+        this.checkBlock(location.getBlock());
     }
 
     private void checkBlock(final Block block) {
-        final Material mat = block.getType();
-
-        for (final Material testMat : mats) {
-            if (mat == testMat) {
-                access(block, false);
-                return;
-            }
+        if(this.checkMaterialList.contains(block.getType())) {
+            this.access(block, false);
         }
     }
 
     private synchronized void access(final Block block, final boolean remove) {
         if (block == null && remove) {
-            map.clear();
-            active = false;
+            this.map.clear();
+            this.active = false;
             return;
         }
 
-        if (map.containsKey(block)) {
+        if (this.map.containsKey(block)) {
             return;
         }
         if (remove) {
-            map.remove(block);
+            this.map.remove(block);
         } else {
-            map.put(block, new RunLater(block));
+            this.map.put(block, new RunLater(block));
         }
     }
 
@@ -124,10 +117,10 @@ class MoveChecker implements Listener {
         class RunLater2 implements Runnable {
             @Override
             public void run() {
-                if (active) {
-                    for (ArenaPlayer ap : arena.getFighters()) {
+                if (MoveChecker.this.active) {
+                    for (ArenaPlayer ap : MoveChecker.this.arena.getFighters()) {
                         if (ap.getStatus() == Status.FIGHT) {
-                            checkBlock(ap.get().getLocation().clone().subtract(0, 1, 0));
+                            MoveChecker.this.checkBlock(ap.get().getLocation().clone().subtract(0, 1, 0));
                         }
                     }
                 }
@@ -142,24 +135,24 @@ class MoveChecker implements Listener {
         final Block block;
 
         RunLater(final Block b) {
-            block = b;
-            Bukkit.getScheduler().runTaskLater(PVPArena.instance, this, delay);
+            this.block = b;
+            ArenaModuleManager.onBlockBreak(MoveChecker.this.arena, b);
+            Bukkit.getScheduler().runTaskLater(PVPArena.instance, this, MoveChecker.this.delay);
         }
 
         @Override
         public void run() {
-            access(block, true);
-            block.setType(Material.AIR);
+            MoveChecker.this.access(this.block, true);
+            this.block.setType(Material.AIR);
         }
 
     }
 
     public void clear() {
-        access(null, true);
-        active = false;
+        this.access(null, true);
     }
 
     public void start() {
-        new CountdownRunner(arena, this, startSeconds);
+        new CountdownRunner(this.arena, this, this.startSeconds);
     }
 }

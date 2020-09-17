@@ -1,5 +1,6 @@
 package net.slipcor.pvparena.modules.blockdissolve;
 
+import net.slipcor.pvparena.arena.ArenaTeam;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.loadables.ArenaModule;
 import org.bukkit.command.CommandSender;
@@ -10,6 +11,8 @@ public class BlockDissolve extends ArenaModule {
 
     private boolean setup;
     private MoveChecker checker;
+    private ItemStack[] dissolveItems;
+    private int dissolveTicks;
 
     public BlockDissolve() {
         super("BlockDissolve");
@@ -17,26 +20,27 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public String version() {
-        return getClass().getPackage().getImplementationVersion();
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     @Override
     public void configParse(final YamlConfiguration config) {
-        if (setup) {
+        if (this.setup) {
             return;
         }
-        if (checker == null) {
-            checker = new MoveChecker(arena, arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
-                    arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
+        if (this.checker == null) {
+            this.dissolveItems = this.arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS);
+            this.dissolveTicks = this.arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS);
+            this.checker = new MoveChecker(this.arena, this.dissolveItems, this.dissolveTicks);
         }
-        setup = true;
+        this.setup = true;
     }
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        sender.sendMessage("ticks: " + arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
+        sender.sendMessage("ticks: " + this.dissolveTicks);
         StringBuilder materials = new StringBuilder("materials: ");
-        ItemStack[] items = arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS);
+        ItemStack[] items = this.dissolveItems;
         for(ItemStack item : items) {
             materials.append(item.getType().name());
         }
@@ -45,17 +49,24 @@ public class BlockDissolve extends ArenaModule {
 
     @Override
     public void parseStart() {
-        if (checker == null) {
-            checker = new MoveChecker(arena, arena.getArenaConfig().getItems(CFG.MODULES_BLOCKDISSOLVE_MATERIALS),
-                    arena.getArenaConfig().getInt(CFG.MODULES_BLOCKDISSOLVE_TICKS));
+        if (this.checker == null) {
+            this.checker = new MoveChecker(this.arena, this.dissolveItems, this.dissolveTicks);
         }
-        checker.start();
+        this.checker.start();
+    }
+
+    @Override
+    public boolean commitEnd(final ArenaTeam aTeam) {
+        if (this.checker != null) {
+            this.checker.clear();
+        }
+        return false;
     }
 
     @Override
     public void reset(final boolean force) {
-        if (checker != null) {
-            checker.clear();
+        if (this.checker != null) {
+            this.checker.clear();
         }
     }
 }

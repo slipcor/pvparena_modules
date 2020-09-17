@@ -10,13 +10,13 @@ public class CountdownRunner extends ArenaRunnable {
 
     public CountdownRunner(final Arena arena, final MoveChecker mc, final int seconds) {
         super(MSG.ARENA_STARTING_IN.getNode(), seconds, null, arena, false);
-        checker = mc;
+        this.checker = mc;
     }
 
     @Override
     protected void commit() {
-        checker.active = true;
-        checker.startTask();
+        this.checker.active = true;
+        this.checker.startTask();
     }
 
     @Override
