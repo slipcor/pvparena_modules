@@ -94,7 +94,7 @@ public class Points extends ArenaModule implements Listener {
     }
 
     @Override
-    public void resetPlayer(final Player player, final boolean force) {
+    public void resetPlayer(final Player player, final boolean soft, final boolean force) {
         if (arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)) {
             globalconfig.set(player.getName(), globalpoints.get(player.getName()));
         } else {

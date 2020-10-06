@@ -700,7 +700,7 @@ public class VaultSupport extends ArenaModule implements Listener {
     }
 
     @Override
-    public void resetPlayer(final Player player, final boolean force) {
+    public void resetPlayer(final Player player, final boolean soft, final boolean force) {
         if (player == null) {
             return;
         }

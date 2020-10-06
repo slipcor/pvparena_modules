@@ -102,7 +102,7 @@ public class StartFreeze extends ArenaModule implements Listener {
     }
 
     @Override
-    public void resetPlayer(Player p, boolean force) {
+    public void resetPlayer(final Player p, final boolean soft, final boolean force) {
         if (speeds.containsKey(p.getName())) {
             p.setWalkSpeed(speeds.get(p.getName()));
         }
