@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class TempPerms extends ArenaModule implements Listener {
+    private static final String DEFAULT_NODE = "default";
     private boolean listening;
 
     public TempPerms() {
@@ -54,18 +55,27 @@ public class TempPerms extends ArenaModule implements Listener {
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
-        result.define(new String[]{"add"});
-        result.define(new String[]{"rem"});
+
         if (arena == null) {
             return result;
         }
+
+        result.define(new String[]{"add"});
+        this.getTempPerms(arena, DEFAULT_NODE).entrySet().forEach(entry ->
+                result.define(new String[]{"rem", getPolarizedPermission(entry)})
+        );
+
         for (final ArenaClass aClass : arena.getClasses()) {
             result.define(new String[]{aClass.getName(), "add"});
-            result.define(new String[]{aClass.getName(), "rem"});
+            this.getTempPerms(arena, aClass.getName()).entrySet().forEach(entry ->
+                    result.define(new String[]{aClass.getName(), "rem", getPolarizedPermission(entry)})
+            );
         }
         for (final String team : arena.getTeamNames()) {
             result.define(new String[]{team, "add"});
-            result.define(new String[]{team, "rem"});
+            this.getTempPerms(arena, team).entrySet().forEach(entry ->
+                    result.define(new String[]{team, "rem", getPolarizedPermission(entry)})
+            );
         }
         return result;
     }
@@ -97,10 +107,10 @@ public class TempPerms extends ArenaModule implements Listener {
             return;
         }
 
-        Map<String, Boolean> map = this.getTempPerms(this.arena, "default");
+        Map<String, Boolean> map = this.getTempPerms(this.arena, DEFAULT_NODE);
 
         if (args.length == 1) {
-            this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, "default"));
+            this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, DEFAULT_NODE));
             for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
                 this.arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
             }
@@ -110,12 +120,12 @@ public class TempPerms extends ArenaModule implements Listener {
         if (args.length == 3 && ("add".equals(args[1]) || "rem".equals(args[1]))) {
             if ("add".equals(args[1])) {
                 map.put(args[2], true);
-                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[2], "default"));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[2], DEFAULT_NODE));
             } else {
-                map.remove(args[2]);
-                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[2], "default"));
+                map.remove(getStrippedPermission(args[2]));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[2], DEFAULT_NODE));
             }
-            this.setTempPerms(this.arena, map, "default");
+            this.setTempPerms(this.arena, map, DEFAULT_NODE);
             return;
         }
 
@@ -138,7 +148,7 @@ public class TempPerms extends ArenaModule implements Listener {
                 map.put(args[3], true);
                 this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[3], args[1]));
             } else {
-                map.remove(args[3]);
+                map.remove(getStrippedPermission(args[3]));
                 this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[3], args[1]));
             }
             this.setTempPerms(this.arena, map, args[1]);
@@ -159,7 +169,7 @@ public class TempPerms extends ArenaModule implements Listener {
 
                     @Override
                     public void run() {
-                        TempPerms.this.setPermissions(TempPerms.this.arena, aPlayer, TempPerms.this.getTempPerms(TempPerms.this.arena, "default"), TempPerms.this.getTempPerms(TempPerms.this.arena, aPlayer.getArenaTeam().getName()));
+                        TempPerms.this.setPermissions(TempPerms.this.arena, aPlayer, TempPerms.this.getTempPerms(TempPerms.this.arena, DEFAULT_NODE), TempPerms.this.getTempPerms(TempPerms.this.arena, aPlayer.getArenaTeam().getName()));
                     }
                 }
 
@@ -179,7 +189,7 @@ public class TempPerms extends ArenaModule implements Listener {
             this.listening = true;
         }
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        this.setPermissions(this.arena, ap, this.getTempPerms(this.arena, "default"), this.getTempPerms(this.arena, ap.getArenaTeam().getName()));
+        this.setPermissions(this.arena, ap, this.getTempPerms(this.arena, DEFAULT_NODE), this.getTempPerms(this.arena, ap.getArenaTeam().getName()));
     }
 
     /**
@@ -193,20 +203,27 @@ public class TempPerms extends ArenaModule implements Listener {
         if (arena.getArenaConfig().getYamlConfiguration().contains("perms." + node)) {
             final List<String> list = arena.getArenaConfig().getStringList("perms." + node, new ArrayList<>());
             for (final String key : list) {
-                result.put(key.replace("-", "").replace("^", ""), !(key.startsWith("^") || key.startsWith("-")));
+                result.put(getStrippedPermission(key), !(key.startsWith("^") || key.startsWith("-")));
             }
         }
-
         return result;
     }
 
     private void setTempPerms(final Arena arena, final Map<String, Boolean> map, final String node) {
         final List<String> result = new ArrayList<>();
         for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
-            result.add((stringBooleanEntry.getValue() ? "" : "^") + stringBooleanEntry.getKey());
+            result.add(getPolarizedPermission(stringBooleanEntry));
         }
         arena.getArenaConfig().setManually("perms." + node, result);
         arena.getArenaConfig().save();
+    }
+
+    private static String getStrippedPermission(String key) {
+        return key.replaceAll("[\\^\\-]", "");
+    }
+
+    private static String getPolarizedPermission(Map.Entry<String, Boolean> stringBooleanEntry) {
+        return (stringBooleanEntry.getValue() ? "" : "-") + stringBooleanEntry.getKey();
     }
 
     private void setPermissions(final Arena arena, final ArenaPlayer ap, final Map<String, Boolean> mGlobal, final Map<String, Boolean> mTeam) {
