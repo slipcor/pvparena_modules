@@ -32,7 +32,14 @@ public class Projectiles extends ArenaModule implements Listener {
 
     @Override
     public void displayInfo(final CommandSender player) {
-        player.sendMessage(StringParser.colorVar("global", this.arena.getArenaConfig().getBoolean(CFG.MODULES_POINTS_GLOBAL)));
+        Config cfg = this.arena.getArenaConfig();
+        String message = String.format("%s | %s | %s | %s",
+                StringParser.colorVar("snowball", cfg.getBoolean(MODULES_PROJECTILES_SNOWBALL)),
+                StringParser.colorVar("egg", arena.getArenaConfig().getBoolean(CFG.MODULES_PROJECTILES_EGG)),
+                StringParser.colorVar("fishHook", arena.getArenaConfig().getBoolean(CFG.MODULES_PROJECTILES_FISHHOOK)),
+                StringParser.colorVar("enderPearl", arena.getArenaConfig().getBoolean(CFG.MODULES_PROJECTILES_ENDERPEARL))
+        );
+        player.sendMessage(message);
     }
 
     @Override
