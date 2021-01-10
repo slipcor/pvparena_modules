@@ -27,7 +27,7 @@
         <dependency>
             <groupId>net.slipcor.pvpa</groupId>
             <artifactId>m_vault</artifactId>
-            <version>1.14.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>

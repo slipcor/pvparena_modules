@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>net.slipcor</groupId>
                 <artifactId>pvparena</artifactId>
-                <version>1.15.1</version>
+                <version>1.15.2-SNAPSHOT</version>
                 <type>jar</type>
             </dependency>
         </dependencies>
@@ -62,7 +62,6 @@
         <module>m_BlockDissolve</module>
         <module>m_BlockRestore</module>
         <module>m_ChestFiller</module>
-        <module>m_Duel</module>
         <module>m_EventActions</module>
         <module>m_Factions</module>
         <module>m_FixInventoryLoss</module>
@@ -89,6 +88,8 @@
         <module>m_Titles</module>
         <module>m_Turrets</module>
         <module>m_Vault</module>
+        <!-- require m_Vault module to compile -->
+        <module>m_Duel</module>
         <module>m_Walls</module>
         <module>m_WorldEdit</module>
         <module>m_WorldGuard</module>
