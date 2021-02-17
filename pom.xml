@@ -21,8 +21,8 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <id>craftyn-repo</id>
-            <url>https://repo2.craftyn.com/repository/snapshots/</url>
+            <id>eredrim-repo</id>
+            <url>https://repo.eredrim.fr/repository/maven-public/</url>
         </repository>
     </repositories>
 

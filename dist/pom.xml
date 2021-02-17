@@ -51,7 +51,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>files-${project.parent.version}</finalName>
+                            <finalName>pvparena-modules-${project.parent.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
