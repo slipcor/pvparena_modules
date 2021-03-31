@@ -173,6 +173,8 @@ public class MatchResultStats extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
-        data.reset(force);
+        if(data != null) {
+            data.reset(force);
+        }
     }
 }
