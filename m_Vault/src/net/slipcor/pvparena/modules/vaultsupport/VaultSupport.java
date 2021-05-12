@@ -46,7 +46,7 @@ public class VaultSupport extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.130";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -667,7 +667,6 @@ public class VaultSupport extends ArenaModule implements Listener {
                 final Player player = Bukkit.getPlayer(nSplit[0]);
 
                 if (player == null) {
-                    System.out.print("player null: " + nSplit[0]);
                     arena.getDebugger().i("Player is null!");
                 } else {
                     double factor = 1.0d;
@@ -701,7 +700,7 @@ public class VaultSupport extends ArenaModule implements Listener {
     }
 
     @Override
-    public void resetPlayer(final Player player, final boolean force) {
+    public void resetPlayer(final Player player, final boolean soft, final boolean force) {
         if (player == null) {
             return;
         }

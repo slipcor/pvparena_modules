@@ -26,7 +26,7 @@ public class AutoSneak extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     private final List<String> sneaker = new ArrayList<>();

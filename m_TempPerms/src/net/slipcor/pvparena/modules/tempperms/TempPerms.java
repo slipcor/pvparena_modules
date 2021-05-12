@@ -20,10 +20,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
 public class TempPerms extends ArenaModule implements Listener {
+    private static final String DEFAULT_NODE = "default";
     private boolean listening;
 
     public TempPerms() {
@@ -32,7 +34,7 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.291";
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -53,18 +55,27 @@ public class TempPerms extends ArenaModule implements Listener {
     @Override
     public CommandTree<String> getSubs(final Arena arena) {
         final CommandTree<String> result = new CommandTree<>(null);
-        result.define(new String[]{"add"});
-        result.define(new String[]{"rem"});
+
         if (arena == null) {
             return result;
         }
+
+        result.define(new String[]{"add"});
+        this.getTempPerms(arena, DEFAULT_NODE).entrySet().forEach(entry ->
+                result.define(new String[]{"rem", getPolarizedPermission(entry)})
+        );
+
         for (final ArenaClass aClass : arena.getClasses()) {
             result.define(new String[]{aClass.getName(), "add"});
-            result.define(new String[]{aClass.getName(), "rem"});
+            this.getTempPerms(arena, aClass.getName()).entrySet().forEach(entry ->
+                    result.define(new String[]{aClass.getName(), "rem", getPolarizedPermission(entry)})
+            );
         }
         for (final String team : arena.getTeamNames()) {
             result.define(new String[]{team, "add"});
-            result.define(new String[]{team, "rem"});
+            this.getTempPerms(arena, team).entrySet().forEach(entry ->
+                    result.define(new String[]{team, "rem", getPolarizedPermission(entry)})
+            );
         }
         return result;
     }
@@ -84,24 +95,24 @@ public class TempPerms extends ArenaModule implements Listener {
         // !tps [teamname] rem [perm] | remove team perm
 
         if (!PVPArena.hasAdminPerms(sender)
-                && !PVPArena.hasCreatePerms(sender, arena)) {
-            arena.msg(
+                && !PVPArena.hasCreatePerms(sender, this.arena)) {
+            this.arena.msg(
                     sender,
                     Language.parse(MSG.ERROR_NOPERM,
                             Language.parse(MSG.ERROR_NOPERM_X_ADMIN)));
             return;
         }
 
-        if (!AbstractArenaCommand.argCountValid(sender, arena, args, new Integer[]{1, 2, 3, 4})) {
+        if (!AbstractArenaCommand.argCountValid(sender, this.arena, args, new Integer[]{1, 2, 3, 4})) {
             return;
         }
 
-        Map<String, Boolean> map = getTempPerms(arena, "default");
+        Map<String, Boolean> map = this.getTempPerms(this.arena, DEFAULT_NODE);
 
         if (args.length == 1) {
-            arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, "default"));
+            this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, DEFAULT_NODE));
             for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
-                arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
+                this.arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
             }
             return;
         }
@@ -109,25 +120,25 @@ public class TempPerms extends ArenaModule implements Listener {
         if (args.length == 3 && ("add".equals(args[1]) || "rem".equals(args[1]))) {
             if ("add".equals(args[1])) {
                 map.put(args[2], true);
-                arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[2], "default"));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[2], DEFAULT_NODE));
             } else {
-                map.remove(args[2]);
-                arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[2], "default"));
+                map.remove(getStrippedPermission(args[2]));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[2], DEFAULT_NODE));
             }
-            setTempPerms(arena, map, "default");
+            this.setTempPerms(this.arena, map, DEFAULT_NODE);
             return;
         }
 
         if (args.length == 3) {
-            arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "add | remove"));
+            this.arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[1], "add | remove"));
             return;
         }
 
-        map = getTempPerms(arena, args[1]);
+        map = this.getTempPerms(this.arena, args[1]);
         if (args.length == 2) {
-            arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, args[1]));
+            this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_HEAD, args[1]));
             for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
-                arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
+                this.arena.msg(sender, stringBooleanEntry.getKey() + " - " + StringParser.colorVar(stringBooleanEntry.getValue()));
             }
             return;
         }
@@ -135,35 +146,35 @@ public class TempPerms extends ArenaModule implements Listener {
         if (args.length == 4 && ("add".equals(args[2]) || "rem".equals(args[2]))) {
             if ("add".equals(args[2])) {
                 map.put(args[3], true);
-                arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[3], args[1]));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_ADDED, args[3], args[1]));
             } else {
-                map.remove(args[3]);
-                arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[3], args[1]));
+                map.remove(getStrippedPermission(args[3]));
+                this.arena.msg(sender, Language.parse(MSG.MODULE_TEMPPERMS_REMOVED, args[3], args[1]));
             }
-            setTempPerms(arena, map, args[1]);
+            this.setTempPerms(this.arena, map, args[1]);
             return;
         }
 
-        arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[2], "add | remove"));
+        this.arena.msg(sender, Language.parse(MSG.ERROR_ARGUMENT, args[2], "add | remove"));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onClassChange(final PAPlayerClassChangeEvent event) {
-        if (event.getArena() != null && event.getArena().equals(arena)) {
+        if (event.getArena() != null && event.getArena().equals(this.arena)) {
             final ArenaPlayer aPlayer = ArenaPlayer.parsePlayer(event.getPlayer().getName());
-            if (arena != null && arena.getEveryone().contains(aPlayer)) {
-                removePermissions(event.getPlayer());
+            if (this.arena != null && this.arena.getEveryone().contains(aPlayer)) {
+                this.removePermissions(event.getPlayer());
 
-                class RunLater implements Runnable {
+                class RunLater extends BukkitRunnable {
 
                     @Override
                     public void run() {
-                        setPermissions(arena, aPlayer, getTempPerms(arena, "default"), getTempPerms(arena, aPlayer.getArenaTeam().getName()));
+                        TempPerms.this.setPermissions(TempPerms.this.arena, aPlayer, TempPerms.this.getTempPerms(TempPerms.this.arena, DEFAULT_NODE), TempPerms.this.getTempPerms(TempPerms.this.arena, aPlayer.getArenaTeam().getName()));
                     }
                 }
 
                 try {
-                    Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 1L);
+                    new RunLater().runTaskLater(PVPArena.instance, 1);
                 } catch (IllegalPluginAccessException ex) {
                     new RunLater().run();
                 }
@@ -173,12 +184,12 @@ public class TempPerms extends ArenaModule implements Listener {
 
     @Override
     public void parseJoin(final CommandSender player, final ArenaTeam team) {
-        if (!listening) {
+        if (!this.listening) {
             Bukkit.getPluginManager().registerEvents(this, PVPArena.instance);
-            listening = true;
+            this.listening = true;
         }
         final ArenaPlayer ap = ArenaPlayer.parsePlayer(player.getName());
-        setPermissions(arena, ap, getTempPerms(arena, "default"), getTempPerms(arena, ap.getArenaTeam().getName()));
+        this.setPermissions(this.arena, ap, this.getTempPerms(this.arena, DEFAULT_NODE), this.getTempPerms(this.arena, ap.getArenaTeam().getName()));
     }
 
     /**
@@ -190,24 +201,29 @@ public class TempPerms extends ArenaModule implements Listener {
         final Map<String, Boolean> result = new HashMap<>();
 
         if (arena.getArenaConfig().getYamlConfiguration().contains("perms." + node)) {
-            final List<String> list = arena.getArenaConfig().getStringList("perms." + node,
-                    new ArrayList<String>());
+            final List<String> list = arena.getArenaConfig().getStringList("perms." + node, new ArrayList<>());
             for (final String key : list) {
-                result.put(key.replace("-", "").replace("^", ""),
-                        !(key.startsWith("^") || key.startsWith("-")));
+                result.put(getStrippedPermission(key), !(key.startsWith("^") || key.startsWith("-")));
             }
         }
-
         return result;
     }
 
     private void setTempPerms(final Arena arena, final Map<String, Boolean> map, final String node) {
         final List<String> result = new ArrayList<>();
         for (final Map.Entry<String, Boolean> stringBooleanEntry : map.entrySet()) {
-            result.add((stringBooleanEntry.getValue() ? "" : "^") + stringBooleanEntry.getKey());
+            result.add(getPolarizedPermission(stringBooleanEntry));
         }
         arena.getArenaConfig().setManually("perms." + node, result);
         arena.getArenaConfig().save();
+    }
+
+    private static String getStrippedPermission(String key) {
+        return key.replaceAll("[\\^\\-]", "");
+    }
+
+    private static String getPolarizedPermission(Map.Entry<String, Boolean> stringBooleanEntry) {
+        return (stringBooleanEntry.getValue() ? "" : "-") + stringBooleanEntry.getKey();
     }
 
     private void setPermissions(final Arena arena, final ArenaPlayer ap, final Map<String, Boolean> mGlobal, final Map<String, Boolean> mTeam) {
@@ -217,7 +233,7 @@ public class TempPerms extends ArenaModule implements Listener {
         if (ap.getArenaClass() == null) {
             mClass = new HashMap<>();
         } else {
-            mClass = getTempPerms(arena, ap.getArenaClass().getName());
+            mClass = this.getTempPerms(arena, ap.getArenaClass().getName());
         }
 
         final Map<String, Boolean> total = new HashMap<>();
@@ -240,7 +256,6 @@ public class TempPerms extends ArenaModule implements Listener {
         for (final Map.Entry<String, Boolean> stringBooleanEntry : total.entrySet()) {
             pa.setPermission(stringBooleanEntry.getKey(), stringBooleanEntry.getValue());
         }
-        ap.get().recalculatePermissions();
         ap.getTempPermissions().add(pa);
     }
 
@@ -260,27 +275,16 @@ public class TempPerms extends ArenaModule implements Listener {
             }
         }
         player.getTempPermissions().clear();
-        p.recalculatePermissions();
     }
 
     @Override
-    public void resetPlayer(final Player player, final boolean force) {
+    public void resetPlayer(final Player player, final boolean soft, final boolean force) {
         try {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, new ResetRunnable(this, player), 5L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance, () -> {
+                this.removePermissions(player);
+            }, 5L);
         } catch (final IllegalPluginAccessException e) {
             // we don't care. Perms don't need to be removed on shutdown
         }
     }
-    /*
-	@Override
-	public void parseStart() {
-		HashMap<String, Boolean> mGlobal = getTempPerms(arena, "default");
-		
-		for (ArenaTeam team : arena.getTeams()) {
-			HashMap<String, Boolean> mTeam = getTempPerms(arena, team.getName());
-			for (ArenaPlayer ap : team.getTeamMembers()) {
-				setPermissions(arena, ap, mGlobal, mTeam);
-			}
-		}
-	}*/
 }

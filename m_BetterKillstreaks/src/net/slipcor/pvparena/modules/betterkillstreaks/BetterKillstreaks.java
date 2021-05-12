@@ -34,7 +34,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -106,11 +106,9 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
 
         if ("items".equals(args[2])) {
             // !bk [level] items | set the items to your inventory
-            final ItemStack[] items = ((Player) sender).getInventory().getContents().clone();
-            final String val = StringParser.getStringFromItemStacks(items);
-            cs.set("d" + level + ".items", val);
+            cs.set("d" + level + ".items", ((Player) sender).getInventory().getContents());
             arena.getArenaConfig().save();
-            arena.msg(sender, "Items of level " + level + " set to: " + val);
+            arena.msg(sender, "Items of level " + level + " set to: " + ((Player) sender).getInventory().getContents().toString());
             return;
         }
 
@@ -260,7 +258,7 @@ public class BetterKillstreaks extends ArenaModule implements Listener {
         final ConfigurationSection cs = arena.getArenaConfig().getYamlConfiguration().getConfigurationSection("modules.betterkillstreaks.definitions");
         for (final String key : cs.getKeys(false)) {
             if (key.equals("d" + value)) {
-                final ItemStack[] items = StringParser.getItemStacksFromString(cs.getString("items", "AIR"));
+                final ItemStack[] items = cs.getList("items").toArray(new ItemStack[0]);
                 for (final ItemStack item : items) {
                     player.getInventory().addItem(item);
                 }

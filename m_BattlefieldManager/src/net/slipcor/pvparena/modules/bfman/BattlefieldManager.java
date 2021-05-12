@@ -32,7 +32,7 @@ public class BattlefieldManager extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override

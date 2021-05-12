@@ -29,7 +29,7 @@ public class PlayerFinder extends ArenaModule implements Listener {
 
     @Override
     public String version() {
-        return "v1.3.4.270";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override

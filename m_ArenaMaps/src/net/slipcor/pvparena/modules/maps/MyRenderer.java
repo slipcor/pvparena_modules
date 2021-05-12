@@ -16,7 +16,6 @@ import org.bukkit.map.*;
 import org.bukkit.map.MapView.Scale;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,7 +85,7 @@ class MyRenderer extends MapRenderer {
         }
     }
 
-    private static final Set<Short> done = new HashSet<>();
+    private static final Set<Integer> done = new HashSet<>();
 
     @Override
     public void render(final MapView map, final MapCanvas canvas, final Player player) {

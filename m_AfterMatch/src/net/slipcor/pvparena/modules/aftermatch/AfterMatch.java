@@ -33,7 +33,7 @@ public class AfterMatch extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     public void afterMatch() {
@@ -44,7 +44,7 @@ public class AfterMatch extends ArenaModule {
                 }
                 final Player player = p.get();
                 if (player != null) {
-                    arena.tpPlayerToCoordName(player, "after");
+                    this.arena.tpPlayerToCoordName(p, "after");
                 }
             }
         }

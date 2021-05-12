@@ -32,7 +32,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.149";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class SinglePlayerSupport extends ArenaModule {
 
         for (final PASpawn spawn : spawns) {
             if (--pos < 0) {
-                arena.tpPlayerToCoordName(player.get(), spawn.getName());
+                this.arena.tpPlayerToCoordNameForJoin(player, spawn.getName(), true);
                 break;
             }
         }

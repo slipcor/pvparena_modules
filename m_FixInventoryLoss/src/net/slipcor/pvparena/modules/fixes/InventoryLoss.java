@@ -27,7 +27,7 @@ public class InventoryLoss extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.139";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override

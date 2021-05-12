@@ -30,7 +30,7 @@ public class Spectate extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.149";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -48,14 +48,6 @@ public class Spectate extends ArenaModule {
             res.setPriority(this, priority);
         }
         return res;
-    }
-
-    SpectateListener getListener() {
-        if (listener == null) {
-            listener = new SpectateListener();
-            Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
-        }
-        return listener;
     }
 
     @Override
@@ -86,7 +78,7 @@ public class Spectate extends ArenaModule {
         ap.debugPrint();
 
         ap.setArena(arena);
-        ap.setStatus(Status.WATCH);
+        this.getListener().addSpectator(player);
 
         if (ap.getState() == null) {
             final Arena arena = ap.getArena();
@@ -106,8 +98,9 @@ public class Spectate extends ArenaModule {
 
             @Override
             public void run() {
-                arena.tpPlayerToCoordName(player, "spectator");
+                arena.tpPlayerToCoordNameForJoin(ap, "spectator", false);
                 arena.msg(player, Language.parse(MSG.NOTICE_WELCOME_SPECTATOR));
+                ap.setStatus(Status.WATCH);
             }
         }
         class RunEvenLater implements Runnable {
@@ -126,14 +119,26 @@ public class Spectate extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
-        getListener().stop();
+        if(this.listener != null) {
+            this.listener.stop();
+        }
     }
 
     @Override
     public void unload(final Player player) {
-        getListener().removeSpectator(player);
+        if(this.listener != null) {
+            this.listener.removeSpectator(player);
+        }
 
         player.setAllowFlight(false);
         player.setFlying(false);
+    }
+
+    private SpectateListener getListener() {
+        if (listener == null) {
+            listener = new SpectateListener(this);
+            Bukkit.getPluginManager().registerEvents(listener, PVPArena.instance);
+        }
+        return listener;
     }
 }

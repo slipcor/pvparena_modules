@@ -5,7 +5,7 @@ import net.slipcor.pvparena.classes.PABlockLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.material.MaterialData;
+import org.bukkit.block.data.BlockData;
 
 class EADelay implements Runnable {
     private final Block block;
@@ -16,9 +16,8 @@ class EADelay implements Runnable {
 
     @Override
     public void run() {
-        final int type = block.getTypeId();
-        final byte data = block.getData();
-        final MaterialData meta = block.getState().getData();
+        final Material type = block.getType();
+        final BlockData data = block.getBlockData();
 
         block.setType(Material.REDSTONE_BLOCK);
 
@@ -26,8 +25,8 @@ class EADelay implements Runnable {
 
             @Override
             public void run() {
-                block.setTypeIdAndData(type, data, true);
-                block.getState().setData(meta);
+                block.setType(type);
+                block.setBlockData(data);
             }
 
         }

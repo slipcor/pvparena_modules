@@ -7,7 +7,7 @@
     <parent>
         <groupId>net.slipcor.pvpa</groupId>
         <artifactId>modules</artifactId>
-        <version>1.3.4-SNAPSHOT</version>
+        <version>1.15.2-SNAPSHOT</version>
     </parent>
 
     <name>PVP Arena Modules - Distribution</name>
@@ -16,6 +16,31 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-version</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>.</directory>
+                                    <includes>
+                                        <include>version.lock</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -26,7 +51,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>files</finalName>
+                            <finalName>pvparena-modules-${project.parent.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>

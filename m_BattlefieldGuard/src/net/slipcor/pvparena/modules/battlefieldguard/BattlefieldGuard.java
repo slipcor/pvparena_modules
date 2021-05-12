@@ -4,9 +4,10 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.StringParser;
 import net.slipcor.pvparena.loadables.ArenaModule;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.util.Set;
 
 public class BattlefieldGuard extends ArenaModule {
     private boolean setup;
@@ -17,26 +18,31 @@ public class BattlefieldGuard extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.235";
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     @Override
     public void configParse(final YamlConfiguration config) {
-        if (setup) {
+        if (this.setup) {
             return;
         }
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(PVPArena.instance, new BattleRunnable(), 20L, 20L);
-        setup = true;
+        new BattleRunnable().runTaskTimer(PVPArena.instance, 20, 20);
+        this.setup = true;
     }
 
     @Override
     public void displayInfo(final CommandSender sender) {
-        sender.sendMessage(StringParser.colorVar("enterdeath", arena.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)));
+        sender.sendMessage(StringParser.colorVar("enterdeath", this.arena.getArenaConfig().getBoolean(CFG.MODULES_BATTLEFIELDGUARD_ENTERDEATH)));
     }
 
     @Override
     public boolean hasSpawn(final String s) {
         return "exit".equalsIgnoreCase(s);
+    }
+
+    @Override
+    public String checkForMissingSpawns(final Set<String> list) {
+        return list.contains("exit") ? null : "exit not set";
     }
 
     @Override

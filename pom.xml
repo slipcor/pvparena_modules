@@ -8,11 +8,41 @@
     <name>PVP Arena Modules</name>
     <groupId>net.slipcor.pvpa</groupId>
     <artifactId>modules</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.15.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <url>https://github.com/Eredrim/pvparena</url>
+
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>eredrim-repo</id>
+            <url>https://repo.eredrim.fr/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.spigotmc</groupId>
+                <artifactId>spigot-api</artifactId>
+                <version>1.13.2-R0.1-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.slipcor</groupId>
+                <artifactId>pvparena</artifactId>
+                <version>1.15.2-SNAPSHOT</version>
+                <type>jar</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>m_AfterMatch</module>
@@ -32,8 +62,6 @@
         <module>m_BlockDissolve</module>
         <module>m_BlockRestore</module>
         <module>m_ChestFiller</module>
-        <module>m_ColorTeams</module>
-        <module>m_Duel</module>
         <module>m_EventActions</module>
         <module>m_Factions</module>
         <module>m_FixInventoryLoss</module>
@@ -45,25 +73,54 @@
         <module>m_PlayerFinder</module>
         <module>m_Points</module>
         <module>m_PowerUps</module>
+        <module>m_Projectiles</module>
         <module>m_RealSpectate</module>
         <module>m_RedStoneTriggers</module>
         <module>m_RespawnRelay</module>
-        <module>m_ScoreBoards</module>
         <module>m_SinglePlayerSupport</module>
         <module>m_SpecialJoin</module>
         <module>m_Spectate</module>
         <module>m_Squads</module>
-        <module>m_Skins</module>
+<!--        <module>m_Skins</module>-->
         <module>m_StartFreeze</module>
         <module>m_TeamSizeRestrict</module>
         <module>m_TempPerms</module>
-        <module>m_ThermosFix</module>
         <module>m_Titles</module>
         <module>m_Turrets</module>
         <module>m_Vault</module>
+        <!-- require m_Vault module to compile -->
+        <module>m_Duel</module>
         <module>m_Walls</module>
         <module>m_WorldEdit</module>
         <module>m_WorldGuard</module>
         <module>dist</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

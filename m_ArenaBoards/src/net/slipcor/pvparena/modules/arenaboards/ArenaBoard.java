@@ -27,9 +27,9 @@ public class ArenaBoard {
     private final ArenaBoardManager abm;
     private final boolean global;
 
-    private StatisticsManager.type sortBy = StatisticsManager.type.KILLS;
+    private StatisticsManager.Type sortBy = StatisticsManager.Type.KILLS;
 
-    private final Map<StatisticsManager.type, ArenaBoardColumn> columns = new HashMap<>();
+    private final Map<StatisticsManager.Type, ArenaBoardColumn> columns = new HashMap<>();
 
     /**
      * create an arena board instance
@@ -57,7 +57,7 @@ public class ArenaBoard {
             debug.i("parsing signs: ");
             int border = 10;
             do {
-                StatisticsManager.type t = null;
+                StatisticsManager.Type t = null;
                 try {
                     t = StatisticsManager.getTypeBySignLine(s.getLine(0));
                     s.setLine(0, ChatColor.AQUA + t.getNiceName());
@@ -111,15 +111,15 @@ public class ArenaBoard {
      */
     public void update() {
         debug.i("ArenaBoard update()");
-        for (final StatisticsManager.type t : StatisticsManager.type.values()) {
+        for (final StatisticsManager.Type t : StatisticsManager.Type.values()) {
             debug.i("checking stat: " + t.name());
-            if (!columns.containsKey(t)) {
+            if (!this.columns.containsKey(t)) {
                 continue;
             }
             debug.i("found! reading!");
-            final String[] s = StatisticsManager.read(
-                    StatisticsManager.getStats(global ? null : abm.getArena(), sortBy), t, global);
-            columns.get(t).write(s);
+            final String[] s =
+                    StatisticsManager.getStatsValuesForBoard(this.global ? null : this.abm.getArena(), this.sortBy);
+            this.columns.get(t).write(s);
         }
     }
 
@@ -162,12 +162,12 @@ public class ArenaBoard {
         if (ab.global) {
             debug.i("global!", player);
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                ab.sortBy = StatisticsManager.type.next(ab.sortBy);
+                ab.sortBy = StatisticsManager.Type.next(ab.sortBy);
                 Arena.pmsg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
                 return true;
             } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                ab.sortBy = StatisticsManager.type.last(ab.sortBy);
+                ab.sortBy = StatisticsManager.Type.last(ab.sortBy);
                 Arena.pmsg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
                 return true;
@@ -175,12 +175,12 @@ public class ArenaBoard {
         } else {
             debug.i("not global!", player);
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                ab.sortBy = StatisticsManager.type.next(ab.sortBy);
+                ab.sortBy = StatisticsManager.Type.next(ab.sortBy);
                 ab.abm.getArena().msg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
                 return true;
             } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                ab.sortBy = StatisticsManager.type.last(ab.sortBy);
+                ab.sortBy = StatisticsManager.Type.last(ab.sortBy);
                 ab.abm.getArena().msg(player,
                         Language.parse(MSG.MODULE_ARENABOARDS_SORTINGBY, ab.sortBy.toString()));
                 return true;

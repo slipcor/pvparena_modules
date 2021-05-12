@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.slipcor.pvpa</groupId>
         <artifactId>modules</artifactId>
-        <version>1.3.4-SNAPSHOT</version>
+        <version>1.15.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>m_aftermatch</artifactId>
@@ -12,38 +12,19 @@
 
     <name>PVP Arena Modules - AfterMatch</name>
 
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>craftyn-repo</id>
-            <url>https://repo2.craftyn.com/repository/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.11.2-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.slipcor</groupId>
             <artifactId>pvparena</artifactId>
-            <version>1.3.4-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
     </dependencies>
-
-    <url>http://pa.slipcor.net</url>
-    <ciManagement>
-        <system>jenkins</system>
-        <url>https://ci2.craftyn.com</url>
-    </ciManagement>
 
     <build>
         <defaultGoal>clean package install</defaultGoal>
@@ -59,24 +40,5 @@
                 </includes>
             </resource>
         </resources>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                        <encoding>ISO-8859-1</encoding>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+        </build>
 </project>

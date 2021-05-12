@@ -31,7 +31,7 @@ public class Walls extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.3.245";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -58,16 +58,12 @@ public class Walls extends ArenaModule {
 
     private void createWalls() {
         Material mat;
-        byte data;
         try {
-            ItemStack itemStack = StringParser.getItemStackFromString(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-            mat = itemStack.getType();
-            data = itemStack.getData().getData();
+            mat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
         } catch (final Exception e) {
             mat = Material.SAND;
-            data = 0;
         }
-        debug.i("material: "+mat.name() + " - data: " + data);
+        debug.i("material: "+mat.name());
         debug.i("replacing the wall for the following regions:");
 
         for (final ArenaRegion region : arena.getRegions()) {
@@ -87,7 +83,7 @@ public class Walls extends ArenaModule {
                         for (int c = z1; c <= z2; c++) {
                             Block block = world.getBlockAt(a, b, c);
                             if (block.getType() == Material.AIR) {
-                                block.setTypeIdAndData(mat.getId(), data, true);
+                                block.setType(mat);
                             }
                         }
                     }
@@ -177,14 +173,10 @@ public class Walls extends ArenaModule {
 
     public void removeWalls() {
         Material mat;
-        byte data;
         try {
-            ItemStack itemStack = StringParser.getItemStackFromString(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
-            mat = itemStack.getType();
-            data = itemStack.getData().getData();
+            mat = Material.getMaterial(arena.getArenaConfig().getString(CFG.MODULES_WALLS_MATERIAL));
         } catch (final Exception e) {
             mat = Material.SAND;
-            data = 0;
         }
         for (final ArenaRegion region : arena.getRegions()) {
 
@@ -202,8 +194,8 @@ public class Walls extends ArenaModule {
                     for (int b = y1; b <= y2; b++) {
                         for (int c = z1; c <= z2; c++) {
                             Block block = world.getBlockAt(a, b, c);
-                            if (block.getType() == mat && block.getData() == data) {
-                                block.setTypeIdAndData(0, (byte)1, true);
+                            if (block.getType() == mat) {
+                                block.setType(Material.AIR);
                             }
                         }
                     }

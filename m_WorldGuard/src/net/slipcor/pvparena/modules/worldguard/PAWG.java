@@ -1,7 +1,11 @@
 package net.slipcor.pvparena.modules.worldguard;
 
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.slipcor.pvparena.arena.Arena;
 import net.slipcor.pvparena.arena.ArenaPlayer;
 import net.slipcor.pvparena.classes.PABlockLocation;
@@ -22,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PAWG extends ArenaModule {
-    private static WorldGuardPlugin worldGuard;
+    private static RegionContainer wgRegionContainer;
 
     public PAWG() {
         super("WorldGuard");
@@ -30,7 +34,7 @@ public class PAWG extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.55";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -86,7 +90,8 @@ public class PAWG extends ArenaModule {
 
     private void create(final Player p, final Arena arena, final String regionName, final String wgRegion) {
 
-        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegion(wgRegion);
+        final RegionManager rgManager = wgRegionContainer.get(new BukkitWorld(p.getWorld()));
+        final ProtectedRegion region = (rgManager != null) ? rgManager.getRegion(wgRegion) : null;
 
         if (region == null) {
             arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));
@@ -112,9 +117,10 @@ public class PAWG extends ArenaModule {
         cmd.commit(arena, p, args);
     }
 
-    private void update(final Player p, final Arena arena, final ArenaRegion ars,
-                        final String wgRegion) {
-        final ProtectedRegion region = worldGuard.getRegionManager(p.getWorld()).getRegion(wgRegion);
+    private void update(final Player p, final Arena arena, final ArenaRegion ars, final String wgRegion) {
+
+        final RegionManager rgManager = wgRegionContainer.get(new BukkitWorld(p.getWorld()));
+        final ProtectedRegion region = (rgManager != null) ? rgManager.getRegion(wgRegion) : null;
 
         if (region == null) {
             arena.msg(p, Language.parse(MSG.MODULE_WORLDGUARD_NOTFOUND, wgRegion));
@@ -144,7 +150,7 @@ public class PAWG extends ArenaModule {
     public void onThisLoad() {
         final Plugin pwep = Bukkit.getPluginManager().getPlugin("WorldGuard");
         if (pwep != null && pwep.isEnabled() && pwep instanceof WorldGuardPlugin) {
-            worldGuard = (WorldGuardPlugin) pwep;
+            wgRegionContainer = WorldGuard.getInstance().getPlatform().getRegionContainer();
         }
     }
 }

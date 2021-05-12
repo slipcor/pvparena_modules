@@ -35,7 +35,7 @@ public class MatchResultStats extends ArenaModule {
 
     @Override
     public String version() {
-        return "v1.3.2.51";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -173,6 +173,8 @@ public class MatchResultStats extends ArenaModule {
 
     @Override
     public void reset(final boolean force) {
-        data.reset(force);
+        if(data != null) {
+            data.reset(force);
+        }
     }
 }

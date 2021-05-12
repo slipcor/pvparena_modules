@@ -24,25 +24,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.*;
 
 public class BetterGears extends ArenaModule {
     private static Map<String, String> defaultColors;
-    private Debug debug = new Debug(600);
+    private Debug debug;
 
     private Map<ArenaTeam, Short[]> colorMap;
     private Map<ArenaClass, Short> levelMap;
 
     public BetterGears() {
         super("BetterGears");
-        debug = new Debug(401);
+        debug = new Debug(600);
     }
 
     @Override
     public String version() {
-        return "v1.3.3.239";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
@@ -209,7 +210,8 @@ public class BetterGears extends ArenaModule {
 
     void equip(final ArenaPlayer ap) {
 
-        arena.getDebugger().i("equipping better gear!", ap.get());
+        Player player = ap.get();
+        arena.getDebugger().i("equipping better gear!", player);
 
         if (getColorMap().isEmpty()) {
             setup();
@@ -252,49 +254,29 @@ public class BetterGears extends ArenaModule {
             s = getLevelMap().get(ac);
         }
 
+        if(s != null && s > 0) {
+            isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, s);
+            isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_EXPLOSIONS, s);
+            isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FALL, s);
+            isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, s);
+            isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, s);
+        }
 
-        isArmor[0].addUnsafeEnchantment(
-                Enchantment.PROTECTION_ENVIRONMENTAL, s);
-        isArmor[0]
-                .addUnsafeEnchantment(Enchantment.PROTECTION_EXPLOSIONS, s);
-        isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FALL, s);
-        isArmor[0].addUnsafeEnchantment(Enchantment.PROTECTION_FIRE, s);
-        isArmor[0]
-                .addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE, s);
+        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_HEAD)) {
+            this.replaceArmorItem(EquipmentSlot.HEAD, player, isArmor[0]);
+        }
 
-        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_HEAD) &&
-                (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
-                        ap.get().getInventory().getHelmet() != null &&
-                                ap.get().getInventory().getHelmet().getType().name().contains("LEATHER"))) {
-            if (!tryReplace(EquipmentSlot.HEAD, ap.get(), isArmor[0])){
-                ap.get().getInventory().setHelmet(isArmor[0]);
-            }
+        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_CHEST)) {
+            this.replaceArmorItem(EquipmentSlot.CHEST, player, isArmor[1]);
         }
-        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_CHEST) &&
-                (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
-                        ap.get().getInventory().getChestplate() != null &&
-                                ap.get().getInventory().getChestplate().getType().name().contains("LEATHER"))) {
-            if (!tryReplace(EquipmentSlot.CHEST, ap.get(), isArmor[1])) {
-                ap.get().getInventory().setChestplate(isArmor[1]);
-            }
+
+        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_LEG)) {
+            this.replaceArmorItem(EquipmentSlot.LEGS, player, isArmor[2]);
         }
-        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_LEG) &&
-                (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
-                        ap.get().getInventory().getLeggings() != null &&
-                                ap.get().getInventory().getLeggings().getType().name().contains("LEATHER"))) {
-            if (!tryReplace(EquipmentSlot.LEGS, ap.get(), isArmor[2])) {
-                ap.get().getInventory().setLeggings(isArmor[2]);
-            }
+
+        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_FOOT)) {
+            this.replaceArmorItem(EquipmentSlot.FEET, player, isArmor[3]);
         }
-        if (arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_FOOT) &&
-                (!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER) ||
-                        ap.get().getInventory().getBoots() != null &&
-                                ap.get().getInventory().getBoots().getType().name().contains("LEATHER"))) {
-            if (!tryReplace(EquipmentSlot.FEET, ap.get(), isArmor[3])) {
-                ap.get().getInventory().setBoots(isArmor[3]);
-            }
-        }
-        ap.get().updateInventory();
     }
 
     private Map<ArenaTeam, Short[]> getColorMap() {
@@ -467,52 +449,34 @@ public class BetterGears extends ArenaModule {
         }
     }
 
-    private boolean tryReplace(EquipmentSlot slot, Player player, ItemStack setItem) {
-        ItemStack checkItem;
+    private void replaceArmorItem(EquipmentSlot slot, Player player, ItemStack setItem) {
+        PlayerInventory inventory = player.getInventory();
         switch (slot) {
             case HEAD:
-                checkItem = player.getInventory().getHelmet();
+                inventory.setHelmet(getColoredItemStack(inventory.getHelmet(), setItem));
                 break;
             case CHEST:
-                checkItem = player.getInventory().getChestplate();
+                inventory.setChestplate(getColoredItemStack(inventory.getChestplate(), setItem));
                 break;
             case LEGS:
-                checkItem = player.getInventory().getLeggings();
+                inventory.setLeggings(getColoredItemStack(inventory.getLeggings(), setItem));
                 break;
             case FEET:
-                checkItem = player.getInventory().getBoots();
+                inventory.setBoots(getColoredItemStack(inventory.getBoots(), setItem));
                 break;
-            default:
-                checkItem = null;
         }
+    }
 
-        if (checkItem == null || checkItem.getType() == Material.AIR) {
-            return false;
-        }
-        if (checkItem.getEnchantments() == null || checkItem.getEnchantments().isEmpty()) {
-            return false;
-        }
-        if (checkItem.getType() == setItem.getType()) {
-            LeatherArmorMeta checkMeta =  (LeatherArmorMeta) checkItem.getItemMeta();
+    private ItemStack getColoredItemStack(ItemStack checkItem, ItemStack setItem) {
+        if(!arena.getArenaConfig().getBoolean(CFG.MODULES_BETTERGEARS_ONLYIFLEATHER)) {
+            return setItem;
+        } else if (checkItem != null && setItem != null && setItem.getType().equals(checkItem.getType())) {
+            LeatherArmorMeta checkMeta = (LeatherArmorMeta) checkItem.getItemMeta();
             LeatherArmorMeta setMeta = (LeatherArmorMeta) setItem.getItemMeta();
             checkMeta.setColor(setMeta.getColor());
             checkItem.setItemMeta(checkMeta);
-            switch (slot) {
-                case HEAD:
-                    player.getInventory().setHelmet(checkItem);
-                    return true;
-                case CHEST:
-                    player.getInventory().setChestplate(checkItem);
-                    return true;
-                case LEGS:
-                    player.getInventory().setLeggings(checkItem);
-                    return true;
-                case FEET:
-                    player.getInventory().setBoots(checkItem);
-                    return true;
-                default:
-            }
+            return checkItem;
         }
-        return false;
+        return checkItem;
     }
 }

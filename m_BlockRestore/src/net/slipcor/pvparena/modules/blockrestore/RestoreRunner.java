@@ -4,7 +4,6 @@ import net.slipcor.pvparena.PVPArena;
 import net.slipcor.pvparena.commands.PAA_Edit;
 import net.slipcor.pvparena.core.Config.CFG;
 import net.slipcor.pvparena.core.Debug;
-import net.slipcor.pvparena.core.StringParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -58,19 +57,19 @@ class RestoreRunner implements Runnable {
             try {
                 debug.i("trying to restore chest: " + locationEntry1.getKey());
                 final Block b = world.getBlockAt(locationEntry1.getKey());
-                b.setType(Material.CHEST);
-                final Inventory inv = ((Chest) b.getState())
-                        .getInventory();
-                inv.clear();
-                int i = 0;
-                for (final ItemStack is : locationEntry1.getValue()) {
-                    debug.i("restoring: " + StringParser.getStringFromItemStack(is));
-                    inv.setItem(i++, is);
+                if(b.getType() == Material.CHEST) {
+                    final Inventory inv = ((Chest) b.getState()).getInventory();
+                    inv.clear();
+                    int i = 0;
+                    for (final ItemStack is : locationEntry1.getValue()) {
+                        debug.i("restoring: " + is);
+                        inv.setItem(i++, is);
+                    }
+                    debug.i("success!");
+                    chests.remove(locationEntry1.getKey());
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
+                            this, blocks.getArena().getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
                 }
-                debug.i("success!");
-                chests.remove(locationEntry1.getKey());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(PVPArena.instance,
-                        this, blocks.getArena().getArenaConfig().getInt(CFG.MODULES_BLOCKRESTORE_OFFSET) * 1L);
                 return;
             } catch (final Exception e) {
                 e.printStackTrace();

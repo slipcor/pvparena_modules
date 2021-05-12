@@ -209,6 +209,13 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${basedir}/../m_Projectiles/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${basedir}/../m_RealSpectate/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
@@ -286,13 +293,6 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${basedir}/../m_ThermosFix/target/</directory>
-            <outputDirectory>/files/</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>${basedir}/../m_Titles/target/</directory>
             <outputDirectory>/files/</outputDirectory>
             <includes>
@@ -332,6 +332,13 @@
             <outputDirectory>/files/</outputDirectory>
             <includes>
                 <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/target/</directory>
+            <outputDirectory>/files/</outputDirectory>
+            <includes>
+                <include>version.lock</include>
             </includes>
         </fileSet>
     </fileSets>

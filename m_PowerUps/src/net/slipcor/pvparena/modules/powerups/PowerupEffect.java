@@ -13,6 +13,7 @@ import net.slipcor.pvparena.loadables.ArenaModuleManager;
 import net.slipcor.pvparena.managers.ArenaManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -204,17 +205,13 @@ class PowerupEffect {
         debug.i("committing " + type.name(), player);
         final Random r = new Random();
         if (r.nextFloat() <= chance) {
-            if (type == PowerupType.HEALTH) {
-                if (diff > 0) {
-                    double value = player.getHealth() + diff;
-
-                    if (player.getMaxHealth() > value) {
-                        value = player.getMaxHealth();
-                    }
-                    player.setHealth(value);
+            if (this.type == PowerupType.HEALTH) {
+                if (this.diff > 0) {
+                    double newHealth = player.getHealth() + this.diff;
+                    double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                    player.setHealth(Math.min(newHealth, maxHealth));
                 } else {
-                    player.setHealth((int) Math.round(player.getHealth()
-                            * factor));
+                    player.setHealth((int) Math.round(player.getHealth() * this.factor));
                 }
                 return true;
             } else if (type == PowerupType.LIVES) {
